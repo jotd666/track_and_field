@@ -4,18 +4,18 @@
 	.global vb_ticks_count
 	.global break_at_startup_flag
 	.global skip_intro_flag
-	.global must_skip_konami_logo_flag
 	.global log_ptr
-	.global	i_reg
 	.global highscore_needs_saving_flag
 	.global sprite_ram_9000
 	.global	regscopy
-	.global	ram_buffer
 	.global vbl_sync_counter
 	.global vbl_sync_flag
 	.global no_sync_flag
-	.ifndef	RELEASE
-	.global ram_start_8000
+	.ifdef	RELEASE
+	.global	ram_buffer
+	.else
+	.global ram_start_1800
+	.global	dev_ram_buffer
 	.endif
 	
 	.ifdef   __amiga__
@@ -33,10 +33,13 @@
 
 ram_buffer:
 	.ifdef	RELEASE
-	.skip	0x9000-0x8000
+	.skip	0x4000-0x1800
+rom_buffer:
+	.skip	0x10000-0x6000
 	.else
+dev_ram_buffer:
 	.skip	0x20000
-ram_start_8000:
+ram_start_1800:
 	.long	0
 	.endif
 

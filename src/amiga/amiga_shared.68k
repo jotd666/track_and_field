@@ -11,9 +11,9 @@
 
 * sound engine and also highscore management, common to all versions
 	
-.include "dos_lvos.i"
-.include "pooyan.inc"
-.include "sounds.inc"
+	.include "lvo/dos_lvos.i"
+	.include "track_and_field.inc"
+	.include "sounds.inc"
 
 SCORE_FILE_SIZE = 3+30*3
 

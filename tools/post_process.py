@@ -36,6 +36,8 @@ with open("../src/conv.s") as f:
 
         elif "[$6600" in line:
             line = "irq_6600:\n"+line
+        elif "[$f000" in line:
+            line = "reset_f000:\n"+line
         elif "unsupported instruction rti" in line:
             line = change_instruction("rts",line)
         elif "unsupported instruction lds" in line:
@@ -54,4 +56,7 @@ with open("../src/conv.s") as f:
         lines[i] = line
 
 with open("../src/track_and_field.68k","w") as fw:
+    fw.write("""\t.global\tirq_6600
+\t.global\treset_f000
+""")
     fw.writelines(lines)
