@@ -1,1 +1,3 @@
-- run through game trace cpu extra non-code
+- 0: main state? debug
+- continue get_address checks
+- find video related get_address and patch them (auto!)

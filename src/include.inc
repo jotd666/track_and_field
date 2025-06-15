@@ -14,9 +14,44 @@
 
 
 	.macro	ERROR     arg
-	| \arg
+	.error "\arg"
 	.endm
 
+	
+	.ifdef	RELEASE
+	.macro	GET_ADDRESS_FUNC
+	lea		(a6,a0.l),a0
+	.endm
+	
+	.else
+	
+	.macro	GET_ADDRESS_FUNC
+	jbsr	get_address
+	.endm
+	
+* dev mode, more checks about the address
+get_address:
+	cmp.l	#0x6000,a0
+	jcc		10f		| rom: ok
+	cmp.l	#0x4000,a0
+	jcs		0f
+	BREAKPOINT	"unsupported address range 0x4000-0x5FFF"
+	illegal
+0:
+	cmp.l	#0x1800,a0
+	jcs		0f
+	BREAKPOINT	"unsupported address range 0-0x1800"
+	illegal
+0:
+	* 0X1800 <= range < 0x4000, ram, video ram & special ram/scroll
+
+10:
+	lea		(a6,a0.l),a0
+	rts
+
+	.endif 
+	
+	
 	.macro	MAKE_D
 * add value of A in B MSB so D&0xFF == B
 	rol.w	#8,d1
@@ -86,11 +121,9 @@
 	.endm
 
 
-	.macro SET_I_FLAG
-    ERROR   "TODO: insert interrupt disable code here"
-	.endm
+
 	.macro CLR_I_FLAG
-    ERROR   "TODO: insert interrupt enable code here"
+    * not useful
 	.endm
 
 	.macro	JXX_A_INDEXED
@@ -195,7 +228,7 @@
 
 	.macro GET_ADDRESS	offset
 	lea	\offset,a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_DP_ADDRESS	offset
@@ -206,13 +239,13 @@
 	.macro GET_INDIRECT_ADDRESS	offset
 	GET_ADDRESS	\offset
 	READ_BE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro SET_DP_FROM_A
 	lsl.w    #8,d0
 	move.l    d0,a0
-	jbsr    get_address
+	GET_ADDRESS_FUNC
 	move.l	a0,a4
 	lsr.w    #8,d0
 	.endm
@@ -233,7 +266,7 @@
 	lea	\offset,a0
 	add.l	d2,a0
 	.endif
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_X_INDIRECT_ADDRESS	offset
@@ -244,13 +277,13 @@
 	add.l	d2,a0
 	.endif
 	READ_BE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_X_ADDRESS_FROM_REG	reg
 	move.l	\reg,a0
 	add.l	d2,a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_Y_ADDRESS	offset
@@ -260,7 +293,7 @@
 	lea	\offset,a0
 	add.l	d3,a0
 	.endif
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_Y_INDIRECT_ADDRESS	offset
@@ -271,13 +304,13 @@
 	add.l	d3,a0
 	.endif
 	READ_BE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_Y_ADDRESS_FROM_REG	reg
 	move.l	\reg,a0
 	add.l	d3,a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_S_ADDRESS	offset
@@ -287,7 +320,7 @@
 	lea	\offset,a0
 	add.l	d5,a0
 	.endif
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_S_INDIRECT_ADDRESS	offset
@@ -298,13 +331,13 @@
 	add.l	d5,a0
 	.endif
 	READ_BE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_S_ADDRESS_FROM_REG	reg
 	move.l	\reg,a0
 	add.l	d5,a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_U_ADDRESS	offset
@@ -314,7 +347,7 @@
 	lea	\offset,a0
 	add.l	d4,a0
 	.endif
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_U_INDIRECT_ADDRESS	offset
@@ -325,13 +358,13 @@
 	add.l	d4,a0
 	.endif
 	READ_BE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_U_ADDRESS_FROM_REG	reg
 	move.l	\reg,a0
 	add.l	d4,a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 cpu_init:
@@ -345,9 +378,6 @@ cpu_init:
 	moveq	#0,d7
 	rts
 
-get_address:
-	ERROR "`TODO: implement this by adding memory base to a0"
-	rts
 
 
 multiply_ab:

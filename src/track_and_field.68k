@@ -35,6 +35,7 @@
 
 
 * page $28xx
+copy_of_inputs_30 = 0x30
 hammer_speed_38 = 0x38
 p1_attempts_left_81 = 0x81
 p1_attempts_left_a1 = 0xA1
@@ -48,17 +49,20 @@ watchdog_1000 = 0x1000
 flip_screen_set_1080 = 0x1080
 irq_mask_w_1087 = 0x1087
 dsw2_1200 = 0x1200
+system_1280 = 0x1280
+in0_1281 = 0x1281
+in1_1282 = 0x1282
 dsw1_1283 = 0x1283
 sprite_ram_1800 = 0x1800
 scroll_registers_1840 = 0x1840
+copy_of_inputs_2830 = $$2830
 failed_rom_check_2a8e = 0x2a8e
 failed_rom_check_29d4 = 0x29d4
 video_ram_3000 = 0x3000
 color_ram_3800 = 0x3800
 
 l_6000:
-	GET_ADDRESS	irq_mask_w_1087            	| [$6000: clr    irq_mask_w_1087] disable interrupts
-	clr.b	(a0)                         	| [...]
+	jbsr	osd_disable_interrupts |  [$6000: clr    irq_mask_w_1087] disable interrupts
 	 |  [$6003: lds    #$1f80] set stack
 	move.b	#0x28,d0                        	| [$6007: lda    #$28]
 	SET_DP_FROM_A                          	| [$6009: tfr    a,dp] set direct page to nvram
@@ -332,9 +336,8 @@ l_6145:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6145                             	| [$6157: bne    $6145]
 l_6159:
-	move.b	#0x01,d0                        	| [$6159: lda    #$01]
-	GET_ADDRESS	irq_mask_w_1087            	| [$615b: sta    irq_mask_w_1087]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$6159: lda    #$01]
+	jbsr	osd_enable_interrupts |  [$615b: sta    irq_mask_w_1087]
 	CLR_I_FLAG                             	| [$615e: andcc  #$ef]
 l_6160:
 	moveq	#0,d2                            	| [...]
@@ -362,9 +365,7 @@ l_6176:
 	jra	l_6160                             	| [$617d: bra    $6160]
 
 l_617f:
-	GET_ADDRESS	irq_mask_w_1087            	| [$617f: clr    irq_mask_w_1087]
-	clr.b	(a0)                         	| [...]
-	moveq	#0,d3                            	| [...]
+	jbsr	osd_disable_interrupts |  [$617f: clr    irq_mask_w_1087]
 	move.w	#sprite_ram_1800,d3             	| [$6182: ldy    #sprite_ram_1800]
 	move.w	#0x1c00,d4                      	| [$6186: ldu    #$1c00]
 	move.b	#0x00,d0                        	| [$6189: ldd    #$00ff]
@@ -412,9 +413,8 @@ l_61ac:
 	GET_DP_ADDRESS	0x40                    	| [$61b6: dec    $40]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_61ac                             	| [$61b8: bne    $61ac]
-	move.b	#0x01,d0                        	| [$61ba: lda    #$01]
-	GET_ADDRESS	irq_mask_w_1087            	| [$61bc: sta    irq_mask_w_1087]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$61ba: lda    #$01]
+	jbsr	osd_enable_interrupts |  [$61bc: sta    irq_mask_w_1087]
 	rts                                    	| [$61bf: rts]
 
 l_61c0:
@@ -1256,8 +1256,7 @@ l_65f2:
 	rts                                    	| [$65ff: rts]
 
 irq_6600:
-	GET_ADDRESS	irq_mask_w_1087            	| [$6600: clr    irq_mask_w_1087]
-	clr.b	(a0)                         	| [...]
+	jbsr	osd_disable_interrupts |  [$6600: clr    irq_mask_w_1087]
 	move.b	#0x01,d0                        	| [$6603: lda    #$01]
 	 |  [$6605: sta    watchdog_1000]
 	jbsr	l_d906                            	| [$6608: jsr    $d906]
@@ -1269,18 +1268,18 @@ irq_6600:
 	JSR_A_INDEXED	A2                   	| [$6611: jsr    [a,x]] [jump_table]
 	GET_DP_ADDRESS	0x3f                    	| [$6613: inc    $3f]
 	addq.b	#1,(a0)                         	| [...]
-	jbsr	l_6624                            	| [$6615: jsr    $6624]
+	jbsr	read_inputs_6624                  	| [$6615: jsr    read_inputs_6624]
 	jbsr	l_664a                            	| [$6618: jsr    $664a]
 	jbsr	l_66eb                            	| [$661b: jsr    $66eb]
-	move.b	#0x01,d0                        	| [$661e: lda    #$01]
-	GET_ADDRESS	irq_mask_w_1087            	| [$6620: sta    irq_mask_w_1087]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$661e: lda    #$01]
+	jbsr	osd_enable_interrupts |  [$6620: sta    irq_mask_w_1087]
 	rts |  [$6623: rti]
-l_6624:
+
+read_inputs_6624:
 	moveq	#0,d2                            	| [...]
 	move.w	#0x2830,d2                      	| [$6624: ldx    #$2830]
-	GET_X_ADDRESS	0x3                      	| [$6627: ldd    $3,x]
-	LOAD_D                                 	| [$6627: ldd    $3,x]
+	GET_X_ADDRESS	0x3                      	| [$6627: ldd    $3,x] copy previous values of inputs
+	LOAD_D                                 	| [$6627: ldd    $3,x] copy previous values of inputs
 	GET_X_ADDRESS	0x6                      	| [$6629: std    $6,x]
 	MOVE_W_TO_REG	d1,(a0)                  	| [...]
 	GET_X_ADDRESS	0x5                      	| [$662b: lda    $5,x]
@@ -1295,19 +1294,19 @@ l_6624:
 	move.b	(a0),d0                         	| [...]
 	GET_X_ADDRESS	0x5                      	| [$6635: sta    $5,x]
 	move.b	d0,(a0)                         	| [...]
-	GET_ADDRESS	0x1280                     	| [$6637: lda    $1280]
+	GET_ADDRESS	system_1280                	| [$6637: lda    system_1280]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$663a: coma]
 	GET_X_ADDRESS	0                        	| [$663b: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_ADDRESS	0x1281                     	| [$663d: lda    $1281]
+	GET_ADDRESS	in0_1281                   	| [$663d: lda    in0_1281]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$6640: coma]
 	GET_X_ADDRESS	0                        	| [$6641: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_ADDRESS	0x1282                     	| [$6643: lda    $1282]
+	GET_ADDRESS	in1_1282                   	| [$6643: lda    in1_1282]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$6646: coma]
 	GET_X_ADDRESS	0                        	| [$6647: sta    ,x]
@@ -1621,7 +1620,7 @@ l_67c4:
 	jne	l_67c4                             	| [$67c9: bne    $67c4]
 	GET_DP_ADDRESS	0x23                    	| [$67cb: ldb    $23]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	0x30                    	| [$67cd: lda    $30]
+	GET_DP_ADDRESS	copy_of_inputs_30       	| [$67cd: lda    copy_of_inputs_30]
 	move.b	(a0),d0                         	| [...]
 	BIT	#0x08,d0                           	| [$67cf: bita   #$08]
 	jne	l_67e5                             	| [$67d1: bne    $67e5]

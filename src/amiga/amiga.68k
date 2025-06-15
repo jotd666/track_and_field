@@ -192,7 +192,8 @@ start:
 	.global		_dosbase
 	.global		cheat_used
 * osd layer		
-		.global osd_interrupt_control
+		.global osd_enable_interrupts
+		.global osd_disable_interrupts
 		.global osd_break		| for debug	
 		.global osd_blitz		| for debug
 		.global osd_w_videoram
@@ -2026,14 +2027,10 @@ load_palette:
 	
 	
 
-* 60Hz VBLANK interrupt (also keyboard)
-* only called at bootup, not from interrupts (at least!!)
-osd_interrupt_control:
-	tst.b	d0
-	jeq		0f
+osd_enable_interrupts:
 	move.w	#0xC038+0x780,_custom+intena
 	rts
-0:
+osd_disable_interrupts:
 	move.w	#0x0030,_custom+intena
 	rts
 

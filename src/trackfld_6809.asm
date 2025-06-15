@@ -29,6 +29,7 @@
 	
 
 * page $28xx
+copy_of_inputs_30 = $30
 hammer_speed_38 = $38
 p1_attempts_left_81 = $81
 p1_attempts_left_a1 = $A1
@@ -42,9 +43,13 @@ watchdog_1000 = $1000
 flip_screen_set_1080 = $1080
 irq_mask_w_1087 = $1087
 dsw2_1200 = $1200
+system_1280 = $1280
+in0_1281 = $1281
+in1_1282 = $1282
 dsw1_1283 = $1283
 sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
+copy_of_inputs_2830 = $$2830
 failed_rom_check_2a8e = $2a8e
 failed_rom_check_29d4 = $29d4
 video_ram_3000 = $3000
@@ -769,14 +774,16 @@ color_ram_3800 = $3800
 660E: 8E A8 69       LDX    #table_a869
 6611: AD 96          JSR    [A,X]		; [jump_table]
 6613: 0C 3F          INC    $3F
-6615: BD 66 24       JSR    $6624
+6615: BD 66 24       JSR    read_inputs_6624
 6618: BD 66 4A       JSR    $664A
 661B: BD 66 EB       JSR    $66EB
 661E: 86 01          LDA    #$01
 6620: B7 10 87       STA    irq_mask_w_1087
 6623: 3B             RTI
+
+read_inputs_6624:
 6624: 8E 28 30       LDX    #$2830
-6627: EC 03          LDD    $3,X
+6627: EC 03          LDD    $3,X	; copy previous values of inputs
 6629: ED 06          STD    $6,X
 662B: A6 05          LDA    $5,X
 662D: A7 08          STA    $8,X
@@ -784,13 +791,13 @@ color_ram_3800 = $3800
 6631: ED 03          STD    $3,X
 6633: A6 02          LDA    $2,X
 6635: A7 05          STA    $5,X
-6637: B6 12 80       LDA    $1280
+6637: B6 12 80       LDA    system_1280
 663A: 43             COMA
 663B: A7 80          STA    ,X+
-663D: B6 12 81       LDA    $1281
+663D: B6 12 81       LDA    in0_1281
 6640: 43             COMA
 6641: A7 80          STA    ,X+
-6643: B6 12 82       LDA    $1282
+6643: B6 12 82       LDA    in1_1282
 6646: 43             COMA
 6647: A7 84          STA    ,X
 6649: 39             RTS
@@ -1000,7 +1007,7 @@ color_ram_3800 = $3800
 67C6: 8C 2C 00       CMPX   #$2C00
 67C9: 26 F9          BNE    $67C4
 67CB: D6 23          LDB    $23
-67CD: 96 30          LDA    $30
+67CD: 96 30          LDA    copy_of_inputs_30
 67CF: 85 08          BITA   #$08
 67D1: 26 12          BNE    $67E5
 67D3: 85 10          BITA   #$10

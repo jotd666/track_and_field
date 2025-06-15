@@ -40,6 +40,7 @@ this_dir = pathlib.Path(__file__).absolute().parent
 
 source_dir = this_dir / "../src"
 
+# various dirty but at least automatic patches applying on the specific track and field code
 with open(source_dir / "conv.s") as f:
     lines = list(f)
 
@@ -74,7 +75,16 @@ with open(source_dir / "conv.s") as f:
             lines[i+2] = ""
             lines[i+4] = ""
 
-        elif "[$6600" in line:
+        elif "irq_mask_w_1087" in line:
+            # check next line
+            next_line = lines[i+1]
+            if "clr" in next_line:
+                line = change_instruction("jbsr\tosd_disable_interrupts",lines,i)
+            else:
+                line = change_instruction("jbsr\tosd_enable_interrupts",lines,i)
+                lines[i-1] = remove_instruction(lines,i-1)
+
+        if "[$6600" in line:
             line = "irq_6600:\n"+line
         elif "[$f000" in line:
             line = "reset_f000:\n"+line
