@@ -15,7 +15,8 @@
 	.include "lvo/dos_lvos.i"
 	.include "lvo/graphics_lvos.i"
 
-
+	.global	m6809_direct_page_pointer
+	
 AttnFlags = 0x128
 AFB_68010 = 0
 AFB_68020 = 1
@@ -401,15 +402,12 @@ _user:
 	
 	moveq	#0,d0
 	move.b	start_level_option+3,d0
-	and.b	#0x3F,d0	| safety
-	lea		start_level_table,a0
-	move.b	(a0,d0.w),start_level
+
+	move.b	d0,start_level
 	
 	move.l	misc_options,d1
 	btst	#0,d1
 	sne		frameskip
-	btst	#1,d1
-	sne		stars_off_flag
 	.ifndef	RELEASE
 	btst	#31,d1
 	sne		break_at_startup_flag
@@ -737,7 +735,7 @@ demo_game:
 	add.l	#0x4000-0x1800,d1
 	move.l 	d1,a1
 	move.w	#(0x10000-0x6000)/4-1,d0
-	lea		rom,a0
+	lea		rom_base,a0
 0:
 	move.l	(a0)+,(a1)+
 	dbf		d0,0b
@@ -747,7 +745,7 @@ demo_game:
 	* copy the ROM data right after RAM
 	lea		ram_buffer+0x4000-0x1800,a1
 	move.w	#(0x10000-0x6000)/4-1,d0
-	lea		rom,a0
+	lea		rom_base,a0
 0:
 	move.l	(a0)+,(a1)+
 	dbf		d0,0b
@@ -846,7 +844,7 @@ _vblank:
 	
 	subq.w	#1,delay_timer
 		
-	jbsr		do_both_gyruss_irq
+	jbsr		do_irq
 	
 	tst.b	frameskip
 	jeq		0f
@@ -872,45 +870,10 @@ _vblank:
 
 osd_log_cpu:
 	move.l	a6,-(a7)
-	tst.w	(8,a7)
-	jne		0f
+	* check if cpu log is enabled
 	tst.b	cpu_log_enable
 	jeq		445f
-	* check if cpu log is enabled
 	move.l	log_ptr,a6
-	move.w	(10,a7),(a6)+	| the PC
-	move.b	d0,(a6)+
-	move.b	d1,(a6)+
-	move.b	d2,(a6)+
-	move.b	d3,(a6)+
-	move.b	d4,(a6)+
-	move.b	d5,(a6)+
-	move.b	d6,(a6)+
-	move.b	d7,(a6)+
-	move.l	a0,(a6)+
-	move.l	a1,(a6)+
-	move.l	a2,(a6)+
-	move.l	a3,(a6)+
-	move.w	#0xDEAD,(a6)+
-	cmp.w	#0xCAFE,(a6)  | hitting the protection buffer
-	jne		444f
-	* save log before hitting breakpoint
-	move.l	(a7)+,a6
-	jbsr	save_cpu_log
-	BREAKPOINT	"cpu log buffer full!"
-	illegal
-444:
-	move.l	a6,log_ptr
-445:
-	move.l	(a7)+,a6
-	rts
-
-* sub-cpu
-0:
-	* check if sub cpu log is enabled
-	tst.b	cpu_log_enable+1
-	jeq		445f
-	move.l	sub_log_ptr,a6
 	move.w	(10,a7),(a6)+	| the PC
 	move.l	d1,-(a7)
 	rol.w	#8,d1
@@ -926,7 +889,7 @@ osd_log_cpu:
 	BREAKPOINT	"sub cpu log buffer full!"
 444:
 	move.w	#0xDEAD,(a6)+
-	move.l	a6,sub_log_ptr
+	move.l	a6,log_ptr
 	move.l	(a7)+,d1
 445:
 	move.l	(a7)+,a6
@@ -1847,8 +1810,6 @@ store_system:
 	* note: game crawls on vanilla A1200 too if stars are on
 	*
 	st.b	frameskip
-	* also turn off stars
-	st.b	stars_off_flag
 1:
 
 	lea	_custom,a6
@@ -2736,7 +2697,7 @@ handle_keyboard:
 	cmp.b	#0x50,d0	| F1 key: only 1 wolf
 	bne.b	0f
 	move.w	#0x0FF,_custom+color
-	st.b 	level_skip_flag
+	*st.b 	level_skip_flag
 	st.b	cheat_used
 	
 0:

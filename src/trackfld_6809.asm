@@ -33,9 +33,22 @@ hammer_speed_38 = $38
 p1_attempts_left_81 = $81
 p1_attempts_left_a1 = $A1
 current_level_84 = $84
-jump_foul_C9 = $c9
-false_start_D9 = $D9
-high_jump_fault_9F = $9F
+jump_foul_c9 = $c9
+false_start_d9 = $D9
+high_jump_fault_9f = $9F
+
+* memory offsets
+watchdog_1000 = $1000
+flip_screen_set_1080 = $1080
+irq_mask_w_1087 = $1087
+dsw2_1200 = $1200
+dsw1_1283 = $1283
+sprite_ram_1800 = $1800
+scroll_registers_1840 = $1840
+failed_rom_check_2a8e = $2a8e
+failed_rom_check_29d4 = $29d4
+video_ram_3000 = $3000
+color_ram_3800 = $3800
 
 6000: 7F 10 87       CLR    irq_mask_w_1087				; disable interrupts
 6003: 10 CE 1F 80    LDS    #$1F80				; set stack
@@ -63,15 +76,15 @@ high_jump_fault_9F = $9F
 6038: B6 2F FF       LDA    $2FFF
 603B: 84 C0          ANDA   #$C0
 603D: B7 2F FF       STA    $2FFF
-6040: 8E 30 00       LDX    #$3000		; clear screen: 0x1E char, with 0 clut attribute
+6040: 8E 30 00       LDX    #video_ram_3000		; clear screen: 0x1E char, with 0 clut attribute
 6043: 86 1E          LDA    #$1E
 6045: 5F             CLRB
 6046: E7 89 08 00    STB    $0800,X
 604A: A7 80          STA    ,X+
 604C: B7 10 00       STA    watchdog_1000
-604F: 8C 38 00       CMPX   #$3800
+604F: 8C 38 00       CMPX   #color_ram_3800
 6052: 26 F2          BNE    $6046
-6054: 8E 18 00       LDX    #$1800		; clear sprites
+6054: 8E 18 00       LDX    #sprite_ram_1800		; clear sprites
 6057: 6F 80          CLR    ,X+
 6059: B7 10 00       STA    watchdog_1000
 605C: 8C 20 00       CMPX   #$2000
@@ -209,7 +222,7 @@ high_jump_fault_9F = $9F
 617D: 20 E1          BRA    $6160
 
 617F: 7F 10 87       CLR    irq_mask_w_1087
-6182: 10 8E 18 00    LDY    #$1800
+6182: 10 8E 18 00    LDY    #sprite_ram_1800
 6186: CE 1C 00       LDU    #$1C00
 6189: CC 00 FF       LDD    #$00FF
 618C: ED A1          STD    ,Y++
@@ -221,7 +234,7 @@ high_jump_fault_9F = $9F
 6199: ED C1          STD    ,U++
 619B: 10 8C 18 60    CMPY   #$1860
 619F: 26 F6          BNE    $6197
-61A1: 8E 30 00       LDX    #$3000
+61A1: 8E 30 00       LDX    #video_ram_3000
 61A4: 86 08          LDA    #$08
 61A6: 97 40          STA    $40
 61A8: 0F 41          CLR    $41
@@ -918,56 +931,56 @@ high_jump_fault_9F = $9F
 6739: 96 0F          LDA    $0F
 673B: 48             ASLA
 673C: AD 96          JSR    [A,X]	; [jump_table]
-673E: B6 2F E7       LDA    $2FE7
-6741: 81 19          CMPA   #$19
-6743: 26 66          BNE    $67AB
-6745: B6 2F EE       LDA    $2FEE
-6748: 81 65          CMPA   #$65
-674A: 26 5F          BNE    $67AB
-674C: B6 2F EF       LDA    $2FEF
-674F: 81 DB          CMPA   #$DB
-6751: 26 58          BNE    $67AB
-6753: 10 8E A6 BC    LDY    #$A6BC
-6757: A6 A0          LDA    ,Y+
-6759: 4A             DECA
-675A: 81 4A          CMPA   #$4A
-675C: 26 4A          BNE    $67A8
-675E: A6 A0          LDA    ,Y+
-6760: 8B 20          ADDA   #$20
-6762: 81 6F          CMPA   #$6F
-6764: 26 42          BNE    $67A8
-6766: A6 A0          LDA    ,Y+
-6768: 80 05          SUBA   #$05
-676A: 81 49          CMPA   #$49
-676C: 26 3A          BNE    $67A8
-676E: A6 A0          LDA    ,Y+
-6770: 4C             INCA
-6771: 81 42          CMPA   #$42
-6773: 26 33          BNE    $67A8
-6775: A6 A0          LDA    ,Y+
-6777: 8B 03          ADDA   #$03
-6779: 81 50          CMPA   #$50
-677B: 26 2B          BNE    $67A8
-677D: A6 A0          LDA    ,Y+
-677F: 81 49          CMPA   #$49
-6781: 26 25          BNE    $67A8
-6783: 8E FC 47       LDX    #$FC47
-6786: 30 88 24       LEAX   $24,X
-6789: CC 00 00       LDD    #$0000
-678C: EB 81          ADDB   ,X++
-678E: 89 00          ADCA   #$00
-6790: 30 01          LEAX   $1,X
-6792: EB 84          ADDB   ,X
-6794: 89 00          ADCA   #$00
-6796: 30 03          LEAX   $3,X
-6798: EB 80          ADDB   ,X+
-679A: 89 00          ADCA   #$00
-679C: 30 02          LEAX   $2,X
-679E: EB 84          ADDB   ,X
-67A0: 89 00          ADCA   #$00
-67A2: 10 83 03 12    CMPD   #$0312
-67A6: 27 03          BEQ    $67AB
-67A8: 16 51 3B       LBRA   $B8E6
+673E: B6 2F E7       LDA    $2FE7   ; [rom_check_code]
+6741: 81 19          CMPA   #$19    ; [rom_check_code]
+6743: 26 66          BNE    $67AB   ; [rom_check_code]
+6745: B6 2F EE       LDA    $2FEE   ; [rom_check_code]
+6748: 81 65          CMPA   #$65    ; [rom_check_code]
+674A: 26 5F          BNE    $67AB   ; [rom_check_code]
+674C: B6 2F EF       LDA    $2FEF   ; [rom_check_code]
+674F: 81 DB          CMPA   #$DB    ; [rom_check_code]
+6751: 26 58          BNE    $67AB   ; [rom_check_code]
+6753: 10 8E A6 BC    LDY    #$A6BC  ; [rom_check_code]
+6757: A6 A0          LDA    ,Y+     ; [rom_check_code]
+6759: 4A             DECA           ; [rom_check_code]
+675A: 81 4A          CMPA   #$4A    ; [rom_check_code]
+675C: 26 4A          BNE    $67A8   ; [rom_check_code]
+675E: A6 A0          LDA    ,Y+     ; [rom_check_code]
+6760: 8B 20          ADDA   #$20    ; [rom_check_code]
+6762: 81 6F          CMPA   #$6F    ; [rom_check_code]
+6764: 26 42          BNE    $67A8   ; [rom_check_code]
+6766: A6 A0          LDA    ,Y+     ; [rom_check_code]
+6768: 80 05          SUBA   #$05    ; [rom_check_code]
+676A: 81 49          CMPA   #$49    ; [rom_check_code]
+676C: 26 3A          BNE    $67A8   ; [rom_check_code]
+676E: A6 A0          LDA    ,Y+     ; [rom_check_code]
+6770: 4C             INCA           ; [rom_check_code]
+6771: 81 42          CMPA   #$42    ; [rom_check_code]
+6773: 26 33          BNE    $67A8   ; [rom_check_code]
+6775: A6 A0          LDA    ,Y+     ; [rom_check_code]
+6777: 8B 03          ADDA   #$03    ; [rom_check_code]
+6779: 81 50          CMPA   #$50    ; [rom_check_code]
+677B: 26 2B          BNE    $67A8   ; [rom_check_code]
+677D: A6 A0          LDA    ,Y+     ; [rom_check_code]
+677F: 81 49          CMPA   #$49    ; [rom_check_code]
+6781: 26 25          BNE    $67A8   ; [rom_check_code]
+6783: 8E FC 47       LDX    #$FC47  ; [rom_check_code]
+6786: 30 88 24       LEAX   $24,X   ; [rom_check_code]
+6789: CC 00 00       LDD    #$0000  ; [rom_check_code]
+678C: EB 81          ADDB   ,X++    ; [rom_check_code]
+678E: 89 00          ADCA   #$00    ; [rom_check_code]
+6790: 30 01          LEAX   $1,X    ; [rom_check_code]
+6792: EB 84          ADDB   ,X      ; [rom_check_code]
+6794: 89 00          ADCA   #$00    ; [rom_check_code]
+6796: 30 03          LEAX   $3,X    ; [rom_check_code]
+6798: EB 80          ADDB   ,X+     ; [rom_check_code]
+679A: 89 00          ADCA   #$00    ; [rom_check_code]
+679C: 30 02          LEAX   $2,X    ; [rom_check_code]
+679E: EB 84          ADDB   ,X      ; [rom_check_code]
+67A0: 89 00          ADCA   #$00    ; [rom_check_code]
+67A2: 10 83 03 12    CMPD   #$0312  ; [rom_check_code]
+67A6: 27 03          BEQ    $67AB   ; [rom_check_code]
+67A8: 16 51 3B       LBRA   $B8E6   ; [rom_check_code] bogus address
 67AB: 39             RTS
 
 67AC: 8E A8 7D       LDX    #table_a87d
@@ -1027,7 +1040,7 @@ high_jump_fault_9F = $9F
 6810: DD 80          STD    $80
 6812: DD 82          STD    $82
 6814: 97 84          STA    current_level_84
-6816: 97 9F          STA    high_jump_fault_9F
+6816: 97 9F          STA    high_jump_fault_9f
 6818: 97 DF          STA    $DF
 681A: 97 10          STA    $10
 681C: 86 01          LDA    #$01
@@ -1130,7 +1143,7 @@ high_jump_fault_9F = $9F
 
 68F3: 0A 08          DEC    $08
 68F5: 26 0B          BNE    $6902
-68F7: BD 8C 2F       JSR    $8C2F
+68F7: BD 8C 2F       JSR    reset_scrolling_8c2f
 68FA: CE 30 C5       LDU    #$30C5
 68FD: BD FC AB       JSR    $FCAB
 6900: 0C 06          INC    $06
@@ -1174,7 +1187,7 @@ high_jump_fault_9F = $9F
 694D: 86 01          LDA    #$01
 694F: B7 10 80       STA    flip_screen_set_1080
 6952: 97 21          STA    $21
-6954: BD 8C 2F       JSR    $8C2F
+6954: BD 8C 2F       JSR    reset_scrolling_8c2f
 6957: 86 2C          LDA    #$2C
 6959: BD 85 0E       JSR    $850E
 695C: 0C 09          INC    $09
@@ -1316,7 +1329,7 @@ high_jump_fault_9F = $9F
 6A83: 6E B6          JMP    [A,Y]	; [jump_table]
 6A85: 4F             CLRA
 6A86: 5F             CLRB
-6A87: 8E 18 00       LDX    #$1800
+6A87: 8E 18 00       LDX    #sprite_ram_1800
 6A8A: ED 81          STD    ,X++
 6A8C: 8C 1F 00       CMPX   #$1F00
 6A8F: 26 F9          BNE    $6A8A
@@ -1723,16 +1736,16 @@ high_jump_fault_9F = $9F
 6E2E: 0F 09          CLR    $09
 6E30: 0F 06          CLR    $06
 6E32: 0C 03          INC    $03
-6E34: FC 2F E0       LDD    $2FE0
-6E37: 10 83 0F A0    CMPD   #$0FA0
-6E3B: 25 11          BCS    $6E4E
-6E3D: B6 A6 C0       LDA    $A6C0
-6E40: 81 4D          CMPA   #$4D
-6E42: 26 07          BNE    $6E4B
-6E44: B6 FC 71       LDA    $FC71
-6E47: 81 CC          CMPA   #$CC
-6E49: 27 03          BEQ    $6E4E
-6E4B: 16 81 AE       LBRA   $EFFC
+6E34: FC 2F E0       LDD    $2FE0		; [rom_check_code]
+6E37: 10 83 0F A0    CMPD   #$0FA0		; [rom_check_code]
+6E3B: 25 11          BCS    $6E4E		; [rom_check_code]
+6E3D: B6 A6 C0       LDA    $A6C0		; [rom_check_code]
+6E40: 81 4D          CMPA   #$4D        ; [rom_check_code]
+6E42: 26 07          BNE    $6E4B       ; [rom_check_code]
+6E44: B6 FC 71       LDA    $FC71       ; [rom_check_code]
+6E47: 81 CC          CMPA   #$CC        ; [rom_check_code]
+6E49: 27 03          BEQ    $6E4E       ; [rom_check_code]
+6E4B: 16 81 AE       LBRA   $EFFC       ; [rom_check_code]
 6E4E: 39             RTS
 
 6E4F: BD 8A 9B       JSR    $8A9B
@@ -1772,12 +1785,12 @@ high_jump_fault_9F = $9F
 6E9D: 96 F4          LDA    $F4
 6E9F: 27 57          BEQ    $6EF8
 6EA1: 7C 2A B7       INC    $2AB7
-6EA4: 96 9F          LDA    high_jump_fault_9F
+6EA4: 96 9F          LDA    high_jump_fault_9f
 6EA6: 81 02          CMPA   #$02
 6EA8: 26 4E          BNE    $6EF8
 6EAA: BD 87 92       JSR    $8792
 6EAD: 8E 29 60       LDX    #$2960
-6EB0: 96 9F          LDA    high_jump_fault_9F
+6EB0: 96 9F          LDA    high_jump_fault_9f
 6EB2: D6 84          LDB    current_level_84
 6EB4: C1 05          CMPB   #$05
 6EB6: 26 02          BNE    $6EBA
@@ -1963,7 +1976,7 @@ high_jump_fault_9F = $9F
 7043: 86 32          LDA    #$32
 7045: A6 C6          LDA    A,U
 7047: A7 01          STA    $1,X
-7049: 96 9F          LDA    high_jump_fault_9F
+7049: 96 9F          LDA    high_jump_fault_9f
 704B: 81 02          CMPA   #$02
 704D: 26 0A          BNE    $7059
 704F: BD 71 3B       JSR    $713B
@@ -1983,7 +1996,7 @@ high_jump_fault_9F = $9F
 7073: 27 0E          BEQ    $7083
 7075: BD D9 93       JSR    $D993
 7078: BD D9 B2       JSR    $D9B2
-707B: BD 8C 1D       JSR    $8C1D
+707B: BD 8C 1D       JSR    clear_sprites_8c1d
 707E: 86 33          LDA    #$33
 7080: BD 85 0E       JSR    $850E
 7083: 86 F0          LDA    #$F0
@@ -2224,7 +2237,7 @@ high_jump_fault_9F = $9F
 7277: 26 04          BNE    $727D
 7279: 0D F4          TST    $F4
 727B: 27 0C          BEQ    $7289
-727D: 0C 9F          INC    high_jump_fault_9F
+727D: 0C 9F          INC    high_jump_fault_9f
 727F: 96 84          LDA    current_level_84
 7281: 81 00          CMPA   #$00
 7283: 27 07          BEQ    $728C
@@ -2234,7 +2247,7 @@ high_jump_fault_9F = $9F
 728C: 0C 06          INC    $06
 728E: 39             RTS
 
-728F: 96 9F          LDA    high_jump_fault_9F
+728F: 96 9F          LDA    high_jump_fault_9f
 7291: 91 E1          CMPA   $E1
 7293: 26 27          BNE    $72BC
 7295: 0D 22          TST    $22
@@ -2317,19 +2330,19 @@ high_jump_fault_9F = $9F
 731F: BD 8A 2A       JSR    $8A2A
 7322: 96 48          LDA    $48
 7324: 97 80          STA    $80
-7326: 0F 9F          CLR    high_jump_fault_9F
+7326: 0F 9F          CLR    high_jump_fault_9f
 7328: 0C 09          INC    $09
 732A: 39             RTS
 
 732B: BD 8A 2A       JSR    $8A2A
-732E: 0F 9F          CLR    high_jump_fault_9F
+732E: 0F 9F          CLR    high_jump_fault_9f
 7330: 0C 09          INC    $09
 7332: 0C 09          INC    $09
 7334: 86 01          LDA    #$01
 7336: 97 0B          STA    $0B
 7338: 39             RTS
 
-7339: BD 8C 3E       JSR    $8C3E
+7339: BD 8C 3E       JSR    partially_reset_scrolling_8c3e
 733C: B6 2A B9       LDA    $2AB9
 733F: 27 03          BEQ    $7344
 7341: BD D9 93       JSR    $D993
@@ -2395,7 +2408,7 @@ high_jump_fault_9F = $9F
 73C2: 33 CB          LEAU   D,U
 73C4: A6 C4          LDA    ,U
 73C6: 27 15          BEQ    $73DD
-73C8: 0F 9F          CLR    high_jump_fault_9F
+73C8: 0F 9F          CLR    high_jump_fault_9f
 73CA: BD 87 7A       JSR    $877A
 73CD: 6F C8 1F       CLR    $1F,U
 73D0: 96 CD          LDA    $CD
@@ -2426,7 +2439,7 @@ high_jump_fault_9F = $9F
 73FF: 33 CB          LEAU   D,U
 7401: A6 C4          LDA    ,U
 7403: 27 15          BEQ    $741A
-7405: 0F 9F          CLR    high_jump_fault_9F
+7405: 0F 9F          CLR    high_jump_fault_9f
 7407: BD 87 7A       JSR    $877A
 740A: 6F C8 1F       CLR    $1F,U
 740D: 96 CD          LDA    $CD
@@ -2576,7 +2589,7 @@ high_jump_fault_9F = $9F
 
 751D: 0A 0B          DEC    $0B
 751F: 26 07          BNE    $7528
-7521: BD 8C 1D       JSR    $8C1D
+7521: BD 8C 1D       JSR    clear_sprites_8c1d
 7524: 0C 06          INC    $06
 7526: 0F 09          CLR    $09
 7528: 96 60          LDA    $60
@@ -2701,7 +2714,7 @@ high_jump_fault_9F = $9F
 760E: 86 03          LDA    #$03
 7610: 97 84          STA    current_level_84
 7612: 0F 82          CLR    $82
-7614: 0F 9F          CLR    high_jump_fault_9F
+7614: 0F 9F          CLR    high_jump_fault_9f
 7616: 0F DF          CLR    $DF
 7618: 4F             CLRA
 7619: 5F             CLRB
@@ -3134,7 +3147,7 @@ high_jump_fault_9F = $9F
 79AC: 0F 0C          CLR    $0C
 79AE: 39             RTS
 
-79AF: 8E 18 00       LDX    #$1800
+79AF: 8E 18 00       LDX    #sprite_ram_1800
 79B2: 4F             CLRA
 79B3: 5F             CLRB
 79B4: ED 89 04 00    STD    $0400,X
@@ -4753,14 +4766,14 @@ high_jump_fault_9F = $9F
 86FC: C6 0C          LDB    #$0C
 86FE: 3D             MUL
 86FF: 30 8B          LEAX   D,X
-8701: 96 9F          LDA    high_jump_fault_9F
+8701: 96 9F          LDA    high_jump_fault_9f
 8703: C6 04          LDB    #$04
 8705: 3D             MUL
 8706: 30 8B          LEAX   D,X
 8708: 39             RTS
 
 8709: CE 32 58       LDU    #$3258
-870C: 96 9F          LDA    high_jump_fault_9F
+870C: 96 9F          LDA    high_jump_fault_9f
 870E: C6 40          LDB    #$40
 8710: 3D             MUL
 8711: 33 CB          LEAU   D,U
@@ -4800,7 +4813,7 @@ high_jump_fault_9F = $9F
 875F: 3D             MUL
 8760: 30 8B          LEAX   D,X
 8762: CE 32 58       LDU    #$3258
-8765: 96 9F          LDA    high_jump_fault_9F
+8765: 96 9F          LDA    high_jump_fault_9f
 8767: 97 48          STA    $48
 8769: 27 0A          BEQ    $8775
 876B: BD 87 16       JSR    $8716
@@ -5416,23 +5429,26 @@ high_jump_fault_9F = $9F
 8C1A: A7 C0          STA    ,U+
 8C1C: 39             RTS
 
+clear_sprites_8c1d:
 8C1D: 4F             CLRA
 8C1E: 5F             CLRB
-8C1F: CE 18 00       LDU    #$1800
+8C1F: CE 18 00       LDU    #sprite_ram_1800
 8C22: ED C9 04 00    STD    $0400,U
 8C26: ED C1          STD    ,U++
-8C28: 11 83 18 30    CMPU   #$1830
+8C28: 11 83 18 30    CMPU   #sprite_ram_1800+$30
 8C2C: 26 F4          BNE    $8C22
 8C2E: 39             RTS
 
-8C2F: 8E 18 40       LDX    #$1840
+reset_scrolling_8c2f:
+8C2F: 8E 18 40       LDX    #scroll_registers_1840
 8C32: 6F 89 04 00    CLR    $0400,X
 8C36: 6F 80          CLR    ,X+
-8C38: 8C 18 60       CMPX   #$1860
+8C38: 8C 18 60       CMPX   #scroll_registers_1840+$20
 8C3B: 26 F5          BNE    $8C32
 8C3D: 39             RTS
 
-8C3E: 8E 18 4D       LDX    #$184D
+partially_reset_scrolling_8c3e:
+8C3E: 8E 18 4D       LDX    #scroll_registers_1840+$D
 8C41: 6F 89 04 00    CLR    $0400,X
 8C45: 6F 80          CLR    ,X+
 8C47: 8C 18 52       CMPX   #$1852
@@ -5723,7 +5739,7 @@ high_jump_fault_9F = $9F
 8E85: C6 0C          LDB    #$0C
 8E87: 3D             MUL
 8E88: 33 CB          LEAU   D,U
-8E8A: 96 9F          LDA    high_jump_fault_9F
+8E8A: 96 9F          LDA    high_jump_fault_9f
 8E8C: 27 2D          BEQ    $8EBB
 8E8E: 4A             DECA
 8E8F: 48             ASLA
@@ -6011,7 +6027,7 @@ high_jump_fault_9F = $9F
 90E3: C6 04          LDB    #$04
 90E5: 7E 8A 15       JMP    $8A15
 90E8: 5F             CLRB
-90E9: 96 9F          LDA    high_jump_fault_9F
+90E9: 96 9F          LDA    high_jump_fault_9f
 90EB: 26 19          BNE    $9106
 90ED: 8E 2B 80       LDX    #$2B80
 90F0: 4F             CLRA
@@ -8308,17 +8324,16 @@ table_a869:
 	dc.w	$6726	; $a86b
 	dc.w	$67ac	; $a86d
 	dc.w	$691b	; $a86f
-	dc.w	$effb	; $a871
 table_a873:
 	dc.w	$6716	; $a873
 	dc.w	$671d	; $a875
 table_a877:
 	dc.w	$fbb6	; $a877
 	dc.w	$75ef	; $a879
-	dc.w	$effb	; $a87b
 table_a87d:
 	dc.w	$67b4	; $a87d
 	dc.w	$f6fa	; $a87f
+table_a881:
 	dc.w	$68b9	; $a881
 	dc.w	$68f3	; $a883
 	dc.w	$6903	; $a885
@@ -8341,20 +8356,11 @@ table_a8a2:
 	dc.w	$6a7c	; $a8a2
 	dc.w	$6de4	; $a8a4
 table_a8a6:
-table_a8a6:
 	dc.w	$6a85	; $a8a6
 	dc.w	$6b4b	; $a8a8
 	dc.w	$6c65	; $a8aa
 	dc.w	$6d2c	; $a8ac
 	dc.w	$6dc9	; $a8ae
-	dc.w	$b8e6	; $a8b0
-	dc.w	$c547	; $a8b2
-	dc.w	$b8e6	; $a8b4
-	dc.w	$bd6d	; $a8b6
-	dc.w	$af9c	; $a8b8
-	dc.w	$c547	; $a8ba
-	dc.w	$b4de	; $a8bc
-	dc.w	$c278	; $a8be
 table_a8c0:
 	dc.w	$6df3	; $a8c0
 	dc.w	$6e0b	; $a8c2
@@ -8369,8 +8375,10 @@ table_a8d0:
 	dc.w	$6e88	; $a8d0
 	dc.w	$6fbc	; $a8d2
 	dc.w	$7151	; $a8d4
+table_a8d6:
 	dc.w	$722d	; $a8d6
 	dc.w	$728f	; $a8d8
+table_a8da:
 	dc.w	$72f3	; $a8da
 	dc.w	$7467	; $a8dc
 	dc.w	$d59d	; $a8de
@@ -8378,6 +8386,7 @@ table_a8d0:
 	dc.w	$7550	; $a8e2
 	dc.w	$757d	; $a8e4
 	dc.w	$dadf	; $a8e6
+table_a8e8:
 	dc.w	$72fb	; $a8e8
 	dc.w	$7339	; $a8ea
 	dc.w	$7370	; $a8ec
@@ -8464,6 +8473,7 @@ table_a96c:
 	dc.w	$7b8a	; $a972
 	dc.w	$7bb2	; $a974
 	dc.w	$7bc0	; $a976
+table_a978:
 	dc.w	$81eb	; $a978
 	dc.w	$8261	; $a97a
 	dc.w	$8283	; $a97c
@@ -8471,6 +8481,7 @@ table_a96c:
 	dc.w	$8383	; $a980
 	dc.w	$8491	; $a982
 	dc.w	$84e7	; $a984
+table_a986:
 	dc.w	$81f3	; $a986
 	dc.w	$824a	; $a988
 table_a993:
@@ -8787,7 +8798,7 @@ CDAE: 7A 2B 02       DEC    $2B02
 CDB1: 7A 2B 12       DEC    $2B12
 CDB4: 7A 2B 22       DEC    $2B22
 CDB7: 10 8E DD 92    LDY    #$DD92
-CDBB: CE 18 00       LDU    #$1800
+CDBB: CE 18 00       LDU    #sprite_ram_1800
 CDBE: A6 02          LDA    $2,X
 CDC0: 81 EA          CMPA   #$EA
 CDC2: 24 61          BCC    $CE25
@@ -8831,7 +8842,7 @@ CE25: 39             RTS
 CE26: A6 84          LDA    ,X
 CE28: 27 FB          BEQ    $CE25
 CE2A: 10 8E DD 95    LDY    #$DD95
-CE2E: CE 18 00       LDU    #$1800
+CE2E: CE 18 00       LDU    #sprite_ram_1800
 CE31: 96 DF          LDA    $DF
 CE33: 84 01          ANDA   #$01
 CE35: 27 02          BEQ    $CE39
@@ -9041,6 +9052,7 @@ CFFA: 7D 2A B5       TST    $2AB5
 CFFD: 26 02          BNE    $D001
 CFFF: DA DF          ORB    $DF
 D001: E7 44          STB    $4,U
+D002: 44             LSRA
 D003: A7 09          STA    $9,X
 D005: EC 01          LDD    $1,X
 D007: 8B 10          ADDA   #$10
@@ -9797,7 +9809,7 @@ D611: 30 05          LEAX   $5,X
 D613: 5A             DECB
 D614: 26 F5          BNE    $D60B
 D616: 20 DB          BRA    $D5F3
-D618: BD 8C 2F       JSR    $8C2F
+D618: BD 8C 2F       JSR    reset_scrolling_8c2f
 D61B: 86 30          LDA    #$30
 D61D: BD 85 0E       JSR    $850E
 D620: CC 00 00       LDD    #$0000
@@ -10202,7 +10214,7 @@ D98C: BD 85 87       JSR    $8587
 D98F: BD 99 E7       JSR    $99E7
 D992: 39             RTS
 
-D993: BD 8C 2F       JSR    $8C2F
+D993: BD 8C 2F       JSR    reset_scrolling_8c2f
 D996: CE 33 40       LDU    #$3340
 D999: 86 11          LDA    #$11
 D99B: 97 48          STA    $48
@@ -10356,7 +10368,7 @@ DAE5: 6E 96          JMP    [A,X]		; [jump_table]
 
 DAE7: 96 60          LDA    $60
 DAE9: 27 15          BEQ    $DB00
-DAEB: BD 8C 2F       JSR    $8C2F
+DAEB: BD 8C 2F       JSR    reset_scrolling_8c2f
 DAEE: 86 30          LDA    #$30
 DAF0: BD 85 0E       JSR    $850E
 DAF3: CC 00 00       LDD    #$0000
@@ -11009,7 +11021,7 @@ E30B: C6 0C          LDB    #$0C
 E30D: 3D             MUL
 E30E: 30 8B          LEAX   D,X
 E310: 10 8E 28 6A    LDY    #$286A
-E314: 96 9F          LDA    high_jump_fault_9F
+E314: 96 9F          LDA    high_jump_fault_9f
 E316: 48             ASLA
 E317: 48             ASLA
 E318: 30 86          LEAX   A,X
@@ -11017,7 +11029,7 @@ E31A: EC A1          LDD    ,Y++
 E31C: ED 81          STD    ,X++
 E31E: EC A4          LDD    ,Y
 E320: ED 84          STD    ,X
-E322: 96 9F          LDA    high_jump_fault_9F
+E322: 96 9F          LDA    high_jump_fault_9f
 E324: 81 02          CMPA   #$02
 E326: 10 26 00 78    LBNE   $E3A2
 E32A: 10 8E ED EA    LDY    #$EDEA
@@ -11030,7 +11042,7 @@ E338: BD 89 68       JSR    $8968
 E33B: 0D 62          TST    $62
 E33D: 27 06          BEQ    $E345
 E33F: 7C 29 D3       INC    $29D3
-E342: 7F 29 D4       CLR    $29D4
+E342: 7F 29 D4       CLR    failed_rom_check_29d4
 E345: BD 87 7A       JSR    $877A
 E348: 0D CD          TST    $CD
 E34A: 27 56          BEQ    $E3A2
@@ -11039,9 +11051,9 @@ E34F: 27 51          BEQ    $E3A2
 E351: 96 3F          LDA    $3F
 E353: 84 07          ANDA   #$07
 E355: 26 2C          BNE    $E383
-E357: B6 29 D4       LDA    $29D4
-E35A: 81 04          CMPA   #$04
-E35C: 27 26          BEQ    $E384
+E357: B6 29 D4       LDA    failed_rom_check_29d4	; [rom_check_code]
+E35A: 81 04          CMPA   #$04                    ; [rom_check_code]
+E35C: 27 26          BEQ    $E384                   ; [rom_check_code]
 E35E: CE 18 2E       LDU    #$182E
 E361: 8E 29 D0       LDX    #$29D0
 E364: 10 8E DE D3    LDY    #$DED3
@@ -11049,12 +11061,13 @@ E368: 31 A6          LEAY   A,Y
 E36A: CC 36 30       LDD    #$3630
 E36D: FD 29 D1       STD    $29D1
 E370: BD D1 2F       JSR    $D12F
-E373: 7F 2A 8E       CLR    $2A8E
-E376: B6 C4 18       LDA    $C418
-E379: 81 B1          CMPA   #$B1
-E37B: 27 03          BEQ    $E380
-E37D: 7C 2A 8E       INC    $2A8E
-E380: 7C 29 D4       INC    $29D4
+E373: 7F 2A 8E       CLR    failed_rom_check_2a8e
+* rom check!
+E376: B6 C4 18       LDA    $C418                     ; [rom_check_code]
+E379: 81 B1          CMPA   #$B1                      ; [rom_check_code]
+E37B: 27 03          BEQ    $E380                     ; [rom_check_code]
+E37D: 7C 2A 8E       INC    failed_rom_check_2a8e     ; [rom_check_code]
+E380: 7C 29 D4       INC    failed_rom_check_29d4     ; [rom_check_code]
 E383: 39             RTS
 
 E384: B6 29 D1       LDA    $29D1
@@ -11066,17 +11079,18 @@ E392: 10 8E DE DB    LDY    #$DEDB
 E396: BD D1 2F       JSR    $D12F
 E399: BD D5 40       JSR    $D540
 E39C: 7F 29 D3       CLR    $29D3
-E39F: 7F 29 D4       CLR    $29D4
+E39F: 7F 29 D4       CLR    failed_rom_check_29d4
 E3A2: 0C 06          INC    $06
 E3A4: 0C 06          INC    $06
 E3A6: 39             RTS
 
-E3A7: 96 9F          LDA    high_jump_fault_9F
-E3A9: 81 02          CMPA   #$02
-E3AB: 26 08          BNE    $E3B5
-E3AD: 7D 2A 8E       TST    $2A8E
-E3B0: 27 03          BEQ    $E3B5
-E3B2: 7E D0 00       JMP    $D000
+* rom check after 2 faults at high jump, very vicious :)
+E3A7: 96 9F          LDA    high_jump_fault_9f     ; [rom_check_code]
+E3A9: 81 02          CMPA   #$02            ; [rom_check_code]
+E3AB: 26 08          BNE    $E3B5		  ; [rom_check_code]
+E3AD: 7D 2A 8E       TST    failed_rom_check_2a8e  ; [rom_check_code]
+E3B0: 27 03          BEQ    $E3B5		; [rom_check_code]
+E3B2: 7E D0 00       JMP    $D000		; [rom_check_code]
 E3B5: 8E 29 A0       LDX    #$29A0
 E3B8: 6D 84          TST    ,X
 E3BA: 27 07          BEQ    $E3C3
@@ -11091,7 +11105,7 @@ E3CC: 97 F4          STA    $F4
 E3CE: B7 2A B7       STA    $2AB7
 E3D1: 86 03          LDA    #$03
 E3D3: 8E 3A D7       LDX    #$3AD7
-E3D6: D6 9F          LDB    high_jump_fault_9F
+E3D6: D6 9F          LDB    high_jump_fault_9f
 E3D8: 5C             INCB
 E3D9: A7 85          STA    B,X
 E3DB: 86 82          LDA    #$82
@@ -11483,7 +11497,7 @@ E735: 39             RTS
 
 E736: BD E1 DC       JSR    $E1DC
 E739: BD E7 ED       JSR    $E7ED
-E73C: 10 8E 18 00    LDY    #$1800
+E73C: 10 8E 18 00    LDY    #sprite_ram_1800
 E740: 86 06          LDA    #$06
 E742: C6 00          LDB    #$00
 E744: E7 A9 04 00    STB    $0400,Y
@@ -11561,7 +11575,7 @@ E7F4: 97 C9          STA    jump_foul_C9
 E7F6: BD ED 61       JSR    $ED61
 E7F9: 39             RTS
 
-E7FA: 10 8E 18 00    LDY    #$1800
+E7FA: 10 8E 18 00    LDY    #sprite_ram_1800
 E7FE: 86 06          LDA    #$06
 E800: C6 00          LDB    #$00
 E802: E7 A9 04 00    STB    $0400,Y
@@ -11669,7 +11683,7 @@ E8E3: F7 2B 38       STB    $2B38
 E8E6: FC 2B 38       LDD    $2B38
 E8E9: FD 2B 31       STD    $2B31
 E8EC: 8E 2B 30       LDX    #$2B30
-E8EF: CE 18 00       LDU    #$1800
+E8EF: CE 18 00       LDU    #sprite_ram_1800
 E8F2: 10 8E DE D7    LDY    #$DED7
 E8F6: BD D1 2F       JSR    $D12F
 E8F9: 86 04          LDA    #$04
@@ -11724,7 +11738,7 @@ E964: 96 DF          LDA    $DF
 E966: C6 0C          LDB    #$0C
 E968: 3D             MUL
 E969: 30 8B          LEAX   D,X
-E96B: 96 9F          LDA    high_jump_fault_9F
+E96B: 96 9F          LDA    high_jump_fault_9f
 E96D: 48             ASLA
 E96E: 48             ASLA
 E96F: 30 86          LEAX   A,X
@@ -11750,7 +11764,7 @@ E997: 96 DF          LDA    $DF
 E999: C6 0C          LDB    #$0C
 E99B: 3D             MUL
 E99C: 30 8B          LEAX   D,X
-E99E: 96 9F          LDA    high_jump_fault_9F
+E99E: 96 9F          LDA    high_jump_fault_9f
 E9A0: 48             ASLA
 E9A1: 48             ASLA
 E9A2: 30 86          LEAX   A,X
@@ -11822,7 +11836,7 @@ EA20: CC 10 05       LDD    #$1005
 EA23: AB 01          ADDA   $1,X
 EA25: EB 02          ADDB   $2,X
 EA27: FD 2B 31       STD    $2B31
-EA2A: CE 18 00       LDU    #$1800
+EA2A: CE 18 00       LDU    #sprite_ram_1800
 EA2D: 8E 2B 30       LDX    #$2B30
 EA30: 10 8E 28 4E    LDY    #$284E
 EA34: CC E0 44       LDD    #$E044
@@ -11888,14 +11902,14 @@ EAA6: 27 04          BEQ    $EAAC
 EAA8: 0C B1          INC    $B1
 EAAA: 84 0F          ANDA   #$0F
 EAAC: 97 B2          STA    $B2
-EAAE: 0D 9F          TST    high_jump_fault_9F
+EAAE: 0D 9F          TST    high_jump_fault_9f
 EAB0: 27 37          BEQ    $EAE9
 EAB2: D6 DF          LDB    $DF
 EAB4: 10 8E 29 60    LDY    #$2960
 EAB8: 86 0C          LDA    #$0C
 EABA: 3D             MUL
 EABB: 31 A5          LEAY   B,Y
-EABD: 96 9F          LDA    high_jump_fault_9F
+EABD: 96 9F          LDA    high_jump_fault_9f
 EABF: 4A             DECA
 EAC0: 48             ASLA
 EAC1: 48             ASLA
@@ -12126,7 +12140,7 @@ EC9E: 96 DF          LDA    $DF
 ECA0: C6 0C          LDB    #$0C
 ECA2: 3D             MUL
 ECA3: 30 85          LEAX   B,X
-ECA5: 96 9F          LDA    high_jump_fault_9F
+ECA5: 96 9F          LDA    high_jump_fault_9f
 ECA7: 48             ASLA
 ECA8: 48             ASLA
 ECA9: 30 86          LEAX   A,X
@@ -12221,6 +12235,9 @@ ED74: FD 3D C7       STD    $3DC7
 ED77: FD 3D C9       STD    $3DC9
 ED7A: 39             RTS
 
+; not sure if all offsets are valid, the range of the index
+; is unknown
+
 table_ede2:
 	dc.w	$e044	; $ede2
 	dc.w	$e084	; $ede4
@@ -12238,17 +12255,8 @@ table_ee16:
 	dc.w	$e41a	; $ee16
 	dc.w	$e471	; $ee18
 	dc.w	$e5a0	; $ee1a
-	dc.w	$ee26	; $ee1c
-	dc.w	$ee26	; $ee1e
-	dc.w	$ee2a	; $ee20
-	dc.w	$ee2e	; $ee22
-	dc.w	$ffff	; $ee24
-	dc.w	$a9a8	; $ee26
-	dc.w	$a1a0	; $ee28
-	dc.w	$bdbc	; $ee2a
-	dc.w	$b5b4	; $ee2c
-	dc.w	$adac	; $ee2e
-	dc.w	$a5a4	; $ee30
+
+
 
 table_eed3:
 	dc.w	$e652	; $eed3
@@ -12266,14 +12274,12 @@ table_eee5:
 	dc.w	$e846	; $eee7
 	dc.w	$e8a0	; $eee9
 	dc.w	$e8dd	; $eeeb
-	dc.w	$ddce	; $eeed
-	dc.w	$ddd2	; $eeef
-	dc.w	$ddd2	; $eef1
 table_eef3:
 	dc.w	$e8aa	; $eef3
 	dc.w	$e8cb	; $eef5
 	dc.w	$e8d4	; $eef7
-	
+
+
 F000: BA 2A 9B       ORA    $2A9B
 F003: B7 2A 9B       STA    $2A9B
 F006: 0D 22          TST    $22
@@ -12701,7 +12707,7 @@ F378: 0F DF          CLR    $DF
 F37A: CC 30 E8       LDD    #$30E8
 F37D: DD A1          STD    p1_attempts_left_a1
 F37F: 8E 28 A0       LDX    #$28A0
-F382: CE 18 00       LDU    #$1800
+F382: CE 18 00       LDU    #sprite_ram_1800
 F385: BD CE C4       JSR    $CEC4
 F388: EC 01          LDD    $1,X
 F38A: C0 D0          SUBB   #$D0
@@ -12757,7 +12763,7 @@ F3EE: BD F1 78       JSR    $F178
 F3F1: 86 18          LDA    #$18
 F3F3: 97 48          STA    $48
 F3F5: CC 00 F0       LDD    #$00F0
-F3F8: 8E 18 00       LDX    #$1800
+F3F8: 8E 18 00       LDX    #sprite_ram_1800
 F3FB: 10 8E 1C 00    LDY    #$1C00
 F3FF: ED 81          STD    ,X++
 F401: ED A1          STD    ,Y++
@@ -13071,7 +13077,7 @@ F6A2: FC 2A 40       LDD    $2A40
 F6A5: C0 04          SUBB   #$04
 F6A7: FD 2A 01       STD    $2A01
 F6AA: 8E 2A 00       LDX    #$2A00
-F6AD: CE 18 00       LDU    #$1800
+F6AD: CE 18 00       LDU    #sprite_ram_1800
 F6B0: BD CE C4       JSR    $CEC4
 F6B3: EC 0E          LDD    $E,X
 F6B5: C3 00 04       ADDD   #$0004
@@ -13295,7 +13301,7 @@ F890: 8B 03          ADDA   #$03
 F892: 97 A2          STA    $A2
 F894: 8E 28 A0       LDX    #$28A0
 F897: 10 8E DD 6E    LDY    #$DD6E
-F89B: CE 18 00       LDU    #$1800
+F89B: CE 18 00       LDU    #sprite_ram_1800
 F89E: BD D1 2F       JSR    $D12F
 F8A1: 86 40          LDA    #$40
 F8A3: 0D 21          TST    $21
@@ -13307,7 +13313,7 @@ F8AE: 25 04          BCS    $F8B4
 F8B0: 8A 02          ORA    #$02
 F8B2: 20 02          BRA    $F8B6
 F8B4: 8A 01          ORA    #$01
-F8B6: B7 18 00       STA    $1800
+F8B6: B7 18 00       STA    sprite_ram_1800
 F8B9: B6 29 9D       LDA    $299D
 F8BC: 81 FF          CMPA   #$FF
 F8BE: 10 27 00 AB    LBEQ   $F96D
@@ -13488,7 +13494,7 @@ FA17: 86 03          LDA    #$03
 FA19: 97 00          STA    $00
 FA1B: 0F DF          CLR    $DF
 FA1D: CC 00 00       LDD    #$0000
-FA20: FD 18 00       STD    $1800
+FA20: FD 18 00       STD    sprite_ram_1800
 FA23: FD 1C 00       STD    $1C00
 FA26: FD 29 9C       STD    $299C
 FA29: FD 29 9E       STD    $299E
@@ -13693,7 +13699,7 @@ FBCC: 8E FE FA       LDX    #table_fefa
 FBCF: 6E 96          JMP    [A,X]	; [jump_table]
 
 FBD1: CC 30 F0       LDD    #$30F0
-FBD4: 8E 18 00       LDX    #$1800
+FBD4: 8E 18 00       LDX    #sprite_ram_1800
 FBD7: CE 1C 00       LDU    #$1C00
 FBDA: E7 80          STB    ,X+
 FBDC: E7 C0          STB    ,U+
@@ -13827,7 +13833,7 @@ FD13: B6 2B 50       LDA    $2B50
 FD16: 4C             INCA
 FD17: 97 A2          STA    $A2
 FD19: FC 2B 51       LDD    $2B51
-FD1C: CE 18 00       LDU    #$1800
+FD1C: CE 18 00       LDU    #sprite_ram_1800
 FD1F: BD FD 75       JSR    $FD75
 FD22: 96 A2          LDA    $A2
 FD24: B7 2B 50       STA    $2B50
@@ -13897,7 +13903,6 @@ table_fe8f:
 	dc.w	$f7cc	; $fe93
 	dc.w	$f802	; $fe95
 	dc.w	$f99d	; $fe97
-	dc.w	$fc10	; $fe99
 	
 table_fefa:
 	dc.w	$fbd1	; $fefa

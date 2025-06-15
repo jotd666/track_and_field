@@ -53,13 +53,11 @@ ram.o: ram.68k $(PROGNAME).inc
 	$(ASM) ram.68k -o ram.o
 rom.o: rom.68k
 	$(ASM) rom.68k -o rom.o
-$(PROGNAME).o: $(PROGNAME).68k $(PROGNAME).inc sounds.inc
+$(PROGNAME).o: $(PROGNAME).68k $(PROGNAME).inc sounds.inc data.inc
 	$(ASM) $(PROGNAME).68k -o $(PROGNAME).o
-$(PROGNAME)_sub.o: $(PROGNAME)_sub.68k  $(PROGNAME).inc $(PROGNAME)_sub.inc
-	$(ASM) $(PROGNAME)_sub.68k -o $(PROGNAME)_sub.o
-amiga.o: $(AMIGASRC)/amiga.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/palette.68k $(AMIGASRC)/sound_entries.68k
+amiga.o: $(AMIGASRC)/amiga.68k $(PROGNAME).inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/palette.68k $(AMIGASRC)/sound_entries.68k
 	$(ASM) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga.o
-amiga_shared.o: $(AMIGASRC)/amiga_shared.68k $(AMIGASRC)/sound_entries.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i
+amiga_shared.o: $(AMIGASRC)/amiga_shared.68k data.inc $(AMIGASRC)/sound_entries.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i
 	$(ASM) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga_shared.68k -o amiga_shared.o
 vbr.o: $(AMIGASRC)/vbr.68k
 	$(ASM_020) -Iamiga $(AMIGASRC)/vbr.68k -o vbr.o
