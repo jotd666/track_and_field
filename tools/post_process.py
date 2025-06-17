@@ -75,6 +75,10 @@ with open(source_dir / "conv.s") as f:
             lines[i+2] = ""
             lines[i+4] = ""
 
+        elif "flip_screen_set_1080" in line or "nmi_mask_1082" in line:
+            line = remove_instruction(lines,i)
+            remove_continuing_lines(lines,i)
+
         elif "irq_mask_w_1087" in line:
             # check next line
             next_line = lines[i+1]
@@ -84,10 +88,6 @@ with open(source_dir / "conv.s") as f:
                 line = change_instruction("jbsr\tosd_enable_interrupts",lines,i)
                 lines[i-1] = remove_instruction(lines,i-1)
 
-        if "[$6600" in line:
-            line = "irq_6600:\n"+line
-        elif "[$f000" in line:
-            line = "reset_f000:\n"+line
         elif "unsupported instruction rti" in line:
             line = change_instruction("rts",lines,i)
         elif "unsupported instruction lds" in line:
@@ -113,6 +113,6 @@ with open(source_dir / "track_and_field.68k","w") as fw:
     fw.write("""\t.include "track_and_field.inc"
 .include "data.inc"
 \t.global\tirq_6600
-\t.global\treset_f000
+\t.global\treset_6000
 """)
     fw.writelines(lines)

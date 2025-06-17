@@ -1,7 +1,7 @@
 	.include "track_and_field.inc"
 .include "data.inc"
 	.global	irq_6600
-	.global	reset_f000
+	.global	reset_6000
 	.include "include.inc"
 
 *	map(0x1000, 0x1000).mirror(0x007f).w("watchdog", FUNC(watchdog_timer_device::reset_w));       /* AFE */
@@ -61,13 +61,13 @@ failed_rom_check_29d4 = 0x29d4
 video_ram_3000 = 0x3000
 color_ram_3800 = 0x3800
 
+reset_6000:
 l_6000:
 	jbsr	osd_disable_interrupts |  [$6000: clr    irq_mask_w_1087] disable interrupts
 	 |  [$6003: lds    #$1f80] set stack
 	move.b	#0x28,d0                        	| [$6007: lda    #$28]
 	SET_DP_FROM_A                          	| [$6009: tfr    a,dp] set direct page to nvram
-	GET_ADDRESS	flip_screen_set_1080       	| [$600b: clr    flip_screen_set_1080] no flip screen
-	clr.b	(a0)                         	| [...]
+	 |  [$600b: clr    flip_screen_set_1080] no flip screen
 	moveq	#0,d1                            	| [$600e: clrb]
 l_600f:
 	 |  [$600f: sta    watchdog_1000]
@@ -150,10 +150,7 @@ l_6067:
 	move.w	d2,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x1e                    	| [$607a: stx    $1e]
 	move.w	d2,(a0)                         	| [...]
-	GET_ADDRESS	flip_screen_set_1080       	| [$607c: clr    flip_screen_set_1080] no flip screen
-	clr.b	(a0)                         	| [...]
-	GET_ADDRESS	0x1082                     	| [$607f: clr    $1082] nmi mask?
-	clr.b	(a0)                         	| [...]
+	 |  [$607c: clr    flip_screen_set_1080] no flip screen
 	jbsr	osd_read_dsw_1 |  [$6082: lda    dsw1_1283]
 	not.b	d0                               	| [$6085: coma] negative logic
 	GET_DP_ADDRESS	0x2c                    	| [$6086: sta    $2c] copy dip switch 1 in 282C
@@ -370,7 +367,7 @@ l_617f:
 	move.w	#0x1c00,d4                      	| [$6186: ldu    #$1c00]
 	move.b	#0x00,d0                        	| [$6189: ldd    #$00ff]
 	move.w	#0x00ff,d1                      	| [$6189: ldd    #$00ff]
-l_618c:
+l_618c: 
 	MAKE_D                                 	| [...]
 	GET_Y_ADDRESS	0                        	| [$618c: std    ,y++]
 	addq.w	#2,d3                           	| [...]
@@ -1816,8 +1813,7 @@ l_688e:
 	rts                                    	| [$68b8: rts]
 
 l_68b9:
-	GET_ADDRESS	flip_screen_set_1080       	| [$68b9: clr    flip_screen_set_1080]
-	clr.b	(a0)                         	| [...]
+	 |  [$68b9: clr    flip_screen_set_1080]
 	move.b	#0x00,d0                        	| [$68bc: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$68bc: ldd    #$0000]
 	jbsr	l_84f5                            	| [$68bf: jsr    $84f5]
@@ -1919,8 +1915,7 @@ l_6936:
 	jeq	l_694f                             	| [$694b: beq    $694f]
 	move.b	#0x01,d0                        	| [$694d: lda    #$01]
 l_694f:
-	GET_ADDRESS	flip_screen_set_1080       	| [$694f: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$694f: sta    flip_screen_set_1080]
 	GET_DP_ADDRESS	0x21                    	| [$6952: sta    $21]
 	move.b	d0,(a0)                         	| [...]
 	jbsr	reset_scrolling_8c2f              	| [$6954: jsr    reset_scrolling_8c2f]
@@ -2321,8 +2316,7 @@ l_6b4b:
 	jeq	l_6b60                             	| [$6b5c: beq    $6b60]
 	move.b	#0x01,d0                        	| [$6b5e: lda    #$01]
 l_6b60:
-	GET_ADDRESS	flip_screen_set_1080       	| [$6b60: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$6b60: sta    flip_screen_set_1080]
 	GET_DP_ADDRESS	0x21                    	| [$6b63: sta    $21]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	current_level_84        	| [$6b65: lda    current_level_84]
@@ -13488,12 +13482,14 @@ table_a869:
 	.long	l_6726                           	|  $a86b
 	.long	l_67ac                           	|  $a86d
 	.long	l_691b                           	|  $a86f
+	.long	l_effb                           	|  $a871
 table_a873:
 	.long	l_6716                           	|  $a873
 	.long	l_671d                           	|  $a875
 table_a877:
 	.long	l_fbb6                           	|  $a877
 	.long	l_75ef                           	|  $a879
+	.long	l_effb                           	|  $a87b
 table_a87d:
 	.long	l_67b4                           	|  $a87d
 	.long	l_f6fa                           	|  $a87f
@@ -15870,8 +15866,7 @@ l_d62d:
 	jeq	l_d65e                             	| [$d65a: beq    $d65e]
 	move.b	#0x01,d0                        	| [$d65c: lda    #$01]
 l_d65e:
-	GET_ADDRESS	flip_screen_set_1080       	| [$d65e: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$d65e: sta    flip_screen_set_1080]
 	move.w	#0x3187,d4                      	| [$d661: ldu    #$3187]
 	move.b	#0x12,d1                        	| [$d664: ldb    #$12]
 	jbsr	l_d7ec                            	| [$d666: jsr    $d7ec]
@@ -16771,8 +16766,7 @@ l_db09:
 	jeq	l_db2b                             	| [$db27: beq    $db2b]
 	move.b	#0x01,d0                        	| [$db29: lda    #$01]
 l_db2b:
-	GET_ADDRESS	flip_screen_set_1080       	| [$db2b: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$db2b: sta    flip_screen_set_1080]
 	move.w	#0x3187,d4                      	| [$db2e: ldu    #$3187]
 	move.b	#0x12,d1                        	| [$db31: ldb    #$12]
 	jbsr	l_d7ec                            	| [$db33: jsr    $d7ec]
@@ -19795,8 +19789,12 @@ table_eef3:
 	.long	l_e8cb                           	|  $eef5
 	.long	l_e8d4                           	|  $eef7
 
-
-reset_f000:
+* called on game over
+l_effb:
+	GET_DP_ADDRESS	0x31                    	| [$effb: lda    $31]
+	move.b	(a0),d0                         	| [...]
+	or.b	#0x80,d0                          	| [$effd: ora    #$80]
+	not.b	d0                               	| [$efff: coma]
 	GET_ADDRESS	0x2a9b                     	| [$f000: ora    $2a9b]
 	or.b	(a0),d0                           	| [...]
                                          | [$f003: sta    $2a9b]
@@ -20190,8 +20188,7 @@ l_f1ff:
 	move.b	(a0),d1                         	| [...]
 	BIT	#0x04,d1                           	| [$f204: bitb   #$04]
 	jne	l_f20b                             	| [$f206: bne    $f20b]
-	GET_ADDRESS	flip_screen_set_1080       	| [$f208: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$f208: sta    flip_screen_set_1080]
 l_f20b:
 	GET_DP_ADDRESS	0x03                    	| [$f20b: inc    $03]
 	addq.b	#1,(a0)                         	| [...]
@@ -20728,9 +20725,7 @@ l_f497:
 	and.b	(a0),d0                          	| [...]
 	GET_DP_ADDRESS	0x21                    	| [$f4a5: sta    $21]
 	move.b	d0,(a0)                         	| [...]
-	GET_ADDRESS	flip_screen_set_1080       	| [$f4a7: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
-	moveq	#0,d2                            	| [...]
+	 |  [$f4a7: sta    flip_screen_set_1080]
 	move.w	#0xfde5,d2                      	| [$f4aa: ldx    #$fde5]
 	moveq	#0,d3                            	| [...]
 	move.w	#0x310b,d3                      	| [$f4ad: ldy    #$310b]
@@ -21263,8 +21258,7 @@ l_f752:
 	clr.b	(a0)                         	| [...]
 	GET_ADDRESS	0x2a0a                     	| [$f76c: clr    $2a0a]
 	clr.b	(a0)                         	| [...]
-	GET_ADDRESS	flip_screen_set_1080       	| [$f76f: clr    flip_screen_set_1080]
-	clr.b	(a0)                         	| [...]
+	 |  [$f76f: clr    flip_screen_set_1080]
 	GET_DP_ADDRESS	0x06                    	| [$f772: inc    $06]
 	addq.b	#1,(a0)                         	| [...]
 	GET_ADDRESS	0x2fe4                     	| [$f774: ldd    $2fe4]
@@ -21675,8 +21669,7 @@ l_f96d:
 	BIT	#0x04,d1                           	| [$f981: bitb   #$04]
 	jne	l_f98b                             	| [$f983: bne    $f98b]
 	asr.b	#1,d0                            	| [$f985: asra]
-	GET_ADDRESS	flip_screen_set_1080       	| [$f986: sta    flip_screen_set_1080]
-	move.b	d0,(a0)                         	| [...]
+	 |  [$f986: sta    flip_screen_set_1080]
 	GET_DP_ADDRESS	0x21                    	| [$f989: sta    $21]
 	move.b	d0,(a0)                         	| [...]
 l_f98b:
@@ -21718,8 +21711,7 @@ l_f9b1:
 	jne	l_fa2c                             	| [$f9b9: bne    $fa2c]
 	GET_ADDRESS	0x29a0                     	| [$f9bb: clr    $29a0]
 	clr.b	(a0)                         	| [...]
-	GET_ADDRESS	flip_screen_set_1080       	| [$f9be: clr    flip_screen_set_1080]
-	clr.b	(a0)                         	| [...]
+	 |  [$f9be: clr    flip_screen_set_1080]
 	GET_DP_ADDRESS	0x03                    	| [$f9c1: clr    $03]
 	clr.b	(a0)                         	| [...]
 	GET_DP_ADDRESS	0x06                    	| [$f9c3: clr    $06]
@@ -21882,8 +21874,7 @@ l_fa2c:
 	GET_ADDRESS	0x2fe6                     	| [$fa2c: lda    $2fe6]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_fa91                             	| [$fa2f: beq    $fa91]
-	GET_ADDRESS	flip_screen_set_1080       	| [$fa31: clr    flip_screen_set_1080]
-	clr.b	(a0)                         	| [...]
+	 |  [$fa31: clr    flip_screen_set_1080]
 	GET_ADDRESS	0x2990                     	| [$fa34: ldd    $2990]
 	LOAD_D                                 	| [$fa34: ldd    $2990]
 	cmp.w	#0x1923,d1                       	| [$fa37: cmpd   #$1923]
@@ -22244,8 +22235,7 @@ l_fbda:
 	move.b	#0x02,d0                        	| [$fbea: lda    #$02]
 	GET_ADDRESS	0x2b4e                     	| [$fbec: sta    $2b4e]
 	move.b	d0,(a0)                         	| [...]
-	GET_ADDRESS	flip_screen_set_1080       	| [$fbef: clr    flip_screen_set_1080]
-	clr.b	(a0)                         	| [...]
+	 |  [$fbef: clr    flip_screen_set_1080]
 	GET_DP_ADDRESS	0x21                    	| [$fbf2: clr    $21]
 	clr.b	(a0)                         	| [...]
 	move.b	#0x90,d0                        	| [$fbf4: lda    #$90]

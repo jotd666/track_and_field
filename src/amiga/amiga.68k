@@ -755,12 +755,14 @@ demo_game:
 	* direct page won't change, let's store it now for irq
 	move.l	a4,m6809_direct_page_pointer
 	GET_MEMORY_START_IN_A6
-	jmp			reset_f000					| pass control to the cpu core
+	jbsr	cpu_init
+	jmp			reset_6000					| pass control to the cpu core
 		
 	
 	
 do_irq:
 	* set base for RAM
+	jbsr	cpu_init
 	GET_MEMORY_START_IN_A6
 	jra			irq_6600					| pass control to the cpu core
 	

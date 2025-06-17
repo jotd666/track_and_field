@@ -41,6 +41,7 @@ high_jump_fault_9f = $9F
 * memory offsets
 watchdog_1000 = $1000
 flip_screen_set_1080 = $1080
+nmi_mask_w_1082 = $1082
 irq_mask_w_1087 = $1087
 dsw2_1200 = $1200
 system_1280 = $1280
@@ -55,6 +56,7 @@ failed_rom_check_29d4 = $29d4
 video_ram_3000 = $3000
 color_ram_3800 = $3800
 
+reset_6000:
 6000: 7F 10 87       CLR    irq_mask_w_1087				; disable interrupts
 6003: 10 CE 1F 80    LDS    #$1F80				; set stack
 6007: 86 28          LDA    #$28
@@ -106,7 +108,7 @@ color_ram_3800 = $3800
 6078: 9F 1C          STX    $1C
 607A: 9F 1E          STX    $1E
 607C: 7F 10 80       CLR    flip_screen_set_1080		; no flip screen
-607F: 7F 10 82       CLR    $1082		; nmi mask?
+607F: 7F 10 82       CLR    nmi_mask_w_1082		; nmi mask?
 6082: B6 12 83       LDA    dsw1_1283
 6085: 43             COMA				; negative logic
 6086: 97 2C          STA    $2C			; copy dip switch 1 in 282C
@@ -765,6 +767,7 @@ color_ram_3800 = $3800
 65FD: 26 F3          BNE    $65F2
 65FF: 39             RTS
 
+irq_6600:
 6600: 7F 10 87       CLR    irq_mask_w_1087
 6603: 86 01          LDA    #$01
 6605: B7 10 00       STA    watchdog_1000
@@ -8331,12 +8334,14 @@ table_a869:
 	dc.w	$6726	; $a86b
 	dc.w	$67ac	; $a86d
 	dc.w	$691b	; $a86f
+	dc.w	$effb	; $a871
 table_a873:
 	dc.w	$6716	; $a873
 	dc.w	$671d	; $a875
 table_a877:
 	dc.w	$fbb6	; $a877
 	dc.w	$75ef	; $a879
+	dc.w	$effb	; $a87b
 table_a87d:
 	dc.w	$67b4	; $a87d
 	dc.w	$f6fa	; $a87f
@@ -12286,7 +12291,10 @@ table_eef3:
 	dc.w	$e8cb	; $eef5
 	dc.w	$e8d4	; $eef7
 
-
+; called on game over
+EFFB: 96 31          LDA    $31                                          
+EFFD: 8A 80          ORA    #$80                                         
+EFFF: 43             COMA                                                
 F000: BA 2A 9B       ORA    $2A9B
 F003: B7 2A 9B       STA    $2A9B
 F006: 0D 22          TST    $22

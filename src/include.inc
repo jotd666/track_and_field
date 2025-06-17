@@ -11,7 +11,7 @@
 * conditional compilation to select the proper memory banks at compile time
 * (see my burger time 6502 conversion which does that in RELEASE mode)
 
-
+	.global	cpu_init
 
 	.macro	ERROR     arg
 	.error "\arg"
@@ -39,7 +39,7 @@ get_address:
 	illegal
 0:
 	cmp.l	#0x1800,a0
-	jcs		0f
+	jcc		0f
 	BREAKPOINT	"unsupported address range 0-0x1800"
 	illegal
 0:
