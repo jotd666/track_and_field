@@ -12,6 +12,7 @@
 * (see my burger time 6502 conversion which does that in RELEASE mode)
 
 	.global	cpu_init
+	.global	m6809_direct_page_pointer
 
 	.macro	ERROR     arg
 	.error "\arg"
@@ -247,6 +248,7 @@ get_address:
 	move.l    d0,a0
 	GET_ADDRESS_FUNC
 	move.l	a0,a4
+	move.l	a4,m6809_direct_page_pointer
 	lsr.w    #8,d0
 	.endm
 
@@ -378,7 +380,9 @@ cpu_init:
 	moveq	#0,d7
 	rts
 
-
+* direct page pointer needs to be reloaded in case of irq
+m6809_direct_page_pointer:
+	.long	0xA4A4A4A4
 
 multiply_ab:
 	and.w	#0xFF,d0

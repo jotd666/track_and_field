@@ -125,7 +125,7 @@ BIT_UP = 2
 BIT_DOWN = 3
 BIT_FIRE = 4
 
-.macro	GET_MEMORY_START_IN_A6
+.macro	GET_MEMORY_START_AND_DP
 	move.l	m6809_direct_page_pointer,a4
 	.ifdef	RELEASE
 	lea		ram_buffer-0x1800,a6
@@ -752,10 +752,8 @@ demo_game:
 	dbf		d0,0b
 	.endif
 	
-	* direct page won't change, let's store it now for irq
-	move.l	a4,m6809_direct_page_pointer
-	GET_MEMORY_START_IN_A6
 	jbsr	cpu_init
+	GET_MEMORY_START_AND_DP
 	jmp			reset_6000					| pass control to the cpu core
 		
 	
@@ -763,7 +761,7 @@ demo_game:
 do_irq:
 	* set base for RAM
 	jbsr	cpu_init
-	GET_MEMORY_START_IN_A6
+	GET_MEMORY_START_AND_DP
 	jra			irq_6600					| pass control to the cpu core
 	
 * just in case some hardware calls nmi
@@ -975,7 +973,7 @@ osd_wait:
 * Z: set if not playing
 is_game_playing:
 	move.l	a6,-(a7)
-	GET_MEMORY_START_IN_A6
+	GET_MEMORY_START_AND_DP
 	*tst.b	game_in_play_9669(a6)
 	moveq	#0,d0
 	move.l	(a7)+,a6
@@ -983,7 +981,7 @@ is_game_playing:
 	
 lose_all_lives:
 	move.l	a6,-(a7)
-	GET_MEMORY_START_IN_A6
+	GET_MEMORY_START_AND_DP
 	*move.b	#1,lives_9600(a6)					| no more lives
 	*move.b	#0xf0,level_playing_flag_9000(a6)	| kill player
 	move.l	(a7)+,a6
@@ -991,7 +989,7 @@ lose_all_lives:
 
 add_10000_points:
 	move.l	a6,-(a7)
-	GET_MEMORY_START_IN_A6
+	GET_MEMORY_START_AND_DP
 	movem.w	d0/d7,-(a7)
 	*move.b	player_1_score_9663+2(a6),d0
 	MOVEQ	#1,d7
@@ -1072,7 +1070,7 @@ blit_background:
 really_update_tiles:
 	lea		_custom,a5
 	WAIT_BLIT
-	GET_MEMORY_START_IN_A6
+	GET_MEMORY_START_AND_DP
 	lea		(0x400,a6),a5
 	lea		tiles_row_flags(pc),a1
 	moveq	#0,d3
@@ -1420,7 +1418,7 @@ osd_dump_logs:
 	move.l	#16*512,d0
 	jbsr	resload_SaveFile(a2)
 		
-	GET_MEMORY_START_IN_A6
+	GET_MEMORY_START_AND_DP
 	lea		sprites_ram_name_A000(pc),a0
 	lea	(0x2000,a6),a1		| sprites
 	move.l	#0x200,d0
@@ -2804,10 +2802,7 @@ beamdelay:
 	
 	MUL_TABLE	NB_BYTES_PER_ROW,NB_LINES*2
 
-* direct page pointer is set by gyruss reset to 0x42
-* then it's never changed
-m6809_direct_page_pointer:
-	.long	0xA4A4A4A4
+
 
 
 

@@ -106,6 +106,21 @@ with open(source_dir / "conv.s") as f:
         lines[i] = line
 
 
+GET_ADDRESS    system_1280                    | [$6637: lda    system_1280]
+    move.b    (a0),d0                             | [...]
+    not.b    d0                                   | [$663a: coma]
+    GET_X_ADDRESS    0                            | [$663b: sta    ,x+]
+    addq.w    #1,d2                               | [...]
+    move.b    d0,(a0)                             | [...]
+    GET_ADDRESS    in0_1281                       | [$663d: lda    in0_1281]
+    move.b    (a0),d0                             | [...]
+    not.b    d0                                   | [$6640: coma]
+    GET_X_ADDRESS    0                            | [$6641: sta    ,x+]
+    addq.w    #1,d2                               | [...]
+    move.b    d0,(a0)                             | [...]
+    GET_ADDRESS    in1_1282                       | [$6643: lda    in1_1282]
+    move.b    (a0),d0
+
 with open(source_dir / "data.inc","w") as fw:
     fw.writelines(equates)
 
