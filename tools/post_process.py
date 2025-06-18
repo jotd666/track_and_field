@@ -40,6 +40,14 @@ this_dir = pathlib.Path(__file__).absolute().parent
 
 source_dir = this_dir / "../src"
 
+input_dict = {"system_1280":"read_system_inputs",
+"in0_1281":"read_inputs_1",
+"in1_1282":"read_inputs_2",
+"audio_register_w_1100":"sound_start",
+"nmi_mask_w_1082":"",
+"sh_irqtrigger_w_1081":"",
+}
+
 # various dirty but at least automatic patches applying on the specific track and field code
 with open(source_dir / "conv.s") as f:
     lines = list(f)
@@ -53,13 +61,22 @@ with open(source_dir / "conv.s") as f:
         for p in ("[rom_check_code]","watchdog_1000"):
             line = remove_code(p,lines,i)
 
-        if "dsw1_" in line:
+        if "dsw1_" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
-        if "dsw2_" in line:
+        if "dsw2_" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
 
         if "multiply_ab" in line and "MAKE_D" in lines[i+1]:
             lines[i+1] = ""
+        if "tfr" in line and "POP_SR" in lines[i+1]:
+            # we don't need to save SR in this game when a TFR is done
+            lines[i-1] = ""
+            lines[i+1] = ""
+        if "rox" in line and "POP_SR" in lines[i-1]:
+            # we don't need to save SR as roxx uses X flag
+            lines[i-3] = ""
+            lines[i-1] = ""
+
 
         line = re.sub(tablere,subt,line)
         if "[$83bd" in line or "[$9db1" in line or "[$d804" in line:
@@ -88,6 +105,17 @@ with open(source_dir / "conv.s") as f:
                 line = change_instruction("jbsr\tosd_enable_interrupts",lines,i)
                 lines[i-1] = remove_instruction(lines,i-1)
 
+        if "GET_ADDRESS" in line:
+            val = line.split()[1]
+            osd_call = input_dict.get(val)
+            if osd_call is not None:
+                if osd_call:
+                    line = change_instruction(f"jbsr\tosd_{osd_call}",lines,i)
+                else:
+                    line = remove_instruction(lines,i)
+                lines[i+1] = remove_instruction(lines,i+1)
+
+
         elif "unsupported instruction rti" in line:
             line = change_instruction("rts",lines,i)
         elif "unsupported instruction lds" in line:
@@ -106,20 +134,7 @@ with open(source_dir / "conv.s") as f:
         lines[i] = line
 
 
-GET_ADDRESS    system_1280                    | [$6637: lda    system_1280]
-    move.b    (a0),d0                             | [...]
-    not.b    d0                                   | [$663a: coma]
-    GET_X_ADDRESS    0                            | [$663b: sta    ,x+]
-    addq.w    #1,d2                               | [...]
-    move.b    d0,(a0)                             | [...]
-    GET_ADDRESS    in0_1281                       | [$663d: lda    in0_1281]
-    move.b    (a0),d0                             | [...]
-    not.b    d0                                   | [$6640: coma]
-    GET_X_ADDRESS    0                            | [$6641: sta    ,x+]
-    addq.w    #1,d2                               | [...]
-    move.b    d0,(a0)                             | [...]
-    GET_ADDRESS    in1_1282                       | [$6643: lda    in1_1282]
-    move.b    (a0),d0
+
 
 with open(source_dir / "data.inc","w") as fw:
     fw.writelines(equates)

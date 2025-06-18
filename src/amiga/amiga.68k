@@ -38,7 +38,7 @@ _custom = 0xDFF000
 
 BASE_BPLCON2_VALUE = 0x0064		| sprites above all playfields
 
-
+ROM_START = 0x6000
 
 
 
@@ -733,9 +733,9 @@ demo_game:
 	* and 6809 memory access is way faster (no bank switching)
 	
 	* copy the ROM data
-	add.l	#0x4000-0x1800,d1
+	add.l	#ROM_START-0x1800,d1
 	move.l 	d1,a1
-	move.w	#(0x10000-0x6000)/4-1,d0
+	move.w	#(0x10000-ROM_START)/4-1,d0
 	lea		rom_base,a0
 0:
 	move.l	(a0)+,(a1)+
@@ -743,9 +743,9 @@ demo_game:
 	.else
 	* release mode
 
-	* copy the ROM data right after RAM
-	lea		ram_buffer+0x4000-0x1800,a1
-	move.w	#(0x10000-0x6000)/4-1,d0
+	* copy the ROM data after RAM
+	lea		ram_buffer+ROM_START-0x1800,a1
+	move.w	#(0x10000-ROM_START)/4-1,d0
 	lea		rom_base,a0
 0:
 	move.l	(a0)+,(a1)+

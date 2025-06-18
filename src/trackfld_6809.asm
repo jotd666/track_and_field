@@ -29,6 +29,8 @@
 	
 
 * page $28xx
+dsw1_copy_2c = $2c
+dsw2_copy_2d = $2d
 copy_of_inputs_30 = $30
 hammer_speed_38 = $38
 p1_attempts_left_81 = $81
@@ -41,8 +43,10 @@ high_jump_fault_9f = $9F
 * memory offsets
 watchdog_1000 = $1000
 flip_screen_set_1080 = $1080
+sh_irqtrigger_w_1081 = $1081
 nmi_mask_w_1082 = $1082
 irq_mask_w_1087 = $1087
+audio_register_w_1100 = $1100
 dsw2_1200 = $1200
 system_1280 = $1280
 in0_1281 = $1281
@@ -50,7 +54,7 @@ in1_1282 = $1282
 dsw1_1283 = $1283
 sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
-copy_of_inputs_2830 = $$2830
+copy_of_inputs_2830 = $2830
 failed_rom_check_2a8e = $2a8e
 failed_rom_check_29d4 = $29d4
 video_ram_3000 = $3000
@@ -111,10 +115,10 @@ reset_6000:
 607F: 7F 10 82       CLR    nmi_mask_w_1082		; nmi mask?
 6082: B6 12 83       LDA    dsw1_1283
 6085: 43             COMA				; negative logic
-6086: 97 2C          STA    $2C			; copy dip switch 1 in 282C
+6086: 97 2C          STA    dsw1_copy_2c			; copy dip switch 1 in 282C
 6088: B6 12 00       LDA    dsw2_1200
 608B: 43             COMA
-608C: 97 2D          STA    $2D			; copy dip switch 2 in 282D
+608C: 97 2D          STA    dsw2_copy_2d			; copy dip switch 2 in 282D
 608E: 84 60          ANDA   #$60
 6090: 44             LSRA
 6091: 44             LSRA
@@ -122,13 +126,13 @@ reset_6000:
 6093: 44             LSRA
 6094: 44             LSRA
 6095: 97 2F          STA    $2F
-6097: 96 2C          LDA    $2C
+6097: 96 2C          LDA    dsw1_copy_2c
 6099: 84 0F          ANDA   #$0F
 609B: 48             ASLA
 609C: 8E A4 3B       LDX    #$A43B
 609F: EC 86          LDD    A,X
 60A1: DD 28          STD    $28
-60A3: 96 2C          LDA    $2C
+60A3: 96 2C          LDA    dsw1_copy_2c
 60A5: 84 F0          ANDA   #$F0
 60A7: 44             LSRA
 60A8: 44             LSRA
@@ -313,7 +317,7 @@ reset_6000:
 6226: 35 04          PULS   B
 6228: 8D 3D          BSR    $6267
 622A: 33 41          LEAU   $1,U
-622C: 96 2D          LDA    $2D
+622C: 96 2D          LDA    dsw2_copy_2d
 622E: 85 08          BITA   #$08
 6230: 26 08          BNE    $623A
 6232: 84 01          ANDA   #$01
@@ -785,7 +789,7 @@ irq_6600:
 6623: 3B             RTI
 
 read_inputs_6624:
-6624: 8E 28 30       LDX    #$2830
+6624: 8E 28 30       LDX    #copy_of_inputs_2830
 6627: EC 03          LDD    $3,X	; copy previous values of inputs
 6629: ED 06          STD    $6,X
 662B: A6 05          LDA    $5,X
@@ -805,7 +809,7 @@ read_inputs_6624:
 6647: A7 84          STA    ,X
 6649: 39             RTS
 
-664A: 96 2C          LDA    $2C
+664A: 96 2C          LDA    dsw1_copy_2c
 664C: 84 0F          ANDA   #$0F
 664E: 81 0F          CMPA   #$0F
 6650: 26 05          BNE    $6657
@@ -898,15 +902,15 @@ read_inputs_6624:
 66F1: 39             RTS
 
 66F2: A6 80          LDA    ,X+
-66F4: B7 11 00       STA    $1100
+66F4: B7 11 00       STA    audio_register_w_1100
 66F7: 4F             CLRA
-66F8: B7 10 81       STA    $1081
+66F8: B7 10 81       STA    sh_irqtrigger_w_1081
 66FB: 12             NOP
 66FC: 12             NOP
 66FD: 12             NOP
 66FE: 12             NOP
 66FF: 4C             INCA
-6700: B7 10 81       STA    $1081
+6700: B7 10 81       STA    sh_irqtrigger_w_1081
 6703: 8C 29 60       CMPX   #$2960
 6706: 26 03          BNE    $670B
 6708: 8E 29 40       LDX    #$2940
@@ -929,7 +933,7 @@ read_inputs_6624:
 6723: 0C 00          INC    $00
 6725: 39             RTS
 
-6726: 96 2C          LDA    $2C
+6726: 96 2C          LDA    dsw1_copy_2c
 6728: 84 0F          ANDA   #$0F
 672A: 81 0F          CMPA   #$0F
 672C: 26 06          BNE    $6734
@@ -1056,7 +1060,7 @@ read_inputs_6624:
 681C: 86 01          LDA    #$01
 681E: 97 22          STA    $22
 6820: 86 01          LDA    #$01
-6822: D6 2D          LDB    $2D
+6822: D6 2D          LDB    dsw2_copy_2d
 6824: 57             ASRB
 6825: 24 02          BCC    $6829
 6827: 86 02          LDA    #$02
@@ -1135,7 +1139,7 @@ read_inputs_6624:
 68C5: BD 84 F5       JSR    $84F5
 68C8: CC 02 06       LDD    #$0206
 68CB: BD 84 F5       JSR    $84F5
-68CE: 96 2D          LDA    $2D
+68CE: 96 2D          LDA    dsw2_copy_2d
 68D0: 84 08          ANDA   #$08
 68D2: 27 0C          BEQ    $68E0
 68D4: CC 01 09       LDD    #$0109
@@ -1188,7 +1192,7 @@ read_inputs_6624:
 693C: 86 14          LDA    #$14
 693E: 97 0B          STA    $0B
 6940: 4F             CLRA
-6941: D6 2D          LDB    $2D
+6941: D6 2D          LDB    dsw2_copy_2d
 6943: C4 04          ANDB   #$04
 6945: 26 08          BNE    $694F
 6947: D6 DF          LDB    $DF
@@ -1314,7 +1318,7 @@ read_inputs_6624:
 6A4F: 26 F9          BNE    $6A4A
 6A51: 96 22          LDA    $22
 6A53: 26 14          BNE    $6A69
-6A55: 96 2C          LDA    $2C
+6A55: 96 2C          LDA    dsw1_copy_2c
 6A57: 84 0F          ANDA   #$0F
 6A59: 81 0F          CMPA   #$0F
 6A5B: 26 0C          BNE    $6A69
@@ -1425,7 +1429,7 @@ read_inputs_6624:
 6B4B: BD 8E CC       JSR    $8ECC
 6B4E: BD 8E F0       JSR    $8EF0
 6B51: 4F             CLRA
-6B52: D6 2D          LDB    $2D
+6B52: D6 2D          LDB    dsw2_copy_2d
 6B54: C4 04          ANDB   #$04
 6B56: 26 08          BNE    $6B60
 6B58: D6 DF          LDB    $DF
@@ -2561,7 +2565,7 @@ read_inputs_6624:
 74D0: A9 C4          ADCA   ,U
 74D2: 19             DAA
 74D3: A7 84          STA    ,X
-74D5: 96 2D          LDA    $2D
+74D5: 96 2D          LDA    dsw2_copy_2d
 74D7: 84 08          ANDA   #$08
 74D9: 27 2B          BEQ    $7506
 74DB: A6 84          LDA    ,X
@@ -2658,7 +2662,7 @@ read_inputs_6624:
 7592: 81 06          CMPA   #$06
 7594: 26 08          BNE    $759E
 7596: 0F 84          CLR    current_level_84
-7598: 96 2D          LDA    $2D
+7598: 96 2D          LDA    dsw2_copy_2d
 759A: 84 02          ANDA   #$02
 759C: 27 2A          BEQ    $75C8
 759E: 86 04          LDA    #$04
@@ -2710,7 +2714,7 @@ read_inputs_6624:
 75F4: 48             ASLA
 75F5: 6E 96          JMP    [A,X]		; [jump_table]
 
-75F7: 96 2C          LDA    $2C
+75F7: 96 2C          LDA    dsw1_copy_2c
 75F9: 84 0F          ANDA   #$0F
 75FB: 81 0F          CMPA   #$0F
 75FD: 27 07          BEQ    $7606
@@ -2765,7 +2769,7 @@ read_inputs_6624:
 7669: 16 13 BC       LBRA   $8A28
 766C: 39             RTS
 
-766D: 96 2C          LDA    $2C
+766D: 96 2C          LDA    dsw1_copy_2c
 766F: 84 0F          ANDA   #$0F
 7671: 81 0F          CMPA   #$0F
 7673: 27 07          BEQ    $767C
@@ -2778,7 +2782,7 @@ read_inputs_6624:
 7681: 48             ASLA
 7682: 6E 96          JMP    [A,X]	; [jump_table]
 
-7684: 96 2C          LDA    $2C
+7684: 96 2C          LDA    dsw1_copy_2c
 7686: 84 0F          ANDA   #$0F
 7688: 81 0F          CMPA   #$0F
 768A: 27 07          BEQ    $7693
@@ -4528,7 +4532,7 @@ read_inputs_6624:
 8504: 10 9F 18       STY    $18
 8507: 39             RTS
 
-8508: D6 2D          LDB    $2D
+8508: D6 2D          LDB    dsw2_copy_2d
 850A: C4 80          ANDB   #$80
 850C: 26 04          BNE    $8512
 850E: 0D 22          TST    $22
@@ -9443,7 +9447,7 @@ D322: A6 3F          LDA    -$1,Y
 D324: 27 1F          BEQ    $D345
 D326: 84 10          ANDA   #$10
 D328: 26 1B          BNE    $D345
-D32A: 96 2D          LDA    $2D
+D32A: 96 2D          LDA    dsw2_copy_2d
 D32C: 84 08          ANDA   #$08
 D32E: 27 0D          BEQ    $D33D
 D330: 1F 21          TFR    Y,X
@@ -9845,7 +9849,7 @@ D646: CC 02 39       LDD    #$0239
 D649: BD 84 F5       JSR    $84F5
 D64C: BD D7 71       JSR    $D771
 D64F: 4F             CLRA
-D650: D6 2D          LDB    $2D
+D650: D6 2D          LDB    dsw2_copy_2d
 D652: C4 04          ANDB   #$04
 D654: 26 08          BNE    $D65E
 D656: D6 DF          LDB    $DF
@@ -10061,7 +10065,7 @@ D824: CC 07 00       LDD    #$0700
 D827: BD 84 F5       JSR    $84F5
 D82A: 39             RTS
 
-D82B: 96 2C          LDA    $2C
+D82B: 96 2C          LDA    dsw1_copy_2c
 D82D: 84 0F          ANDA   #$0F
 D82F: 81 0F          CMPA   #$0F
 D831: 27 16          BEQ    $D849
@@ -10404,7 +10408,7 @@ DB13: CC 02 3D       LDD    #$023D
 DB16: BD 84 F5       JSR    $84F5
 DB19: BD DB FF       JSR    $DBFF
 DB1C: 4F             CLRA
-DB1D: D6 2D          LDB    $2D
+DB1D: D6 2D          LDB    dsw2_copy_2d
 DB1F: C4 04          ANDB   #$04
 DB21: 26 08          BNE    $DB2B
 DB23: D6 DF          LDB    $DF
@@ -12299,7 +12303,7 @@ F000: BA 2A 9B       ORA    $2A9B
 F003: B7 2A 9B       STA    $2A9B
 F006: 0D 22          TST    $22
 F008: 26 0E          BNE    $F018
-F00A: 96 2C          LDA    $2C
+F00A: 96 2C          LDA    dsw1_copy_2c
 F00C: 84 0F          ANDA   #$0F
 F00E: 81 0F          CMPA   #$0F
 F010: 27 06          BEQ    $F018
@@ -12531,7 +12535,7 @@ F1FA: 24 12          BCC    $F20E
 F1FC: 7F 29 9C       CLR    $299C
 F1FF: 96 DF          LDA    $DF
 F201: 47             ASRA
-F202: D6 2D          LDB    $2D
+F202: D6 2D          LDB    dsw2_copy_2d
 F204: C5 04          BITB   #$04
 F206: 26 03          BNE    $F20B
 F208: B7 10 80       STA    flip_screen_set_1080
@@ -12854,7 +12858,7 @@ F497: B6 2A A0       LDA    $2AA0
 F49A: 4A             DECA
 F49B: 44             LSRA
 F49C: 97 48          STA    $48
-F49E: 96 2D          LDA    $2D
+F49E: 96 2D          LDA    dsw2_copy_2d
 F4A0: 43             COMA
 F4A1: 44             LSRA
 F4A2: 44             LSRA
@@ -12936,7 +12940,7 @@ F54E: 96 3F          LDA    $3F
 F550: 85 07          BITA   #$07
 F552: 10 26 00 8B    LBNE   $F5E1
 F556: 8E 32 49       LDX    #$3249
-F559: 96 2D          LDA    $2D
+F559: 96 2D          LDA    dsw2_copy_2d
 F55B: 84 02          ANDA   #$02
 F55D: 26 14          BNE    $F573
 F55F: B6 2A 4C       LDA    $2A4C
@@ -13206,7 +13210,7 @@ F7AB: 26 F0          BNE    $F79D
 F7AD: 86 04          LDA    #$04
 F7AF: 97 48          STA    $48
 F7B1: A6 C0          LDA    ,U+
-F7B3: 30 88 38       LEAX   hammer_speed_38,X
+F7B3: 30 88 38       LEAX   $38,X
 F7B6: 0A 49          DEC    $49
 F7B8: 26 E3          BNE    $F79D
 F7BA: CE 30 C5       LDU    #$30C5
@@ -13427,7 +13431,7 @@ F977: 27 1C          BEQ    $F995
 F979: 0C DF          INC    $DF
 F97B: 4C             INCA
 F97C: B7 29 9C       STA    $299C
-F97F: D6 2D          LDB    $2D
+F97F: D6 2D          LDB    dsw2_copy_2d
 F981: C5 04          BITB   #$04
 F983: 26 06          BNE    $F98B
 F985: 47             ASRA
@@ -13699,7 +13703,7 @@ FBB1: 31 23          LEAY   $3,Y
 FBB3: A6 A4          LDA    ,Y
 FBB5: 39             RTS
 
-FBB6: 96 2C          LDA    $2C
+FBB6: 96 2C          LDA    dsw1_copy_2c
 FBB8: 84 0F          ANDA   #$0F
 FBBA: 81 0F          CMPA   #$0F
 FBBC: 27 0A          BEQ    $FBC8
@@ -13826,7 +13830,7 @@ FCDF: A6 80          LDA    ,X+
 FCE1: A7 C0          STA    ,U+
 FCE3: 7A 2B 4D       DEC    $2B4D
 FCE6: 26 F3          BNE    $FCDB
-FCE8: 33 C8 2D       LEAU   $2D,U
+FCE8: 33 C8 2D       LEAU   dsw2_copy_2d,U
 FCEB: 7A 2B 5F       DEC    $2B5F
 FCEE: 26 E5          BNE    $FCD5
 FCF0: 33 C9 FD 87    LEAU   -$0279,U

@@ -11,14 +11,15 @@
 * conditional compilation to select the proper memory banks at compile time
 * (see my burger time 6502 conversion which does that in RELEASE mode)
 
+
+
 	.global	cpu_init
 	.global	m6809_direct_page_pointer
 
-	.macro	ERROR     arg
-	.error "\arg"
+	.macro	ERROR	arg
+	.error	"\arg"     | comment out to disable errors
 	.endm
 
-	
 	.ifdef	RELEASE
 	.macro	GET_ADDRESS_FUNC
 	lea		(a6,a0.l),a0
@@ -45,14 +46,16 @@ get_address:
 	illegal
 0:
 	* 0X1800 <= range < 0x4000, ram, video ram & special ram/scroll
-
+	cmp.l	#0x3000,a0
+	jcs		0f
+	* video/attribute: must be done without "get_address"
+	BREAKPOINT	"unsupported address range 0x3000-0x3FFF"
+0:
 10:
 	lea		(a6,a0.l),a0
 	rts
 
 	.endif 
-	
-	
 	.macro	MAKE_D
 * add value of A in B MSB so D&0xFF == B
 	rol.w	#8,d1
@@ -261,111 +264,30 @@ get_address:
 	exg	d0,\reg
 	.endm
 
-	.macro GET_X_ADDRESS	offset
+	.macro GET_REG_ADDRESS	offset,reg
 	.ifeq	\offset
-	move.l	d2,a0
+	move.l	\reg,a0
 	.else
 	lea	\offset,a0
-	add.l	d2,a0
+	add.l	\reg,a0
 	.endif
 	GET_ADDRESS_FUNC
 	.endm
 
-	.macro GET_X_INDIRECT_ADDRESS	offset
+	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
 	.ifeq	\offset
-	move.l	d2,a0
+	move.l	\reg,a0
 	.else
 	lea	\offset,a0
-	add.l	d2,a0
+	add.l	\reg,a0
 	.endif
 	READ_BE_WORD	a0
 	GET_ADDRESS_FUNC
 	.endm
 
-	.macro GET_X_ADDRESS_FROM_REG	reg
+	.macro GET_REG_ADDRESS_FROM_REG	reg,reg2
 	move.l	\reg,a0
-	add.l	d2,a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_Y_ADDRESS	offset
-	.ifeq	\offset
-	move.l	d3,a0
-	.else
-	lea	\offset,a0
-	add.l	d3,a0
-	.endif
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_Y_INDIRECT_ADDRESS	offset
-	.ifeq	\offset
-	move.l	d3,a0
-	.else
-	lea	\offset,a0
-	add.l	d3,a0
-	.endif
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_Y_ADDRESS_FROM_REG	reg
-	move.l	\reg,a0
-	add.l	d3,a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_S_ADDRESS	offset
-	.ifeq	\offset
-	move.l	d5,a0
-	.else
-	lea	\offset,a0
-	add.l	d5,a0
-	.endif
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_S_INDIRECT_ADDRESS	offset
-	.ifeq	\offset
-	move.l	d5,a0
-	.else
-	lea	\offset,a0
-	add.l	d5,a0
-	.endif
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_S_ADDRESS_FROM_REG	reg
-	move.l	\reg,a0
-	add.l	d5,a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_U_ADDRESS	offset
-	.ifeq	\offset
-	move.l	d4,a0
-	.else
-	lea	\offset,a0
-	add.l	d4,a0
-	.endif
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_U_INDIRECT_ADDRESS	offset
-	.ifeq	\offset
-	move.l	d4,a0
-	.else
-	lea	\offset,a0
-	add.l	d4,a0
-	.endif
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_U_ADDRESS_FROM_REG	reg
-	move.l	\reg,a0
-	add.l	d4,a0
+	add.l	\reg2,a0
 	GET_ADDRESS_FUNC
 	.endm
 
@@ -383,6 +305,7 @@ cpu_init:
 * direct page pointer needs to be reloaded in case of irq
 m6809_direct_page_pointer:
 	.long	0xA4A4A4A4
+
 
 multiply_ab:
 	and.w	#0xFF,d0
