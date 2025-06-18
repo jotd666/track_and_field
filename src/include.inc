@@ -20,8 +20,14 @@
 	.error	"\arg"     | comment out to disable errors
 	.endm
 
-	.macro	VIDEO_DIRTY
+	.macro	VIDEO_BYTE_DIRTY
 	| called when a write was done in a0
+	jbsr	osd_video_byte_dirty
+	.endm
+
+	.macro	VIDEO_WORD_DIRTY
+	| called when a write was done in a0
+	jbsr	osd_video_word_dirty
 	.endm
 
 	.ifdef	RELEASE

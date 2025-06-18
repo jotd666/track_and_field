@@ -254,8 +254,8 @@ reset_6000:
 61A6: 97 40          STA    $40
 61A8: 0F 41          CLR    $41
 61AA: 86 10          LDA    #$10
-61AC: 6F 89 08 00    CLR    $0800,X
-61B0: A7 80          STA    ,X+
+61AC: 6F 89 08 00    CLR    $0800,X		; [video_address]
+61B0: A7 80          STA    ,X+			; [video_address]
 61B2: 0A 41          DEC    $41
 61B4: 26 F6          BNE    $61AC
 61B6: 0A 40          DEC    $40
@@ -12613,8 +12613,8 @@ F289: 26 04          BNE    $F28F
 F28B: 0D 49          TST    $49
 F28D: 27 08          BEQ    $F297
 F28F: 0C 49          INC    $49
-F291: A7 84          STA    ,X
-F293: 6F 89 08 00    CLR    $0800,X
+F291: A7 84          STA    ,X			; [video_address]
+F293: 6F 89 08 00    CLR    $0800,X			; [video_address]
 F297: 30 01          LEAX   $1,X
 F299: 5D             TSTB
 F29A: 26 04          BNE    $F2A0
@@ -12627,8 +12627,8 @@ F2A8: 30 01          LEAX   $1,X
 F2AA: 0A 48          DEC    $48
 F2AC: 26 CB          BNE    $F279
 F2AE: 4F             CLRA
-F2AF: A7 84          STA    ,X
-F2B1: 6F 89 08 00    CLR    $0800,X
+F2AF: A7 84          STA    ,X				; [video_address]
+F2B1: 6F 89 08 00    CLR    $0800,X				; [video_address]
 F2B5: 30 88 EE       LEAX   -$12,X
 F2B8: B6 2A 90       LDA    $2A90
 F2BB: 81 0B          CMPA   #$0B
@@ -12653,11 +12653,11 @@ F2D7: 84 1F          ANDA   #$1F
 F2D9: 8B 10          ADDA   #$10
 F2DB: 97 4B          STA    $4B
 F2DD: DC 4A          LDD    $4A
-F2DF: ED 07          STD    $7,X
-F2E1: 6F 89 08 07    CLR    $0807,X
+F2DF: ED 07          STD    $7,X	; [video_address]
+F2E1: 6F 89 08 07    CLR    $0807,X	; [video_address]
 F2E5: 96 4C          LDA    $4C
-F2E7: A7 09          STA    $9,X
-F2E9: 6F 89 08 09    CLR    $0809,X
+F2E7: A7 09          STA    $9,X	; [video_address]
+F2E9: 6F 89 08 09    CLR    $0809,X	; [video_address]
 F2ED: B6 2A 90       LDA    $2A90
 F2F0: 4A             DECA
 F2F1: C6 0A          LDB    #$0A
@@ -13206,9 +13206,9 @@ F798: CC 04 03       LDD    #$0403
 F79B: DD 48          STD    $48
 F79D: A6 C4          LDA    ,U
 F79F: 1F 89          TFR    A,B
-F7A1: ED 89 08 00    STD    $0800,X
+F7A1: ED 89 08 00    STD    $0800,X		; [video_address_word]
 F7A5: EC A1          LDD    ,Y++
-F7A7: ED 81          STD    ,X++
+F7A7: ED 81          STD    ,X++		; [video_address_word]
 F7A9: 0A 48          DEC    $48
 F7AB: 26 F0          BNE    $F79D
 F7AD: 86 04          LDA    #$04
@@ -13565,7 +13565,7 @@ FA9C: 47             ASRA
 FA9D: 84 03          ANDA   #$03
 FA9F: A6 A6          LDA    A,Y
 FAA1: C6 0F          LDB    #$0F
-FAA3: A7 85          STA    B,X
+FAA3: A7 85          STA    B,X		; [video_address]
 FAA5: 5A             DECB
 FAA6: 26 FB          BNE    $FAA3
 FAA8: D6 DF          LDB    $DF
@@ -13579,7 +13579,7 @@ FAB6: 3D             MUL
 FAB7: 30 8B          LEAX   D,X
 FAB9: 35 02          PULS   A
 FABB: C6 07          LDB    #$07
-FABD: A7 85          STA    B,X
+FABD: A7 85          STA    B,X		; [video_address]
 FABF: 5A             DECB
 FAC0: 26 FB          BNE    $FABD
 FAC2: 39             RTS
@@ -13757,15 +13757,15 @@ FC1D: C3 00 08       ADDD   #$0008
 FC20: ED 0A          STD    $A,X
 FC22: 39             RTS
 
-FC23: CE 30 E1       LDU    #$30E1
+FC23: CE 30 E1       LDU    #video_ram_3000+$E1
 FC26: BD FC AB       JSR    $FCAB
-FC29: CE 35 00       LDU    #$3500
+FC29: CE 35 00       LDU    #video_ram_3000+$500
 FC2C: 86 40          LDA    #$40
 FC2E: B7 2B 4D       STA    $2B4D
 FC31: 86 1C          LDA    #$1C
 FC33: C6 40          LDB    #$40
-FC35: E7 C9 08 00    STB    $0800,U
-FC39: A7 C0          STA    ,U+
+FC35: E7 C9 08 00    STB    $0800,U		; [video_address]
+FC39: A7 C0          STA    ,U+					; [video_address]
 FC3B: 7A 2B 4D       DEC    $2B4D
 FC3E: 26 06          BNE    $FC46
 FC40: 4C             INCA
@@ -13776,9 +13776,9 @@ FC4A: 26 E7          BNE    $FC33
 FC4C: CE 34 46       LDU    #$3446
 FC4F: CC 12 40       LDD    #$1240
 FC52: B7 2B 4D       STA    $2B4D
-FC55: E7 C9 08 00    STB    $0800,U
+FC55: E7 C9 08 00    STB    $0800,U		; [video_address]
 FC59: A6 80          LDA    ,X+
-FC5B: A7 C0          STA    ,U+
+FC5B: A7 C0          STA    ,U+			; [video_address]
 FC5D: 7A 2B 4D       DEC    $2B4D
 FC60: 26 F3          BNE    $FC55
 FC62: 33 C8 2E       LEAU   $2E,U

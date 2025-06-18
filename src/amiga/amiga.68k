@@ -38,6 +38,7 @@ _custom = 0xDFF000
 
 BASE_BPLCON2_VALUE = 0x0064		| sprites above all playfields
 
+RAM_START = 0x1800
 ROM_START = 0x6000
 
 
@@ -196,7 +197,8 @@ start:
 		.global osd_disable_interrupts
 		.global osd_break		| for debug	
 		.global osd_blitz		| for debug
-		.global osd_w_videoram
+		.global osd_video_byte_dirty
+		.global osd_video_word_dirty
 		.global osd_read_dsw_1
 		.global osd_read_dsw_2
 		.global osd_read_dsw_3
@@ -2038,14 +2040,18 @@ osd_disable_interrupts:
 * a6=ram base
 * should preserve all registers
 
-osd_w_videoram:
+osd_video_word_dirty:
+osd_video_byte_dirty:
+	rts
+	
 	movem.l	d0/d1/d7/a0/a1,-(a7)
 	move.l	a0,d7		| save address
+	sub.l	a6,d7
 	.ifndef	RELEASE
-	cmp.l	#0x8800,d7
+	cmp.l	#0x3000-RAM_START,d7
 	jcs		0f
 	BREAKPOINT	"write videoram out of range (D7 >= $8800)"
-	jra		osd_w_videoram_out
+	jra		osd_video_dirty_out
 0:
 	.endif
 
@@ -2057,16 +2063,15 @@ osd_w_videoram:
 	* should not happen
 	add.w	#0x8000,d7
 	BREAKPOINT	"write videoram out of range (D7 < $8000)"
-	jra		osd_w_videoram_out
+	jra		osd_video_dirty_out
 	.endif
 1:	
 	move.l	d7,a0
 	add.l	a6,a0				| add RAM base
 	move.b	(a0),d1
 	cmp.b	d1,d0
-	beq.b	osd_w_videoram_out		| already the proper value
+	beq.b	osd_video_dirty_out		| already the proper value
 3:
-	move.b	d0,(a0)	| update logical grid
 	
 	* now set the flag for tile refresh in copper interrupt (so it doesn't
 	* interfere with blits. This game uses a lot of tile animation in the background
@@ -2088,7 +2093,7 @@ osd_w_videoram:
 	move.b	d7,(a0)
 	move.b	d7,(a1)
 
-osd_w_videoram_out:
+osd_video_dirty_out:
 	movem.l	(a7)+,d0/d1/d7/a0/a1
 	rts	
 

@@ -62,7 +62,7 @@ with open(source_dir / "conv.s") as f:
             line = remove_code(p,lines,i)
 
 
-        if "[video_address]" in line:
+        if "[video_address" in line:
             # give me the original instruction
             line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
             # if it's a write, insert a "VIDEO_DIRTY" macro after the write
@@ -71,7 +71,10 @@ with open(source_dir / "conv.s") as f:
                 if "[...]" not in next_line:
                     break
                 if ",(a0)" in next_line:
-                    lines[j] = next_line+"\tVIDEO_DIRTY | [...]\n"
+                    if "address_word" in line:
+                        lines[j] = next_line+"\tVIDEO_WORD_DIRTY | [...]\n"
+                    else:
+                        lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
                     break
 
         if "dsw1_" in line and "lda" in line:
