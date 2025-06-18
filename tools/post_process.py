@@ -61,9 +61,22 @@ with open(source_dir / "conv.s") as f:
         for p in ("[rom_check_code]","watchdog_1000"):
             line = remove_code(p,lines,i)
 
+
+        if "[video_address]" in line:
+            # give me the original instruction
+            line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
+            # if it's a write, insert a "VIDEO_DIRTY" macro after the write
+            for j in range(i+1,len(lines)):
+                next_line = lines[j]
+                if "[...]" not in next_line:
+                    break
+                if ",(a0)" in next_line:
+                    lines[j] = next_line+"\tVIDEO_DIRTY | [...]\n"
+                    break
+
         if "dsw1_" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
-        if "dsw2_" in line and "lda" in line:
+        elif "dsw2_" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
 
         if "multiply_ab" in line and "MAKE_D" in lines[i+1]:

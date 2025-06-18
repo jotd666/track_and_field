@@ -66,6 +66,10 @@ failed_rom_check_29d4 = 0x29d4
 video_ram_3000 = 0x3000
 color_ram_3800 = 0x3800
 
+* the [xxx] tags are there to help the specific game post-processing to automatically
+* change or remove the code. For instance [rom_check_code] lines can be removed without
+* changing the game logic
+
 reset_6000:
 l_6000:
 	jbsr	osd_disable_interrupts |  [$6000: clr    irq_mask_w_1087] disable interrupts
@@ -111,11 +115,13 @@ l_602f:
 	move.b	#0x1e,d0                        	| [$6043: lda    #$1e]
 	moveq	#0,d1                            	| [$6045: clrb]
 l_6046:
-	GET_REG_ADDRESS	0x0800,d2              	| [$6046: stb    $0800,x]
+	GET_REG_UNCHECKED_ADDRESS	0x0800,d2              	| [$6046: stb    $0800,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
-	GET_REG_ADDRESS	0,d2                   	| [$604a: sta    ,x+]
+	VIDEO_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$604a: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_DIRTY | [...]
 	 |  [$604c: sta    watchdog_1000]
 	cmp.w	#color_ram_3800,d2               	| [$604f: cmpx   #color_ram_3800]
 	jne	l_6046                             	| [$6052: bne    $6046]

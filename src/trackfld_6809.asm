@@ -60,6 +60,10 @@ failed_rom_check_29d4 = $29d4
 video_ram_3000 = $3000
 color_ram_3800 = $3800
 
+; the [xxx] tags are there to help the specific game post-processing to automatically
+; change or remove the code. For instance [rom_check_code] lines can be removed without
+; changing the game logic
+
 reset_6000:
 6000: 7F 10 87       CLR    irq_mask_w_1087				; disable interrupts
 6003: 10 CE 1F 80    LDS    #$1F80				; set stack
@@ -90,8 +94,8 @@ reset_6000:
 6040: 8E 30 00       LDX    #video_ram_3000		; clear screen: 0x1E char, with 0 clut attribute
 6043: 86 1E          LDA    #$1E
 6045: 5F             CLRB
-6046: E7 89 08 00    STB    $0800,X
-604A: A7 80          STA    ,X+
+6046: E7 89 08 00    STB    $0800,X				; [video_address]
+604A: A7 80          STA    ,X+				    ; [video_address]
 604C: B7 10 00       STA    watchdog_1000
 604F: 8C 38 00       CMPX   #color_ram_3800
 6052: 26 F2          BNE    $6046
