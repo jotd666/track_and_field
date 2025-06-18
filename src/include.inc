@@ -20,6 +20,10 @@
 	.error	"\arg"     | comment out to disable errors
 	.endm
 
+	.macro	VIDEO_DIRTY
+	| called when a write was done in a0
+	.endm
+
 	.ifdef	RELEASE
 	.macro	GET_ADDRESS_FUNC
 	lea		(a6,a0.l),a0
@@ -29,6 +33,10 @@
 	
 	.macro	GET_ADDRESS_FUNC
 	jbsr	get_address
+	.endm
+	
+	.macro	GET_UNCHECKED_ADDRESS_FUNC
+	lea		(a6,a0.l),a0
 	.endm
 	
 * dev mode, more checks about the address
@@ -230,21 +238,13 @@ get_address:
 	move.w	d6,\srcreg
 	.endm
 
-	.macro GET_ADDRESS	offset
-	lea	\offset,a0
-	GET_ADDRESS_FUNC
-	.endm
+
 
 	.macro GET_DP_ADDRESS	offset
 	lea	(a4,\offset\().W),a0
 	.endm
 
 
-	.macro GET_INDIRECT_ADDRESS	offset
-	GET_ADDRESS	\offset
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
 
 	.macro SET_DP_FROM_A
 	lsl.w    #8,d0
@@ -291,6 +291,48 @@ get_address:
 	GET_ADDRESS_FUNC
 	.endm
 
+	.macro GET_ADDRESS	offset
+	lea	\offset,a0
+	GET_ADDRESS_FUNC
+	.endm
+	.macro GET_INDIRECT_ADDRESS	offset
+	GET_ADDRESS	\offset
+	READ_BE_WORD	a0
+	GET_ADDRESS_FUNC
+	.endm
+	.macro GET_REG_UNCHECKED_ADDRESS	offset,reg
+	.ifeq	\offset
+	move.l	\reg,a0
+	.else
+	lea	\offset,a0
+	add.l	\reg,a0
+	.endif
+	GET_UNCHECKED_ADDRESS_FUNC
+	.endm
+	.macro GET_REG_INDIRECT_UNCHECKED_ADDRESS	offset,reg
+	.ifeq	\offset
+	move.l	\reg,a0
+	.else
+	lea	\offset,a0
+	add.l	\reg,a0
+	.endif
+	READ_BE_WORD	a0
+	GET_UNCHECKED_ADDRESS_FUNC
+	.endm
+	.macro GET_REG_UNCHECKED_ADDRESS_FROM_REG	reg,reg2
+	move.l	\reg,a0
+	add.l	\reg2,a0
+	GET_UNCHECKED_ADDRESS_FUNC
+	.endm
+	.macro GET_UNCHECKED_ADDRESS	offset
+	lea	\offset,a0
+	GET_UNCHECKED_ADDRESS_FUNC
+	.endm
+	.macro GET_INDIRECT_UNCHECKED_ADDRESS	offset
+	GET_ADDRESS	\offset
+	READ_BE_WORD	a0
+	GET_UNCHECKED_ADDRESS_FUNC
+	.endm
 cpu_init:
 	moveq	#0,d0
 	moveq	#0,d1
@@ -302,7 +344,7 @@ cpu_init:
 	moveq	#0,d7
 	rts
 
-* direct page pointer needs to be reloaded in case of irq
+| direct page pointer needs to be reloaded in case of irq
 m6809_direct_page_pointer:
 	.long	0xA4A4A4A4
 
