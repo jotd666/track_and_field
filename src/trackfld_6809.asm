@@ -279,23 +279,23 @@ reset_6000:
 61D0: 27 0E          BEQ    $61E0
 61D2: 96 72          LDA    $72
 61D4: 98 73          EORA   $73
-61D6: A7 C9 08 00    STA    $0800,U
+61D6: A7 C9 08 00    STA    $0800,U		; [video_address]
 61DA: C0 30          SUBB   #$30
-61DC: E7 C0          STB    ,U+
+61DC: E7 C0          STB    ,U+			; [video_address]
 61DE: 20 EC          BRA    $61CC
 61E0: 39             RTS
 
 61E1: 96 72          LDA    $72
 61E3: 98 73          EORA   $73
-61E5: A7 C9 08 00    STA    $0800,U
-61E9: E7 C4          STB    ,U
+61E5: A7 C9 08 00    STA    $0800,U		; [video_address]
+61E9: E7 C4          STB    ,U			; [video_address]
 61EB: 39             RTS
 
 61EC: 80 30          SUBA   #$30
 61EE: C6 00          LDB    #$00
 61F0: D8 73          EORB   $73
-61F2: E7 C9 08 00    STB    $0800,U
-61F6: A7 C0          STA    ,U+
+61F2: E7 C9 08 00    STB    $0800,U		; [video_address]
+61F6: A7 C0          STA    ,U+         ; [video_address]
 61F8: 39             RTS
 
 61F9: 8E 2A A0       LDX    #$2AA0
@@ -419,6 +419,7 @@ reset_6000:
 62EA: 27 03          BEQ    $62EF
 62EC: 5F             CLRB
 62ED: 20 09          BRA    $62F8
+
 62EF: 10 8E A4 C8    LDY    #$A4C8
 62F3: A6 84          LDA    ,X
 62F5: 4A             DECA
@@ -13627,7 +13628,7 @@ FAFE: C6 80          LDB    #$80
 FB00: 3D             MUL
 FB01: 30 8B          LEAX   D,X
 FB03: EC A4          LDD    ,Y
-FB05: ED 84          STD    ,X
+FB05: ED 84          STD    ,X		; [video_address_word]
 FB07: A6 22          LDA    $2,Y
 FB09: A7 02          STA    $2,X
 FB0B: 10 8E A4 C8    LDY    #$A4C8
