@@ -13238,13 +13238,14 @@ F7E0: 80 1B          SUBA   #$1B
 F7E2: 48             ASLA
 F7E3: CE FE B8       LDU    #$FEB8
 F7E6: EC C6          LDD    A,U
-F7E8: ED A4          STD    ,Y
+F7E8: ED A4          STD    ,Y		; [video_address_word]
 F7EA: 20 04          BRA    $F7F0
+
 F7EC: 8B 11          ADDA   #$11
-F7EE: A7 A4          STA    ,Y
+F7EE: A7 A4          STA    ,Y			; [video_address]
 F7F0: 86 00          LDA    #$00
 F7F2: 1F 89          TFR    A,B
-F7F4: ED A9 08 00    STD    $0800,Y
+F7F4: ED A9 08 00    STD    $0800,Y		; [video_address_word]
 F7F8: 7C 29 9C       INC    $299C
 F7FB: 39             RTS
 
@@ -13596,6 +13597,7 @@ FAD3: 96 DF          LDA    $DF
 FAD5: 8B 11          ADDA   #$11
 FAD7: A7 1F          STA    -$1,X
 FAD9: 20 02          BRA    $FADD
+
 FADB: 86 10          LDA    #$10
 FADD: E6 80          LDB    ,X+
 FADF: C1 FF          CMPB   #$FF
@@ -13816,9 +13818,9 @@ FCAE: 86 03          LDA    #$03
 FCB0: B7 2B 5F       STA    $2B5F
 FCB3: CC 07 40       LDD    #$0740
 FCB6: B7 2B 4D       STA    $2B4D
-FCB9: E7 C9 08 00    STB    $0800,U
+FCB9: E7 C9 08 00    STB    $0800,U  ; [video_address]
 FCBD: A6 80          LDA    ,X+
-FCBF: A7 C0          STA    ,U+
+FCBF: A7 C0          STA    ,U+      ; [video_address]
 FCC1: 7A 2B 4D       DEC    $2B4D
 FCC4: 26 F3          BNE    $FCB9
 FCC6: 33 C8 39       LEAU   $39,U
@@ -13829,9 +13831,9 @@ FCD0: 86 08          LDA    #$08
 FCD2: B7 2B 5F       STA    $2B5F
 FCD5: CC 13 40       LDD    #$1340
 FCD8: B7 2B 4D       STA    $2B4D
-FCDB: E7 C9 08 00    STB    $0800,U
+FCDB: E7 C9 08 00    STB    $0800,U      ; [video_address]
 FCDF: A6 80          LDA    ,X+
-FCE1: A7 C0          STA    ,U+
+FCE1: A7 C0          STA    ,U+      ; [video_address]
 FCE3: 7A 2B 4D       DEC    $2B4D
 FCE6: 26 F3          BNE    $FCDB
 FCE8: 33 C8 2D       LEAU   dsw2_copy_2d,U
@@ -13840,9 +13842,9 @@ FCEE: 26 E5          BNE    $FCD5
 FCF0: 33 C9 FD 87    LEAU   -$0279,U
 FCF4: 86 12          LDA    #$12
 FCF6: B7 2B 4D       STA    $2B4D
-FCF9: E7 C9 08 00    STB    $0800,U
+FCF9: E7 C9 08 00    STB    $0800,U      ; [video_address]
 FCFD: A6 80          LDA    ,X+
-FCFF: A7 C0          STA    ,U+
+FCFF: A7 C0          STA    ,U+      ; [video_address]
 FD01: 7A 2B 4D       DEC    $2B4D
 FD04: 26 F3          BNE    $FCF9
 FD06: 39             RTS
