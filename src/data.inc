@@ -1,3 +1,5 @@
+global_state_00 = 0x00
+boot_state_03 = 0x03
 dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
 copy_of_inputs_30 = 0x30

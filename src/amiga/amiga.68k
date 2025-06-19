@@ -71,7 +71,7 @@ OPT_ENABLE_MULTIPLEXED_SPRITES = 0
 NB_PLAYFIELD_PLANES = 5
 NB_BOB_PLANES = 4		| only using 16 first colors
 TOTAL_NB_COLORS = 1<<NB_PLAYFIELD_PLANES
-NB_BYTES_PER_ROW = 40
+NB_BYTES_PER_ROW = 80
 
 * add 16 so sprites can be drawn at the bottom
 * without corrupting the screen
@@ -1073,7 +1073,8 @@ really_update_tiles:
 	lea		_custom,a5
 	WAIT_BLIT
 	GET_MEMORY_START_AND_DP
-	lea		(0x400,a6),a5
+	lea		(0x3000,a6),a6
+	lea		(0x800,a6),a5
 	lea		tiles_row_flags(pc),a1
 	moveq	#0,d3
 3:
@@ -1081,9 +1082,9 @@ really_update_tiles:
 	jeq		2f
 	lea		tiles_refresh_table(pc),a0
 	subq.b	#1,(-1,a1)
-	move.w	#0x1F,d2
+	move.w	#0x1F,d2		| 0X20 rows
 	move.w	d3,d7
-	lsl.w	#5,d7		| times 32, get offset for big dirty table
+	lsl.w	#6,d7		| times 64, get offset for big dirty table
 	add.w	d7,a0
 0:
 	tst.b	(a0)+
@@ -1109,7 +1110,8 @@ really_update_tiles:
 
 really_update_sprites:
 update_bobs_and_hw_sprites:
-
+	rts
+	
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -1932,7 +1934,7 @@ platform_init:
 	* try to hide color 0 on the border (except on OCS)
 
     move.w #0,bplcon1(a5)
-	moveq	#0,d0
+	moveq	#NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl1mod(a5)
     move.w d0,bpl2mod(a5)
 
@@ -2041,47 +2043,45 @@ osd_disable_interrupts:
 * should preserve all registers
 
 osd_video_word_dirty:
-osd_video_byte_dirty:
+	jbsr	osd_video_byte_dirty
+	addq	#1,a0
+	jbsr	osd_video_byte_dirty
+	subq	#1,a0
 	rts
 	
+osd_video_byte_dirty:
 	movem.l	d0/d1/d7/a0/a1,-(a7)
 	move.l	a0,d7		| save address
 	sub.l	a6,d7
 	.ifndef	RELEASE
-	cmp.l	#0x3000-RAM_START,d7
+	cmp.l	#0x4000,d7
 	jcs		0f
-	BREAKPOINT	"write videoram out of range (D7 >= $8800)"
+	BREAKPOINT	"write videoram out of range (D7 >= $3800)"
 	jra		osd_video_dirty_out
 0:
 	.endif
 
 	* remove 0x8000 offset (ram starts at 0x8000)
-	sub.w	#0x8000,d7
+	sub.w	#0x3000,d7
 	.ifndef	RELEASE
 	jpl	1f
 
 	* should not happen
-	add.w	#0x8000,d7
-	BREAKPOINT	"write videoram out of range (D7 < $8000)"
+	add.w	#0x3000,d7
+	BREAKPOINT	"write videoram out of range (D7 < $3000)"
 	jra		osd_video_dirty_out
 	.endif
 1:	
-	move.l	d7,a0
-	add.l	a6,a0				| add RAM base
-	move.b	(a0),d1
-	cmp.b	d1,d0
-	beq.b	osd_video_dirty_out		| already the proper value
-3:
 	
 	* now set the flag for tile refresh in copper interrupt (so it doesn't
 	* interfere with blits. This game uses a lot of tile animation in the background
 	* as opposed to most games, so updating in real tile isn't an option and kills
 	* the smoothness even in double buffering mode)
-	and.w	#0x3FF,d7
+	and.w	#0x7FF,d7
 
 	lea		tiles_refresh_table(pc),a0
 	add.w	d7,a0
-	lsr.w	#5,d7	| divide by 32
+	and.w	#0x3F,d7	| get column
 	lea		tiles_row_flags(pc),a1
 	add.w	d7,a1
 	* now a0 points on the tiles refresh table, mark it dirty
@@ -2114,39 +2114,31 @@ compute_tile_xy_landscape:
 compute_tile_xy:
 	moveq	#0,d0
 	moveq	#0,d1
-	move.w	d7,d1
+	move.w	d7,d0
+	and.w	#0x3F,d0	| this is X
 	lsr.w	#5,d7		| this is X
-	neg.w	d7
-	add.w	#32,d7
-	and.w	#0x1F,d1	| this is Y
-	*addq.w	#2,d1
 
-	move.b	d7,d0		| this is X
+	move.b	d7,d1		| this is X
 	lsl.b	#3,d1		| Y times 8
 	rts
 
 
 
-* addresses 0x8400->0x843F don't map to visible tiles
-* addresses 0x87C0->0x87FF don't map to visible tiles
+* addresses 0x3000->0x307F don't map to visible tiles (2 first rows)
+* addresses 0x3780->0x37FF don't map to visible tiles (2 last rows)
 * each column has 0x20*8 = 256 pixels
 * each visible row has 28*8 = 244 pixels
 
-* < D7: 0-0x400 address
+* < D7: 0-0x800 address
 * < D0: tile code
 * < D1: color code
 
 update_bg_tile:
-	moveq	#0,d2	| mask up to 255
+	moveq	#0,d2			| mask up to 255
 	move.b	d0,d2			| tile code
 	moveq	#0,d3
 	move.b	d1,d3			| CLUT & tile code & flags
 	
-	btst	#5,d3
-	jeq		13f
-	* add 0x100 to code
-	bset	#8,d2
-13:
 	
 	.ifne	OPT_ENABLE_LOGGING
 	lea		character_log_table,a0
@@ -2187,7 +2179,7 @@ update_bg_tile:
 	jeq		11f					| clear tile, no error (release)
 	.else
 	jne		12f
-	add.w	#0x8400,d7
+	add.w	#0x3000,d7
 	lsr.w	#2,d2
 	move.w	#0xF0F,_custom+color
 	jra		11f
@@ -2203,7 +2195,7 @@ update_bg_tile:
 	jeq		11f						| not necessarily a problem
 	.else
 	jne		12f
-	add.w	#0x8400,d7
+	add.w	#0x3000,d7
 	lsr.w	#2,d2
 	lsr.w	#2,d3
 	move.w	#0xF0F,_custom+color
@@ -2914,7 +2906,7 @@ frameskip:
 tiles_row_flags:
 	.skip	0x20
 tiles_refresh_table:
-	.skip	0x400
+	.skip	0x800
 	
 vbl_counter:
 	.word	0

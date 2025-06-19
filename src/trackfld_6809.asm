@@ -29,6 +29,8 @@
 	
 
 * page $28xx
+global_state_00 = $00
+boot_state_03 = $03
 dsw1_copy_2c = $2c
 dsw2_copy_2d = $2d
 copy_of_inputs_30 = $30
@@ -780,9 +782,9 @@ irq_6600:
 6603: 86 01          LDA    #$01
 6605: B7 10 00       STA    watchdog_1000
 6608: BD D9 06       JSR    $D906
-660B: 96 00          LDA    $00
+660B: 96 00          LDA    global_state_00
 660D: 48             ASLA
-660E: 8E A8 69       LDX    #table_a869
+660E: 8E A8 69       LDX    #main_jump_table_a869
 6611: AD 96          JSR    [A,X]		; [jump_table]
 6613: 0C 3F          INC    $3F
 6615: BD 66 24       JSR    read_inputs_6624
@@ -921,22 +923,24 @@ read_inputs_6624:
 670B: 9F 1E          STX    $1E
 670D: 39             RTS
 
-670E: 8E A8 73       LDX    #table_a873
-6711: 96 03          LDA    $03
+boot_670e:
+670E: 8E A8 73       LDX    #boot_table_a873
+6711: 96 03          LDA    boot_state_03
 6713: 48             ASLA
 6714: 6E 96          JMP    [A,X]	; [jump_table]
 
 6716: 86 30          LDA    #$30
 6718: 97 08          STA    $08
-671A: 0C 03          INC    $03
+671A: 0C 03          INC    boot_state_03
 671C: 39             RTS
 
 671D: 0A 08          DEC    $08
 671F: 26 04          BNE    $6725
-6721: 0F 03          CLR    $03
-6723: 0C 00          INC    $00
+6721: 0F 03          CLR    boot_state_03
+6723: 0C 00          INC    global_state_00		; next state
 6725: 39             RTS
 
+rolling_demo_6726:
 6726: 96 2C          LDA    dsw1_copy_2c
 6728: 84 0F          ANDA   #$0F
 672A: 81 0F          CMPA   #$0F
@@ -1001,8 +1005,9 @@ read_inputs_6624:
 67A8: 16 51 3B       LBRA   $B8E6   ; [rom_check_code] bogus address
 67AB: 39             RTS
 
+push_start_screen_67ac:
 67AC: 8E A8 7D       LDX    #table_a87d
-67AF: 96 03          LDA    $03
+67AF: 96 03          LDA    boot_state_03
 67B1: 48             ASLA
 67B2: 6E 96          JMP    [A,X]	; [jump_table]
 
@@ -1125,9 +1130,9 @@ read_inputs_6624:
 689F: 86 40          LDA    #$40
 68A1: BD 85 0E       JSR    $850E
 68A4: 86 02          LDA    #$02
-68A6: 97 00          STA    $00
+68A6: 97 00          STA    global_state_00
 68A8: 86 01          LDA    #$01
-68AA: 97 03          STA    $03
+68AA: 97 03          STA    boot_state_03
 68AC: 0F 06          CLR    $06
 68AE: 0F 09          CLR    $09
 68B0: 0F 0C          CLR    $0C
@@ -1179,8 +1184,9 @@ read_inputs_6624:
 6917: BD 84 F5       JSR    $84F5
 691A: 39             RTS
 
+running_game_691b:
 691B: 10 8E A8 87    LDY    #table_a887
-691F: 96 03          LDA    $03
+691F: 96 03          LDA    boot_state_03
 6921: 48             ASLA
 6922: 6E B6          JMP    [A,Y]		; [jump_table]
 6924: 96 06          LDA    $06
@@ -1332,7 +1338,7 @@ read_inputs_6624:
 6A66: BD 84 F5       JSR    $84F5
 6A69: 0F 06          CLR    $06
 6A6B: 0F 09          CLR    $09
-6A6D: 0C 03          INC    $03
+6A6D: 0C 03          INC    boot_state_03
 6A6F: 39             RTS
 
 6A70: BD 8E 5F       JSR    $8E5F
@@ -1753,7 +1759,7 @@ read_inputs_6624:
 6E2B: BD 8D 9D       JSR    $8D9D
 6E2E: 0F 09          CLR    $09
 6E30: 0F 06          CLR    $06
-6E32: 0C 03          INC    $03
+6E32: 0C 03          INC    boot_state_03
 6E34: FC 2F E0       LDD    $2FE0		; [rom_check_code]
 6E37: 10 83 0F A0    CMPD   #$0FA0		; [rom_check_code]
 6E3B: 25 11          BCS    $6E4E		; [rom_check_code]
@@ -2210,7 +2216,7 @@ read_inputs_6624:
 7216: 26 E3          BNE    $71FB
 7218: 0F 63          CLR    $63
 721A: 0F E8          CLR    $E8
-721C: 0C 03          INC    $03
+721C: 0C 03          INC    boot_state_03
 721E: 0F 06          CLR    $06
 7220: 0F 09          CLR    $09
 7222: 0F 0A          CLR    $0A
@@ -2271,7 +2277,7 @@ read_inputs_6624:
 7295: 0D 22          TST    $22
 7297: 26 09          BNE    $72A2
 7299: 0C 12          INC    $12
-729B: 0F 03          CLR    $03
+729B: 0F 03          CLR    boot_state_03
 729D: 0F 06          CLR    $06
 729F: 0F 09          CLR    $09
 72A1: 39             RTS
@@ -2281,12 +2287,12 @@ read_inputs_6624:
 72A6: 27 0B          BEQ    $72B3
 72A8: 81 03          CMPA   #$03
 72AA: 27 07          BEQ    $72B3
-72AC: 0C 03          INC    $03
+72AC: 0C 03          INC    boot_state_03
 72AE: 0F 06          CLR    $06
 72B0: 0F 09          CLR    $09
 72B2: 39             RTS
 
-72B3: 0C 03          INC    $03
+72B3: 0C 03          INC    boot_state_03
 72B5: 0F 06          CLR    $06
 72B7: 86 03          LDA    #$03
 72B9: 97 09          STA    $09
@@ -2309,10 +2315,10 @@ read_inputs_6624:
 72D8: 25 08          BCS    $72E2
 72DA: 0A 48          DEC    $48
 72DC: 26 E2          BNE    $72C0
-72DE: 0C 03          INC    $03
+72DE: 0C 03          INC    boot_state_03
 72E0: 20 04          BRA    $72E6
 72E2: 86 01          LDA    #$01
-72E4: 97 03          STA    $03
+72E4: 97 03          STA    boot_state_03
 72E6: 0F 06          CLR    $06
 72E8: 0F 09          CLR    $09
 72EA: 39             RTS
@@ -2503,7 +2509,7 @@ read_inputs_6624:
 745D: 39             RTS
 
 745E: 86 01          LDA    #$01
-7460: 97 03          STA    $03
+7460: 97 03          STA    boot_state_03
 7462: 0F 06          CLR    $06
 7464: 0F 09          CLR    $09
 7466: 39             RTS
@@ -2688,7 +2694,7 @@ read_inputs_6624:
 75BE: 0F 09          CLR    $09
 75C0: 39             RTS
 
-75C1: 0F 03          CLR    $03
+75C1: 0F 03          CLR    boot_state_03
 75C3: 0F 06          CLR    $06
 75C5: 0F 09          CLR    $09
 75C7: 39             RTS
@@ -2707,8 +2713,8 @@ read_inputs_6624:
 75E0: 30 88 20       LEAX   $20,X
 75E3: 5A             DECB
 75E4: 26 F8          BNE    $75DE
-75E6: 0C 00          INC    $00
-75E8: 0F 03          CLR    $03
+75E6: 0C 00          INC    global_state_00
+75E8: 0F 03          CLR    boot_state_03
 75EA: 0F 06          CLR    $06
 75EC: 0F 09          CLR    $09
 75EE: 39             RTS
@@ -2782,7 +2788,7 @@ read_inputs_6624:
 7679: 7E 76 A5       JMP    $76A5
 
 767C: 8E A9 0C       LDX    #table_a90c
-767F: 96 03          LDA    $03
+767F: 96 03          LDA    boot_state_03
 7681: 48             ASLA
 7682: 6E 96          JMP    [A,X]	; [jump_table]
 
@@ -2797,7 +2803,7 @@ read_inputs_6624:
 7695: 7F 2A 9A       CLR    $2A9A
 7698: 0C 0F          INC    $0F
 769A: 0F 12          CLR    $12
-769C: 0F 03          CLR    $03
+769C: 0F 03          CLR    boot_state_03
 769E: 0F 06          CLR    $06
 76A0: 0F 09          CLR    $09
 76A2: 0F 0C          CLR    $0C
@@ -2805,8 +2811,8 @@ read_inputs_6624:
 
 76A5: CC 01 02       LDD    #$0102
 76A8: 97 22          STA    $22
-76AA: D7 00          STB    $00
-76AC: 0F 03          CLR    $03
+76AA: D7 00          STB    global_state_00
+76AC: 0F 03          CLR    boot_state_03
 76AE: 0F 06          CLR    $06
 76B0: 0F 09          CLR    $09
 76B2: 0F 0C          CLR    $0C
@@ -3259,7 +3265,7 @@ read_inputs_6624:
 7A64: 26 EC          BNE    $7A52
 7A66: 0A DF          DEC    $DF
 7A68: 86 05          LDA    #$05
-7A6A: 97 03          STA    $03
+7A6A: 97 03          STA    boot_state_03
 7A6C: 86 01          LDA    #$01
 7A6E: 97 06          STA    $06
 7A70: 0F 09          CLR    $09
@@ -3267,7 +3273,7 @@ read_inputs_6624:
 7A74: 39             RTS
 
 7A75: 86 01          LDA    #$01
-7A77: 97 03          STA    $03
+7A77: 97 03          STA    boot_state_03
 7A79: 0F 06          CLR    $06
 7A7B: 0F 09          CLR    $09
 7A7D: 0F 0C          CLR    $0C
@@ -3428,7 +3434,7 @@ read_inputs_6624:
 7BCF: 0A 0B          DEC    $0B
 7BD1: 26 09          BNE    $7BDC
 7BD3: BD 96 D3       JSR    $96D3
-7BD6: 0C 03          INC    $03
+7BD6: 0C 03          INC    boot_state_03
 7BD8: 0F 06          CLR    $06
 7BDA: 0F 09          CLR    $09
 7BDC: B6 2A 0A       LDA    $2A0A
@@ -3469,7 +3475,7 @@ read_inputs_6624:
 7C2B: 10 83 03 FD    CMPD   #$03FD
 7C2F: 27 06          BEQ    $7C37
 7C31: 86 10          LDA    #$10
-7C33: 97 00          STA    $00
+7C33: 97 00          STA    global_state_00
 7C35: 97 06          STA    $06
 7C37: 39             RTS
 
@@ -3818,7 +3824,7 @@ read_inputs_6624:
 7F09: 26 06          BNE    $7F11
 7F0B: 0F 06          CLR    $06
 7F0D: 0F 09          CLR    $09
-7F0F: 0C 03          INC    $03
+7F0F: 0C 03          INC    boot_state_03
 7F11: 39             RTS
 
 7F12: 8E 28 A0       LDX    #$28A0
@@ -3886,7 +3892,7 @@ read_inputs_6624:
 7F91: 26 06          BNE    $7F99
 7F93: 0F 06          CLR    $06
 7F95: 0F 09          CLR    $09
-7F97: 0C 03          INC    $03
+7F97: 0C 03          INC    boot_state_03
 7F99: 39             RTS
 
 7F9A: 8E 28 A0       LDX    #$28A0
@@ -4517,13 +4523,13 @@ read_inputs_6624:
 84DE: 26 06          BNE    $84E6
 84E0: 0F 06          CLR    $06
 84E2: 0F 09          CLR    $09
-84E4: 0C 03          INC    $03
+84E4: 0C 03          INC    boot_state_03
 84E6: 39             RTS
 
 84E7: 0A 08          DEC    $08
 84E9: 26 09          BNE    $84F4
 84EB: BD 86 E3       JSR    $86E3
-84EE: 0C 03          INC    $03
+84EE: 0C 03          INC    boot_state_03
 84F0: 0F 06          CLR    $06
 84F2: 0F 09          CLR    $09
 84F4: 39             RTS
@@ -7198,7 +7204,7 @@ partially_reset_scrolling_8c3e:
 9A6D: 10 83 03 4E    CMPD   #$034E
 9A71: 27 06          BEQ    $9A79
 9A73: 86 0A          LDA    #$0A
-9A75: 97 03          STA    $03
+9A75: 97 03          STA    boot_state_03
 9A77: 97 06          STA    $06
 9A79: 39             RTS
 
@@ -8337,19 +8343,19 @@ table_a41f:
 	dc.w	$65ba	; $a437
 	dc.w	$65dc	; $a439
 	
-table_a869:
-	dc.w	$670e	; $a869
-	dc.w	$6726	; $a86b
-	dc.w	$67ac	; $a86d
-	dc.w	$691b	; $a86f
-	dc.w	$effb	; $a871
-table_a873:
+main_jump_table_a869:
+	dc.w	boot_670e	; $a869
+	dc.w	rolling_demo_6726	; $a86b
+	dc.w	push_start_screen_67ac	; $a86d
+	dc.w	running_game_691b	; $a86f
+	dc.w	high_scores_effb	; $a871
+boot_table_a873:
 	dc.w	$6716	; $a873
 	dc.w	$671d	; $a875
 table_a877:
 	dc.w	$fbb6	; $a877
 	dc.w	$75ef	; $a879
-	dc.w	$effb	; $a87b
+	dc.w	high_scores_effb	; $a87b
 table_a87d:
 	dc.w	$67b4	; $a87d
 	dc.w	$f6fa	; $a87f
@@ -10398,8 +10404,8 @@ DAFB: 97 0B          STA    $0B
 DAFD: 0C 09          INC    $09
 DAFF: 39             RTS
 
-DB00: 0C 00          INC    $00
-DB02: 0F 03          CLR    $03
+DB00: 0C 00          INC    global_state_00
+DB02: 0F 03          CLR    boot_state_03
 DB04: 0F 06          CLR    $06
 DB06: 0F 09          CLR    $09
 DB08: 39             RTS
@@ -11142,7 +11148,7 @@ E3F0: 39             RTS
 
 E3F1: 0F 06          CLR    $06
 E3F3: 0F 09          CLR    $09
-E3F5: 0C 03          INC    $03
+E3F5: 0C 03          INC    boot_state_03
 E3F7: 10 8E 2B 98    LDY    #$2B98
 E3FB: 86 20          LDA    #$20
 E3FD: D6 DF          LDB    $DF
@@ -11803,7 +11809,7 @@ E9BC: 39             RTS
 
 E9BD: 0F 06          CLR    $06
 E9BF: 0F 09          CLR    $09
-E9C1: 0C 03          INC    $03
+E9C1: 0C 03          INC    boot_state_03
 E9C3: 39             RTS
 
 E9C4: 96 21          LDA    $21
@@ -12300,6 +12306,7 @@ table_eef3:
 	dc.w	$e8d4	; $eef7
 
 ; called on game over
+high_scores_effb:
 EFFB: 96 31          LDA    $31                                          
 EFFD: 8A 80          ORA    #$80                                         
 EFFF: 43             COMA                                                
@@ -12313,11 +12320,11 @@ F00E: 81 0F          CMPA   #$0F
 F010: 27 06          BEQ    $F018
 F012: 0D 23          TST    $23
 F014: 10 26 86 8D    LBNE   $76A5
-F018: 96 03          LDA    $03
+F018: 96 03          LDA    boot_state_03
 F01A: 48             ASLA
 F01B: 10 8E FD 89    LDY    #table_fd89
 F01F: AD B6          JSR    [A,Y]	; [jump_table]
-F021: 96 03          LDA    $03
+F021: 96 03          LDA    boot_state_03
 F023: 81 02          CMPA   #$02
 F025: 25 03          BCS    $F02A
 F027: 7E 67 BF       JMP    $67BF
@@ -12340,7 +12347,7 @@ F04E: CC 01 00       LDD    #$0100
 F051: FD 2A 90       STD    $2A90
 F054: CC DC B6       LDD    #$DCB6
 F057: DD AE          STD    $AE
-F059: 0C 03          INC    $03
+F059: 0C 03          INC    boot_state_03
 F05B: 39             RTS
 
 F05C: 7D 2A 91       TST    $2A91
@@ -12471,7 +12478,7 @@ F16A: CC 00 00       LDD    #$0000
 F16D: BD 84 F5       JSR    $84F5
 F170: 86 1F          LDA    #$1F
 F172: BD 85 0E       JSR    $850E
-F175: 0C 03          INC    $03
+F175: 0C 03          INC    boot_state_03
 F177: 39             RTS
 
 F178: 4C             INCA
@@ -12543,7 +12550,7 @@ F202: D6 2D          LDB    dsw2_copy_2d
 F204: C5 04          BITB   #$04
 F206: 26 03          BNE    $F20B
 F208: B7 10 80       STA    flip_screen_set_1080
-F20B: 0C 03          INC    $03
+F20B: 0C 03          INC    boot_state_03
 F20D: 39             RTS
 
 F20E: 8E FD BD       LDX    #$FDBD
@@ -12559,7 +12566,7 @@ F224: 86 6D          LDA    #$6D
 F226: B7 29 9C       STA    $299C
 F229: 86 03          LDA    #$03
 F22B: B7 2A 91       STA    $2A91
-F22E: 97 03          STA    $03
+F22E: 97 03          STA    boot_state_03
 F230: 20 CD          BRA    $F1FF
 F232: B6 29 9C       LDA    $299C
 F235: 81 0A          CMPA   #$0A
@@ -12696,7 +12703,7 @@ F336: 39             RTS
 
 F337: 86 6D          LDA    #$6D
 F339: B7 29 9C       STA    $299C
-F33C: 0C 03          INC    $03
+F33C: 0C 03          INC    boot_state_03
 F33E: 39             RTS
 
 F33F: 96 3F          LDA    $3F
@@ -12761,7 +12768,7 @@ F3BD: C3 00 04       ADDD   #$0004
 F3C0: ED 0E          STD    $E,X
 F3C2: 39             RTS
 
-F3C3: 0C 03          INC    $03
+F3C3: 0C 03          INC    boot_state_03
 F3C5: 39             RTS
 
 F3C6: 7D 2A 9B       TST    $2A9B
@@ -12798,18 +12805,18 @@ F40D: 7F 29 9C       CLR    $299C
 F410: 86 14          LDA    #$14
 F412: B7 2A 92       STA    $2A92
 F415: 86 02          LDA    #$02
-F417: 97 03          STA    $03
+F417: 97 03          STA    boot_state_03
 F419: 39             RTS
 
 F41A: 0F 84          CLR    current_level_84
 F41C: 0F DF          CLR    $DF
 F41E: 0F 60          CLR    $60
 F420: 0D 22          TST    $22
-F422: 0F 03          CLR    $03
+F422: 0F 03          CLR    boot_state_03
 F424: 0F 0F          CLR    $0F
 F426: 26 04          BNE    $F42C
 F428: 86 01          LDA    #$01
-F42A: 97 00          STA    $00
+F42A: 97 00          STA    global_state_00
 F42C: 86 00          LDA    #$00
 F42E: BD 85 12       JSR    $8512
 F431: 7F 2A 9B       CLR    $2A9B
@@ -13465,7 +13472,7 @@ F9B6: 7A 29 9C       DEC    $299C
 F9B9: 26 71          BNE    $FA2C
 F9BB: 7F 29 A0       CLR    $29A0
 F9BE: 7F 10 80       CLR    flip_screen_set_1080
-F9C1: 0F 03          CLR    $03
+F9C1: 0F 03          CLR    boot_state_03
 F9C3: 0F 06          CLR    $06
 F9C5: 4F             CLRA
 F9C6: BD 85 0E       JSR    $850E
@@ -13515,7 +13522,7 @@ FA11: 30 03          LEAX   $3,X
 FA13: 0A 48          DEC    $48
 FA15: 26 BD          BNE    $F9D4
 FA17: 86 03          LDA    #$03
-FA19: 97 00          STA    $00
+FA19: 97 00          STA    global_state_00
 FA1B: 0F DF          CLR    $DF
 FA1D: CC 00 00       LDD    #$0000
 FA20: FD 18 00       STD    sprite_ram_1800

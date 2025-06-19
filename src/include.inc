@@ -168,11 +168,11 @@ get_address:
 	.endm
 
 	.macro	MOVE_W_TO_REG	src,dest
-	move.w	\src,\dest
+	move.w	(\src),\dest
 	.endm
 
 	.macro    MOVE_W_FROM_REG    src,dest
-	move.w	\dest,\src
+	move.w	\src,(\dest)
 	.endm
 
 	.macro	JSR_A_INDEXED	reg
@@ -197,18 +197,16 @@ get_address:
 
 	.macro	MOVE_W_TO_REG	src,dest
 	ror.w	#8,\dest
-	move.b	\src+,\dest
+	move.b	(\src),\dest
 	ror.w	#8,\dest
-	move.b	\src,\dest
-	subq	#1,\dest
+	move.b	(1,\src),\dest
 	.endm
 
 	.macro	MOVE_W_FROM_REG	src,dest
 	ror.w	#8,\src
-	move.b	\src,\dest+
+	move.b	\src,(\dest)
 	ror.w	#8,\src
-	move.b	\src,\dest
-	subq	#1,\dest
+	move.b	\src,(1,\dest)
 	.endm
 
 

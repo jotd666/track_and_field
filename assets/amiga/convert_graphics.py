@@ -81,7 +81,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0):
 
     return sorted(set(palette)),tileset_1
 
-all_tile_cluts = False
+all_tile_cluts = True
 
 sprite_cluts = [[] for _ in range(NB_SPRITES)]
 ##hw_sprite_cluts = [[] for _ in range(64)]
@@ -161,7 +161,7 @@ def add_hw_sprite(index,name,cluts=[0]):
         hw_sprite_cluts[idx] = cluts
 
 
-sprite_sheet_dicts = [{i:Image.open(sheets_path / "sprites" / f"set_{z}" / f"pal_{i:02x}.png") for i in range(16)} for z in (0,1)]
+sprite_sheet_dicts = [{i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(16)}]
 tile_sheet_dict = {i:Image.open(sheets_path / "tiles" / f"pal_{i:02x}.png") for i in range(16)}
 
 tile_palette = set()
@@ -189,37 +189,34 @@ for j,sprite_sheet_dict in enumerate(sprite_sheet_dicts):
         sprite_palette.update(sp)
 
 sprite_dump_dir = dump_dir / "sprites"
-for sd in ["16x8","16x16"]:
-    for p in (sprite_dump_dir / sd).glob("*"):
-        p.unlink()
-    (sprite_dump_dir / sd).mkdir(exist_ok=True)
 
-for palette_index,sprite_set in enumerate(sprite_set_list):
-    # rework tiles which are grouped now that 2x256 list is composed
-    for tile_number,wtile in enumerate(sprite_set):
-        if wtile and tile_number < 0x100 and tile_number in grouped_sprites:
-            # change wtile, fetch code +0x100
-            other_tile_index = (tile_number+0x100)
-            other_tile = sprite_set[other_tile_index]
-            new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
-            new_tile.paste(wtile)
-            new_tile.paste(other_tile,(0,wtile.size[1]))
-            sprite_set[tile_number] = new_tile
-            sprite_set[tile_number+0x100] = None  # no need
-            wtile = new_tile
-        if dump_it and wtile:
-            img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
-            if sprite_names:
-                name = sprite_names.get(tile_number,"unknown")
-            else:
-                name = "unknown"
+for p in sprite_dump_dir.glob("*"):
+    p.unlink()
+sprite_dump_dir.mkdir(exist_ok=True)
 
-            img.save(sprite_dump_dir / f"16x{wtile.size[1]}" / f"{name}_{tile_number:02x}_{palette_index:02x}.png")
+##for palette_index,sprite_set in enumerate(sprite_set_list):
+##    # rework tiles which are grouped now that 2x256 list is composed
+##    for tile_number,wtile in enumerate(sprite_set):
+##        if wtile and tile_number < 0x100 and tile_number in grouped_sprites:
+##            # change wtile, fetch code +0x100
+##            other_tile_index = (tile_number+0x100)
+##            other_tile = sprite_set[other_tile_index]
+##            new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
+##            new_tile.paste(wtile)
+##            new_tile.paste(other_tile,(0,wtile.size[1]))
+##            sprite_set[tile_number] = new_tile
+##            sprite_set[tile_number+0x100] = None  # no need
+##            wtile = new_tile
+##        if dump_it and wtile:
+##            img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
+##            if sprite_names:
+##                name = sprite_names.get(tile_number,"unknown")
+##            else:
+##                name = "unknown"
+##
+##            img.save(sprite_dump_dir / f"{name}_{tile_number:02x}_{palette_index:02x}.png")
 
 
-# extract star colors (we now where the non-black pixel of the star is
-star_sprite = 0x13
-star_colors = [sprite_set_list[clut][star_sprite].getpixel((8,3)) for clut  in [4,5,6,7,8]]
 
 # sprite_set_list is now a 16x512 matrix of sprite tiles
 
@@ -229,33 +226,8 @@ star_colors = [sprite_set_list[clut][star_sprite].getpixel((8,3)) for clut  in [
 ##    hw_sprite_set_list.append(hw_sprite_set)
 
 
-# add sprite palette first. As it's 16 colors, we can use only 4 blits per sprite
-# which saves blitter bandwidth, plus the 17th color first on the 5th plane
-full_palette = [None]*17
+full_palette = sorted(tile_palette)
 
-for i,sc in enumerate(star_colors):
-    full_palette[1<<i] = sc
-    sprite_palette.discard(sc)
-# now put the remaining colors
-idx=0
-for s in sorted(sprite_palette):
-    while full_palette[idx]:
-        idx+=1
-    full_palette[idx] = s
-
-# copy one color so all 16 colors are still 0-15. Game uses 28 colors max so we can afford
-# to duplicate colors
-full_palette[-2] = full_palette[-1]
-
-
-# now we swap positions for star colors. We need them to be in special positions
-# so setting just 1 bit on 1 plane activates the proper color
-
-full_palette_colors = set(full_palette)
-for c in sorted(tile_palette):
-    if c not in full_palette_colors:
-        full_palette.append(c)
-        full_palette_colors.add(c)
 
 
 #full_palette_rgb4 = {(x>>4,y>>4,z>>4) for x,y,z in full_palette}
@@ -343,7 +315,7 @@ tile_plane_cache = {}
 tile_table = read_tileset(tile_set_list,full_palette,[True,False,False,False],cache=tile_plane_cache, is_bob=False)
 
 bob_plane_cache = {}
-sprite_table = read_tileset(sprite_set_list,full_palette[:16],[True,False,True,False],cache=bob_plane_cache, is_bob=True)
+sprite_table = [] #read_tileset(sprite_set_list,full_palette[:16],[True,False,True,False],cache=bob_plane_cache, is_bob=True)
 
 with open(os.path.join(src_dir,"palette.68k"),"w") as f:
     bitplanelib.palette_dump(full_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
