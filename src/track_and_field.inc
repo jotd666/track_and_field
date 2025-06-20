@@ -3,7 +3,7 @@
 	.endm
 
 	.else
-LOG_BUFFER_SIZE = 0x10000
+LOG_BUFFER_SIZE = 0x80000
 	* amiga specific
 	.macro	BREAKPOINT comment
 	move.l	a0,-(a7)

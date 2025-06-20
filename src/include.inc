@@ -361,3 +361,29 @@ multiply_ab:
 	move.b	d1,d0
 	ror.w	#8,d1
 	rts
+
+	.ifndef	RELEASE
+	
+
+	* to trace at some virtual PCs, insert this macro
+	
+	.macro	LOG_REGS	z80pc
+	move.w	sr,-(a7)
+	move.w	#0x\z80pc,-(a7)
+	move.w	#0,-(a7)
+	jbsr	osd_log_cpu
+	addq.w	#4,a7
+	move.w	(a7)+,sr
+	.endm
+	
+	.macro	ENABLE_REGS_LOG
+	moveq	#1,d6		| enable
+	jbsr	osd_cpu_logging_control	
+	.endm
+	.macro	DISABLE_REGS_LOG
+	moveq	#0,d6		| disable
+	jbsr	osd_cpu_logging_control	
+	.endm	
+	.endif
+	
+	

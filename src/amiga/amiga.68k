@@ -889,7 +889,7 @@ osd_log_cpu:
 	move.w	d4,(a6)+
 	cmp.w	#0xCAFE,(a6)  | hitting the protection buffer
 	jne		444f
-	BREAKPOINT	"sub cpu log buffer full!"
+	BREAKPOINT	"cpu log buffer full!"
 444:
 	move.w	#0xDEAD,(a6)+
 	move.l	a6,log_ptr
@@ -900,8 +900,7 @@ osd_log_cpu:
 
 * < D6: 0 disable, 1 enable
 osd_cpu_logging_control:
-	lea		cpu_log_enable,a1
-	move.b	d6,(a1)
+	move.b	d6,cpu_log_enable
 	rts
 	.endif
 

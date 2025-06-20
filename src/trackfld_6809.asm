@@ -59,6 +59,7 @@ scroll_registers_1840 = $1840
 copy_of_inputs_2830 = $2830
 failed_rom_check_2a8e = $2a8e
 failed_rom_check_29d4 = $29d4
+display_state_2b40 = $2b40
 video_ram_3000 = $3000
 color_ram_3800 = $3800
 
@@ -224,10 +225,11 @@ reset_6000:
 6159: 86 01          LDA    #$01
 615B: B7 10 87       STA    irq_mask_w_1087
 615E: 1C EF          ANDCC  #$EF
+master_mainloop_6160:
 6160: 9E 1A          LDX    $1A
 6162: EC 84          LDD    ,X
 6164: 48             ASLA
-6165: 25 F9          BCS    $6160
+6165: 25 F9          BCS    master_mainloop_6160
 6167: 10 8E FF FF    LDY    #$FFFF
 616B: 10 AF 81       STY    ,X++
 616E: 8C 29 40       CMPX   #$2940
@@ -236,7 +238,7 @@ reset_6000:
 6176: 9F 1A          STX    $1A
 6178: 8E A4 1F       LDX    #table_a41f
 617B: AD 96          JSR    [A,X]		; [jump_table]
-617D: 20 E1          BRA    $6160
+617D: 20 E1          BRA    master_mainloop_6160
 
 617F: 7F 10 87       CLR    irq_mask_w_1087
 6182: 10 8E 18 00    LDY    #sprite_ram_1800
@@ -269,6 +271,7 @@ reset_6000:
 61C0: D7 72          STB    $72
 61C2: 39             RTS
 
+write_copyright_text_61c3:
 61C3: 58             ASLB
 61C4: 8E A4 E7       LDX    #$A4E7
 61C7: 4F             CLRA
@@ -8331,7 +8334,7 @@ A41E: 39             RTS
 table_a41f:
 	dc.w	$617f	; $a41f
 	dc.w	$61c0	; $a421
-	dc.w	$61c3	; $a423
+	dc.w	write_copyright_text_61c3	; $a423
 	dc.w	$61f9	; $a425
 	dc.w	$6482	; $a427
 	dc.w	$62ad	; $a429
@@ -13723,14 +13726,15 @@ FBBA: 81 0F          CMPA   #$0F
 FBBC: 27 0A          BEQ    $FBC8
 FBBE: 96 23          LDA    $23
 FBC0: 27 06          BEQ    $FBC8
-FBC2: 7F 2B 40       CLR    $2B40
+FBC2: 7F 2B 40       CLR    display_state_2b40
 FBC5: 7E 76 A5       JMP    $76A5
 
-FBC8: B6 2B 40       LDA    $2B40
+FBC8: B6 2B 40       LDA    display_state_2b40
 FBCB: 48             ASLA
 FBCC: 8E FE FA       LDX    #table_fefa
 FBCF: 6E 96          JMP    [A,X]	; [jump_table]
 
+init_title_screen_fbd1:
 FBD1: CC 30 F0       LDD    #$30F0
 FBD4: 8E 18 00       LDX    #sprite_ram_1800
 FBD7: CE 1C 00       LDU    #$1C00
@@ -13740,7 +13744,7 @@ FBDE: 4A             DECA
 FBDF: 26 F9          BNE    $FBDA
 FBE1: CC 00 00       LDD    #$0000
 FBE4: BD 84 F5       JSR    $84F5
-FBE7: 7C 2B 40       INC    $2B40
+FBE7: 7C 2B 40       INC    display_state_2b40
 FBEA: 86 02          LDA    #$02
 FBEC: B7 2B 4E       STA    $2B4E
 FBEF: 7F 10 80       CLR    flip_screen_set_1080
@@ -13767,6 +13771,7 @@ FC1D: C3 00 08       ADDD   #$0008
 FC20: ED 0A          STD    $A,X
 FC22: 39             RTS
 
+draw_title_tiles_fc23:
 FC23: CE 30 E1       LDU    #video_ram_3000+$E1
 FC26: BD FC AB       JSR    $FCAB
 FC29: CE 35 00       LDU    #video_ram_3000+$500
@@ -13800,13 +13805,14 @@ FC71: CC 02 1C       LDD    #$021C
 FC74: BD 84 F5       JSR    $84F5
 FC77: CC 02 3E       LDD    #$023E
 FC7A: BD 84 F5       JSR    $84F5
-FC7D: 7C 2B 40       INC    $2B40
+FC7D: 7C 2B 40       INC    display_state_2b40
+animate_runners_in_title_fc80:
 FC80: BD FD 07       JSR    $FD07
 FC83: CE 18 42       LDU    #$1842
 FC86: A6 C4          LDA    ,U
 FC88: 81 E0          CMPA   #$E0
 FC8A: 26 03          BNE    $FC8F
-FC8C: 7C 2B 40       INC    $2B40
+FC8C: 7C 2B 40       INC    display_state_2b40
 FC8F: 6C C0          INC    ,U+
 FC91: 11 83 18 50    CMPU   #$1850
 FC95: 26 F8          BNE    $FC8F
@@ -13818,7 +13824,7 @@ FC9E: 26 0A          BNE    $FCAA
 FCA0: 7A 2B 4E       DEC    $2B4E
 FCA3: 26 05          BNE    $FCAA
 FCA5: 0C 0F          INC    $0F
-FCA7: 7F 2B 40       CLR    $2B40
+FCA7: 7F 2B 40       CLR    display_state_2b40
 FCAA: 39             RTS
 
 FCAB: 8E FF 02       LDX    #$FF02
@@ -13938,7 +13944,7 @@ table_fe8f:
 	dc.w	$f99d	; $fe97
 	
 table_fefa:
-	dc.w	$fbd1	; $fefa
-	dc.w	$fc23	; $fefc
-	dc.w	$fc80	; $fefe
+	dc.w	init_title_screen_fbd1	; $fefa
+	dc.w	draw_title_tiles_fc23	; $fefc
+	dc.w	animate_runners_in_title_fc80	; $fefe
 	dc.w	$fc98	; $ff00

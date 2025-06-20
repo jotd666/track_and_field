@@ -6,7 +6,7 @@
 ;CHIP_ONLY
 
 EXPMEM = $100000
-CHIPSIZE = $80000
+CHIPSIZE = $100000
 
 _base	SLAVE_HEADER					; ws_security + ws_id
 	dc.w	17					; ws_version (was 10)

@@ -26,5 +26,6 @@ scroll_registers_1840 = 0x1840
 copy_of_inputs_2830 = 0x2830
 failed_rom_check_2a8e = 0x2a8e
 failed_rom_check_29d4 = 0x29d4
+display_state_2b40 = 0x2b40
 video_ram_3000 = 0x3000
 color_ram_3800 = 0x3800
