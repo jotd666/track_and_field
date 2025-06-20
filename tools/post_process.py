@@ -58,7 +58,7 @@ with open(source_dir / "conv.s") as f:
             line = ""
 
         # remove code for rom checks, watchdog, ...
-        for p in ("[rom_check_code]","watchdog_1000"):
+        for p in ("[rom_check_code]","watchdog_1000","coin_counter"):
             line = remove_code(p,lines,i)
 
 
@@ -77,9 +77,9 @@ with open(source_dir / "conv.s") as f:
                         lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
                     break
 
-        if "dsw1_" in line and "lda" in line:
+        if "dsw1_1283" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
-        elif "dsw2_" in line and "lda" in line:
+        elif "dsw2_1200" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
 
         if "multiply_ab" in line and "MAKE_D" in lines[i+1]:

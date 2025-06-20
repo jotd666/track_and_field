@@ -31,6 +31,8 @@
 * page $28xx
 global_state_00 = $00
 boot_state_03 = $03
+event_pointer_18 = $18
+event_pointer_1a = $1a
 dsw1_copy_2c = $2c
 dsw2_copy_2d = $2d
 copy_of_inputs_30 = $30
@@ -47,6 +49,8 @@ watchdog_1000 = $1000
 flip_screen_set_1080 = $1080
 sh_irqtrigger_w_1081 = $1081
 nmi_mask_w_1082 = $1082
+coin_counter_1_w_1083 = $1083
+coin_counter_1_w_1084 = $1084
 irq_mask_w_1087 = $1087
 audio_register_w_1100 = $1100
 dsw2_1200 = $1200
@@ -58,6 +62,7 @@ sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
 copy_of_inputs_2830 = $2830
 failed_rom_check_2a8e = $2a8e
+event_buffer_2900 = $2900
 failed_rom_check_29d4 = $29d4
 display_state_2b40 = $2b40
 video_ram_3000 = $3000
@@ -107,15 +112,15 @@ reset_6000:
 6059: B7 10 00       STA    watchdog_1000
 605C: 8C 20 00       CMPX   #$2000
 605F: 26 F6          BNE    $6057
-6061: 8E 29 00       LDX    #$2900		; put FFFF in nvram 2900-2940
+6061: 8E 29 00       LDX    #event_buffer_2900		; event buffer: no events
 6064: CC FF FF       LDD    #$FFFF
 6067: ED 81          STD    ,X++
-6069: 8C 29 40       CMPX   #$2940
+6069: 8C 29 40       CMPX   #event_buffer_2900+$40
 606C: 26 F9          BNE    $6067
-606E: 8E 29 00       LDX    #$2900
-6071: 9F 18          STX    $18			; copy contents of 2900 in 2818,281A
-6073: 9F 1A          STX    $1A
-6075: 8E 29 40       LDX    #$2940		; copy contents of 2940 in 281C,281E
+606E: 8E 29 00       LDX    #event_buffer_2900
+6071: 9F 18          STX    event_pointer_18			; copy contents of 2900 in 2818,281A
+6073: 9F 1A          STX    event_pointer_1a
+6075: 8E 29 40       LDX    #event_buffer_2900+$40		; copy contents of 2940 in 281C,281E
 6078: 9F 1C          STX    $1C
 607A: 9F 1E          STX    $1E
 607C: 7F 10 80       CLR    flip_screen_set_1080		; no flip screen
@@ -226,17 +231,17 @@ reset_6000:
 615B: B7 10 87       STA    irq_mask_w_1087
 615E: 1C EF          ANDCC  #$EF
 master_mainloop_6160:
-6160: 9E 1A          LDX    $1A
-6162: EC 84          LDD    ,X
+6160: 9E 1A          LDX    event_pointer_1a
+6162: EC 84          LDD    ,X					; load command and argument
 6164: 48             ASLA
 6165: 25 F9          BCS    master_mainloop_6160
 6167: 10 8E FF FF    LDY    #$FFFF
-616B: 10 AF 81       STY    ,X++
-616E: 8C 29 40       CMPX   #$2940
+616B: 10 AF 81       STY    ,X++			; ack event
+616E: 8C 29 40       CMPX   #event_buffer_2900+$40
 6171: 26 03          BNE    $6176
-6173: 8E 29 00       LDX    #$2900
-6176: 9F 1A          STX    $1A
-6178: 8E A4 1F       LDX    #table_a41f
+6173: 8E 29 00       LDX    #event_buffer_2900	; wrap
+6176: 9F 1A          STX    event_pointer_1a
+6178: 8E A4 1F       LDX    #event_table_a41f	; B is the parameter
 617B: AD 96          JSR    [A,X]		; [jump_table]
 617D: 20 E1          BRA    master_mainloop_6160
 
@@ -831,12 +836,12 @@ read_inputs_6624:
 6659: 27 04          BEQ    $665F
 665B: 0A 24          DEC    $24
 665D: 86 01          LDA    #$01
-665F: B7 10 83       STA    $1083
+665F: B7 10 83       STA    coin_counter_1_w_1083
 6662: 96 26          LDA    $26
 6664: 27 04          BEQ    $666A
 6666: 0A 26          DEC    $26
 6668: 86 01          LDA    #$01
-666A: B7 10 84       STA    $1084
+666A: B7 10 84       STA    coin_counter_1_w_1084
 666D: 8E 28 30       LDX    #$2830
 6670: A6 06          LDA    $6,X
 6672: AA 03          ORA    $3,X
@@ -1147,22 +1152,22 @@ push_start_screen_67ac:
 
 68B9: 7F 10 80       CLR    flip_screen_set_1080
 68BC: CC 00 00       LDD    #$0000
-68BF: BD 84 F5       JSR    $84F5
+68BF: BD 84 F5       JSR    queue_event_84f5
 68C2: CC 01 01       LDD    #$0101
-68C5: BD 84 F5       JSR    $84F5
+68C5: BD 84 F5       JSR    queue_event_84f5
 68C8: CC 02 06       LDD    #$0206
-68CB: BD 84 F5       JSR    $84F5
+68CB: BD 84 F5       JSR    queue_event_84f5
 68CE: 96 2D          LDA    dsw2_copy_2d
 68D0: 84 08          ANDA   #$08
 68D2: 27 0C          BEQ    $68E0
 68D4: CC 01 09       LDD    #$0109
-68D7: BD 84 F5       JSR    $84F5
+68D7: BD 84 F5       JSR    queue_event_84f5
 68DA: CC 02 12       LDD    #$0212
-68DD: BD 84 F5       JSR    $84F5
+68DD: BD 84 F5       JSR    queue_event_84f5
 68E0: CC 01 0A       LDD    #$010A
-68E3: BD 84 F5       JSR    $84F5
+68E3: BD 84 F5       JSR    queue_event_84f5
 68E6: CC 02 04       LDD    #$0204
-68E9: BD 84 F5       JSR    $84F5
+68E9: BD 84 F5       JSR    queue_event_84f5
 68EC: 86 02          LDA    #$02
 68EE: 97 08          STA    $08
 68F0: 0C 06          INC    $06
@@ -1177,7 +1182,7 @@ push_start_screen_67ac:
 6902: 39             RTS
 
 6903: CC 01 01       LDD    #$0101
-6906: BD 84 F5       JSR    $84F5
+6906: BD 84 F5       JSR    queue_event_84f5
 6909: D6 23          LDB    $23
 690B: 27 0D          BEQ    $691A
 690D: C1 04          CMPB   #$04
@@ -1185,7 +1190,7 @@ push_start_screen_67ac:
 6911: C6 04          LDB    #$04
 6913: CB 17          ADDB   #$17
 6915: 86 02          LDA    #$02
-6917: BD 84 F5       JSR    $84F5
+6917: BD 84 F5       JSR    queue_event_84f5
 691A: 39             RTS
 
 running_game_691b:
@@ -1202,7 +1207,7 @@ running_game_691b:
 6930: 10 8E A8 97    LDY    #table_a897
 6934: 6E B6          JMP    [A,Y]		; [jump_table]
 6936: CC 00 00       LDD    #$0000
-6939: BD 84 F5       JSR    $84F5
+6939: BD 84 F5       JSR    queue_event_84f5
 693C: 86 14          LDA    #$14
 693E: 97 0B          STA    $0B
 6940: 4F             CLRA
@@ -1275,7 +1280,7 @@ running_game_691b:
 69CD: 96 22          LDA    $22
 69CF: 27 05          BEQ    $69D6
 69D1: 86 03          LDA    #$03
-69D3: BD 84 F5       JSR    $84F5
+69D3: BD 84 F5       JSR    queue_event_84f5
 69D6: 96 84          LDA    current_level_84
 69D8: 81 00          CMPA   #$00
 69DA: 27 04          BEQ    $69E0
@@ -1337,9 +1342,9 @@ running_game_691b:
 6A59: 81 0F          CMPA   #$0F
 6A5B: 26 0C          BNE    $6A69
 6A5D: CC 01 0A       LDD    #$010A
-6A60: BD 84 F5       JSR    $84F5
+6A60: BD 84 F5       JSR    queue_event_84f5
 6A63: CC 02 2F       LDD    #$022F
-6A66: BD 84 F5       JSR    $84F5
+6A66: BD 84 F5       JSR    queue_event_84f5
 6A69: 0F 06          CLR    $06
 6A6B: 0F 09          CLR    $09
 6A6D: 0C 03          INC    boot_state_03
@@ -1419,7 +1424,7 @@ running_game_691b:
 6B14: 20 32          BRA    $6B48
 6B16: BD 8F F6       JSR    $8FF6
 6B19: 86 06          LDA    #$06
-6B1B: BD 84 F5       JSR    $84F5
+6B1B: BD 84 F5       JSR    queue_event_84f5
 6B1E: CE 32 0B       LDU    #$320B
 6B21: C6 03          LDB    #$03
 6B23: BD 8A 15       JSR    $8A15
@@ -1614,14 +1619,14 @@ running_game_691b:
 6CE2: 39             RTS
 
 6CE3: CC 01 00       LDD    #$0100
-6CE6: BD 84 F5       JSR    $84F5
+6CE6: BD 84 F5       JSR    queue_event_84f5
 6CE9: 86 02          LDA    #$02
 6CEB: D6 DF          LDB    $DF
-6CED: BD 84 F5       JSR    $84F5
+6CED: BD 84 F5       JSR    queue_event_84f5
 6CF0: 86 05          LDA    #$05
-6CF2: BD 84 F5       JSR    $84F5
+6CF2: BD 84 F5       JSR    queue_event_84f5
 6CF5: CC 02 07       LDD    #$0207
-6CF8: BD 84 F5       JSR    $84F5
+6CF8: BD 84 F5       JSR    queue_event_84f5
 6CFB: 96 84          LDA    current_level_84
 6CFD: 81 00          CMPA   #$00
 6CFF: 27 04          BEQ    $6D05
@@ -1630,16 +1635,16 @@ running_game_691b:
 6D05: 86 02          LDA    #$02
 6D07: D6 DF          LDB    $DF
 6D09: CB 08          ADDB   #$08
-6D0B: BD 84 F5       JSR    $84F5
+6D0B: BD 84 F5       JSR    queue_event_84f5
 6D0E: 86 0D          LDA    #$0D
-6D10: BD 84 F5       JSR    $84F5
+6D10: BD 84 F5       JSR    queue_event_84f5
 6D13: 96 DF          LDA    $DF
 6D15: 84 01          ANDA   #$01
 6D17: 27 0C          BEQ    $6D25
 6D19: CC 01 0B       LDD    #$010B
-6D1C: BD 84 F5       JSR    $84F5
+6D1C: BD 84 F5       JSR    queue_event_84f5
 6D1F: CC 02 21       LDD    #$0221
-6D22: BD 84 F5       JSR    $84F5
+6D22: BD 84 F5       JSR    queue_event_84f5
 6D25: 86 80          LDA    #$80
 6D27: 97 0B          STA    $0B
 6D29: 0C 09          INC    $09
@@ -1690,29 +1695,29 @@ running_game_691b:
 6D87: A6 86          LDA    A,X
 6D89: 26 2D          BNE    $6DB8
 6D8B: CC 01 00       LDD    #$0100
-6D8E: BD 84 F5       JSR    $84F5
+6D8E: BD 84 F5       JSR    queue_event_84f5
 6D91: 86 02          LDA    #$02
 6D93: D6 DF          LDB    $DF
-6D95: BD 84 F5       JSR    $84F5
+6D95: BD 84 F5       JSR    queue_event_84f5
 6D98: 86 05          LDA    #$05
-6D9A: BD 84 F5       JSR    $84F5
+6D9A: BD 84 F5       JSR    queue_event_84f5
 6D9D: CC 02 07       LDD    #$0207
-6DA0: BD 84 F5       JSR    $84F5
+6DA0: BD 84 F5       JSR    queue_event_84f5
 6DA3: 86 02          LDA    #$02
 6DA5: D6 DF          LDB    $DF
 6DA7: CB 08          ADDB   #$08
-6DA9: BD 84 F5       JSR    $84F5
+6DA9: BD 84 F5       JSR    queue_event_84f5
 6DAC: 86 0D          LDA    #$0D
-6DAE: BD 84 F5       JSR    $84F5
+6DAE: BD 84 F5       JSR    queue_event_84f5
 6DB1: 86 80          LDA    #$80
 6DB3: 97 0B          STA    $0B
 6DB5: 0C 09          INC    $09
 6DB7: 39             RTS
 
 6DB8: CC 01 0B       LDD    #$010B
-6DBB: BD 84 F5       JSR    $84F5
+6DBB: BD 84 F5       JSR    queue_event_84f5
 6DBE: CC 02 22       LDD    #$0222
-6DC1: BD 84 F5       JSR    $84F5
+6DC1: BD 84 F5       JSR    queue_event_84f5
 6DC4: 0C 06          INC    $06
 6DC6: 0F 09          CLR    $09
 6DC8: 39             RTS
@@ -1964,7 +1969,7 @@ running_game_691b:
 6FE5: BD 71 3B       JSR    $713B
 6FE8: BD 88 CD       JSR    $88CD
 6FEB: 86 06          LDA    #$06
-6FED: BD 84 F5       JSR    $84F5
+6FED: BD 84 F5       JSR    queue_event_84f5
 6FF0: BD 8E BC       JSR    $8EBC
 6FF3: BD 8F 1E       JSR    $8F1E
 6FF6: BD 8E CC       JSR    $8ECC
@@ -2378,14 +2383,14 @@ running_game_691b:
 7347: 86 2D          LDA    #$2D
 7349: BD 85 0E       JSR    $850E
 734C: CC 01 00       LDD    #$0100
-734F: BD 84 F5       JSR    $84F5
+734F: BD 84 F5       JSR    queue_event_84f5
 7352: 86 02          LDA    #$02
 7354: D6 DF          LDB    $DF
-7356: BD 84 F5       JSR    $84F5
+7356: BD 84 F5       JSR    queue_event_84f5
 7359: 86 05          LDA    #$05
-735B: BD 84 F5       JSR    $84F5
+735B: BD 84 F5       JSR    queue_event_84f5
 735E: CC 02 05       LDD    #$0205
-7361: BD 84 F5       JSR    $84F5
+7361: BD 84 F5       JSR    queue_event_84f5
 7364: 86 01          LDA    #$01
 7366: B7 2A B4       STA    $2AB4
 7369: 86 80          LDA    #$80
@@ -2609,7 +2614,7 @@ running_game_691b:
 750C: 26 B2          BNE    $74C0
 750E: BD 8C 4D       JSR    $8C4D
 7511: 86 03          LDA    #$03
-7513: BD 84 F5       JSR    $84F5
+7513: BD 84 F5       JSR    queue_event_84f5
 7516: 86 60          LDA    #$60
 7518: 97 0B          STA    $0B
 751A: 0C 09          INC    $09
@@ -2860,25 +2865,25 @@ running_game_691b:
 7704: 6C 84          INC    ,X
 7706: BD CD 73       JSR    $CD73
 7709: CC 01 00       LDD    #$0100
-770C: BD 84 F5       JSR    $84F5
+770C: BD 84 F5       JSR    queue_event_84f5
 770F: 96 DF          LDA    $DF
 7711: 84 02          ANDA   #$02
 7713: 26 0E          BNE    $7723
 7715: CC 02 0D       LDD    #$020D
-7718: BD 84 F5       JSR    $84F5
+7718: BD 84 F5       JSR    queue_event_84f5
 771B: CC 02 0E       LDD    #$020E
-771E: BD 84 F5       JSR    $84F5
+771E: BD 84 F5       JSR    queue_event_84f5
 7721: 20 0C          BRA    $772F
 7723: CC 02 23       LDD    #$0223
-7726: BD 84 F5       JSR    $84F5
+7726: BD 84 F5       JSR    queue_event_84f5
 7729: CC 02 24       LDD    #$0224
-772C: BD 84 F5       JSR    $84F5
+772C: BD 84 F5       JSR    queue_event_84f5
 772F: CC 01 0A       LDD    #$010A
-7732: BD 84 F5       JSR    $84F5
+7732: BD 84 F5       JSR    queue_event_84f5
 7735: CC 02 3A       LDD    #$023A
-7738: BD 84 F5       JSR    $84F5
+7738: BD 84 F5       JSR    queue_event_84f5
 773B: CC 02 3B       LDD    #$023B
-773E: BD 84 F5       JSR    $84F5
+773E: BD 84 F5       JSR    queue_event_84f5
 7741: 86 80          LDA    #$80
 7743: BD 85 08       JSR    $8508
 7746: 86 FF          LDA    #$FF
@@ -3110,14 +3115,14 @@ running_game_691b:
 7917: 6C 88 39       INC    $39,X
 791A: BD 8B A3       JSR    $8BA3
 791D: CC 01 00       LDD    #$0100
-7920: BD 84 F5       JSR    $84F5
+7920: BD 84 F5       JSR    queue_event_84f5
 7923: 86 02          LDA    #$02
 7925: D6 DF          LDB    $DF
-7927: BD 84 F5       JSR    $84F5
+7927: BD 84 F5       JSR    queue_event_84f5
 792A: 86 05          LDA    #$05
-792C: BD 84 F5       JSR    $84F5
+792C: BD 84 F5       JSR    queue_event_84f5
 792F: CC 02 25       LDD    #$0225
-7932: BD 84 F5       JSR    $84F5
+7932: BD 84 F5       JSR    queue_event_84f5
 7935: C6 01          LDB    #$01
 7937: 39             RTS
 
@@ -3161,14 +3166,14 @@ running_game_691b:
 7989: 6C C6          INC    A,U
 798B: BD 8B A3       JSR    $8BA3
 798E: CC 01 00       LDD    #$0100
-7991: BD 84 F5       JSR    $84F5
+7991: BD 84 F5       JSR    queue_event_84f5
 7994: 86 02          LDA    #$02
 7996: D6 DF          LDB    $DF
-7998: BD 84 F5       JSR    $84F5
+7998: BD 84 F5       JSR    queue_event_84f5
 799B: 86 05          LDA    #$05
-799D: BD 84 F5       JSR    $84F5
+799D: BD 84 F5       JSR    queue_event_84f5
 79A0: CC 02 26       LDD    #$0226
-79A3: BD 84 F5       JSR    $84F5
+79A3: BD 84 F5       JSR    queue_event_84f5
 79A6: 86 80          LDA    #$80
 79A8: 97 0B          STA    $0B
 79AA: 0C 09          INC    $09
@@ -3398,7 +3403,7 @@ running_game_691b:
 7B81: 6C 0B          INC    $B,X
 7B83: A7 0C          STA    $C,X
 7B85: 86 0C          LDA    #$0C
-7B87: 7E 84 F5       JMP    $84F5
+7B87: 7E 84 F5       JMP    queue_event_84f5
 7B8A: A6 88 1C       LDA    $1C,X
 7B8D: 26 05          BNE    $7B94
 7B8F: EC 88 10       LDD    $10,X
@@ -3510,17 +3515,17 @@ running_game_691b:
 7C6A: 97 B6          STA    $B6
 7C6C: 97 B7          STA    $B7
 7C6E: CC 01 00       LDD    #$0100
-7C71: BD 84 F5       JSR    $84F5
+7C71: BD 84 F5       JSR    queue_event_84f5
 7C74: CC 02 0C       LDD    #$020C
-7C77: BD 84 F5       JSR    $84F5
+7C77: BD 84 F5       JSR    queue_event_84f5
 7C7A: CC 02 17       LDD    #$0217
-7C7D: BD 84 F5       JSR    $84F5
+7C7D: BD 84 F5       JSR    queue_event_84f5
 7C80: CC 01 0A       LDD    #$010A
-7C83: BD 84 F5       JSR    $84F5
+7C83: BD 84 F5       JSR    queue_event_84f5
 7C86: CC 02 3C       LDD    #$023C
-7C89: BD 84 F5       JSR    $84F5
+7C89: BD 84 F5       JSR    queue_event_84f5
 7C8C: 86 09          LDA    #$09
-7C8E: BD 84 F5       JSR    $84F5
+7C8E: BD 84 F5       JSR    queue_event_84f5
 7C91: BD 90 E8       JSR    $90E8
 7C94: 86 05          LDA    #$05
 7C96: 5D             TSTB
@@ -3596,7 +3601,7 @@ running_game_691b:
 7D1E: BD 94 B8       JSR    $94B8
 7D21: 8E 28 A0       LDX    #$28A0
 7D24: 86 09          LDA    #$09
-7D26: BD 84 F5       JSR    $84F5
+7D26: BD 84 F5       JSR    queue_event_84f5
 7D29: BD 91 35       JSR    $9135
 7D2C: BD 85 87       JSR    $8587
 7D2F: BD 9A 1C       JSR    $9A1C
@@ -3624,7 +3629,7 @@ running_game_691b:
 7D64: BD 94 B8       JSR    $94B8
 7D67: 8E 28 A0       LDX    #$28A0
 7D6A: 86 09          LDA    #$09
-7D6C: BD 84 F5       JSR    $84F5
+7D6C: BD 84 F5       JSR    queue_event_84f5
 7D6F: BD 91 35       JSR    $9135
 7D72: BD 85 87       JSR    $8587
 7D75: BD 99 1A       JSR    $991A
@@ -4020,7 +4025,7 @@ running_game_691b:
 80A4: 6C 0B          INC    $B,X
 80A6: A7 0C          STA    $C,X
 80A8: 86 0C          LDA    #$0C
-80AA: 7E 84 F5       JMP    $84F5
+80AA: 7E 84 F5       JMP    queue_event_84f5
 80AD: 4F             CLRA
 80AE: E6 02          LDB    $2,X
 80B0: 10 83 00 EE    CMPD   #$00EE
@@ -4073,7 +4078,7 @@ running_game_691b:
 811D: 0A 49          DEC    $49
 811F: 26 F9          BNE    $811A
 8121: 86 0C          LDA    #$0C
-8123: 7E 84 F5       JMP    $84F5
+8123: 7E 84 F5       JMP    queue_event_84f5
 8126: BD 81 D1       JSR    $81D1
 8129: BD 81 D1       JSR    $81D1
 812C: 6F 88 37       CLR    $37,X
@@ -4191,17 +4196,17 @@ running_game_691b:
 8212: 8E 2A 00       LDX    #$2A00
 8215: BD CC 2D       JSR    $CC2D
 8218: CC 01 00       LDD    #$0100
-821B: BD 84 F5       JSR    $84F5
+821B: BD 84 F5       JSR    queue_event_84f5
 821E: CC 02 0C       LDD    #$020C
-8221: BD 84 F5       JSR    $84F5
+8221: BD 84 F5       JSR    queue_event_84f5
 8224: CC 02 17       LDD    #$0217
-8227: BD 84 F5       JSR    $84F5
+8227: BD 84 F5       JSR    queue_event_84f5
 822A: CC 01 0A       LDD    #$010A
-822D: BD 84 F5       JSR    $84F5
+822D: BD 84 F5       JSR    queue_event_84f5
 8230: CC 02 3C       LDD    #$023C
-8233: BD 84 F5       JSR    $84F5
+8233: BD 84 F5       JSR    queue_event_84f5
 8236: 86 0B          LDA    #$0B
-8238: BD 84 F5       JSR    $84F5
+8238: BD 84 F5       JSR    queue_event_84f5
 823B: BD 90 E8       JSR    $90E8
 823E: 86 05          LDA    #$05
 8240: 5D             TSTB
@@ -4264,7 +4269,7 @@ running_game_691b:
 82B5: 0F B2          CLR    $B2
 82B7: 0F B3          CLR    $B3
 82B9: 86 0B          LDA    #$0B
-82BB: BD 84 F5       JSR    $84F5
+82BB: BD 84 F5       JSR    queue_event_84f5
 82BE: A6 02          LDA    $2,X
 82C0: 81 89          CMPA   #$89
 82C2: 27 5F          BEQ    $8323
@@ -4425,7 +4430,7 @@ running_game_691b:
 8403: 0C D2          INC    $D2
 8405: BD FB 26       JSR    $FB26
 8408: 86 04          LDA    #$04
-840A: BD 84 F5       JSR    $84F5
+840A: BD 84 F5       JSR    queue_event_84f5
 840D: BD DE FF       JSR    $DEFF
 8410: DD 50          STD    $50
 8412: 8E 2A 40       LDX    #$2A40
@@ -4538,12 +4543,13 @@ running_game_691b:
 84F2: 0F 09          CLR    $09
 84F4: 39             RTS
 
-84F5: 10 9E 18       LDY    $18
+queue_event_84f5:
+84F5: 10 9E 18       LDY    event_pointer_18
 84F8: ED A1          STD    ,Y++
 84FA: 10 8C 29 40    CMPY   #$2940
 84FE: 26 04          BNE    $8504
-8500: 10 8E 29 00    LDY    #$2900
-8504: 10 9F 18       STY    $18
+8500: 10 8E 29 00    LDY    #event_buffer_2900
+8504: 10 9F 18       STY    event_pointer_18
 8507: 39             RTS
 
 8508: D6 2D          LDB    dsw2_copy_2d
@@ -6043,11 +6049,11 @@ partially_reset_scrolling_8c3e:
 90C2: 84 10          ANDA   #$10
 90C4: 27 12          BEQ    $90D8
 90C6: CC 01 03       LDD    #$0103
-90C9: BD 84 F5       JSR    $84F5
+90C9: BD 84 F5       JSR    queue_event_84f5
 90CC: CC 02 15       LDD    #$0215
-90CF: BD 84 F5       JSR    $84F5
+90CF: BD 84 F5       JSR    queue_event_84f5
 90D2: CC 02 16       LDD    #$0216
-90D5: 7E 84 F5       JMP    $84F5
+90D5: 7E 84 F5       JMP    queue_event_84f5
 90D8: CE 32 4C       LDU    #$324C
 90DB: C6 04          LDB    #$04
 90DD: BD 8A 15       JSR    $8A15
@@ -6929,7 +6935,7 @@ partially_reset_scrolling_8c3e:
 981F: BD E4 52       JSR    $E452
 9822: BD FB 26       JSR    $FB26
 9825: 86 08          LDA    #$08
-9827: BD 84 F5       JSR    $84F5
+9827: BD 84 F5       JSR    queue_event_84f5
 982A: BD 8A 03       JSR    $8A03
 982D: 4F             CLRA
 982E: D6 4A          LDB    $4A
@@ -6995,7 +7001,7 @@ partially_reset_scrolling_8c3e:
 98AA: A7 02          STA    $2,X
 98AC: BD 8A 03       JSR    $8A03
 98AF: 86 08          LDA    #$08
-98B1: BD 84 F5       JSR    $84F5
+98B1: BD 84 F5       JSR    queue_event_84f5
 98B4: 8E 29 E0       LDX    #$29E0
 98B7: A6 02          LDA    $2,X
 98B9: 90 4B          SUBA   $4B
@@ -7759,7 +7765,7 @@ partially_reset_scrolling_8c3e:
 9F31: 96 22          LDA    $22
 9F33: 27 2B          BEQ    $9F60
 9F35: 86 06          LDA    #$06
-9F37: BD 84 F5       JSR    $84F5
+9F37: BD 84 F5       JSR    queue_event_84f5
 9F3A: 96 DF          LDA    $DF
 9F3C: 44             LSRA
 9F3D: 24 15          BCC    $9F54
@@ -8331,7 +8337,7 @@ A418: 11 83 37 20    CMPU   #$3720
 A41C: 26 E3          BNE    $A401
 A41E: 39             RTS
 
-table_a41f:
+event_table_a41f:
 	dc.w	$617f	; $a41f
 	dc.w	$61c0	; $a421
 	dc.w	write_copyright_text_61c3	; $a423
@@ -9754,7 +9760,7 @@ D56D: BD 85 0E       JSR    $850E
 D570: BD 8C 4D       JSR    $8C4D
 D573: 35 70          PULS   X,Y,U
 D575: 86 03          LDA    #$03
-D577: 7E 84 F5       JMP    $84F5
+D577: 7E 84 F5       JMP    queue_event_84f5
 D57A: 8E 2A 80       LDX    #$2A80
 D57D: 96 DF          LDA    $DF
 D57F: C6 03          LDB    #$03
@@ -9843,7 +9849,7 @@ D618: BD 8C 2F       JSR    reset_scrolling_8c2f
 D61B: 86 30          LDA    #$30
 D61D: BD 85 0E       JSR    $850E
 D620: CC 00 00       LDD    #$0000
-D623: BD 84 F5       JSR    $84F5
+D623: BD 84 F5       JSR    queue_event_84f5
 D626: 86 02          LDA    #$02
 D628: 97 0B          STA    $0B
 D62A: 0C 09          INC    $09
@@ -9852,15 +9858,15 @@ D62C: 39             RTS
 D62D: 0A 0B          DEC    $0B
 D62F: 26 FB          BNE    $D62C
 D631: CC 01 00       LDD    #$0100
-D634: BD 84 F5       JSR    $84F5
+D634: BD 84 F5       JSR    queue_event_84f5
 D637: 86 02          LDA    #$02
 D639: D6 84          LDB    current_level_84
 D63B: CB 30          ADDB   #$30
-D63D: BD 84 F5       JSR    $84F5
+D63D: BD 84 F5       JSR    queue_event_84f5
 D640: CC 01 01       LDD    #$0101
-D643: BD 84 F5       JSR    $84F5
+D643: BD 84 F5       JSR    queue_event_84f5
 D646: CC 02 39       LDD    #$0239
-D649: BD 84 F5       JSR    $84F5
+D649: BD 84 F5       JSR    queue_event_84f5
 D64C: BD D7 71       JSR    $D771
 D64F: 4F             CLRA
 D650: D6 2D          LDB    dsw2_copy_2d
@@ -9898,11 +9904,11 @@ D69B: 4A             DECA
 D69C: E6 A6          LDB    A,Y
 D69E: D7 49          STB    $49
 D6A0: 86 01          LDA    #$01
-D6A2: BD 84 F5       JSR    $84F5
+D6A2: BD 84 F5       JSR    queue_event_84f5
 D6A5: 86 02          LDA    #$02
 D6A7: D6 07          LDB    $07
 D6A9: CB 36          ADDB   #$36
-D6AB: BD 84 F5       JSR    $84F5
+D6AB: BD 84 F5       JSR    queue_event_84f5
 D6AE: D6 49          LDB    $49
 D6B0: A6 84          LDA    ,X
 D6B2: BD 61 F0       JSR    $61F0
@@ -9969,12 +9975,12 @@ D745: 96 3F          LDA    $3F
 D747: 84 04          ANDA   #$04
 D749: 27 08          BEQ    $D753
 D74B: CC 01 00       LDD    #$0100
-D74E: BD 84 F5       JSR    $84F5
+D74E: BD 84 F5       JSR    queue_event_84f5
 D751: 20 06          BRA    $D759
 D753: CC 01 01       LDD    #$0101
-D756: BD 84 F5       JSR    $84F5
+D756: BD 84 F5       JSR    queue_event_84f5
 D759: CC 02 39       LDD    #$0239
-D75C: BD 84 F5       JSR    $84F5
+D75C: BD 84 F5       JSR    queue_event_84f5
 D75F: 8E 28 A0       LDX    #$28A0
 D762: BD CE 53       JSR    $CE53
 D765: BD CB A5       JSR    $CBA5
@@ -10076,7 +10082,7 @@ D81E: 97 7F          STA    $7F
 D820: 0D EA          TST    $EA
 D822: 27 06          BEQ    $D82A
 D824: CC 07 00       LDD    #$0700
-D827: BD 84 F5       JSR    $84F5
+D827: BD 84 F5       JSR    queue_event_84f5
 D82A: 39             RTS
 
 D82B: 96 2C          LDA    dsw1_copy_2c
@@ -10293,41 +10299,41 @@ D9FE: 96 3F          LDA    $3F
 DA00: 84 04          ANDA   #$04
 DA02: 27 39          BEQ    $DA3D
 DA04: CC 01 03       LDD    #$0103
-DA07: BD 84 F5       JSR    $84F5
+DA07: BD 84 F5       JSR    queue_event_84f5
 DA0A: CC 02 27       LDD    #$0227
-DA0D: BD 84 F5       JSR    $84F5
+DA0D: BD 84 F5       JSR    queue_event_84f5
 DA10: CC 01 0A       LDD    #$010A
-DA13: BD 84 F5       JSR    $84F5
+DA13: BD 84 F5       JSR    queue_event_84f5
 DA16: CC 02 28       LDD    #$0228
-DA19: BD 84 F5       JSR    $84F5
+DA19: BD 84 F5       JSR    queue_event_84f5
 DA1C: 86 02          LDA    #$02
 DA1E: D6 E8          LDB    $E8
 DA20: CB 2B          ADDB   #$2B
-DA22: BD 84 F5       JSR    $84F5
+DA22: BD 84 F5       JSR    queue_event_84f5
 DA25: CC 02 29       LDD    #$0229
-DA28: BD 84 F5       JSR    $84F5
+DA28: BD 84 F5       JSR    queue_event_84f5
 DA2B: CC 01 01       LDD    #$0101
-DA2E: BD 84 F5       JSR    $84F5
+DA2E: BD 84 F5       JSR    queue_event_84f5
 DA31: CC 02 2A       LDD    #$022A
-DA34: BD 84 F5       JSR    $84F5
+DA34: BD 84 F5       JSR    queue_event_84f5
 DA37: CC 02 2B       LDD    #$022B
-DA3A: 7E 84 F5       JMP    $84F5
+DA3A: 7E 84 F5       JMP    queue_event_84f5
 DA3D: CC 01 00       LDD    #$0100
-DA40: BD 84 F5       JSR    $84F5
+DA40: BD 84 F5       JSR    queue_event_84f5
 DA43: CC 02 27       LDD    #$0227
-DA46: BD 84 F5       JSR    $84F5
+DA46: BD 84 F5       JSR    queue_event_84f5
 DA49: CC 02 28       LDD    #$0228
-DA4C: BD 84 F5       JSR    $84F5
+DA4C: BD 84 F5       JSR    queue_event_84f5
 DA4F: 86 02          LDA    #$02
 DA51: D6 E8          LDB    $E8
 DA53: CB 2B          ADDB   #$2B
-DA55: BD 84 F5       JSR    $84F5
+DA55: BD 84 F5       JSR    queue_event_84f5
 DA58: CC 02 29       LDD    #$0229
-DA5B: BD 84 F5       JSR    $84F5
+DA5B: BD 84 F5       JSR    queue_event_84f5
 DA5E: CC 02 2A       LDD    #$022A
-DA61: BD 84 F5       JSR    $84F5
+DA61: BD 84 F5       JSR    queue_event_84f5
 DA64: CC 02 2B       LDD    #$022B
-DA67: 7E 84 F5       JMP    $84F5
+DA67: 7E 84 F5       JMP    queue_event_84f5
 DA6A: 0C 13          INC    $13
 DA6C: 10 8E DC A4    LDY    #$DCA4
 DA70: 96 13          LDA    $13
@@ -10402,7 +10408,7 @@ DAEB: BD 8C 2F       JSR    reset_scrolling_8c2f
 DAEE: 86 30          LDA    #$30
 DAF0: BD 85 0E       JSR    $850E
 DAF3: CC 00 00       LDD    #$0000
-DAF6: BD 84 F5       JSR    $84F5
+DAF6: BD 84 F5       JSR    queue_event_84f5
 DAF9: 86 02          LDA    #$02
 DAFB: 97 0B          STA    $0B
 DAFD: 0C 09          INC    $09
@@ -10417,9 +10423,9 @@ DB08: 39             RTS
 DB09: 0A 0B          DEC    $0B
 DB0B: 26 FB          BNE    $DB08
 DB0D: CC 01 01       LDD    #$0101
-DB10: BD 84 F5       JSR    $84F5
+DB10: BD 84 F5       JSR    queue_event_84f5
 DB13: CC 02 3D       LDD    #$023D
-DB16: BD 84 F5       JSR    $84F5
+DB16: BD 84 F5       JSR    queue_event_84f5
 DB19: BD DB FF       JSR    $DBFF
 DB1C: 4F             CLRA
 DB1D: D6 2D          LDB    dsw2_copy_2d
@@ -10452,11 +10458,11 @@ DB5D: 4A             DECA
 DB5E: E6 A6          LDB    A,Y
 DB60: D7 49          STB    $49
 DB62: 86 01          LDA    #$01
-DB64: BD 84 F5       JSR    $84F5
+DB64: BD 84 F5       JSR    queue_event_84f5
 DB67: 86 02          LDA    #$02
 DB69: D6 07          LDB    $07
 DB6B: CB 36          ADDB   #$36
-DB6D: BD 84 F5       JSR    $84F5
+DB6D: BD 84 F5       JSR    queue_event_84f5
 DB70: D6 49          LDB    $49
 DB72: A6 84          LDA    ,X
 DB74: BD 61 F0       JSR    $61F0
@@ -10502,12 +10508,12 @@ DBD2: 96 3F          LDA    $3F
 DBD4: 84 04          ANDA   #$04
 DBD6: 27 08          BEQ    $DBE0
 DBD8: CC 01 00       LDD    #$0100
-DBDB: BD 84 F5       JSR    $84F5
+DBDB: BD 84 F5       JSR    queue_event_84f5
 DBDE: 20 06          BRA    $DBE6
 DBE0: CC 01 01       LDD    #$0101
-DBE3: BD 84 F5       JSR    $84F5
+DBE3: BD 84 F5       JSR    queue_event_84f5
 DBE6: CC 02 3D       LDD    #$023D
-DBE9: BD 84 F5       JSR    $84F5
+DBE9: BD 84 F5       JSR    queue_event_84f5
 DBEC: 8E 28 A0       LDX    #$28A0
 DBEF: BD CE 53       JSR    $CE53
 DBF2: BD CB A5       JSR    $CBA5
@@ -10752,10 +10758,10 @@ E058: EC A4          LDD    ,Y
 E05A: B7 28 F4       STA    $28F4
 E05D: F7 29 D3       STB    $29D3
 E060: CC 01 00       LDD    #$0100
-E063: BD 84 F5       JSR    $84F5
+E063: BD 84 F5       JSR    queue_event_84f5
 E066: C6 0F          LDB    #$0F
 E068: 86 02          LDA    #$02
-E06A: BD 84 F5       JSR    $84F5
+E06A: BD 84 F5       JSR    queue_event_84f5
 E06D: 5C             INCB
 E06E: C1 12          CMPB   #$12
 E070: 26 F6          BNE    $E068
@@ -11221,7 +11227,7 @@ E47A: D1 D8          CMPB   $D8
 E47C: 27 0A          BEQ    $E488
 E47E: 0A D8          DEC    $D8
 E480: 86 08          LDA    #$08
-E482: BD 84 F5       JSR    $84F5
+E482: BD 84 F5       JSR    queue_event_84f5
 E485: BD 8A 03       JSR    $8A03
 E488: BD FB 8F       JSR    $FB8F
 E48B: 84 05          ANDA   #$05
@@ -11481,15 +11487,15 @@ E6C1: B7 2B 1C       STA    $2B1C
 E6C4: B7 29 9C       STA    $299C
 E6C7: B7 2B 2F       STA    $2B2F
 E6CA: CC 01 00       LDD    #$0100
-E6CD: BD 84 F5       JSR    $84F5
+E6CD: BD 84 F5       JSR    queue_event_84f5
 E6D0: CC 02 0C       LDD    #$020C
-E6D3: BD 84 F5       JSR    $84F5
+E6D3: BD 84 F5       JSR    queue_event_84f5
 E6D6: CC 02 17       LDD    #$0217
-E6D9: BD 84 F5       JSR    $84F5
+E6D9: BD 84 F5       JSR    queue_event_84f5
 E6DC: CC 01 0A       LDD    #$010A
-E6DF: BD 84 F5       JSR    $84F5
+E6DF: BD 84 F5       JSR    queue_event_84f5
 E6E2: CC 02 3C       LDD    #$023C
-E6E5: BD 84 F5       JSR    $84F5
+E6E5: BD 84 F5       JSR    queue_event_84f5
 E6E8: CC 36 16       LDD    #$3616
 E6EB: DD E4          STD    $E4
 E6ED: BD 88 8A       JSR    $888A
@@ -11561,7 +11567,7 @@ E786: FD 2B 38       STD    $2B38
 E789: BD E9 C4       JSR    $E9C4
 E78C: 8E 28 A0       LDX    #$28A0
 E78F: 86 09          LDA    #$09
-E791: BD 84 F5       JSR    $84F5
+E791: BD 84 F5       JSR    queue_event_84f5
 E794: BD 85 87       JSR    $8587
 E797: 86 8A          LDA    #$8A
 E799: C6 C3          LDB    #$C3
@@ -12335,7 +12341,7 @@ F027: 7E 67 BF       JMP    $67BF
 F02A: 39             RTS
 
 F02B: CC 00 00       LDD    #$0000
-F02E: BD 84 F5       JSR    $84F5
+F02E: BD 84 F5       JSR    queue_event_84f5
 F031: 86 14          LDA    #$14
 F033: B7 2A 92       STA    $2A92
 F036: 86 FF          LDA    #$FF
@@ -12479,7 +12485,7 @@ F163: 0F DF          CLR    $DF
 F165: 86 0A          LDA    #$0A
 F167: B7 2A 92       STA    $2A92
 F16A: CC 00 00       LDD    #$0000
-F16D: BD 84 F5       JSR    $84F5
+F16D: BD 84 F5       JSR    queue_event_84f5
 F170: 86 1F          LDA    #$1F
 F172: BD 85 0E       JSR    $850E
 F175: 0C 03          INC    boot_state_03
@@ -12804,7 +12810,7 @@ F401: ED A1          STD    ,Y++
 F403: 0A 48          DEC    $48
 F405: 26 F8          BNE    $F3FF
 F407: CC 00 00       LDD    #$0000
-F40A: BD 84 F5       JSR    $84F5
+F40A: BD 84 F5       JSR    queue_event_84f5
 F40D: 7F 29 9C       CLR    $299C
 F410: 86 14          LDA    #$14
 F412: B7 2A 92       STA    $2A92
@@ -12848,7 +12854,7 @@ F455: BA 2B C0       ORA    $2BC0
 F458: BA 2B E0       ORA    $2BE0
 F45B: 10 27 02 61    LBEQ   $F6C0
 F45F: CC 00 00       LDD    #$0000
-F462: BD 84 F5       JSR    $84F5
+F462: BD 84 F5       JSR    queue_event_84f5
 F465: 86 00          LDA    #$00
 F467: BD 85 0E       JSR    $850E
 F46A: 86 22          LDA    #$22
@@ -13161,13 +13167,13 @@ F70D: 10 8E FE 8F    LDY    #table_fe8f
 F711: 6E B6          JMP    [A,Y]	; [jump_table]
 
 F713: CC 00 00       LDD    #$0000
-F716: BD 84 F5       JSR    $84F5
+F716: BD 84 F5       JSR    queue_event_84f5
 F719: CC 01 03       LDD    #$0103
-F71C: BD 84 F5       JSR    $84F5
+F71C: BD 84 F5       JSR    queue_event_84f5
 F71F: CC 02 13       LDD    #$0213
-F722: BD 84 F5       JSR    $84F5
+F722: BD 84 F5       JSR    queue_event_84f5
 F725: C6 14          LDB    #$14
-F727: BD 84 F5       JSR    $84F5
+F727: BD 84 F5       JSR    queue_event_84f5
 F72A: 8E A4 C8       LDX    #$A4C8
 F72D: 0F 48          CLR    $48
 F72F: D6 60          LDB    $60
@@ -13176,11 +13182,11 @@ F733: 25 16          BCS    $F74B
 F735: D6 48          LDB    $48
 F737: E6 85          LDB    B,X
 F739: 86 01          LDA    #$01
-F73B: BD 84 F5       JSR    $84F5
+F73B: BD 84 F5       JSR    queue_event_84f5
 F73E: D6 48          LDB    $48
 F740: CB 1D          ADDB   #$1D
 F742: 86 02          LDA    #$02
-F744: BD 84 F5       JSR    $84F5
+F744: BD 84 F5       JSR    queue_event_84f5
 F747: 0C 48          INC    $48
 F749: 20 E4          BRA    $F72F
 F74B: 10 8E 29 90    LDY    #$2990
@@ -13743,7 +13749,7 @@ FBDC: E7 C0          STB    ,U+
 FBDE: 4A             DECA
 FBDF: 26 F9          BNE    $FBDA
 FBE1: CC 00 00       LDD    #$0000
-FBE4: BD 84 F5       JSR    $84F5
+FBE4: BD 84 F5       JSR    queue_event_84f5
 FBE7: 7C 2B 40       INC    display_state_2b40
 FBEA: 86 02          LDA    #$02
 FBEC: B7 2B 4E       STA    $2B4E
@@ -13800,11 +13806,11 @@ FC62: 33 C8 2E       LEAU   $2E,U
 FC65: 11 83 35 06    CMPU   #$3506
 FC69: 26 E4          BNE    $FC4F
 FC6B: CC 01 00       LDD    #$0100
-FC6E: BD 84 F5       JSR    $84F5
+FC6E: BD 84 F5       JSR    queue_event_84f5
 FC71: CC 02 1C       LDD    #$021C
-FC74: BD 84 F5       JSR    $84F5
+FC74: BD 84 F5       JSR    queue_event_84f5
 FC77: CC 02 3E       LDD    #$023E
-FC7A: BD 84 F5       JSR    $84F5
+FC7A: BD 84 F5       JSR    queue_event_84f5
 FC7D: 7C 2B 40       INC    display_state_2b40
 animate_runners_in_title_fc80:
 FC80: BD FD 07       JSR    $FD07

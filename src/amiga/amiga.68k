@@ -1405,6 +1405,7 @@ update_one_hw_sprite:
 	rts
 
 	.ifne	OPT_ENABLE_LOGGING
+
 osd_dump_logs:
 	move.w	sr,-(a7)
 	move.w	#0x2700,SR
@@ -2031,7 +2032,7 @@ load_palette:
 	
 
 osd_enable_interrupts:
-	move.w	#0xC038+0x780,_custom+intena
+	move.w	#0xC038,_custom+intena
 	rts
 osd_disable_interrupts:
 	move.w	#0x0030,_custom+intena

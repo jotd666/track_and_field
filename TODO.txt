@@ -1,8 +1,6 @@
-- 2800: main state? debug, more generally reverse address tables
 - continue get_address checks (scroll, ...)
-
-!!!!- f7e8: MOVE_W_FROM_REG/MOVE_W_TO_REG ?? wrong conversion (reversed)
-
+- converter: POP_SR + GET_REG_ADDRESS virer push+pop
+- converter: lsr 1,s bug at fb84
 - find video related get_address and patch them (auto!)
 - copy code checksum at start see if value ok!
 - converter: .global	cpu_init in include
