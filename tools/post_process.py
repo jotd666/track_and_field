@@ -48,6 +48,8 @@ input_dict = {"system_1280":"read_system_inputs",
 "sh_irqtrigger_w_1081":"",
 }
 
+store_to_video = re.compile("GET_ADDRESS\s+0x3")
+
 # various dirty but at least automatic patches applying on the specific track and field code
 with open(source_dir / "conv.s") as f:
     lines = list(f)
@@ -61,6 +63,9 @@ with open(source_dir / "conv.s") as f:
         for p in ("[rom_check_code]","watchdog_1000","coin_counter"):
             line = remove_code(p,lines,i)
 
+        # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
+        if store_to_video.search(line):
+            line = line.rstrip() + " [video_address]\n"
 
         if "[video_address" in line:
             # give me the original instruction
