@@ -39,6 +39,7 @@ global_state_00 = 0x00
 boot_state_03 = 0x03
 event_pointer_18 = 0x18
 event_pointer_1a = 0x1a
+copy_of_screen_flipped_21 = 0x21
 dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
 copy_of_inputs_30 = 0x30
@@ -990,7 +991,7 @@ l_6492:
 	jmp	l_61f0                             	| [$64a8: jmp    $61f0]
 l_64ab:
 	move.w	d1,-(sp)                        	| [$64ab: pshs   d]
-	GET_DP_ADDRESS	0x21                    	| [$64ad: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$64ad: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_64c3                             	| [$64af: bne    $64c3]
 	move.w	(sp)+,d1                        	| [$64b1: puls   d]
@@ -1351,13 +1352,13 @@ l_665f:
 	move.b	#0x01,d0                        	| [$6668: lda    #$01]
 l_666a:
 	 |  [$666a: sta    coin_counter_1_w_1084]
-	move.w	#0x2830,d2                      	| [$666d: ldx    #$2830]
+	move.w	#copy_of_inputs_2830,d2         	| [$666d: ldx    #copy_of_inputs_2830]
 	GET_REG_ADDRESS	0x6,d2                 	| [$6670: lda    $6,x]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x3,d2                 	| [$6672: ora    $3,x]
 	or.b	(a0),d0                           	| [...]
 	not.b	d0                               	| [$6674: coma]
-	GET_REG_ADDRESS	0,d2                   	| [$6675: anda   ,x]
+	GET_REG_ADDRESS	0,d2                   	| [$6675: anda   ,x] mask with copy_of_inputs_2830, see if changes in inputs
 	and.b	(a0),d0                          	| [...]
 	and.b	#0x07,d0                         	| [$6677: anda   #$07]
 	jeq	l_66a4                             	| [$6679: beq    $66a4]
@@ -1887,7 +1888,9 @@ l_692d:
 	asl.b	#1,d0                            	| [$692f: asla]
 	lea	table_a897,a3                  	| [$6930: ldy    #table_a897]
 	JMP_A_INDEXED	A3                   	| [$6934: jmp    [a,y]] [jump_table]
-l_6936:
+
+
+setup_players_screen_6936:
 	move.b	#0x00,d0                        	| [$6936: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$6936: ldd    #$0000]
 	jbsr	queue_event_84f5                  	| [$6939: jsr    queue_event_84f5]
@@ -1903,10 +1906,11 @@ l_6936:
 	move.b	(a0),d1                         	| [...]
 	and.b	#0x02,d1                         	| [$6949: andb   #$02]
 	jeq	l_694f                             	| [$694b: beq    $694f]
+* more than 2 players in cocktail mode: flip screen
 	move.b	#0x01,d0                        	| [$694d: lda    #$01]
 l_694f:
 	 |  [$694f: sta    flip_screen_set_1080]
-	GET_DP_ADDRESS	0x21                    	| [$6952: sta    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$6952: sta    copy_of_screen_flipped_21] remember the screen state
 	move.b	d0,(a0)                         	| [...]
 	jbsr	reset_scrolling_8c2f              	| [$6954: jsr    reset_scrolling_8c2f]
 	move.b	#0x2c,d0                        	| [$6957: lda    #$2c]
@@ -2291,7 +2295,7 @@ l_6b4b:
 	move.b	#0x01,d0                        	| [$6b5e: lda    #$01]
 l_6b60:
 	 |  [$6b60: sta    flip_screen_set_1080]
-	GET_DP_ADDRESS	0x21                    	| [$6b63: sta    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$6b63: sta    copy_of_screen_flipped_21]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	current_level_84        	| [$6b65: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
@@ -4460,7 +4464,7 @@ l_76e1:
 	moveq	#0,d0                            	| [$76e1: clra]
 	moveq	#0,d1                            	| [$76e2: clrb]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0xd1,d2                	| [$76e3: std    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$76e3: std    $b,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x10,d2                	| [$76e5: std    $10,x]
@@ -4787,7 +4791,7 @@ l_789e:
 	jeq	l_78d4                             	| [$78a2: beq    $78d4]
 	cmp.b	#0x02,d0                         	| [$78a4: cmpa   #$02]
 	jeq	l_78fa                             	| [$78a6: beq    $78fa]
-	GET_REG_ADDRESS	0xd0,d2                	| [$78a8: lda    $a,x]
+	GET_REG_ADDRESS	0xa,d2                 	| [$78a8: lda    $a,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_78d2                             	| [$78aa: bne    $78d2]
 	move.w	#0x2839,d4                      	| [$78ac: ldu    #$2839]
@@ -5314,7 +5318,7 @@ l_7b6e:
 	GET_REG_ADDRESS	0x3a,d2                	| [$7b7c: adda   $3a,x]
 	add.b	(a0),d0                          	| [...]
 	jcc	l_7b83                             	| [$7b7f: bcc    $7b83]
-	GET_REG_ADDRESS	0xd1,d2                	| [$7b81: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$7b81: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_7b83:
 	GET_REG_ADDRESS	0xc,d2                 	| [$7b83: sta    $c,x]
@@ -6248,7 +6252,7 @@ l_8091:
 	GET_REG_ADDRESS	0x3a,d2                	| [$809f: adda   $3a,x]
 	add.b	(a0),d0                          	| [...]
 	jcc	l_80a6                             	| [$80a2: bcc    $80a6]
-	GET_REG_ADDRESS	0xd1,d2                	| [$80a4: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$80a4: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_80a6:
 	GET_REG_ADDRESS	0xc,d2                 	| [$80a6: sta    $c,x]
@@ -6321,7 +6325,7 @@ l_80f7:
 	GET_REG_ADDRESS	0x3a,d2                	| [$8107: adda   $3a,x]
 	add.b	(a0),d0                          	| [...]
 	jcc	l_810e                             	| [$810a: bcc    $810e]
-	GET_REG_ADDRESS	0xd1,d2                	| [$810c: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$810c: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_810e:
 	GET_REG_ADDRESS	0xc,d2                 	| [$810e: sta    $c,x]
@@ -6416,7 +6420,7 @@ l_8186:
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x01,d0                         	| [$8188: adda   #$01]
 	jcc	l_818e                             	| [$818a: bcc    $818e]
-	GET_REG_ADDRESS	0xd1,d2                	| [$818c: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$818c: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_818e:
 	GET_REG_ADDRESS	0xc,d2                 	| [$818e: sta    $c,x]
@@ -6941,9 +6945,9 @@ l_8441:
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x2,d2                 	| [$844f: sta    $2,x]
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0xd1,d2                	| [$8451: addb   $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$8451: addb   $b,x]
 	add.b	(a0),d1                          	| [...]
-	GET_REG_ADDRESS	0xd1,d2                	| [$8453: stb    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$8453: stb    $b,x]
 	move.b	d1,(a0)                         	| [...]
 	GET_ADDRESS	0x2a19                     	| [$8455: tst    $2a19]
 	tst.b	(a0)                             	| [...]
@@ -8247,7 +8251,7 @@ l_8a9b:
 	and.b	#0x1f,d0                         	| [$8aa5: anda   #$1f]
 	add.w	d0,d3                            	| [$8aa7: leay   a,y]
 	move.w	#0x2831,d2                      	| [$8aa9: ldx    #$2831]
-	GET_DP_ADDRESS	0x21                    	| [$8aac: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$8aac: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8ab2                             	| [$8aae: beq    $8ab2]
 	addq.w	#0x1,d2                         	| [$8ab0: leax   $1,x]
@@ -8839,7 +8843,7 @@ l_8d6f:
 
 l_8d70:
 	moveq	#0,d1                            	| [$8d70: clrb]
-	GET_REG_ADDRESS	0xd0,d2                	| [$8d71: lda    $a,x]
+	GET_REG_ADDRESS	0xa,d2                 	| [$8d71: lda    $a,x]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8d8c                             	| [$8d73: beq    $8d8c]
 	GET_DP_ADDRESS	0xdf                    	| [$8d75: lda    $df]
@@ -9603,7 +9607,7 @@ l_9135:
 	GET_REG_ADDRESS	0x3a,d2                	| [$913b: adda   $3a,x]
 	add.b	(a0),d0                          	| [...]
 	jcc	l_9142                             	| [$913e: bcc    $9142]
-	GET_REG_ADDRESS	0xd1,d2                	| [$9140: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$9140: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_9142:
 	GET_REG_ADDRESS	0xc,d2                 	| [$9142: sta    $c,x]
@@ -9664,7 +9668,7 @@ l_917a:
 	GET_REG_ADDRESS	0x3a,d2                	| [$918a: adda   $3a,x]
 	add.b	(a0),d0                          	| [...]
 	jcc	l_9191                             	| [$918d: bcc    $9191]
-	GET_REG_ADDRESS	0xd1,d2                	| [$918f: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$918f: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_9191:
 	GET_REG_ADDRESS	0xc,d2                 	| [$9191: sta    $c,x]
@@ -9682,7 +9686,7 @@ l_919d:
 	GET_REG_ADDRESS	0x3a,d2                	| [$919f: adda   $3a,x]
 	add.b	(a0),d0                          	| [...]
 	jcc	l_91a6                             	| [$91a2: bcc    $91a6]
-	GET_REG_ADDRESS	0xd1,d2                	| [$91a4: inc    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$91a4: inc    $b,x]
 	addq.b	#1,(a0)                         	| [...]
 l_91a6:
 	GET_REG_ADDRESS	0xc,d2                 	| [$91a6: sta    $c,x]
@@ -9756,7 +9760,7 @@ l_9208:
 	move.b	d0,(a0)                         	| [...]
 	rts                                    	| [$920c: rts]
 
-	GET_DP_ADDRESS	0x21                    	| [$920d: tst    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$920d: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
 	jeq	l_921d                             	| [$920f: beq    $921d]
 	GET_REG_ADDRESS	0,d3                   	| [$9211: tst    ,y]
@@ -10765,7 +10769,7 @@ l_973d:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jra	l_9737                             	| [$9742: bra    $9737]
 l_9744:
-	GET_DP_ADDRESS	0x21                    	| [$9744: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$9744: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_978c                             	| [$9746: bne    $978c]
 	GET_ADDRESS	0x2afb                     	| [$9748: lda    $2afb]
@@ -11311,7 +11315,7 @@ l_99f3:
 	LOAD_D                                 	| [$9a0a: ldd    $3,x]
 	GET_DP_ADDRESS	0x95                    	| [$9a0c: std    $95]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	GET_DP_ADDRESS	0x21                    	| [$9a0e: tst    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$9a0e: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
 	jeq	l_9a12                             	| [$9a10: beq    $9a12]
 l_9a12:
@@ -12223,7 +12227,7 @@ l_9ef6:
 	GET_ADDRESS	0x2ab8                     	| [$9f12: sta    $2ab8]
 	move.b	d0,(a0)                         	| [...]
 l_9f15:
-	GET_REG_ADDRESS	0xd0,d2                	| [$9f15: lda    $a,x]
+	GET_REG_ADDRESS	0xa,d2                 	| [$9f15: lda    $a,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_9f1b                             	| [$9f17: bne    $9f1b]
 	GET_DP_ADDRESS	0xea                    	| [$9f19: clr    $ea]
@@ -13108,7 +13112,7 @@ l_a3b5:
 	GET_REG_ADDRESS	0x1e,d2                	| [$a3c0: std    $1e,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0xd1,d2                	| [$a3c3: std    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$a3c3: std    $b,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x2a41                     	| [$a3c5: std    $2a41]
@@ -13230,7 +13234,7 @@ table_a893:
 	.long	l_692d                           	|  $a893
 	.long	l_69cd                           	|  $a895
 table_a897:
-	.long	l_6936                           	|  $a897
+	.long	setup_players_screen_6936        	|  $a897
 	.long	l_695f                           	|  $a899
 	.long	l_69a0                           	|  $a89b
 
@@ -13790,7 +13794,7 @@ l_cd2b:
 	LOAD_D                                 	| [$cd32: ldd    $1,x]
 l_cd34:
 	move.w	d0,-(sp)                        	| [$cd34: pshs   a]
-	GET_DP_ADDRESS	0x21                    	| [$cd36: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$cd36: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_cd4d                             	| [$cd38: bne    $cd4d]
 	move.w	(sp)+,d0                        	| [$cd3a: puls   a]
@@ -13980,7 +13984,7 @@ l_ce70:
 l_ce73:
 	move.w	#0x1820,d4                      	| [$ce73: ldu    #$1820]
 	move.w	d1,-(sp)                        	| [$ce76: pshs   d]
-	GET_DP_ADDRESS	0x21                    	| [$ce78: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$ce78: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_ce89                             	| [$ce7a: bne    $ce89]
 	move.w	(sp)+,d1                        	| [$ce7c: puls   d]
@@ -14031,6 +14035,7 @@ l_ce9f:
 	and.b	#0x10,d0                         	| [$cebb: anda   #$10]
 	jeq	l_cfb6                             	| [$cebd: lbeq   $cfb6]
 	jra	l_d274                             	| [$cec1: lbra   $d274]
+
 l_cec4:
 	GET_REG_ADDRESS	0xe,d2                 	| [$cec4: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
@@ -14044,8 +14049,9 @@ l_cec7:
 	GET_REG_ADDRESS	0xe,d2                 	| [$cecf: std    $e,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jra	l_cec4                             	| [$ced1: bra    $cec4]
+
 l_ced3:
-	GET_DP_ADDRESS	0x21                    	| [$ced3: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$ced3: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_cf3e                             	| [$ced5: bne    $cf3e]
 	GET_REG_ADDRESS	0,d3                   	| [$ced7: lda    ,y]
@@ -14217,7 +14223,7 @@ l_cfb3:
 	GET_REG_ADDRESS	0xe,d2                 	| [$cfb3: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 l_cfb6:
-	GET_DP_ADDRESS	0x21                    	| [$cfb6: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$cfb6: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d02d                             	| [$cfb8: bne    $d02d]
 	GET_REG_ADDRESS	0,d3                   	| [$cfba: ldd    ,y]
@@ -14424,7 +14430,7 @@ l_d0b1:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jra	l_d0ae                             	| [$d0bb: bra    $d0ae]
 l_d0bd:
-	GET_DP_ADDRESS	0x21                    	| [$d0bd: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d0bd: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d0f2                             	| [$d0bf: bne    $d0f2]
 	GET_REG_ADDRESS	0x1,d3                 	| [$d0c1: lda    $1,y]
@@ -14512,14 +14518,14 @@ l_d10d:
 	GET_REG_ADDRESS	0xe,d2                 	| [$d12c: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 l_d12f:
-	GET_DP_ADDRESS	0x21                    	| [$d12f: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d12f: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d10d                             	| [$d131: bne    $d10d]
 	jra	l_d0d8                             	| [$d133: lbra   $d0d8]
 l_d136:
 	GET_REG_ADDRESS	0xe,d2                 	| [$d136: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
-	GET_DP_ADDRESS	0x21                    	| [$d139: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d139: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d151                             	| [$d13b: bne    $d151]
 	GET_REG_ADDRESS	0,d3                   	| [$d13d: ldd    ,y]
@@ -14566,7 +14572,7 @@ l_d16a:
 	GET_REG_ADDRESS	0x1,d2                 	| [$d16a: ldd    $1,x]
 	LOAD_D                                 	| [$d16a: ldd    $1,x]
 	move.w	d0,-(sp)                        	| [$d16c: pshs   a]
-	GET_DP_ADDRESS	0x21                    	| [$d16e: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d16e: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d186                             	| [$d170: bne    $d186]
 	move.w	(sp)+,d0                        	| [$d172: puls   a]
@@ -14607,7 +14613,7 @@ l_d19f:
 	GET_REG_ADDRESS	0x1,d2                 	| [$d19f: ldd    $1,x]
 	LOAD_D                                 	| [$d19f: ldd    $1,x]
 	move.w	d0,-(sp)                        	| [$d1a1: pshs   a]
-	GET_DP_ADDRESS	0x21                    	| [$d1a3: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d1a3: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d1bb                             	| [$d1a5: bne    $d1bb]
 	move.w	(sp)+,d0                        	| [$d1a7: puls   a]
@@ -14647,7 +14653,7 @@ l_d1bb:
 	rts                                    	| [$d1d3: rts]
 
 l_d1d4:
-	GET_DP_ADDRESS	0x21                    	| [$d1d4: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d1d4: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d209                             	| [$d1d6: bne    $d209]
 	GET_REG_ADDRESS	0x1,d2                 	| [$d1d8: ldd    $1,x]
@@ -14728,7 +14734,7 @@ l_d231:
 	rts                                    	| [$d23d: rts]
 
 l_d23e:
-	GET_DP_ADDRESS	0x21                    	| [$d23e: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d23e: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d250                             	| [$d240: bne    $d250]
 	GET_REG_ADDRESS	0x1,d2                 	| [$d242: ldd    $1,x]
@@ -14820,7 +14826,7 @@ l_d296:
 l_d2b2:
 	GET_REG_ADDRESS	0xe,d2                 	| [$d2b2: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
-	GET_DP_ADDRESS	0x21                    	| [$d2b5: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d2b5: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d2e4                             	| [$d2b7: bne    $d2e4]
 	GET_REG_ADDRESS	0,d3                   	| [$d2b9: lda    ,y]
@@ -15900,7 +15906,7 @@ l_d869:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0x2,d3                 	| [$d873: ldd    $2,y]
 	LOAD_D                                 	| [$d873: ldd    $2,y]
-	GET_REG_ADDRESS	0xd0,d3                	| [$d875: std    $a,y]
+	GET_REG_ADDRESS	0xa,d3                 	| [$d875: std    $a,y]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0x4,d3                 	| [$d877: ldd    $4,y]
 	LOAD_D                                 	| [$d877: ldd    $4,y]
@@ -16041,7 +16047,7 @@ l_d90d:
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x0400,d2              	| [$d90f: ldb    $0400,x]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	0x21                    	| [$d913: tst    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d913: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
 	jeq	l_d91d                             	| [$d915: beq    $d91d]
 	GET_REG_ADDRESS	0,d3                   	| [$d917: suba   ,y+]
@@ -16075,7 +16081,7 @@ l_d93b:
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x0400,d2              	| [$d93d: ldb    $0400,x]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	0x21                    	| [$d941: tst    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d941: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
 	jeq	l_d94b                             	| [$d943: beq    $d94b]
 	GET_REG_ADDRESS	0,d3                   	| [$d945: suba   ,y+]
@@ -16683,7 +16689,7 @@ l_df18:
 	add.b	(a0),d1                          	| [...]
                                          | [$df71: stb    $48]
 	move.b	d1,(a0)                         	| [...]
-	GET_REG_ADDRESS	hammer_speed_38,d3     	| [$df73: lda    hammer_speed_38,y]
+	GET_REG_ADDRESS	0x38,d3                	| [$df73: lda    $38,y]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xedd5,d2                      	| [$df76: ldx    #$edd5]
 	neg.b	d0                               	| [$df79: nega]
@@ -16729,7 +16735,7 @@ l_df18:
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4a                    	| [$dfa4: std    $4a]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	GET_REG_ADDRESS	hammer_speed_38,d3     	| [$dfa6: lda    hammer_speed_38,y]
+	GET_REG_ADDRESS	0x38,d3                	| [$dfa6: lda    $38,y]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xed7b,d2                      	| [$dfa9: ldx    #$ed7b]
 	and.l	#0xFF,d0                         	| [masking out]
@@ -18596,7 +18602,7 @@ l_e9bd:
 	rts                                    	| [$e9c3: rts]
 
 l_e9c4:
-	GET_DP_ADDRESS	0x21                    	| [$e9c4: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$e9c4: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$e9c6: coma]
 	CLR_XC_FLAGS |  [$e9c7: andcc  #$00]
@@ -18684,7 +18690,7 @@ l_ea1d:
 	GET_DP_ADDRESS	0x4e                    	| [$ea37: std    $4e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jbsr	l_d12f                            	| [$ea39: jsr    $d12f]
-	GET_DP_ADDRESS	0x21                    	| [$ea3c: lda    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$ea3c: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$ea3e: coma]
 	CLR_XC_FLAGS |  [$ea3f: andcc  #$00]
@@ -18913,7 +18919,7 @@ l_eb69:
 	GET_ADDRESS	0x2ad9                     	| [$eb6c: sta    $2ad9]
 	move.b	d0,(a0)                         	| [...]
 l_eb6f:
-	GET_DP_ADDRESS	0x21                    	| [$eb6f: ldb    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$eb6f: ldb    copy_of_screen_flipped_21]
 	move.b	(a0),d1                         	| [...]
 	not.b	d1                               	| [$eb71: comb]
 	CLR_XC_FLAGS |  [$eb72: andcc  #$00]
@@ -19699,7 +19705,7 @@ l_f1c5:
 	GET_REG_ADDRESS	0,d3                   	| [$f1e1: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$f1e1: ldd    ,y++]
-	GET_REG_ADDRESS	0xd1,d2                	| [$f1e3: std    $b,x]
+	GET_REG_ADDRESS	0xb,d2                 	| [$f1e3: std    $b,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0,d3                   	| [$f1e5: lda    ,y]
 	move.b	(a0),d0                         	| [...]
@@ -20255,7 +20261,7 @@ l_f497:
 	lsr.b	#2,d0                            	| [$f4a2: lsra]
 	GET_DP_ADDRESS	0x48                    	| [$f4a3: anda   $48]
 	and.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	0x21                    	| [$f4a5: sta    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$f4a5: sta    copy_of_screen_flipped_21]
 	move.b	d0,(a0)                         	| [...]
 	 |  [$f4a7: sta    flip_screen_set_1080]
 	move.w	#0xfde5,d2                      	| [$f4aa: ldx    #$fde5]
@@ -21024,7 +21030,7 @@ l_f892:
 	move.w	#sprite_ram_1800,d4             	| [$f89b: ldu    #sprite_ram_1800]
 	jbsr	l_d12f                            	| [$f89e: jsr    $d12f]
 	move.b	#0x40,d0                        	| [$f8a1: lda    #$40]
-	GET_DP_ADDRESS	0x21                    	| [$f8a3: tst    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$f8a3: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
 	jeq	l_f8a9                             	| [$f8a5: beq    $f8a9]
 	move.b	#0x80,d0                        	| [$f8a7: lda    #$80]
@@ -21193,7 +21199,7 @@ l_f96d:
 	jne	l_f98b                             	| [$f983: bne    $f98b]
 	asr.b	#1,d0                            	| [$f985: asra]
 	 |  [$f986: sta    flip_screen_set_1080]
-	GET_DP_ADDRESS	0x21                    	| [$f989: sta    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$f989: sta    copy_of_screen_flipped_21]
 	move.b	d0,(a0)                         	| [...]
 l_f98b:
 	GET_ADDRESS	0x299d                     	| [$f98b: clr    $299d]
@@ -21531,8 +21537,9 @@ l_faee:
 	VIDEO_WORD_DIRTY | [...]
 	GET_REG_ADDRESS	0x2,d3                 	| [$fb07: lda    $2,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0x2,d2                 	| [$fb09: sta    $2,x]
+	GET_REG_UNCHECKED_ADDRESS	0x2,d2                 	| [$fb09: sta    $2,x] [video_address_word]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	move.w	#0xa4c8,d3                      	| [$fb0b: ldy    #$a4c8]
 	GET_DP_ADDRESS	0xdf                    	| [$fb0f: lda    $df]
 	move.b	(a0),d0                         	| [...]
@@ -21541,20 +21548,24 @@ l_faee:
 	move.b	(a0),d0                         	| [...]
 	move.b	d0,d1                           	| [$fb13: tfr    a,b]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x07fc,d2              	| [$fb15: std    $07fc,x]
+	GET_REG_UNCHECKED_ADDRESS	0x07fc,d2              	| [$fb15: std    $07fc,x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x07fe,d2              	| [$fb19: std    $07fe,x]
+	GET_REG_UNCHECKED_ADDRESS	0x07fe,d2              	| [$fb19: std    $07fe,x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x0800,d2              	| [$fb1d: std    $0800,x]
+	GET_REG_UNCHECKED_ADDRESS	0x0800,d2              	| [$fb1d: std    $0800,x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	GET_REG_ADDRESS	0x0802,d2              	| [$fb21: sta    $0802,x]
+	VIDEO_WORD_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0x0802,d2              	| [$fb21: sta    $0802,x] [video_address_word]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	rts                                    	| [$fb25: rts]
 
 l_fb26:
-	GET_REG_ADDRESS	hammer_speed_38,d2     	| [$fb26: lda    hammer_speed_38,x]
+	GET_REG_ADDRESS	0x38,d2                	| [$fb26: lda    $38,x]
 	move.b	(a0),d0                         	| [...]
 	sub.b	#0x2d,d0                         	| [$fb29: suba   #$2d]
 	jeq	l_fb40                             	| [$fb2b: beq    $fb40]
@@ -21725,7 +21736,7 @@ l_fbda:
 	GET_ADDRESS	0x2b4e                     	| [$fbec: sta    $2b4e]
 	move.b	d0,(a0)                         	| [...]
 	 |  [$fbef: clr    flip_screen_set_1080]
-	GET_DP_ADDRESS	0x21                    	| [$fbf2: clr    $21]
+	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$fbf2: clr    copy_of_screen_flipped_21]
 	clr.b	(a0)                         	| [...]
 	move.b	#0x90,d0                        	| [$fbf4: lda    #$90]
 	GET_ADDRESS	0x2b41                     	| [$fbf6: sta    $2b41]
@@ -21763,7 +21774,7 @@ l_fbda:
 	MAKE_D
 	add.w	#0x0008,d1                       	| [$fc1d: addd   #$0008]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0xd0,d2                	| [$fc20: std    $a,x]
+	GET_REG_ADDRESS	0xa,d2                 	| [$fc20: std    $a,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	rts                                    	| [$fc22: rts]
 

@@ -33,6 +33,7 @@ global_state_00 = $00
 boot_state_03 = $03
 event_pointer_18 = $18
 event_pointer_1a = $1a
+copy_of_screen_flipped_21 = $21
 dsw1_copy_2c = $2c
 dsw2_copy_2d = $2d
 copy_of_inputs_30 = $30
@@ -628,7 +629,7 @@ write_copyright_text_61c3:
 64A6: 86 37          LDA    #$37
 64A8: 7E 61 F0       JMP    $61F0
 64AB: 34 06          PSHS   D
-64AD: 96 21          LDA    $21
+64AD: 96 21          LDA    copy_of_screen_flipped_21
 64AF: 26 12          BNE    $64C3
 64B1: 35 06          PULS   D
 64B3: A7 41          STA    $1,U
@@ -842,11 +843,11 @@ read_inputs_6624:
 6666: 0A 26          DEC    $26
 6668: 86 01          LDA    #$01
 666A: B7 10 84       STA    coin_counter_1_w_1084
-666D: 8E 28 30       LDX    #$2830
+666D: 8E 28 30       LDX    #copy_of_inputs_2830
 6670: A6 06          LDA    $6,X
 6672: AA 03          ORA    $3,X
 6674: 43             COMA
-6675: A4 84          ANDA   ,X
+6675: A4 84          ANDA   ,X		; mask with copy_of_inputs_2830, see if changes in inputs
 6677: 84 07          ANDA   #$07
 6679: 27 29          BEQ    $66A4
 667B: 97 48          STA    $48
@@ -1206,6 +1207,9 @@ running_game_691b:
 692F: 48             ASLA
 6930: 10 8E A8 97    LDY    #table_a897
 6934: 6E B6          JMP    [A,Y]		; [jump_table]
+
+
+setup_players_screen_6936:
 6936: CC 00 00       LDD    #$0000
 6939: BD 84 F5       JSR    queue_event_84f5
 693C: 86 14          LDA    #$14
@@ -1217,9 +1221,10 @@ running_game_691b:
 6947: D6 DF          LDB    $DF
 6949: C4 02          ANDB   #$02
 694B: 27 02          BEQ    $694F
+; more than 2 players in cocktail mode: flip screen
 694D: 86 01          LDA    #$01
 694F: B7 10 80       STA    flip_screen_set_1080
-6952: 97 21          STA    $21
+6952: 97 21          STA    copy_of_screen_flipped_21	; remember the screen state
 6954: BD 8C 2F       JSR    reset_scrolling_8c2f
 6957: 86 2C          LDA    #$2C
 6959: BD 85 0E       JSR    $850E
@@ -1456,7 +1461,7 @@ running_game_691b:
 6B5C: 27 02          BEQ    $6B60
 6B5E: 86 01          LDA    #$01
 6B60: B7 10 80       STA    flip_screen_set_1080
-6B63: 97 21          STA    $21
+6B63: 97 21          STA    copy_of_screen_flipped_21
 6B65: 96 84          LDA    current_level_84
 6B67: 81 03          CMPA   #$03
 6B69: 27 43          BEQ    $6BAE
@@ -5294,7 +5299,7 @@ queue_event_84f5:
 8AA5: 84 1F          ANDA   #$1F
 8AA7: 31 A6          LEAY   A,Y
 8AA9: 8E 28 31       LDX    #$2831
-8AAC: 96 21          LDA    $21
+8AAC: 96 21          LDA    copy_of_screen_flipped_21
 8AAE: 27 02          BEQ    $8AB2
 8AB0: 30 01          LEAX   $1,X
 8AB2: 96 AA          LDA    $AA
@@ -6199,7 +6204,7 @@ partially_reset_scrolling_8c3e:
 920A: 97 49          STA    $49
 920C: 39             RTS
 
-920D: 0D 21          TST    $21
+920D: 0D 21          TST    copy_of_screen_flipped_21
 920F: 27 0C          BEQ    $921D
 9211: 6D A4          TST    ,Y
 9213: 26 04          BNE    $9219
@@ -6838,7 +6843,7 @@ partially_reset_scrolling_8c3e:
 973D: CC DE DB       LDD    #$DEDB
 9740: ED 0E          STD    $E,X
 9742: 20 F3          BRA    $9737
-9744: 96 21          LDA    $21
+9744: 96 21          LDA    copy_of_screen_flipped_21
 9746: 26 44          BNE    $978C
 9748: B6 2A FB       LDA    $2AFB
 974B: 97 48          STA    $48
@@ -7168,7 +7173,7 @@ partially_reset_scrolling_8c3e:
 9A07: B7 2B 12       STA    $2B12
 9A0A: EC 03          LDD    $3,X
 9A0C: DD 95          STD    $95
-9A0E: 0D 21          TST    $21
+9A0E: 0D 21          TST    copy_of_screen_flipped_21
 9A10: 27 00          BEQ    $9A12
 9A12: B6 2B 02       LDA    $2B02
 9A15: 4A             DECA
@@ -8384,7 +8389,7 @@ table_a893:
 	dc.w	$692d	; $a893
 	dc.w	$69cd	; $a895
 table_a897:
-	dc.w	$6936	; $a897
+	dc.w	setup_players_screen_6936	; $a897
 	dc.w	$695f	; $a899
 	dc.w	$69a0	; $a89b
 	
@@ -8781,7 +8786,7 @@ CD2B: CE 18 2E       LDU    #$182E
 CD2E: 10 8E DD 6A    LDY    #$DD6A
 CD32: EC 01          LDD    $1,X
 CD34: 34 02          PSHS   A
-CD36: 96 21          LDA    $21
+CD36: 96 21          LDA    copy_of_screen_flipped_21
 CD38: 26 13          BNE    $CD4D
 CD3A: 35 02          PULS   A
 CD3C: A7 41          STA    $1,U
@@ -8913,7 +8918,7 @@ CE70: 86 FF          LDA    #$FF
 CE72: 5F             CLRB
 CE73: CE 18 20       LDU    #$1820
 CE76: 34 06          PSHS   D
-CE78: 96 21          LDA    $21
+CE78: 96 21          LDA    copy_of_screen_flipped_21
 CE7A: 26 0D          BNE    $CE89
 CE7C: 35 06          PULS   D
 CE7E: A7 41          STA    $1,U
@@ -8946,6 +8951,7 @@ CEB9: 96 3F          LDA    $3F
 CEBB: 84 10          ANDA   #$10
 CEBD: 10 27 00 F5    LBEQ   $CFB6
 CEC1: 16 03 B0       LBRA   $D274
+
 CEC4: 10 AE 0E       LDY    $E,X
 CEC7: A6 A4          LDA    ,Y
 CEC9: 81 FF          CMPA   #$FF
@@ -8953,7 +8959,8 @@ CECB: 26 06          BNE    $CED3
 CECD: EC 21          LDD    $1,Y
 CECF: ED 0E          STD    $E,X
 CED1: 20 F1          BRA    $CEC4
-CED3: 96 21          LDA    $21
+
+CED3: 96 21          LDA    copy_of_screen_flipped_21
 CED5: 26 67          BNE    $CF3E
 CED7: A6 A4          LDA    ,Y
 CED9: C6 40          LDB    #$40
@@ -9056,7 +9063,7 @@ CFAE: E7 C9 04 06    STB    $0406,U
 CFB2: 39             RTS
 
 CFB3: 10 AE 0E       LDY    $E,X
-CFB6: 96 21          LDA    $21
+CFB6: 96 21          LDA    copy_of_screen_flipped_21
 CFB8: 26 73          BNE    $D02D
 CFBA: EC A4          LDD    ,Y
 CFBC: A7 C9 04 01    STA    $0401,U
@@ -9174,7 +9181,7 @@ D0B5: 26 06          BNE    $D0BD
 D0B7: EC 21          LDD    $1,Y
 D0B9: ED 0E          STD    $E,X
 D0BB: 20 F1          BRA    $D0AE
-D0BD: 96 21          LDA    $21
+D0BD: 96 21          LDA    copy_of_screen_flipped_21
 D0BF: 26 31          BNE    $D0F2
 D0C1: A6 21          LDA    $1,Y
 D0C3: C6 40          LDB    #$40
@@ -9226,11 +9233,11 @@ D127: E7 C9 04 00    STB    $0400,U
 D12B: 39             RTS
 
 D12C: 10 AE 0E       LDY    $E,X
-D12F: 96 21          LDA    $21
+D12F: 96 21          LDA    copy_of_screen_flipped_21
 D131: 26 DA          BNE    $D10D
 D133: 16 FF A2       LBRA   $D0D8
 D136: 10 AE 0E       LDY    $E,X
-D139: 96 21          LDA    $21
+D139: 96 21          LDA    copy_of_screen_flipped_21
 D13B: 26 14          BNE    $D151
 D13D: EC A4          LDD    ,Y
 D13F: A7 C9 04 01    STA    $0401,U
@@ -9257,7 +9264,7 @@ D169: 39             RTS
 
 D16A: EC 01          LDD    $1,X
 D16C: 34 02          PSHS   A
-D16E: 96 21          LDA    $21
+D16E: 96 21          LDA    copy_of_screen_flipped_21
 D170: 26 14          BNE    $D186
 D172: 35 02          PULS   A
 D174: 4C             INCA
@@ -9284,7 +9291,7 @@ D19E: 39             RTS
 
 D19F: EC 01          LDD    $1,X
 D1A1: 34 02          PSHS   A
-D1A3: 96 21          LDA    $21
+D1A3: 96 21          LDA    copy_of_screen_flipped_21
 D1A5: 26 14          BNE    $D1BB
 D1A7: 35 02          PULS   A
 D1A9: 4C             INCA
@@ -9309,7 +9316,7 @@ D1CF: C8 40          EORB   #$40
 D1D1: E7 C4          STB    ,U
 D1D3: 39             RTS
 
-D1D4: 96 21          LDA    $21
+D1D4: 96 21          LDA    copy_of_screen_flipped_21
 D1D6: 26 31          BNE    $D209
 D1D8: EC 01          LDD    $1,X
 D1DA: 10 27 00 96    LBEQ   $D274
@@ -9361,7 +9368,7 @@ D237: A7 41          STA    $1,U
 D239: E7 C9 04 00    STB    $0400,U
 D23D: 39             RTS
 
-D23E: 96 21          LDA    $21
+D23E: 96 21          LDA    copy_of_screen_flipped_21
 D240: 26 0E          BNE    $D250
 D242: EC 01          LDD    $1,X
 D244: 27 3D          BEQ    $D283
@@ -9413,7 +9420,7 @@ D2AD: A7 C9 04 07    STA    $0407,U
 D2B1: 39             RTS
 
 D2B2: 10 AE 0E       LDY    $E,X
-D2B5: 96 21          LDA    $21
+D2B5: 96 21          LDA    copy_of_screen_flipped_21
 D2B7: 26 2B          BNE    $D2E4
 D2B9: A6 A4          LDA    ,Y
 D2BB: C6 40          LDB    #$40
@@ -10198,7 +10205,7 @@ D906: 8E 18 4D       LDX    #$184D
 D909: 10 8E 2A F0    LDY    #$2AF0
 D90D: A6 84          LDA    ,X
 D90F: E6 89 04 00    LDB    $0400,X
-D913: 0D 21          TST    $21
+D913: 0D 21          TST    copy_of_screen_flipped_21
 D915: 27 06          BEQ    $D91D
 D917: A0 A0          SUBA   ,Y+
 D919: C2 00          SBCB   #$00
@@ -10216,7 +10223,7 @@ D935: 81 03          CMPA   #$03
 D937: 10 27 BE 09    LBEQ   $9744
 D93B: A6 84          LDA    ,X
 D93D: E6 89 04 00    LDB    $0400,X
-D941: 0D 21          TST    $21
+D941: 0D 21          TST    copy_of_screen_flipped_21
 D943: 27 06          BEQ    $D94B
 D945: A0 A0          SUBA   ,Y+
 D947: C2 00          SBCB   #$00
@@ -10627,7 +10634,7 @@ DF6C: 86 03          LDA    #$03
 DF6E: 3D             MUL
 DF6F: DB 48          ADDB   $48
 DF71: D7 48          STB    $48
-DF73: A6 A8 38       LDA    hammer_speed_38,Y
+DF73: A6 A8 38       LDA    $38,Y
 DF76: 8E ED D5       LDX    #$EDD5
 DF79: 40             NEGA
 DF7A: A6 86          LDA    A,X
@@ -10656,7 +10663,7 @@ DFA1: 56             RORB
 DFA2: 47             ASRA
 DFA3: 56             RORB
 DFA4: DD 4A          STD    $4A
-DFA6: A6 A8 38       LDA    hammer_speed_38,Y
+DFA6: A6 A8 38       LDA    $38,Y
 DFA9: 8E ED 7B       LDX    #$ED7B
 DFAC: A6 86          LDA    A,X
 DFAE: 97 4E          STA    $4E
@@ -11822,7 +11829,7 @@ E9BF: 0F 09          CLR    $09
 E9C1: 0C 03          INC    boot_state_03
 E9C3: 39             RTS
 
-E9C4: 96 21          LDA    $21
+E9C4: 96 21          LDA    copy_of_screen_flipped_21
 E9C6: 43             COMA
 E9C7: 1C 00          ANDCC  #$00
 E9C9: 46             RORA
@@ -11878,7 +11885,7 @@ EA30: 10 8E 28 4E    LDY    #$284E
 EA34: CC E0 44       LDD    #$E044
 EA37: DD 4E          STD    $4E
 EA39: BD D1 2F       JSR    $D12F
-EA3C: 96 21          LDA    $21
+EA3C: 96 21          LDA    copy_of_screen_flipped_21
 EA3E: 43             COMA
 EA3F: 1C 00          ANDCC  #$00
 EA41: 46             RORA
@@ -12027,7 +12034,7 @@ EB64: 27 03          BEQ    $EB69
 EB66: B7 2A DA       STA    $2ADA
 EB69: B6 2A D8       LDA    $2AD8
 EB6C: B7 2A D9       STA    $2AD9
-EB6F: D6 21          LDB    $21
+EB6F: D6 21          LDB    copy_of_screen_flipped_21
 EB71: 53             COMB
 EB72: 1C 00          ANDCC  #$00
 EB74: 56             RORB
@@ -12884,7 +12891,7 @@ F4A0: 43             COMA
 F4A1: 44             LSRA
 F4A2: 44             LSRA
 F4A3: 94 48          ANDA   $48
-F4A5: 97 21          STA    $21
+F4A5: 97 21          STA    copy_of_screen_flipped_21
 F4A7: B7 10 80       STA    flip_screen_set_1080
 F4AA: 8E FD E5       LDX    #$FDE5
 F4AD: 10 8E 31 0B    LDY    #$310B
@@ -13345,7 +13352,7 @@ F897: 10 8E DD 6E    LDY    #$DD6E
 F89B: CE 18 00       LDU    #sprite_ram_1800
 F89E: BD D1 2F       JSR    $D12F
 F8A1: 86 40          LDA    #$40
-F8A3: 0D 21          TST    $21
+F8A3: 0D 21          TST    copy_of_screen_flipped_21
 F8A5: 27 02          BEQ    $F8A9
 F8A7: 86 80          LDA    #$80
 F8A9: F6 29 9C       LDB    $299C
@@ -13458,7 +13465,7 @@ F981: C5 04          BITB   #$04
 F983: 26 06          BNE    $F98B
 F985: 47             ASRA
 F986: B7 10 80       STA    flip_screen_set_1080
-F989: 97 21          STA    $21
+F989: 97 21          STA    copy_of_screen_flipped_21
 F98B: 7F 29 9D       CLR    $299D
 F98E: 7F 29 9E       CLR    $299E
 F991: 7F 29 9F       CLR    $299F
@@ -13639,18 +13646,18 @@ FB01: 30 8B          LEAX   D,X
 FB03: EC A4          LDD    ,Y
 FB05: ED 84          STD    ,X		; [video_address_word]
 FB07: A6 22          LDA    $2,Y
-FB09: A7 02          STA    $2,X
+FB09: A7 02          STA    $2,X		; [video_address_word]
 FB0B: 10 8E A4 C8    LDY    #$A4C8
 FB0F: 96 DF          LDA    $DF
 FB11: A6 A6          LDA    A,Y
 FB13: 1F 89          TFR    A,B
-FB15: ED 89 07 FC    STD    $07FC,X
-FB19: ED 89 07 FE    STD    $07FE,X
-FB1D: ED 89 08 00    STD    $0800,X
-FB21: A7 89 08 02    STA    $0802,X
+FB15: ED 89 07 FC    STD    $07FC,X		; [video_address_word]
+FB19: ED 89 07 FE    STD    $07FE,X		; [video_address_word]
+FB1D: ED 89 08 00    STD    $0800,X		; [video_address_word]
+FB21: A7 89 08 02    STA    $0802,X		; [video_address_word]
 FB25: 39             RTS
 
-FB26: A6 88 38       LDA    hammer_speed_38,X
+FB26: A6 88 38       LDA    $38,X
 FB29: 80 2D          SUBA   #$2D
 FB2B: 27 13          BEQ    $FB40
 FB2D: 2A 01          BPL    $FB30
@@ -13754,7 +13761,7 @@ FBE7: 7C 2B 40       INC    display_state_2b40
 FBEA: 86 02          LDA    #$02
 FBEC: B7 2B 4E       STA    $2B4E
 FBEF: 7F 10 80       CLR    flip_screen_set_1080
-FBF2: 0F 21          CLR    $21
+FBF2: 0F 21          CLR    copy_of_screen_flipped_21
 FBF4: 86 90          LDA    #$90
 FBF6: B7 2B 41       STA    $2B41
 FBF9: 8E 2B 50       LDX    #$2B50

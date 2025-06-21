@@ -2,6 +2,7 @@ global_state_00 = 0x00
 boot_state_03 = 0x03
 event_pointer_18 = 0x18
 event_pointer_1a = 0x1a
+copy_of_screen_flipped_21 = 0x21
 dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
 copy_of_inputs_30 = 0x30

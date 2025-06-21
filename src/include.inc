@@ -367,9 +367,9 @@ multiply_ab:
 
 	* to trace at some virtual PCs, insert this macro
 	
-	.macro	LOG_REGS	z80pc
+	.macro	LOG_REGS	the_pc
 	move.w	sr,-(a7)
-	move.w	#0x\z80pc,-(a7)
+	move.w	#0x\the_pc,-(a7)
 	move.w	#0,-(a7)
 	jbsr	osd_log_cpu
 	addq.w	#4,a7

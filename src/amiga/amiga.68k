@@ -1090,8 +1090,8 @@ really_update_tiles:
 	jeq		1f
 	subq.b	#1,(-1,a0)	| decrease dirty counter
 	* read tile & color codes from RAM
-	move.b	(a6,d7.w),d1
-	move.b	(a5,d7.w),d0
+	move.b	(a6,d7.w),d0
+	move.b	(a5,d7.w),d1
 	movem.l	d2/d3/d7/a0/a1/a5,-(a7)
 	jbsr	update_bg_tile
 	movem.l	(a7)+,d2/d3/d7/a0/a1/a5
@@ -1105,7 +1105,60 @@ really_update_tiles:
 	rts
 	
 
-* < A0: target sprite pointer
+* * < A0: target sprite pointer
+* 
+* void trackfld_state::draw_sprites( bitmap_ind16 &bitmap, const rectangle &cliprect )
+* {
+* 	uint8_t *spriteram = m_spriteram;
+* 	uint8_t *spriteram_2 = m_spriteram2;
+* 	int offs;
+* 
+* 	for (offs = m_spriteram.bytes() - 2; offs >= 0; offs -= 2)
+* 	{
+* 		int attr = spriteram_2[offs];
+* 		int code = spriteram[offs + 1];
+* 		int color = attr & 0x0f;
+* 		if (!m_sprites_gfx_banked)
+* 			if (attr&1) code|=0x100; // extra tile# bit for the yiear conversion, trackfld doesn't have this many sprites so it will just get masked
+* 		int flipx = ~attr & 0x40;
+* 		int flipy = attr & 0x80;
+* 		int sx = spriteram[offs] - 1;
+* 		int sy = 240 - spriteram_2[offs + 1];
+* 
+* 		if (flip_screen())
+* 		{
+* 			sy = 240 - sy;
+* 			flipy = !flipy;
+* 		}
+* 
+* 		/* Note that this adjustement must be done AFTER handling flip screen, thus */
+* 		/* proving that this is a hardware related "feature" */
+* 		sy += 1;
+* 
+* 		// to fix the title screen in yieartf it would have to be like this, the same as yiear.c, this should be verified on the hw
+* 		//
+* 		//if (offs < 0x26)
+* 		//{
+* 		//  sy++;   /* fix title screen & garbage at the bottom of the screen */
+* 		//}
+* 
+* 
+* 
+* 			m_gfxdecode->gfx(0)->transmask(bitmap,cliprect,
+* 			code + m_sprite_bank1 + m_sprite_bank2, color,
+* 			flipx, flipy,
+* 			sx, sy,
+* 			m_palette->transpen_mask(*m_gfxdecode->gfx(0), color, 0));
+* 
+* 		/* redraw with wraparound */
+* 
+* 			m_gfxdecode->gfx(0)->transmask(bitmap,cliprect,
+* 			code + m_sprite_bank1 + m_sprite_bank2, color,
+* 			flipx, flipy,
+* 			sx - 256, sy,
+* 			m_palette->transpen_mask(*m_gfxdecode->gfx(0), color, 0));
+* 	}
+* }
 
 really_update_sprites:
 update_bobs_and_hw_sprites:
@@ -2098,30 +2151,48 @@ osd_video_dirty_out:
 	rts	
 
 
-* < D7: 0-0x400
+* < D7: 0-0x800
 * > D0: 
-compute_tile_xy_landscape:
+compute_tile_xy:
 	moveq	#0,d0
 	move.b	d7,d0
 	
-	and.b	#0x1F,d0	| x
+	and.b	#0x3F,d0	| x
 	move.w	d7,d1
-	and.w	#0x3FF,d1
-	lsr.w	#5,d1		| Y
+	and.w	#0x7FF,d1
+	lsr.w	#6,d1		| Y
 	lsl.w	#3,d1		| times 8
 	rts
 
-compute_tile_xy:
+	.ifdef	XXX
+compute_tile_xy_portrait:
 	moveq	#0,d0
 	moveq	#0,d1
-	move.w	d7,d0
-	and.w	#0x3F,d0	| this is X
+	move.w	d7,d1
 	lsr.w	#5,d7		| this is X
+	neg.w	d7
+	add.w	#32,d7
+	and.w	#0x1F,d1	| this is Y
+	*addq.w	#2,d1
 
-	move.b	d7,d1		| this is X
+	move.b	d7,d0		| this is X
 	lsl.b	#3,d1		| Y times 8
 	rts
+	.endif
 
+
+* TILE_GET_INFO_MEMBER(trackfld_state::get_bg_tile_info)
+* {
+* 	int attr = m_colorram[tile_index];
+* 	int code = m_videoram[tile_index] + 4 * (attr & 0xc0);
+* 	int color = attr & 0x0f;
+* 	int flags = ((attr & 0x10) ? TILE_FLIPX : 0) | ((attr & 0x20) ? TILE_FLIPY : 0);
+* 
+* 	if (m_bg_bank)
+* 		code |= 0x400;
+* 
+* 	tileinfo.set(1, code, color, flags);
+* }
 
 
 * addresses 0x3000->0x307F don't map to visible tiles (2 first rows)
@@ -2138,8 +2209,10 @@ update_bg_tile:
 	move.b	d0,d2			| tile code
 	moveq	#0,d3
 	move.b	d1,d3			| CLUT & tile code & flags
-	
-	
+	bclr	#6,d3
+	jeq		0f
+	bset	#8,d2			| add 0x100
+0:
 	.ifne	OPT_ENABLE_LOGGING
 	lea		character_log_table,a0
 	movem.w	d2-d3,-(a7)
@@ -2154,7 +2227,6 @@ update_bg_tile:
 	bsr		compute_tile_xy
 	
 	lea		character_table,a0
-
 	
 	* updating bitplanes
 	move.l	#SCREEN_PLANE_SIZE,d5
@@ -2530,6 +2602,8 @@ osd_read_inputs_2:
 	
 osd_read_system_inputs:
 	moveq	#-1,d0
+	rts
+	
 	movem.l	a0/d1,-(a7)
 	lea		keyboard_table(pc),a0
 	* misc control keys
