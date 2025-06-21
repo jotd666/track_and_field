@@ -1,7 +1,12 @@
-- continue get_address checks (scroll, ...)
-- converter: lbug CEC4: 10 AE 0E       LDY    $E,X
-
-- find video related get_address and patch them (auto!)
-- copy code checksum at start see if value ok!
+- copyright flashing, seems double buffering not working on the bottom...
+- avoid 2 first & last tile rows!
+- copperlist for row scrolling
+- log sprites to show intro properly
+- read_system_inputs returns all 0 if uncommented???
+- continue get_address checks (scroll!!)
+- dual playfield AGA
+- converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
+	cmp.w	(a0),d1   => macro!
+- 9A20: bug??? WTF	
 - converter: .global	cpu_init in include
 - patch inputs/system cf post_process.py

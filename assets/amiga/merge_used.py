@@ -5,7 +5,7 @@ from shared import *
 
 
 
-def merge(used_name):
+def merge(used_name,nb_items):
     merged_path_file = used_graphics_dir
 
 
@@ -20,7 +20,7 @@ def merge(used_name):
         with open(old_used,"rb") as f:
             old_contents = f.read()
     else:
-        old_contents = bytes(16*512)
+        old_contents = bytes(16*nb_items)
 
     contents = bytes([a|b for a,b in zip(new_contents,old_contents)])
 
@@ -34,5 +34,5 @@ def merge(used_name):
         with open(merged_path_file / used_name,"wb") as f:
             f.write(contents)
 
-merge("used_sprites")
-merge("used_tiles")
+merge("used_sprites",256)
+merge("used_tiles",512)

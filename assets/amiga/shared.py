@@ -48,41 +48,6 @@ def get_sprite_names():
     def add(i,name):
             rval[i] = name
 
-    # giving names to the sprites is cosmetic
-    # what is NOT cosmetic is the grouping which makes 2 16x8 sprites
-    # a single 16x16 sprite, which is much more efficient to blit
-    add_dual_range(0x39,0x40,"furthest_swarm_enemy")
-    add_dual_range(1,0x13,"player_ship",group=True)
-    add_range(0x1C0,0x1C6,"player_ship")
-    add_dual_range(0x90,0x99,"player_ship",group=True)
-    add_dual_range(0xC6,0xd4,"player_ship",group=True)
-    add_dual_range(0xD0,0xD3,"player_ship")
-    add_dual_range(0x34,0x36,"iceberg")
-    add_dual_range(0x36,0x39,"iceberg",group=True)
-    add_dual_range(0x88,0x90,"death_ray")
-    add_dual_range(0x81,0x88,"ray_emitter")
-    add_dual_range(0x78,0x7A,"neptune",group=True)
-    add(0x13,"star")
-    add(0x2d,"exploding_particle")
-    add_dual_range(0xD4,0xDD,"earth")
-    add_dual_range(0x2F,0x32,"big_explosion",group=True)
-    add_dual_range(0x32,0x34,"explosion")
-    add_dual_range(0xa0,0xbf,"enemy_ship",group=True)
-    add_dual_range(0x4b,0x55,"side_satellite",group=True)
-    add_dual_range(0xbc,0xc0,"bonus_satellite",group=True)
-    add_dual_range(0xde,0xef,"enemy_ship",group=True)
-    add_dual_range(0x61,0x77,"enemy_ship",group=True)
-    add_dual_range(0x55,0x5F,"chance_ship",group=True)
-    add_dual_range(0x23,0x2A,"chance_ship",group=True)
-    add_dual_range(0x18,0x1f,"player_laser")
-    add_dual_range(0x1f,0x23,"enemy_bomb")
-    add_dual_range(0x7A,0x7B,"neptune")
-
-    add_dual_range(0x65,0x66,"enemy_ship",group=True)
-    add_dual_range(0x9A,0xA0,"enemy_ship",group=True)
-    add_dual_range(0xEF,0x100,"enemy_ship",group=True)
-    add_dual_range(0x15,0x18,"score")
-
 
 
     return rval,groups

@@ -63,6 +63,7 @@ sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
 copy_of_inputs_2830 = $2830
 failed_rom_check_2a8e = $2a8e
+scroll_offsets_2af0 = $2af0
 event_buffer_2900 = $2900
 failed_rom_check_29d4 = $29d4
 display_state_2b40 = $2b40
@@ -409,9 +410,9 @@ write_copyright_text_61c3:
 62BE: CE 33 93       LDU    #$3393
 62C1: 86 03          LDA    #$03
 62C3: 97 40          STA    $40
-62C5: E7 C9 08 00    STB    $0800,U
+62C5: E7 C9 08 00    STB    $0800,U		; [video_address]
 62C9: A6 80          LDA    ,X+
-62CB: A7 C0          STA    ,U+
+62CB: A7 C0          STA    ,U+			; [video_address]
 62CD: 0A 40          DEC    $40
 62CF: 26 F4          BNE    $62C5
 62D1: 39             RTS
@@ -497,18 +498,19 @@ write_copyright_text_61c3:
 637F: 26 05          BNE    $6386
 6381: CC 51 40       LDD    #$5140
 6384: 20 03          BRA    $6389
+
 6386: CC 50 40       LDD    #$5040
-6389: E7 C9 08 00    STB    $0800,U
-638D: A7 C4          STA    ,U
+6389: E7 C9 08 00    STB    $0800,U		; [video_address]
+638D: A7 C4          STA    ,U			; [video_address]
 638F: 33 C8 34       LEAU   $34,U
 6392: 30 04          LEAX   $4,X
 6394: 0A 40          DEC    $40
 6396: 10 26 FF 42    LBNE   $62DC
 639A: 39             RTS
 
-639B: 6F C9 08 00    CLR    $0800,U
+639B: 6F C9 08 00    CLR    $0800,U		; [video_address]
 639F: 86 10          LDA    #$10
-63A1: A7 C4          STA    ,U
+63A1: A7 C4          STA    ,U			; [video_address]
 63A3: 20 EA          BRA    $638F
 63A5: 84 0F          ANDA   #$0F
 63A7: BD 61 EE       JSR    $61EE
@@ -791,7 +793,7 @@ irq_6600:
 6600: 7F 10 87       CLR    irq_mask_w_1087
 6603: 86 01          LDA    #$01
 6605: B7 10 00       STA    watchdog_1000
-6608: BD D9 06       JSR    $D906
+6608: BD D9 06       JSR    update_scrolling_D906
 660B: 96 00          LDA    global_state_00
 660D: 48             ASLA
 660E: 8E A8 69       LDX    #main_jump_table_a869
@@ -5666,12 +5668,12 @@ partially_reset_scrolling_8c3e:
 8D9B: 27 02          BEQ    $8D9F
 8D9D: 86 0B          LDA    #$0B
 8D9F: C6 03          LDB    #$03
-8DA1: A7 C0          STA    ,U+
+8DA1: A7 C0          STA    ,U+			; [video_address]
 8DA3: 5A             DECB
 8DA4: 26 FB          BNE    $8DA1
 8DA6: 33 41          LEAU   $1,U
 8DA8: C6 03          LDB    #$03
-8DAA: A7 C0          STA    ,U+
+8DAA: A7 C0          STA    ,U+			; [video_address]
 8DAC: 5A             DECB
 8DAD: 26 FB          BNE    $8DAA
 8DAF: 39             RTS
@@ -5684,7 +5686,7 @@ partially_reset_scrolling_8c3e:
 8DBB: C4 10          ANDB   #$10
 8DBD: 27 02          BEQ    $8DC1
 8DBF: 86 00          LDA    #$00
-8DC1: A7 C0          STA    ,U+
+8DC1: A7 C0          STA    ,U+		; [video_address]
 8DC3: 0A 49          DEC    $49
 8DC5: 26 FA          BNE    $8DC1
 8DC7: 10 8E A4 C8    LDY    #$A4C8
@@ -5694,9 +5696,9 @@ partially_reset_scrolling_8c3e:
 8DD1: C4 10          ANDB   #$10
 8DD3: 27 02          BEQ    $8DD7
 8DD5: 86 00          LDA    #$00
-8DD7: A7 C0          STA    ,U+
-8DD9: A7 C0          STA    ,U+
-8DDB: A7 C0          STA    ,U+
+8DD7: A7 C0          STA    ,U+				; [video_address]
+8DD9: A7 C0          STA    ,U+				; [video_address]
+8DDB: A7 C0          STA    ,U+				; [video_address]
 8DDD: CE 3B CA       LDU    #$3BCA
 8DE0: 86 02          LDA    #$02
 8DE2: 97 48          STA    $48
@@ -5707,7 +5709,7 @@ partially_reset_scrolling_8c3e:
 8DEC: C4 10          ANDB   #$10
 8DEE: 27 02          BEQ    $8DF2
 8DF0: 86 00          LDA    #$00
-8DF2: A7 C0          STA    ,U+
+8DF2: A7 C0          STA    ,U+		; [video_address]
 8DF4: 0A 49          DEC    $49
 8DF6: 26 FA          BNE    $8DF2
 8DF8: 33 C8 34       LEAU   $34,U
@@ -6171,7 +6173,7 @@ partially_reset_scrolling_8c3e:
 91B8: BD CB 3B       JSR    $CB3B
 91BB: 16 00 4A       LBRA   $9208
 91BE: 97 49          STA    $49
-91C0: 10 8E 2A F0    LDY    #$2AF0
+91C0: 10 8E 2A F0    LDY    #scroll_offsets_2af0
 91C4: CE AA 3A       LDU    #$AA3A
 91C7: 96 84          LDA    current_level_84
 91C9: 48             ASLA
@@ -6901,7 +6903,7 @@ partially_reset_scrolling_8c3e:
 97CB: BD 9B 5C       JSR    $9B5C
 97CE: 0A 48          DEC    $48
 97D0: 26 E4          BNE    $97B6
-97D2: 8E 2A F0       LDX    #$2AF0
+97D2: 8E 2A F0       LDX    #scroll_offsets_2af0
 97D5: 4F             CLRA
 97D6: 5F             CLRB
 97D7: ED 81          STD    ,X++
@@ -10202,18 +10204,20 @@ D901: 0A 48          DEC    $48
 D903: 26 D4          BNE    $D8D9
 D905: 39             RTS
 
-D906: 8E 18 4D       LDX    #$184D
-D909: 10 8E 2A F0    LDY    #$2AF0
-D90D: A6 84          LDA    ,X
-D90F: E6 89 04 00    LDB    $0400,X
+update_scrolling_D906:
+D906: 8E 18 4D       LDX    #scroll_registers_1840+$D
+D909: 10 8E 2A F0    LDY    #scroll_offsets_2af0
+D90D: A6 84          LDA    ,X			; load current values
+D90F: E6 89 04 00    LDB    $0400,X		; of scroll registers
 D913: 0D 21          TST    copy_of_screen_flipped_21
 D915: 27 06          BEQ    $D91D
 D917: A0 A0          SUBA   ,Y+
 D919: C2 00          SBCB   #$00
 D91B: 20 04          BRA    $D921
-D91D: AB A0          ADDA   ,Y+
+
+D91D: AB A0          ADDA   ,Y+		; non flipped, low nibble
 D91F: C9 00          ADCB   #$00
-D921: A7 80          STA    ,X+
+D921: A7 80          STA    ,X+		; high nibble (1Cxx)
 D923: E7 89 03 FF    STB    $03FF,X
 D927: 10 8C 2A F5    CMPY   #$2AF5
 D92B: 26 E0          BNE    $D90D
@@ -10245,7 +10249,7 @@ D96B: 7C 2F E8       INC    $2FE8
 D96E: 7A 2A FF       DEC    $2AFF
 D971: BD 85 25       JSR    $8525
 D974: 20 ED          BRA    $D963
-D976: 8E 2A F0       LDX    #$2AF0
+D976: 8E 2A F0       LDX    #scroll_offsets_2af0
 D979: CC 00 00       LDD    #$0000
 D97C: ED 81          STD    ,X++
 D97E: 8C 2B 00       CMPX   #$2B00
@@ -10849,9 +10853,9 @@ E120: C6 00          LDB    #$00
 E122: 80 01          SUBA   #$01
 E124: 2B 02          BMI    $E128
 E126: C6 03          LDB    #$03
-E128: E7 89 08 00    STB    $0800,X
+E128: E7 89 08 00    STB    $0800,X			; [video_address]
 E12C: C6 9D          LDB    #$9D
-E12E: E7 80          STB    ,X+
+E12E: E7 80          STB    ,X+			; [video_address]
 E130: 8C 32 DB       CMPX   #$32DB
 E133: 26 EB          BNE    $E120
 E135: 8E 28 6A       LDX    #$286A
@@ -12646,8 +12650,8 @@ F29A: 26 04          BNE    $F2A0
 F29C: 0D 49          TST    $49
 F29E: 27 08          BEQ    $F2A8
 F2A0: 0C 49          INC    $49
-F2A2: E7 84          STB    ,X
-F2A4: 6F 89 08 00    CLR    $0800,X
+F2A2: E7 84          STB    ,X			; [video_address]
+F2A4: 6F 89 08 00    CLR    $0800,X		; [video_address]
 F2A8: 30 01          LEAX   $1,X
 F2AA: 0A 48          DEC    $48
 F2AC: 26 CB          BNE    $F279
@@ -13423,7 +13427,7 @@ F92D: 3D             MUL
 F92E: 30 8B          LEAX   D,X
 F930: F6 29 9E       LDB    $299E
 F933: 96 48          LDA    $48
-F935: A7 85          STA    B,X
+F935: A7 85          STA    B,X		; [video_address]
 F937: C1 02          CMPB   #$02
 F939: 27 2F          BEQ    $F96A
 F93B: 7C 29 9E       INC    $299E
@@ -13431,6 +13435,7 @@ F93E: 39             RTS
 
 F93F: C6 10          LDB    #$10
 F941: 20 D0          BRA    $F913
+
 F943: F6 29 9E       LDB    $299E
 F946: 27 21          BEQ    $F969
 F948: 7A 29 9E       DEC    $299E

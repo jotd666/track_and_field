@@ -24,6 +24,8 @@ AFB_68030 = 2
 
 NO68020 = 1
 
+NB_POSSIBLE_SPRITES = 256
+NB_POSSIBLE_TILES = 512
 
 BORDERBLANK = 1
 
@@ -68,7 +70,7 @@ OPT_ENABLE_DOUBLE_BUFFERING = 1
 
 OPT_ENABLE_MULTIPLEXED_SPRITES = 0
 
-NB_PLAYFIELD_PLANES = 5
+NB_PLAYFIELD_PLANES = 4
 NB_BOB_PLANES = 4		| only using 16 first colors
 TOTAL_NB_COLORS = 1<<NB_PLAYFIELD_PLANES
 NB_BYTES_PER_ROW = 80
@@ -1281,26 +1283,6 @@ update_one_bob:
 	.endif
 
 	move.w	#SPRITE_HEIGHT,d6
-	* check if it is a grouped sprite in the table with 0x200 pre-computed entries
-	tst.b	(a2,d3.w)
-	jeq		10f
-	* grouped 16x16 sprite. They have cleverly organized those by code
-	* if not flipped 0x9A is displayed on top and 0x19A is displayed 8 pixels below
-	* if flipped, it's the other way round
-	btst	#6,(TARGET_SPRITE_CODE2,a0)
-	jne		100f
-	* flipped: only display 0x1xx sprite
-	sub.w	#0x100,d3
-	jcs		2f
-	jra		101f
-100:
-	* not flipped: only display 0x0xx sprite
-	cmp.w	#0x100,d3
-	jcc		2f	
-101:
-	add.w	d6,d6		| double the height to add
-	* end grouped 16x16 sprite
-10:
 	add.w	d3,d3
 	add.w	d3,d3
 	move.l	(a4,d3.w),d4		| get pointer from bob table
@@ -1460,30 +1442,31 @@ update_one_hw_sprite:
 	.ifne	OPT_ENABLE_LOGGING
 
 osd_dump_logs:
+	BREAKPOINT	"dumppp"
 	move.w	sr,-(a7)
 	move.w	#0x2700,SR
 	movem.l	d0-a6,-(a7)
 	move.l	_resload(pc),a2
 	lea		sprite_log_table,a1
 	lea		sprite_log_name(pc),a0
-	move.l	#16*512,d0
+	move.l	#16*NB_POSSIBLE_SPRITES,d0
 	jbsr	resload_SaveFile(a2)
 	
 	move.l	_resload(pc),a2
 	lea		character_log_table,a1
 	lea		character_log_name(pc),a0
-	move.l	#16*512,d0
+	move.l	#16*NB_POSSIBLE_TILES,d0
 	jbsr	resload_SaveFile(a2)
 		
-	GET_MEMORY_START_AND_DP
-	lea		sprites_ram_name_A000(pc),a0
-	lea	(0x2000,a6),a1		| sprites
-	move.l	#0x200,d0
-	jbsr	resload_SaveFile(a2)
-	lea		sprites_ram_name_A200(pc),a0
-	lea	(0x2200,a6),a1		| sprites
-	move.l	#0x200,d0
-	jbsr	resload_SaveFile(a2)
+*	GET_MEMORY_START_AND_DP
+*	lea		sprites_ram_name_A000(pc),a0
+*	lea	(0x2000,a6),a1		| sprites
+*	move.l	#0x200,d0
+*	jbsr	resload_SaveFile(a2)
+*	lea		sprites_ram_name_A200(pc),a0
+*	lea	(0x2200,a6),a1		| sprites
+*	move.l	#0x200,d0
+*	jbsr	resload_SaveFile(a2)
 	
 	jbsr	save_cpu_log
 	
@@ -2602,8 +2585,8 @@ osd_read_inputs_2:
 	
 osd_read_system_inputs:
 	moveq	#-1,d0
+
 	rts
-	
 	movem.l	a0/d1,-(a7)
 	lea		keyboard_table(pc),a0
 	* misc control keys
@@ -3085,13 +3068,13 @@ cpu_log_enable:
 	.section	.bss
 
 sprite_log_table:
-	* 16 cluts, 512 tiles
+	* 16 cluts, 256 tiles
 	* a lot of combinations aren't used (fortunately!)
-	ds.b	16*512
+	ds.b	16*NB_POSSIBLE_SPRITES
 character_log_table:
-	* 16 cluts, 512 tiles
+	* 16 cluts, 256 tiles
 	* a lot of combinations aren't used (fortunately!)
-	ds.b	16*512
+	ds.b	16*NB_POSSIBLE_TILES
 	.endif
 	.endif
 
