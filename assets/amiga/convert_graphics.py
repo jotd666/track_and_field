@@ -267,6 +267,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                         wtile = plane_func(tile)
 
                         if is_bob:
+                            actual_nb_planes += 1
 ##                            if i in grouped_sprites:
 ##                                # change wtile, fetch code +0x100
 ##                                other_tile_index = (i+0x100)%0x200
@@ -279,7 +280,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                             # only 4 planes + mask => 5 planes
                             y_start,wtile = bitplanelib.autocrop_y(wtile)
                             height = wtile.size[1]
-                            bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette,generate_mask=True,blit_pad=True)
+                            bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette,generate_mask=True,blit_pad=False)
                         else:
                             # 5 planes, no mask
                             height = 8

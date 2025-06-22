@@ -88,7 +88,7 @@ RESTORE_SCREEN_SIZE = RESTORE_SCREEN_PLANE_SIZE*NB_BOB_PLANES
 SCREEN_SIZE = SCREEN_PLANE_SIZE*NB_PLAYFIELD_PLANES
 NB_HOST_SPRITES = 8
 
-NB_TARGET_SPRITES = 0x40/4  
+NB_TARGET_SPRITES = 0x40/2  
 	
 TARGET_SPRITE_X = 0x400
 TARGET_SPRITE_Y = 1 
@@ -1040,6 +1040,7 @@ blit_background:
 	WAIT_BLIT
     
     * blitter registers set
+    move.l  #-1,bltafwm(a5)
 
 	move.l d3,bltcon0(a5)	| sets con0 and con1
 
@@ -1218,14 +1219,14 @@ update_bobs_and_hw_sprites:
 update_one_bob:
 	* X = 0 and Y = 0: disabled
 	
+	move.b	#1,0x100
 	moveq	#0,d0
 	moveq	#0,d1
 	move.b	(TARGET_SPRITE_Y,a0),d1  | sprite Y
-	jne	0f			| Y set to 0: not shown
+	jeq	2f			| Y set to 0: not shown
 	move.b	(TARGET_SPRITE_X,a0),d0
 	jeq	2f
 0:
-	
 
 	.ifne	SPRITE_Y_CORRECTION
 	add.w	#SPRITE_Y_CORRECTION,d1
@@ -1233,6 +1234,9 @@ update_one_bob:
 	.ifne	SPRITE_X_CORRECTION
 	add.w	#SPRITE_X_CORRECTION,d0
 	.endif
+	
+	neg.w	d1
+	add.w	#241,d1
 	
 	moveq	#0,d2
 	moveq	#0,d3
@@ -1580,16 +1584,18 @@ blit_planes_any_internal_cookie_cut:
     lsr.w   #1,d2
     add.w   d2,d4       | blit height
     * always the same settings (ATM)
-	moveq	#0,d2
+	moveq	#-2,d2
 	add.w	d5,a3			| apply y offset to mask too (y offset looks wrong)
 	
     * now just wait for blitter ready to write all registers
 	WAIT_BLIT
-    
+   
     * blitter registers set
 
 	move.w d2,bltamod(a5)		|A modulo=bytes to skip between lines
 	move.w d2,bltbmod(a5)		|B modulo=bytes to skip between lines
+	moveq	#0,d2
+    move.w  d2,bltalwm(a5)
 	
     move.w  d0,bltcmod(a5)	|C modulo
     move.w  d0,bltdmod(a5)	|D modulo

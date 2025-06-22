@@ -83,7 +83,7 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
             if flipy:
                 im = ImageOps.mirror(im)
 
-            print(f"code:{code:02x}, color:{color:02x}, X:{sx}, Y:{sy}")
+            print(f"offs:{offs:02x}, code:{code:02x}, color:{color:02x}, X:{sx}, Y:{sy}")
             result.paste(im,(sx,sy))
             nb_active += 1
 
@@ -91,4 +91,4 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
     print(f"nb active: {nb_active}")
 
 
-process(r"mem_1800")
+process(r"amiga")
