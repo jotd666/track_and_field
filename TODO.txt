@@ -1,5 +1,6 @@
 - copyright flashing, seems double buffering not working on the bottom...
 - avoid 2 first & last tile rows!
+- sprites update at least to log them!
 - copperlist for row scrolling
 - log sprites to show intro properly
 - read_system_inputs returns all 0 if uncommented???

@@ -88,14 +88,13 @@ RESTORE_SCREEN_SIZE = RESTORE_SCREEN_PLANE_SIZE*NB_BOB_PLANES
 SCREEN_SIZE = SCREEN_PLANE_SIZE*NB_PLAYFIELD_PLANES
 NB_HOST_SPRITES = 8
 
-NB_TARGET_SPRITES = 0x200/4  
+NB_TARGET_SPRITES = 0x40/4  
 	
-	STRUCTURE	TARGET_SPRITE,0
-	UBYTE	TARGET_SPRITE_Y
-	UBYTE	TARGET_SPRITE_CODE1
-	UBYTE	TARGET_SPRITE_CODE2
-	UBYTE	TARGET_SPRITE_X
-	LABEL	TARGET_SPRITE_SIZEOF
+TARGET_SPRITE_X = 0x400
+TARGET_SPRITE_Y = 1 
+TARGET_SPRITE_CODE = 0x401 
+TARGET_SPRITE_ATTR = 0
+TARGET_SPRITE_SIZEOF = 4
 
 	STRUCTURE	PREVIOUS_SPRITE,0
 	UWORD	PREV_X
@@ -1107,64 +1106,10 @@ really_update_tiles:
 	rts
 	
 
-* * < A0: target sprite pointer
-* 
-* void trackfld_state::draw_sprites( bitmap_ind16 &bitmap, const rectangle &cliprect )
-* {
-* 	uint8_t *spriteram = m_spriteram;
-* 	uint8_t *spriteram_2 = m_spriteram2;
-* 	int offs;
-* 
-* 	for (offs = m_spriteram.bytes() - 2; offs >= 0; offs -= 2)
-* 	{
-* 		int attr = spriteram_2[offs];
-* 		int code = spriteram[offs + 1];
-* 		int color = attr & 0x0f;
-* 		if (!m_sprites_gfx_banked)
-* 			if (attr&1) code|=0x100; // extra tile# bit for the yiear conversion, trackfld doesn't have this many sprites so it will just get masked
-* 		int flipx = ~attr & 0x40;
-* 		int flipy = attr & 0x80;
-* 		int sx = spriteram[offs] - 1;
-* 		int sy = 240 - spriteram_2[offs + 1];
-* 
-* 		if (flip_screen())
-* 		{
-* 			sy = 240 - sy;
-* 			flipy = !flipy;
-* 		}
-* 
-* 		/* Note that this adjustement must be done AFTER handling flip screen, thus */
-* 		/* proving that this is a hardware related "feature" */
-* 		sy += 1;
-* 
-* 		// to fix the title screen in yieartf it would have to be like this, the same as yiear.c, this should be verified on the hw
-* 		//
-* 		//if (offs < 0x26)
-* 		//{
-* 		//  sy++;   /* fix title screen & garbage at the bottom of the screen */
-* 		//}
-* 
-* 
-* 
-* 			m_gfxdecode->gfx(0)->transmask(bitmap,cliprect,
-* 			code + m_sprite_bank1 + m_sprite_bank2, color,
-* 			flipx, flipy,
-* 			sx, sy,
-* 			m_palette->transpen_mask(*m_gfxdecode->gfx(0), color, 0));
-* 
-* 		/* redraw with wraparound */
-* 
-* 			m_gfxdecode->gfx(0)->transmask(bitmap,cliprect,
-* 			code + m_sprite_bank1 + m_sprite_bank2, color,
-* 			flipx, flipy,
-* 			sx - 256, sy,
-* 			m_palette->transpen_mask(*m_gfxdecode->gfx(0), color, 0));
-* 	}
-* }
+
 
 really_update_sprites:
 update_bobs_and_hw_sprites:
-	rts
 	
 	***********************
 	* erase previous BOBs *
@@ -1209,18 +1154,59 @@ update_bobs_and_hw_sprites:
 	*********************************************
 
 
-*    lea _custom,A5
-*	move.l	bob_previous_drawed_sprites(pc),a6
+    lea _custom,A5
+	move.l	bob_previous_drawed_sprites(pc),a6
 *	lea		sprite_groups(pc),a2
-*	lea		bob_table,a4
-*	moveq	#NB_TARGET_SPRITES-1,d7
-*1:
-*	jbsr	update_one_bob
-*	subq.w	#4,a0
-*	dbf		d7,1b
-*2:
+	GET_MEMORY_START_AND_DP
+	lea		(0x183E,a6),a0		| sprite start
+	lea		bob_table,a4
+	move.w	#NB_TARGET_SPRITES-1,d7
+1:
+	jbsr	update_one_bob
+	subq.w	#2,a0
+	dbf		d7,1b
+2:
 	rts
 	
+* * < A0: target sprite pointer
+* 
+* void trackfld_state::draw_sprites( bitmap_ind16 &bitmap, const rectangle &cliprect )
+* {
+* 	uint8_t *spriteram_1C00 = m_spriteram;
+* 	uint8_t *spriteram_1800 = m_spriteram2;
+* 	int offs;
+* 
+* 	for (offs = m_spriteram.bytes() - 2; offs >= 0; offs -= 2)
+* 	{
+* 		int attr = spriteram_1800[offs];
+* 		int code = spriteram_1C00[offs + 1];
+* 		int color = attr & 0x0f;
+* 		int flipx = ~attr & 0x40;
+* 		int flipy = attr & 0x80;
+* 		int sx = spriteram_1C00[offs] - 1;
+* 		int sy = 240 - spriteram_1800[offs + 1];
+* 
+* 
+* 		/* Note that this adjustement must be done AFTER handling flip screen, thus */
+* 		/* proving that this is a hardware related "feature" */
+* 		sy += 1;
+* 
+* 
+* 			m_gfxdecode->gfx(0)->transmask(bitmap,cliprect,
+* 			code + m_sprite_bank1 + m_sprite_bank2, color,
+* 			flipx, flipy,
+* 			sx, sy,
+* 			m_palette->transpen_mask(*m_gfxdecode->gfx(0), color, 0));
+* 
+* 		/* redraw with wraparound */
+* 
+* 			m_gfxdecode->gfx(0)->transmask(bitmap,cliprect,
+* 			code + m_sprite_bank1 + m_sprite_bank2, color,
+* 			flipx, flipy,
+* 			sx - 256, sy,
+* 			m_palette->transpen_mask(*m_gfxdecode->gfx(0), color, 0));
+* 	}
+* }
 
 * < A0: sprite array
 * < A2: sprite group table
@@ -1230,15 +1216,15 @@ update_bobs_and_hw_sprites:
 * must preserve all of those, plus D7
 
 update_one_bob:
-	* code = 0 and clut = 0 => disabled ?? to check
-	moveq	#0,d0
-	* game disables sprites on Y, but X=0 is a perfectly valid value
+	* X = 0 and Y = 0: disabled
 	
+	moveq	#0,d0
 	moveq	#0,d1
 	move.b	(TARGET_SPRITE_Y,a0),d1  | sprite Y
-	jeq	2f			| Y set to 0: not shown
+	jne	0f			| Y set to 0: not shown
 	move.b	(TARGET_SPRITE_X,a0),d0
-
+	jeq	2f
+0:
 	
 
 	.ifne	SPRITE_Y_CORRECTION
@@ -1250,22 +1236,8 @@ update_one_bob:
 	
 	moveq	#0,d2
 	moveq	#0,d3
-	* code = ((m_spriteram[offs + 2] & 0x20) << 2) | (m_spriteram[offs + 1] >> 1)
-	move.b	(TARGET_SPRITE_CODE1,a0),d2
-	jeq		2f
-
-	move.b	(TARGET_SPRITE_CODE2,a0),d3
-	and.b	#0x20,d3
-	add.w	d3,d3
-	add.w	d3,d3
-	lsr.b	#1,d2
-	jcc		0f
-	bset	#8,d3			| sprite bank 1 (add 0x100)
-0:
-	or.b	d2,d3
-	
-	move.b	(TARGET_SPRITE_CODE2,a0),d2
-	* color = m_spriteram[offs + 2] & 0x0f
+	move.b	(TARGET_SPRITE_ATTR,a0),d2
+	move.b	(TARGET_SPRITE_CODE,a0),d3
 	and.b	#0xF,d2		| CLUT
 
 
@@ -1283,6 +1255,25 @@ update_one_bob:
 	.endif
 
 	move.w	#SPRITE_HEIGHT,d6
+*	* check if it is a grouped sprite in the table with 0x100 pre-computed entries
+*	tst.b	(a2,d3.w)
+*	jeq		10f
+*	* grouped 32x16 sprite. They usually follow each other
+*	btst	#6,(TARGET_SPRITE_ATTR,a0)
+*	jne		100f
+*	* flipped: only display 0x1xx sprite
+*	sub.w	#0x100,d3
+*	jcs		2f
+*	jra		101f
+*100:
+*	* not flipped: only display 0x0xx sprite
+*	cmp.w	#0x100,d3
+*	jcc		2f	
+*101:
+*	add.w	d6,d6		| double the height to add
+*	* end grouped 16x16 sprite
+*10:
+
 	add.w	d3,d3
 	add.w	d3,d3
 	move.l	(a4,d3.w),d4		| get pointer from bob table
@@ -1296,10 +1287,10 @@ update_one_bob:
 	jeq		22f
 
 	* re-load properties (for X/Y flip)
-	move.b	(TARGET_SPRITE_CODE2,a0),d3
+	move.b	(TARGET_SPRITE_ATTR,a0),d3
 	move.l	a0,-(a7)
 	move.l	d4,a0
-	* flip bits are exactly like Pooyan
+	* flip bits are exactly like Pooyan/Gyruss
     * flip_x = ~D3 & 0x40
     * flip_y =  D3 & 0x80
 	btst	#7,d3
@@ -1368,16 +1359,17 @@ update_one_bob:
 *sprite_groups:
 *	.include	"sprite_groups.68k"
 	
+	.ifdef	HW_SPRITES
 update_one_hw_sprite:
 	* code = 0 and clut = 0 => disabled ?? to check
 	moveq	#0,d2
-	move.b	(TARGET_SPRITE_CODE1,a0),d2
+	move.b	(TARGET_SPRITE_CODE,a0),d2
 	jeq	2f
 
 	move.b	(TARGET_SPRITE_X,a0),d0
 	add.w	d2,d2
 	add.w	d2,d2
-	btst    #2,(TARGET_SPRITE_CODE2,a0)
+	btst    #2,(TARGET_SPRITE_ATTR,a0)
 	jeq		0f
 	addq	#2,d2
 0:
@@ -1388,7 +1380,7 @@ update_one_hw_sprite:
 	and.w	#0xFF,d2
 	* it is a HW sprite all right
 	lsl.w	#4,d2	| 4 pointers for each sprite
-	move.b  (TARGET_SPRITE_CODE2,a0),d3
+	move.b  (TARGET_SPRITE_CODE,a0),d3
 	btst	#0,d3
 	jeq		10f
 	addq	#8,d2			| mirror sprite couple
@@ -1438,11 +1430,12 @@ update_one_hw_sprite:
 2:
 	
 	rts
+	.endif
+	
 
 	.ifne	OPT_ENABLE_LOGGING
 
 osd_dump_logs:
-	BREAKPOINT	"dumppp"
 	move.w	sr,-(a7)
 	move.w	#0x2700,SR
 	movem.l	d0-a6,-(a7)
@@ -1957,7 +1950,7 @@ platform_init:
     move.w #0x200+(NB_PLAYFIELD_PLANES<<12),bplcon0(a5)
 
  	*         VVHH
-    move.w #0x2499,diwstrt(a5)
+    move.w #0x2499-0X10,diwstrt(a5)
     move.w #0x2479,diwstop(a5)
 *	cmp.l	#NTSC_MONITOR_ID,monitor
 *	jne		0f
