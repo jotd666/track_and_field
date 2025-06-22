@@ -29,16 +29,17 @@ NB_POSSIBLE_TILES = 512
 
 BORDERBLANK = 1
 
+BASE_BPLCON3_VALUE = (1<<12)+(BORDERBLANK<<5)  | dpf second playfield palette starts at color 16!
+BASE_BPLCON2_VALUE = 0x0024		| sprites above all playfields
 
 SPRITE_X_CORRECTION = 0
 SPRITE_Y_CORRECTION = 0
-SPRITE_HEIGHT = 8
+SPRITE_HEIGHT = 16
 
 Y_MAX = 256
 
 _custom = 0xDFF000
 
-BASE_BPLCON2_VALUE = 0x0064		| sprites above all playfields
 
 RAM_START = 0x1800
 ROM_START = 0x6000
@@ -70,10 +71,11 @@ OPT_ENABLE_DOUBLE_BUFFERING = 1
 
 OPT_ENABLE_MULTIPLEXED_SPRITES = 0
 
-NB_PLAYFIELD_PLANES = 4
-NB_BOB_PLANES = 4		| only using 16 first colors
-TOTAL_NB_COLORS = 1<<NB_PLAYFIELD_PLANES
-NB_BYTES_PER_ROW = 80
+NB_TILE_PLANES = 4
+NB_BOB_PLANES = 4
+TOTAL_NB_COLORS = 1<<NB_TILE_PLANES
+FG_NB_BYTES_PER_ROW = 40
+BG_NB_BYTES_PER_ROW = 80
 
 * add 16 so sprites can be drawn at the bottom
 * without corrupting the screen
@@ -81,14 +83,14 @@ NB_LINES = Y_MAX+16
 NB_PLAYFIELD_LINES = NB_LINES
 
 
-SCREEN_PLANE_SIZE = NB_BYTES_PER_ROW*NB_PLAYFIELD_LINES
-RESTORE_SCREEN_PLANE_SIZE = SCREEN_PLANE_SIZE
-RESTORE_SCREEN_SIZE = RESTORE_SCREEN_PLANE_SIZE*NB_BOB_PLANES
+BG_SCREEN_PLANE_SIZE = BG_NB_BYTES_PER_ROW*NB_PLAYFIELD_LINES
+FG_SCREEN_PLANE_SIZE = FG_NB_BYTES_PER_ROW*NB_PLAYFIELD_LINES
+BG_SCREEN_SIZE = BG_SCREEN_PLANE_SIZE*NB_TILE_PLANES
+FG_SCREEN_SIZE = FG_SCREEN_PLANE_SIZE*NB_BOB_PLANES
 
-SCREEN_SIZE = SCREEN_PLANE_SIZE*NB_PLAYFIELD_PLANES
 NB_HOST_SPRITES = 8
 
-NB_TARGET_SPRITES = 0x40/2  
+NB_TARGET_SPRITES = 0x40  
 	
 TARGET_SPRITE_X = 0x400
 TARGET_SPRITE_Y = 1 
@@ -358,29 +360,29 @@ _user:
 	lea		debug_copperlist,a0
 	move.l	a0,cop1lc(a5)
 	
-	lea		bg_screen_buffer_1,a0
+	lea		fg_screen_buffer_1,a0
 	addq	#2,a0	| leave 16 bits hidden for left side clipping
-	move.l	a0,bg_screen_data_1
-	move.l	a0,playfield_drawed_screen_ptr
+	move.l	a0,fg_screen_data_1
+	move.l	a0,playfield_drawn_screen_ptr
 	move.l	a0,playfield_displayed_screen_ptr
 
 
 
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-	lea		bg_screen_buffer_2,a0
+	lea		fg_screen_buffer_2,a0
 	addq	#2,a0	| leave 16 bits hidden for left side clipping
-	move.l	a0,bg_screen_data_2
+	move.l	a0,fg_screen_data_2
 	move.l	a0,playfield_displayed_screen_ptr
 	.endif
 		
 	* set them even if reset by game afterwards
 	* avoiding ugly stripe bitplane effect at startup
 
-	bsr		set_static_bitplanes
+	bsr		set_bob_bitplanes
 
-	move.w	#TOTAL_NB_COLORS,d0
+	move.w	#TOTAL_NB_COLORS*2,d0
 	lea		palette,a0
-	lea		game_colors,a1
+	lea		tiles_colors,a1
 	bsr		load_palette
 	
 
@@ -1001,69 +1003,6 @@ add_10000_points:
 	move.l	(a7)+,a6
 	rts
 
-* what: blits data on bg plane, no horizontal shifting (erase)
-* args:
-* < A0: pristine background
-* < A1: dest buffer
-* < D0: X (rounded to smaller 8-multiple)
-* < D1: Y
-* < D2: width in bytes
-* < D4: height
-
-* trashes: D0-D1
-
-blit_background:
-	movem.l	d2-d6/a0-a5,-(a7)
-	lea		_custom,a5
-	* adjust offset X: X//8
-	lsr.w	#3,d0
-	lea		mulNB_BYTES_PER_ROW_table(pc),a4
-	add.w	d1,d1
-	* add Y offset: Y*40
-	add.w	(a4,d1.w),d0
-	* same offset for source and destination
-	add.w	d0,a1
-	add.w	d0,a0
-	
-
-    move.l  #0x09f00000,d3    | A->D copy, ascending mode	
-	move.w	#NB_BYTES_PER_ROW,d1		| blit modulo
-
-    sub.w   d2,d1       | blit modulo
-    lsl.w   #6,d4
-    lsr.w   #1,d2		| blit width
-    add.w   d2,d4       | blit height
-	
-    * always the same settings
-
-    * now just wait for blitter ready to write all registers
-	WAIT_BLIT
-    
-    * blitter registers set
-    move.l  #-1,bltafwm(a5)
-
-	move.l d3,bltcon0(a5)	| sets con0 and con1
-
-    move.w  d1,bltamod(a5)	|A modulo
-    move.w  d1,bltdmod(a5)	|D modulo
-							
-	move.l a0,bltapt(a5)	|source graphic top left corner
-	move.l a1,bltdpt(a5)	|destination top (bottom) left corner
-	move.w  d4,bltsize(a5)	|rectangle size, starts blit
-	
-	.rept	NB_BOB_PLANES-1
-	lea	(RESTORE_SCREEN_PLANE_SIZE,a0),a0
-	lea	(SCREEN_PLANE_SIZE,a1),a1
-	WAIT_BLIT
-	* second bitplane
-	move.l a0,bltapt(a5)	|source graphic top left corner
-	move.l a1,bltdpt(a5)	|destination top (bottom) left corner
-	move.w  d4,bltsize(a5)	|rectangle size, starts blit
-	.endr
-	
-	movem.l	(a7)+,d2-d6/a0-a5
-	rts
-
 * we're going to scan for dirty tiles (0x400 array)
 * an optimization is to also have flags for 0x20-size regions
 * if the value is 0, then no need to try to refresh the next
@@ -1115,12 +1054,10 @@ update_bobs_and_hw_sprites:
 	***********************
 	* erase previous BOBs *
 	***********************
-	move.l	bob_previous_drawed_sprites(pc),a4
+	move.l	bob_previous_drawn_sprites(pc),a4
 	lea		_custom,a5
-	
 	* clear previous positions
-	lea	background_restore_buffer,a0
-	move.l	playfield_drawed_screen_ptr(pc),a1
+	move.l	playfield_drawn_screen_ptr(pc),a1
 	move.w	#NB_TARGET_SPRITES-1,d7
 1:
 	move.l	(a4),d1	| read X and Y
@@ -1131,17 +1068,14 @@ update_bobs_and_hw_sprites:
 	clr.l	(a4)+			| ack deletion
 	move.w	(a4)+,d4		| height
 	move.w	(a4)+,d2		| width/clut index (if star)
-	move.b	(a4)+,d3		| set if star
+	move.b	(a4)+,d3		| ignored
 	move.b	(a4)+,d5
 
-	tst.b	d3
-	jeq		21f
-	moveq	#2,d2	| star: blit width = 2
-21:
 	and.w	#0x1F0,d0		| align on 16 lower bound
-	jbsr		blit_background
-	jra		4f
-4:
+	move.w	#NB_TILE_PLANES,d3
+	move.l		playfield_drawn_screen_ptr(pc),a1
+	jbsr		clear_planes_any_blitter_internal
+
 	dbf		d7,1b	
 	bra.b	12f
 11:
@@ -1156,12 +1090,12 @@ update_bobs_and_hw_sprites:
 
 
     lea _custom,A5
-	move.l	bob_previous_drawed_sprites(pc),a6
 *	lea		sprite_groups(pc),a2
 	GET_MEMORY_START_AND_DP
 	lea		(0x183E,a6),a0		| sprite start
 	lea		bob_table,a4
-	move.w	#NB_TARGET_SPRITES-1,d7
+	move.w	#NB_TARGET_SPRITES/2-1,d7
+	move.l	bob_previous_drawn_sprites(pc),a6
 1:
 	jbsr	update_one_bob
 	subq.w	#2,a0
@@ -1213,13 +1147,12 @@ update_bobs_and_hw_sprites:
 * < A2: sprite group table
 * < A4: bob table
 * < A5: custom
-* < A6: previously drawed sprites array
+* < A6: previously drawn sprites array
 * must preserve all of those, plus D7
 
 update_one_bob:
 	* X = 0 and Y = 0: disabled
 	
-	move.b	#1,0x100
 	moveq	#0,d0
 	moveq	#0,d1
 	move.b	(TARGET_SPRITE_Y,a0),d1  | sprite Y
@@ -1316,7 +1249,7 @@ update_one_bob:
 
 	* A0 points on the first bitplane of the bob
 
-	move.l		playfield_drawed_screen_ptr(pc),a1
+	move.l		playfield_drawn_screen_ptr(pc),a1
 	
 	* D0 and D1 are already set
 	move.w	(a0)+,d6				| active plane mask
@@ -1541,7 +1474,7 @@ blit_planes_any_internal_cookie_cut:
 1:	
 	tst	d1
     beq.b   2f    | optim
-    lea		mulNB_BYTES_PER_ROW_table(pc),a4
+    lea		mulFG_NB_BYTES_PER_ROW_table(pc),a4
 	.ifdef	NO68020
 	add.w	d1,d1
     move.w  (a4,d1.w),d1	| y times 40
@@ -1573,7 +1506,7 @@ blit_planes_any_internal_cookie_cut:
     * but a 68000 CPU doesn't and since we RETURN A1...
     *bclr    #0,d1
     add.w   d1,a1       | plane position (D1 < 0x7FFF, 288*40=0x2D00)
-	move.w	#NB_BYTES_PER_ROW,d0
+	move.w	#FG_NB_BYTES_PER_ROW,d0
 	tst.w	d4
 	bpl.b	5f
 	neg.w	d0
@@ -1606,7 +1539,7 @@ blit_planes_any_internal_cookie_cut:
 6:
 	jbsr	process_1_plane
 	
-	lea		(SCREEN_PLANE_SIZE,a1),a1
+	lea		(FG_SCREEN_PLANE_SIZE,a1),a1
 	dbf		d3,6b
 7:
 	jbsr	process_1_plane
@@ -1689,7 +1622,7 @@ clear_planes_any_blitter_internal:
 	* null or negative height after clipping: out
 	rts
 0:
-    lea mulNB_BYTES_PER_ROW_table(pc),a2
+    lea mulFG_NB_BYTES_PER_ROW_table(pc),a2
     add.w   d1,d1
     move.w  (a2,d1.w),d1
 1:
@@ -1704,7 +1637,7 @@ clear_planes_any_blitter_internal:
 	moveq	#1,d1
 	ror.l	#8,d1     | AKA move.l  #0x01000000,d5   | minterm useD & rect clear (0xA) 
 
-	move.w #NB_BYTES_PER_ROW,d0
+	move.w #FG_NB_BYTES_PER_ROW,d0
 	bclr	#0,d2		| make sure D2 is even (else strange things occur!)
     sub.w   d2,d0       | blit width
 
@@ -1716,7 +1649,7 @@ clear_planes_any_blitter_internal:
     * now just wait for blitter ready to write all registers
 	WAIT_BLIT
     
-	
+	move.l	#-1,bltafwm(a5)
 	move.l d1,bltcon0(a5)	
     move.w  d0,bltdmod(a5)	|D modulo
 	
@@ -1728,7 +1661,7 @@ clear_planes_any_blitter_internal:
 *	lsr.b	#1,d5
 *	jcc		32f
 	BTST	#6,(dmaconr,a5)
-	jeq		31f
+	jra		31f
 	* blitter is busy: do it with cpu for that plane
 	move.w	d6,d2
 	subq	#1,d2
@@ -1737,7 +1670,7 @@ clear_planes_any_blitter_internal:
 	* only 32 bit erase / blits
 55:
 	clr.l	(a2)
-	lea		(NB_BYTES_PER_ROW,a2),a2
+	lea		(FG_NB_BYTES_PER_ROW,a2),a2
 	dbf		d2,55b
 	jra 	32f			| should send to blitter operation next time
 	
@@ -1745,7 +1678,7 @@ clear_planes_any_blitter_internal:
 	move.l a1,bltdpt(a5)	|destination top left corner
 	move.w  d4,bltsize(a5)	|rectangle size, starts blit
 32:
-	lea		(SCREEN_PLANE_SIZE,a1),a1
+	lea		(FG_SCREEN_PLANE_SIZE,a1),a1
 	dbf		d3,3b
 4:
 *	lsr.b	#1,d5
@@ -1754,7 +1687,7 @@ clear_planes_any_blitter_internal:
 *5:
 	* last plane: if blitter busy, do with CPU
 	BTST	#6,(dmaconr,a5)
-	jeq		31f
+	jra		31f
 	* blitter is busy: do it with cpu for that plane
 	move.w	d6,d2
 	subq	#1,d2
@@ -1763,7 +1696,7 @@ clear_planes_any_blitter_internal:
 	* only 32 bit erase / blits
 55:
 	clr.l	(a2)
-	lea		(NB_BYTES_PER_ROW,a2),a2
+	lea		(BG_NB_BYTES_PER_ROW,a2),a2
 	dbf		d2,55b
 	rts
 31:
@@ -1777,7 +1710,7 @@ sprite_buffer:
 	
 bob_previous_positions_1:
 	ds.b	NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZEOF
-bob_previous_drawed_sprites:
+bob_previous_drawn_sprites:
 	.long	bob_previous_positions_1
 bob_previous_displayed_sprites:
 	.ifeq	OPT_ENABLE_DOUBLE_BUFFERING
@@ -1795,11 +1728,11 @@ switch_screen_buffers:
 	* let's switch screen buffers, background (chars)
 	* toggle fg planes (double buffering)
 	* also toggle previous sprite positions
-	lea		playfield_drawed_screen_ptr(pc),a0
+	lea		playfield_drawn_screen_ptr(pc),a0
 	lea		bob_previous_positions_1(pc),a2
 	lea		bob_previous_positions_2(pc),a3
-	move.l	bg_screen_data_1,a1
-	move.l	bg_screen_data_2,a5
+	move.l	fg_screen_data_1,a1
+	move.l	fg_screen_data_2,a5
 	* also switch previous state memory
 	cmp.l	(a0),a1
 	bne.b	2f
@@ -1811,7 +1744,7 @@ switch_screen_buffers:
 	move.l	a1,(a0)
 	move.l	a5,playfield_displayed_screen_ptr
 	move.l	a3,bob_previous_displayed_sprites
-	move.l	a2,bob_previous_drawed_sprites
+	move.l	a2,bob_previous_drawn_sprites
 
 	jbra		set_static_bitplanes
 	.endif
@@ -1953,8 +1886,9 @@ platform_init:
 	* disable extra mid-screen interrupt, as it would be too fast (NTSC)
 	move.w	#0x1FE,intreq_block_game
 0:
-    move.w #0x200+(NB_PLAYFIELD_PLANES<<12),bplcon0(a5)
-
+     move.w #0x0610+BORDERBLANK,bplcon0(a5) | 8 bitplanes, dual playfield, borderblank
+	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
+	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
  	*         VVHH
     move.w #0x2499-0X10,diwstrt(a5)
     move.w #0x2479,diwstop(a5)
@@ -1969,9 +1903,10 @@ platform_init:
 	* try to hide color 0 on the border (except on OCS)
 
     move.w #0,bplcon1(a5)
-	moveq	#NB_BYTES_PER_ROW-40,d0
-    move.w d0,bpl1mod(a5)
+	move.w	#BG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl2mod(a5)
+	move.w	#FG_NB_BYTES_PER_ROW-40,d0
+    move.w d0,bpl1mod(a5)
 
 	
 	lea		_custom,a5
@@ -2211,13 +2146,12 @@ update_bg_tile:
 	lea		character_table,a0
 	
 	* updating bitplanes
-	move.l	#SCREEN_PLANE_SIZE,d5
-	move.w	#NB_BOB_PLANES-1,d4
-	move.l	playfield_drawed_screen_ptr,a1
-	lea		background_restore_buffer,a3
+	move.l	#BG_SCREEN_PLANE_SIZE,d5
+	move.w	#NB_TILE_PLANES-1,d4
+	lea		background_buffer,a1
 
 
-	lea		mulNB_BYTES_PER_ROW_table,A2
+	lea		mulBG_NB_BYTES_PER_ROW_table,A2
 	add.w	d1,d1
 	move.w	(a2,d1.w),d1
 	add.w	d1,d0
@@ -2279,7 +2213,7 @@ update_bg_tile:
 	.set	offset,0
 	.rept	8
 	clr.b	(offset,a1)
-	.set	offset,offset+NB_BYTES_PER_ROW
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
 	.endr	
 	.endm
 	
@@ -2293,13 +2227,12 @@ update_bg_tile:
 	.rept	8
 	clr.b	(offset,a1)
 	clr.b	(offset,a3)
-	.set	offset,offset+NB_BYTES_PER_ROW
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
 	.endr	
 	.endm
 	
 	.macro	TILE_NEXT_PLANE
 	add.w	d5,a1
-	add.w	d5,a3
 	.endm
 	
 * made more complex by 4 tile orientations + the fact that the last
@@ -2316,31 +2249,17 @@ standard_tile:
 	.set	offset,0
 	.rept	8
 	move.b	(a0)+,d0
-	COPY_TILE_PLANE_ROW_BACKBUFFER
-	.set	offset,offset+NB_BYTES_PER_ROW
+	COPY_TILE_PLANE_ROW
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
 	.endr
 41:
 	TILE_NEXT_PLANE
 	dbf		d4,4b
 	
-	* last plane: no backbuffer
-	move.l	(a2)+,d0		| next plane
-	jeq		1f				| end
-	move.l	d0,a0
-	.set	offset,0
-	.rept	8
-	move.b	(a0)+,d0
-	COPY_TILE_PLANE_ROW
-	.set	offset,offset+NB_BYTES_PER_ROW
-	.endr
-	
 0:
 	rts
-1:
-	CLEAR_TILE_PLANE
-	rts
 5:
-	CLEAR_TILE_PLANE_BACKBUFFER
+	CLEAR_TILE_PLANE
 	jra		41b
 
 flipped_tile:	
@@ -2348,34 +2267,20 @@ flipped_tile:
 	move.l	(a2)+,d0		| next plane
 	jeq		5f
 	move.l	d0,a0
-	.set	offset,8*NB_BYTES_PER_ROW
+	.set	offset,8*BG_NB_BYTES_PER_ROW
 	.rept	8
-	.set	offset,offset-NB_BYTES_PER_ROW
+	.set	offset,offset-BG_NB_BYTES_PER_ROW
 	move.b	(a0)+,d0
-	COPY_TILE_PLANE_ROW_BACKBUFFER
+	COPY_TILE_PLANE_ROW
 	.endr
 41:
 	TILE_NEXT_PLANE
 	dbf		d4,4b
 	
-	* last plane
-	move.l	(a2)+,d0		| next plane
-	jeq		1f
-	move.l	d0,a0
-	.set	offset,8*NB_BYTES_PER_ROW
-	.rept	8
-	.set	offset,offset-NB_BYTES_PER_ROW
-	move.b	(a0)+,d0
-	COPY_TILE_PLANE_ROW
-	.endr
-	
 0:
 	rts
-1:
+
 	CLEAR_TILE_PLANE
-	rts
-5:
-	CLEAR_TILE_PLANE_BACKBUFFER
 	jra		41b
 	
 mirror_tile:
@@ -2389,33 +2294,21 @@ mirror_tile:
 	.rept	8
 	move.b	(a0)+,d1
 	move.b	(a4,d1.w),d0	| mirror
-	COPY_TILE_PLANE_ROW_BACKBUFFER
+	COPY_TILE_PLANE_ROW
 
-	.set	offset,offset+NB_BYTES_PER_ROW
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
 	.endr
 41:
 	TILE_NEXT_PLANE
 	dbf		d4,4b
 	
-	move.l	(a2)+,d0		| next plane
-	jeq		1f
-	move.l	d0,a0
-	.set	offset,0
-	.rept	8
-	move.b	(a0)+,d1
-	move.b	(a4,d1.w),d0	| mirror
-	COPY_TILE_PLANE_ROW
 
-	.set	offset,offset+NB_BYTES_PER_ROW
-	.endr
-	
 0:
 	rts
 1:
-	CLEAR_TILE_PLANE
-	rts
+
 5:
-	CLEAR_TILE_PLANE_BACKBUFFER
+	CLEAR_TILE_PLANE
 	jra		41b
 	
 mirror_flipped_tile:
@@ -2425,37 +2318,21 @@ mirror_flipped_tile:
 	move.l	(a2)+,d0		| next plane
 	jeq		5f
 	move.l	d0,a0
-	.set	offset,8*NB_BYTES_PER_ROW
+	.set	offset,8*BG_NB_BYTES_PER_ROW
 	.rept	8
-	.set	offset,offset-NB_BYTES_PER_ROW
-	move.b	(a0)+,d1
-	move.b	(a4,d1.w),d0	| mirror
-	COPY_TILE_PLANE_ROW_BACKBUFFER
-
-	.endr
-41:
-	TILE_NEXT_PLANE
-	dbf		d4,4b
-
-	move.l	(a2)+,d0		| next plane
-	jeq		1f
-	move.l	d0,a0
-	.set	offset,8*NB_BYTES_PER_ROW
-	.rept	8
-	.set	offset,offset-NB_BYTES_PER_ROW
+	.set	offset,offset-BG_NB_BYTES_PER_ROW
 	move.b	(a0)+,d1
 	move.b	(a4,d1.w),d0	| mirror
 	COPY_TILE_PLANE_ROW
 
 	.endr
+41:
 
 0:
 	rts
-1:
-	CLEAR_TILE_PLANE
-	rts
+
 5:
-	CLEAR_TILE_PLANE_BACKBUFFER
+	CLEAR_TILE_PLANE
 	jra		41b
 
 	* clear tile
@@ -2471,7 +2348,6 @@ mirror_flipped_tile:
 
 mirror_jump_table:
 	.long	standard_tile
-
 	.long	flipped_tile
 	.long	mirror_tile
 	.long	mirror_flipped_tile
@@ -2538,10 +2414,27 @@ HW_SpriteYTable_\height:
 
 set_static_bitplanes:
 	movem.l	a0-a1/d0-d2,-(a7)
- 	lea	bitplanes+2,a0
-    moveq #NB_PLAYFIELD_PLANES-1,d1
- 	move.l	#SCREEN_PLANE_SIZE,d2
-    move.l	playfield_displayed_screen_ptr(pc),d0
+ 	lea	tiles_bitplanes+2,a0
+    moveq #NB_TILE_PLANES-1,d1
+ 	move.l	#BG_SCREEN_PLANE_SIZE,d2
+    move.l	#background_buffer,d0
+1:
+    swap d0
+    move.w d0,(a0)
+    swap d0
+    move.w d0,(4,a0)    
+    addq.w  #8,a0
+    add.l d2,d0
+    dbf d1,1b
+	movem.l	(a7)+,a0-a1/d0-d2
+    rts
+
+set_bob_bitplanes:
+	movem.l	a0-a1/d0-d2,-(a7)
+ 	lea	bobs_bitplanes+2,a0
+    moveq #NB_BOB_PLANES-1,d1
+ 	move.l	#FG_SCREEN_PLANE_SIZE,d2
+    move.l	playfield_displayed_screen_ptr,d0
 1:
     swap d0
     move.w d0,(a0)
@@ -2853,7 +2746,8 @@ beamdelay:
 	rts
 
 	
-	MUL_TABLE	NB_BYTES_PER_ROW,NB_LINES*2
+	MUL_TABLE	FG_NB_BYTES_PER_ROW,NB_LINES*2
+	MUL_TABLE	BG_NB_BYTES_PER_ROW,NB_LINES*2
 
 
 
@@ -2982,16 +2876,16 @@ one_out_of_five:
 	.word	0
 
 
-bg_screen_data_1:
+fg_screen_data_1:
 	.long	0
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-bg_screen_data_2:
+fg_screen_data_2:
 	.long	0
 	.endif
 	
 	
 
-playfield_drawed_screen_ptr:
+playfield_drawn_screen_ptr:
 	.long	0
 playfield_displayed_screen_ptr:
 	.long	0
@@ -3099,6 +2993,16 @@ character_log_table:
 	.set	colidx,colidx+1
 	.endr
 	.endm
+	
+* game	
+.macro	DECL_EVEN_BITPLANES	bpoff_start,nb_planes
+	.set	bpoff,\bpoff_start
+	.rept	\nb_planes
+	dc.w  bplpt+bpoff,0
+	dc.w  bplpt+bpoff+2,0
+	.set	bpoff,bpoff+8
+	.endr
+	.endm
 
 .macro	DECL_SPRITES
 	.set	sprite_start,sprpt+0
@@ -3134,8 +3038,10 @@ game_copperlist:
 
 	* enable sprite colors now
 
-bitplanes:
-	DECL_BITPLANES	0,NB_PLAYFIELD_PLANES
+bobs_bitplanes:
+	DECL_EVEN_BITPLANES	0,4
+tiles_bitplanes:
+	DECL_EVEN_BITPLANES	4,4
 
 *game_sprite_colors:
 *	DECL_COLORS	16,16
@@ -3143,12 +3049,10 @@ game_sprites:
 	DECL_SPRITES
 game_sprites_end:
 
-game_colors:
+tiles_colors:
+	DECL_COLORS	16,TOTAL_NB_COLORS
+bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
-
-
-	* priority: BOBs playfield on top
-	.word	bplcon2,BASE_BPLCON2_VALUE
 
 
 
@@ -3185,16 +3089,16 @@ intreq_block_game:
 		.section .bsschip
 		
 	
-background_restore_buffer:
-	.skip	RESTORE_SCREEN_SIZE
+background_buffer:
+	.skip	BG_SCREEN_SIZE
 		
-bg_screen_buffer_1:
-	.skip	SCREEN_SIZE
-	*.skip	NB_BYTES_PER_ROW*12*3
+fg_screen_buffer_1:
+	.skip	FG_SCREEN_SIZE
+	.skip	FG_NB_BYTES_PER_ROW*12*3
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-bg_screen_buffer_2:
-	.skip	SCREEN_SIZE
-	.skip	NB_BYTES_PER_ROW*12*3
+fg_screen_buffer_2:
+	.skip	FG_SCREEN_SIZE
+	.skip	FG_NB_BYTES_PER_ROW*12*3
 	.endif
 
 

@@ -1,8 +1,8 @@
-- copyright flashing, seems double buffering not working on the bottom...
+- copperlist for row scrolling
 - avoid 2 first & last tile rows!
 - sprites update at least to log them!
-- copperlist for row scrolling
 - log sprites to show intro properly
+- group sprites horizontally
 - read_system_inputs returns all 0 if uncommented???
 - continue get_address checks (scroll!!)
 - dual playfield AGA
@@ -11,3 +11,4 @@
 - 9A20: bug??? WTF	
 - converter: .global	cpu_init in include
 - patch inputs/system cf post_process.py
+- cpu erase not working (disabled right now)
