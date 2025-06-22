@@ -127,16 +127,16 @@ else:
     except OSError:
         pass
 
-    # now gather all cluts used by letter/digit tiles, logging probably
-    # missed some
-##    used_cluts = set()
-##    for atc in alphanum_tile_codes:
-##        cluts = tile_cluts.get(atc)
-##        if cluts:
-##            used_cluts.update(cluts)
-##    # now set cluts for all alphanum tiles
-##    for atc in alphanum_tile_codes:
-##        tile_cluts[atc] = sorted(used_cluts)
+# now gather all cluts used by letter/digit tiles, logging probably
+# missed some
+used_cluts = set()
+for atc in alphanum_tile_codes:
+    cluts = tile_cluts.get(atc)
+    if cluts:
+        used_cluts.update(cluts)
+# now set cluts for all alphanum tiles
+for atc in alphanum_tile_codes:
+    tile_cluts[atc] = sorted(used_cluts)
 
 
 

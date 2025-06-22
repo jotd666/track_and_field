@@ -757,12 +757,22 @@ demo_game:
 	dbf		d0,0b
 	.endif
 	
-	jbsr	cpu_init
+	
 	GET_MEMORY_START_AND_DP
+	* patch rom
+	add.l	#0xA855,a6
+	lea		jotd_message(pc),a1
+0:
+	move.b	(a1)+,(a6)+
+	jne	0b
+	
+	GET_MEMORY_START_AND_DP
+	jbsr	cpu_init
 	jmp			reset_6000					| pass control to the cpu core
 		
-	
-	
+jotd_message:	
+	.asciz	"AMIGA@PORT@BY@JOTD"
+	.align  2
 do_irq:
 	* set base for RAM
 	jbsr	cpu_init

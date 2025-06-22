@@ -278,6 +278,8 @@ master_mainloop_6160:
 61C0: D7 72          STB    $72
 61C2: 39             RTS
 
+; the text to write is in ascii
+; the code subtracts 0x30 to match with tiles
 write_copyright_text_61c3:
 61C3: 58             ASLB
 61C4: 8E A4 E7       LDX    #$A4E7
@@ -290,7 +292,7 @@ write_copyright_text_61c3:
 61D2: 96 72          LDA    $72
 61D4: 98 73          EORA   $73
 61D6: A7 C9 08 00    STA    $0800,U		; [video_address]
-61DA: C0 30          SUBB   #$30
+61DA: C0 30          SUBB   #$30		; ASCII => tile number
 61DC: E7 C0          STB    ,U+			; [video_address]
 61DE: 20 EC          BRA    $61CC
 61E0: 39             RTS
