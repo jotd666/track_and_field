@@ -30,6 +30,7 @@ sprite_ram_1800 = 0x1800
 scroll_registers_1840 = 0x1840
 copy_of_inputs_2830 = 0x2830
 failed_rom_check_2a8e = 0x2a8e
+scroll_offsets_2af0 = 0x2af0
 event_buffer_2900 = 0x2900
 failed_rom_check_29d4 = 0x29d4
 display_state_2b40 = 0x2b40

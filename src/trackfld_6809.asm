@@ -247,6 +247,7 @@ master_mainloop_6160:
 617B: AD 96          JSR    [A,X]		; [jump_table]
 617D: 20 E1          BRA    master_mainloop_6160
 
+reset_display_617f:
 617F: 7F 10 87       CLR    irq_mask_w_1087
 6182: 10 8E 18 00    LDY    #sprite_ram_1800
 6186: CE 1C 00       LDU    #$1C00
@@ -256,8 +257,8 @@ master_mainloop_6160:
 6190: 10 8C 18 30    CMPY   #$1830
 6194: 26 F6          BNE    $618C
 6196: 5F             CLRB
-6197: ED A1          STD    ,Y++
-6199: ED C1          STD    ,U++
+6197: ED A1          STD    ,Y++		; [scroll_address_word]
+6199: ED C1          STD    ,U++		; [scroll_address_word]
 619B: 10 8C 18 60    CMPY   #$1860
 619F: 26 F6          BNE    $6197
 61A1: 8E 30 00       LDX    #video_ram_3000
@@ -795,7 +796,7 @@ irq_6600:
 6600: 7F 10 87       CLR    irq_mask_w_1087
 6603: 86 01          LDA    #$01
 6605: B7 10 00       STA    watchdog_1000
-6608: BD D9 06       JSR    update_scrolling_D906
+6608: BD D9 06       JSR    update_scrolling_d906
 660B: 96 00          LDA    global_state_00
 660D: 48             ASLA
 660E: 8E A8 69       LDX    #main_jump_table_a869
@@ -5484,16 +5485,16 @@ clear_sprites_8c1d:
 
 reset_scrolling_8c2f:
 8C2F: 8E 18 40       LDX    #scroll_registers_1840
-8C32: 6F 89 04 00    CLR    $0400,X
-8C36: 6F 80          CLR    ,X+
+8C32: 6F 89 04 00    CLR    $0400,X		;  [scroll_address]
+8C36: 6F 80          CLR    ,X+			;  [scroll_address]
 8C38: 8C 18 60       CMPX   #scroll_registers_1840+$20
 8C3B: 26 F5          BNE    $8C32
 8C3D: 39             RTS
 
 partially_reset_scrolling_8c3e:
 8C3E: 8E 18 4D       LDX    #scroll_registers_1840+$D
-8C41: 6F 89 04 00    CLR    $0400,X
-8C45: 6F 80          CLR    ,X+
+8C41: 6F 89 04 00    CLR    $0400,X	;  [scroll_address]
+8C45: 6F 80          CLR    ,X+		;  [scroll_address]
 8C47: 8C 18 52       CMPX   #$1852
 8C4A: 26 F5          BNE    $8C41
 8C4C: 39             RTS
@@ -8348,7 +8349,7 @@ A41C: 26 E3          BNE    $A401
 A41E: 39             RTS
 
 event_table_a41f:
-	dc.w	$617f	; $a41f
+	dc.w	reset_display_617f	; $a41f
 	dc.w	$61c0	; $a421
 	dc.w	write_copyright_text_61c3	; $a423
 	dc.w	$61f9	; $a425
@@ -10206,21 +10207,21 @@ D901: 0A 48          DEC    $48
 D903: 26 D4          BNE    $D8D9
 D905: 39             RTS
 
-update_scrolling_D906:
+update_scrolling_d906:
 D906: 8E 18 4D       LDX    #scroll_registers_1840+$D
 D909: 10 8E 2A F0    LDY    #scroll_offsets_2af0
-D90D: A6 84          LDA    ,X			; load current values
-D90F: E6 89 04 00    LDB    $0400,X		; of scroll registers
+D90D: A6 84          LDA    ,X			; load current values [scroll_address]
+D90F: E6 89 04 00    LDB    $0400,X		; of scroll registers [scroll_address]
 D913: 0D 21          TST    copy_of_screen_flipped_21
 D915: 27 06          BEQ    $D91D
 D917: A0 A0          SUBA   ,Y+
 D919: C2 00          SBCB   #$00
 D91B: 20 04          BRA    $D921
 
-D91D: AB A0          ADDA   ,Y+		; non flipped, low nibble
+D91D: AB A0          ADDA   ,Y+		; non flipped
 D91F: C9 00          ADCB   #$00
-D921: A7 80          STA    ,X+		; high nibble (1Cxx)
-D923: E7 89 03 FF    STB    $03FF,X
+D921: A7 80          STA    ,X+		; low nibble (1Cxx)  [scroll_address]
+D923: E7 89 03 FF    STB    $03FF,X		; high nibble  [scroll_address]
 D927: 10 8C 2A F5    CMPY   #$2AF5
 D92B: 26 E0          BNE    $D90D
 D92D: 96 84          LDA    current_level_84
@@ -10228,8 +10229,8 @@ D92F: 81 00          CMPA   #$00
 D931: 10 27 BE 0F    LBEQ   $9744
 D935: 81 03          CMPA   #$03
 D937: 10 27 BE 09    LBEQ   $9744
-D93B: A6 84          LDA    ,X
-D93D: E6 89 04 00    LDB    $0400,X
+D93B: A6 84          LDA    ,X		;  [scroll_address]
+D93D: E6 89 04 00    LDB    $0400,X		;  [scroll_address]
 D941: 0D 21          TST    copy_of_screen_flipped_21
 D943: 27 06          BEQ    $D94B
 D945: A0 A0          SUBA   ,Y+
@@ -10237,8 +10238,8 @@ D947: C2 00          SBCB   #$00
 D949: 20 04          BRA    $D94F
 D94B: AB A0          ADDA   ,Y+
 D94D: C9 00          ADCB   #$00
-D94F: A7 80          STA    ,X+
-D951: E7 89 03 FF    STB    $03FF,X
+D94F: A7 80          STA    ,X+				;  [scroll_address]
+D951: E7 89 03 FF    STB    $03FF,X		;  [scroll_address]
 D955: 10 8C 2B 00    CMPY   #$2B00
 D959: 26 E0          BNE    $D93B
 D95B: 7D 2A FF       TST    $2AFF
@@ -13829,13 +13830,15 @@ FC7A: BD 84 F5       JSR    queue_event_84f5
 FC7D: 7C 2B 40       INC    display_state_2b40
 animate_runners_in_title_fc80:
 FC80: BD FD 07       JSR    $FD07
-FC83: CE 18 42       LDU    #$1842
-FC86: A6 C4          LDA    ,U
+FC83: CE 18 42       LDU    #scroll_registers_1840+2
+FC86: A6 C4          LDA    ,U			; [scroll_address]
 FC88: 81 E0          CMPA   #$E0
 FC8A: 26 03          BNE    $FC8F
+; title reached scroll final position: next state
 FC8C: 7C 2B 40       INC    display_state_2b40
-FC8F: 6C C0          INC    ,U+
-FC91: 11 83 18 50    CMPU   #$1850
+; scroll title to the left
+FC8F: 6C C0          INC    ,U+			; [scroll_address]
+FC91: 11 83 18 50    CMPU   #scroll_registers_1840+$10
 FC95: 26 F8          BNE    $FC8F
 FC97: 39             RTS
 

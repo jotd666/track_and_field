@@ -27,6 +27,12 @@ NO68020 = 1
 NB_POSSIBLE_SPRITES = 256
 NB_POSSIBLE_TILES = 512
 
+NB_SCROLL_ROWS = 28
+
+* 3 & 3: most performant
+BITPLANE_FMODE = 3			| works with 1, albeit slower
+SPRITE_FMODE = 3			| required!!
+
 BORDERBLANK = 1
 
 BASE_BPLCON3_VALUE = (1<<12)+(BORDERBLANK<<5)  | dpf second playfield palette starts at color 16!
@@ -360,8 +366,13 @@ _user:
 	lea		debug_copperlist,a0
 	move.l	a0,cop1lc(a5)
 	
+	lea		background_buffer,a0
+	jbsr	align_for_fmode
+	move.l	a0,background_ptr
+	
+	
 	lea		fg_screen_buffer_1,a0
-	addq	#2,a0	| leave 16 bits hidden for left side clipping
+	jbsr	align_for_fmode
 	move.l	a0,fg_screen_data_1
 	move.l	a0,playfield_drawn_screen_ptr
 	move.l	a0,playfield_displayed_screen_ptr
@@ -370,7 +381,7 @@ _user:
 
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	lea		fg_screen_buffer_2,a0
-	addq	#2,a0	| leave 16 bits hidden for left side clipping
+	jbsr	align_for_fmode
 	move.l	a0,fg_screen_data_2
 	move.l	a0,playfield_displayed_screen_ptr
 	.endif
@@ -1883,7 +1894,6 @@ quit_to_os:
 platform_init:
 	bsr		store_system
 	
-
 	lea		_custom,a5
 	move.w	#0x7FFF,dmacon(a5)
 	move.w	#0x7FFF,intena(a5)
@@ -1912,14 +1922,15 @@ platform_init:
 	* restrict borders: we don't see bobs on the borders!
 	* try to hide color 0 on the border (except on OCS)
 
-    move.w #0,bplcon1(a5)
-	move.w	#BG_NB_BYTES_PER_ROW-40,d0
+    move.w #(SPRITE_FMODE<<2)+BITPLANE_FMODE,fmode(a5)	| 32 bit bitplane fetch, 64 bit wide sprites
+
+	move.w	#0,bplcon1(a5)
+
+	move.w	#-8+BG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl2mod(a5)
-	move.w	#FG_NB_BYTES_PER_ROW-40,d0
+	move.w	#-8+FG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl1mod(a5)
 
-	
-	lea		_custom,a5
 	lea		game_copperlist,a0
 	move.l	a0,cop1lc(a5)
 
@@ -1993,6 +2004,16 @@ platform_init:
 	
     rts
 	
+
+* so memory is quadword-aligned (not trusting .align directives)
+align_for_fmode:
+	add.w	#0x8,a0
+	move.l	a0,d0
+	and.b	#0xF8,d0
+	move.l	d0,a0
+	rts
+
+
 * < A0: palette
 * < A1: copperlist
 * < D0: number of colors to load	
@@ -2158,7 +2179,7 @@ update_bg_tile:
 	* updating bitplanes
 	move.l	#BG_SCREEN_PLANE_SIZE,d5
 	move.w	#NB_TILE_PLANES-1,d4
-	lea		background_buffer,a1
+	move.l		background_ptr,a1
 
 
 	lea		mulBG_NB_BYTES_PER_ROW_table,A2
@@ -2427,7 +2448,7 @@ set_static_bitplanes:
  	lea	tiles_bitplanes+2,a0
     moveq #NB_TILE_PLANES-1,d1
  	move.l	#BG_SCREEN_PLANE_SIZE,d2
-    move.l	#background_buffer,d0
+    move.l	background_ptr,d0
 1:
     swap d0
     move.w d0,(a0)
@@ -2741,7 +2762,10 @@ toggle_pause:
 	rts
 
 	
-
+set_row_scroll:
+	*lea		scroll_table,a2
+	*move.w	(a2,d2.w*4),fine_x_scroll_value
+	rts
     
 * < D0: numbers of vertical positions to wait
 beamdelay:
@@ -2893,8 +2917,19 @@ fg_screen_data_2:
 	.long	0
 	.endif
 	
-	
+	.set	offset,0
+scroll_row_copper_address_table:
+	.rept	NB_SCROLL_ROWS/2
+	.long	scroll_rows_first_half+6+offset*8
+	.set	offset,offset+8
+	.endr
+	.rept	NB_SCROLL_ROWS/2
+	.long	scroll_rows_second_half+6+offset*8
+	.set	offset,offset+8
+	.endr
 
+background_ptr:
+	.long	0
 playfield_drawn_screen_ptr:
 	.long	0
 playfield_displayed_screen_ptr:
@@ -2902,24 +2937,11 @@ playfield_displayed_screen_ptr:
 
 	.include	"sound_entries.68k"
 
-current_column_scroll_values:
-	.long	column_scroll_values_1
-previous_column_scroll_values:
-	.long	column_scroll_values_2
-	
-* first current scroll value then previous one
-column_scroll_values_1:
-	.skip	16
-column_scroll_values_2:
-	.skip	16
 	
 update_tile_function:
 	.long	0
 _keyexit:
 	.byte	0x45	| ESC by default unless whdload overwrites it
-
-main_scroll_value:
-	.byte	0
 
 	
 cheat_used:
@@ -2959,6 +2981,9 @@ log_buffer:
 cpu_log_enable:
 	.word	0
 	.endif
+
+scroll_table:
+	.include	"scroll_table_64.68k"
 
 	
 	* on amiga, this file is included in mpatrol.68k file
@@ -3005,7 +3030,7 @@ character_log_table:
 	.endm
 	
 * game	
-.macro	DECL_EVEN_BITPLANES	bpoff_start,nb_planes
+	.macro	DECL_EVEN_BITPLANES	bpoff_start,nb_planes
 	.set	bpoff,\bpoff_start
 	.rept	\nb_planes
 	dc.w  bplpt+bpoff,0
@@ -3014,7 +3039,7 @@ character_log_table:
 	.endr
 	.endm
 
-.macro	DECL_SPRITES
+	.macro	DECL_SPRITES
 	.set	sprite_start,sprpt+0
 	.rept	16
 	* 2 slots
@@ -3023,6 +3048,14 @@ character_log_table:
     .endr
 	.endm
 
+	.macro  HALF_SCROLL_ROWS
+	.rept	NB_SCROLL_ROWS/2
+	.word	0x01+(y_start*256),0xFFFE
+	.word	bplcon1,0
+	.set	y_start,y_start+8
+	.endr
+	.endm 
+	
 blank_sprite:
 	.long	0,0
 	
@@ -3064,21 +3097,22 @@ tiles_colors:
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 
-
-
-	
-	* mid-line wait & extra interrupt
-	.word	0x8001,0xFFFE
+	.set	y_start,0x24
+scroll_rows_first_half:
+	HALF_SCROLL_ROWS
+	* not sure if it's really half screen but it doesn't matter
 intreq_block_game:
-	* now wait some lines until we're sure bitmap only contains
-	* non-black: we can set color 0 to light blue now
 	.word	 intreq,0x8014  | call copper interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
+
+scroll_rows_second_half:
+	HALF_SCROLL_ROWS
+
 
 	* purple 
 
 
 	* pal limit
-    .word  0xFFDF,0xFFFE       | PAL wait
+    .word  0xFFCF,0xFFFE       | PAL wait
 	.word	0x1601,0xFFFE
 
 	| no bobs from now on, get a LOT of drawing time

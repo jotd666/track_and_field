@@ -69,6 +69,7 @@ sprite_ram_1800 = 0x1800
 scroll_registers_1840 = 0x1840
 copy_of_inputs_2830 = 0x2830
 failed_rom_check_2a8e = 0x2a8e
+scroll_offsets_2af0 = 0x2af0
 event_buffer_2900 = 0x2900
 failed_rom_check_29d4 = 0x29d4
 display_state_2b40 = 0x2b40
@@ -141,7 +142,7 @@ l_6057:
 	clr.b	(a0)                         	| [...]
 	 |  [$6059: sta    watchdog_1000]
 	cmp.w	#0x2000,d2                       	| [$605c: cmpx   #$2000]
-	jne	l_6057                             	| [$605f: bne    $6057]
+	 |  [$605f: bne    $6057]
 	move.w	#event_buffer_2900,d2           	| [$6061: ldx    #event_buffer_2900] event buffer: no events
 	move.b	#0xff,d0                        	| [$6064: ldd    #$ffff]
 	move.w	#0xffff,d1                      	| [$6064: ldd    #$ffff]
@@ -367,7 +368,7 @@ l_6176:
 	JSR_A_INDEXED	A2                   	| [$617b: jsr    [a,x]] [jump_table]
 	jra	master_mainloop_6160               	| [$617d: bra    master_mainloop_6160]
 
-l_617f:
+reset_display_617f:
 	jbsr	osd_disable_interrupts |  [$617f: clr    irq_mask_w_1087]
 	move.w	#sprite_ram_1800,d3             	| [$6182: ldy    #sprite_ram_1800]
 	move.w	#0x1c00,d4                      	| [$6186: ldu    #$1c00]
@@ -387,13 +388,15 @@ l_618c:
 	moveq	#0,d1                            	| [$6196: clrb]
 l_6197:
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0,d3                   	| [$6197: std    ,y++]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$6197: std    ,y++] [scroll_address_word]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	SCROLL_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$6199: std    ,u++]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$6199: std    ,u++] [scroll_address_word]
 	addq.w	#2,d4                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	SCROLL_WORD_DIRTY | [...]
 	cmp.w	#0x1860,d3                       	| [$619b: cmpy   #$1860]
 	jne	l_6197                             	| [$619f: bne    $6197]
 	move.w	#video_ram_3000,d2              	| [$61a1: ldx    #video_ram_3000]
@@ -426,6 +429,8 @@ l_61c0:
 	move.b	d1,(a0)                         	| [...]
 	rts                                    	| [$61c2: rts]
 
+* the text to write is in ascii
+* the code subtracts 0x30 to match with tiles
 write_copyright_text_61c3:
 	asl.b	#1,d1                            	| [$61c3: aslb]
 	move.w	#0xa4e7,d2                      	| [$61c4: ldx    #$a4e7]
@@ -451,7 +456,7 @@ l_61cc:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$61d6: sta    $0800,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	sub.b	#0x30,d1                         	| [$61da: subb   #$30]
+	sub.b	#0x30,d1                         	| [$61da: subb   #$30] ASCII => tile number
 	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$61dc: stb    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d1,(a0)                         	| [...]
@@ -1296,7 +1301,7 @@ irq_6600:
 	jbsr	osd_disable_interrupts |  [$6600: clr    irq_mask_w_1087]
 	move.b	#0x01,d0                        	| [$6603: lda    #$01]
 	 |  [$6605: sta    watchdog_1000]
-	jbsr	l_d906                            	| [$6608: jsr    $d906]
+	jbsr	update_scrolling_d906             	| [$6608: jsr    update_scrolling_d906]
 	GET_DP_ADDRESS	global_state_00         	| [$660b: lda    global_state_00]
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$660d: asla]
@@ -8634,11 +8639,13 @@ l_8c22:
 reset_scrolling_8c2f:
 	move.w	#scroll_registers_1840,d2       	| [$8c2f: ldx    #scroll_registers_1840]
 l_8c32:
-	GET_REG_ADDRESS	0x0400,d2              	| [$8c32: clr    $0400,x]
+	GET_REG_UNCHECKED_ADDRESS	0x0400,d2              	| [$8c32: clr    $0400,x]  [scroll_address]
 	clr.b	(a0)                         	| [...]
-	GET_REG_ADDRESS	0,d2                   	| [$8c36: clr    ,x+]
+	SCROLL_BYTE_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$8c36: clr    ,x+]  [scroll_address]
 	addq.w	#1,d2                           	| [...]
 	clr.b	(a0)                         	| [...]
+	SCROLL_BYTE_DIRTY | [...]
 	cmp.w	#scroll_registers_1840+0x20,d2   	| [$8c38: cmpx   #scroll_registers_1840+$20]
 	jne	l_8c32                             	| [$8c3b: bne    $8c32]
 	rts                                    	| [$8c3d: rts]
@@ -8646,11 +8653,13 @@ l_8c32:
 partially_reset_scrolling_8c3e:
 	move.w	#scroll_registers_1840+0xd,d2   	| [$8c3e: ldx    #scroll_registers_1840+$d]
 l_8c41:
-	GET_REG_ADDRESS	0x0400,d2              	| [$8c41: clr    $0400,x]
+	GET_REG_UNCHECKED_ADDRESS	0x0400,d2              	| [$8c41: clr    $0400,x]  [scroll_address]
 	clr.b	(a0)                         	| [...]
-	GET_REG_ADDRESS	0,d2                   	| [$8c45: clr    ,x+]
+	SCROLL_BYTE_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$8c45: clr    ,x+]  [scroll_address]
 	addq.w	#1,d2                           	| [...]
 	clr.b	(a0)                         	| [...]
+	SCROLL_BYTE_DIRTY | [...]
 	cmp.w	#0x1852,d2                       	| [$8c47: cmpx   #$1852]
 	jne	l_8c41                             	| [$8c4a: bne    $8c41]
 	rts                                    	| [$8c4c: rts]
@@ -8942,17 +8951,19 @@ l_8d9d:
 l_8d9f:
 	move.b	#0x03,d1                        	| [$8d9f: ldb    #$03]
 l_8da1:
-	GET_REG_ADDRESS	0,d4                   	| [$8da1: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$8da1: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d1                           	| [$8da3: decb]
 	jne	l_8da1                             	| [$8da4: bne    $8da1]
 	addq.w	#0x1,d4                         	| [$8da6: leau   $1,u]
 	move.b	#0x03,d1                        	| [$8da8: ldb    #$03]
 l_8daa:
-	GET_REG_ADDRESS	0,d4                   	| [$8daa: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$8daa: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d1                           	| [$8dac: decb]
 	jne	l_8daa                             	| [$8dad: bne    $8daa]
 	rts                                    	| [$8daf: rts]
@@ -9816,7 +9827,7 @@ l_91be:
 	GET_DP_ADDRESS	0x49                    	| [$91be: sta    $49]
 	move.b	d0,(a0)                         	| [...]
 l_91c0:
-	move.w	#0x2af0,d3                      	| [$91c0: ldy    #$2af0]
+	move.w	#scroll_offsets_2af0,d3         	| [$91c0: ldy    #scroll_offsets_2af0]
 	move.w	#0xaa3a,d4                      	| [$91c4: ldu    #$aa3a]
 	GET_DP_ADDRESS	current_level_84        	| [$91c7: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
@@ -10979,7 +10990,7 @@ l_97c1:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_97b6                             	| [$97d0: bne    $97b6]
 l_97d2:
-	move.w	#0x2af0,d2                      	| [$97d2: ldx    #$2af0]
+	move.w	#scroll_offsets_2af0,d2         	| [$97d2: ldx    #scroll_offsets_2af0]
 	moveq	#0,d0                            	| [$97d5: clra]
 	moveq	#0,d1                            	| [$97d6: clrb]
 l_97d7:
@@ -11435,7 +11446,6 @@ l_9a1c:
 	GET_DP_ADDRESS	0xd6                    	| [$9a1c: lda    $d6]
 	move.b	(a0),d0                         	| [...]
 	jne	l_9a29                             	| [$9a1e: bne    $9a29]
-	BREAKPOINT	"TEST TEST"
 	GET_REG_INDIRECT_ADDRESS	0x03,d2       	| [$9a20: lda    [$03,x]]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0xe3                    	| [$9a23: cmpa   $e3]
@@ -13304,7 +13314,7 @@ l_a405:
 	rts                                    	| [$a41e: rts]
 
 event_table_a41f:
-	.long	l_617f                           	|  $a41f
+	.long	reset_display_617f               	|  $a41f
 	.long	l_61c0                           	|  $a421
 	.long	write_copyright_text_61c3        	|  $a423
 	.long	l_61f9                           	|  $a425
@@ -16155,13 +16165,13 @@ l_d8ee:
 	jne	l_d8d9                             	| [$d903: bne    $d8d9]
 	rts                                    	| [$d905: rts]
 
-l_d906:
-	move.w	#0x184d,d2                      	| [$d906: ldx    #$184d]
-	move.w	#0x2af0,d3                      	| [$d909: ldy    #$2af0]
+update_scrolling_d906:
+	move.w	#scroll_registers_1840+0xd,d2   	| [$d906: ldx    #scroll_registers_1840+$d]
+	move.w	#scroll_offsets_2af0,d3         	| [$d909: ldy    #scroll_offsets_2af0]
 l_d90d:
-	GET_REG_ADDRESS	0,d2                   	| [$d90d: lda    ,x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$d90d: lda    ,x] load current values [scroll_address]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0x0400,d2              	| [$d90f: ldb    $0400,x]
+	GET_REG_UNCHECKED_ADDRESS	0x0400,d2              	| [$d90f: ldb    $0400,x] of scroll registers [scroll_address]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d913: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
@@ -16172,18 +16182,21 @@ l_d90d:
 	move.b	#0x00,d6	| [$d919: sbcb   #$00]
 	subx.b	d6,d1                        	| [$d919: sbcb   #$00]
 	jra	l_d921                             	| [$d91b: bra    $d921]
+
 l_d91d:
-	GET_REG_ADDRESS	0,d3                   	| [$d91d: adda   ,y+]
+	GET_REG_ADDRESS	0,d3                   	| [$d91d: adda   ,y+] non flipped
 	addq.w	#1,d3                           	| [...]
 	add.b	(a0),d0                          	| [...]
 	move.b	#0x00,d6	| [$d91f: adcb   #$00]
 	addx.b	d6,d1                        	| [$d91f: adcb   #$00]
 l_d921:
-	GET_REG_ADDRESS	0,d2                   	| [$d921: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$d921: sta    ,x+] low nibble (1Cxx)  [scroll_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x03ff,d2              	| [$d923: stb    $03ff,x]
+	SCROLL_BYTE_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0x03ff,d2              	| [$d923: stb    $03ff,x] high nibble  [scroll_address]
 	move.b	d1,(a0)                         	| [...]
+	SCROLL_BYTE_DIRTY | [...]
 	cmp.w	#0x2af5,d3                       	| [$d927: cmpy   #$2af5]
 	jne	l_d90d                             	| [$d92b: bne    $d90d]
 	GET_DP_ADDRESS	current_level_84        	| [$d92d: lda    current_level_84]
@@ -16193,9 +16206,9 @@ l_d921:
 	cmp.b	#0x03,d0                         	| [$d935: cmpa   #$03]
 	jeq	l_9744                             	| [$d937: lbeq   $9744]
 l_d93b:
-	GET_REG_ADDRESS	0,d2                   	| [$d93b: lda    ,x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$d93b: lda    ,x]  [scroll_address]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0x0400,d2              	| [$d93d: ldb    $0400,x]
+	GET_REG_UNCHECKED_ADDRESS	0x0400,d2              	| [$d93d: ldb    $0400,x]  [scroll_address]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d941: tst    copy_of_screen_flipped_21]
 	tst.b	(a0)                             	| [...]
@@ -16213,11 +16226,13 @@ l_d94b:
 	move.b	#0x00,d6	| [$d94d: adcb   #$00]
 	addx.b	d6,d1                        	| [$d94d: adcb   #$00]
 l_d94f:
-	GET_REG_ADDRESS	0,d2                   	| [$d94f: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$d94f: sta    ,x+]  [scroll_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x03ff,d2              	| [$d951: stb    $03ff,x]
+	SCROLL_BYTE_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0x03ff,d2              	| [$d951: stb    $03ff,x]  [scroll_address]
 	move.b	d1,(a0)                         	| [...]
+	SCROLL_BYTE_DIRTY | [...]
 	cmp.w	#0x2b00,d3                       	| [$d955: cmpy   #$2b00]
 	jne	l_d93b                             	| [$d959: bne    $d93b]
 	GET_ADDRESS	0x2aff                     	| [$d95b: tst    $2aff]
@@ -16236,7 +16251,7 @@ l_d963:
 	jbsr	l_8525                            	| [$d971: jsr    $8525]
 	jra	l_d963                             	| [$d974: bra    $d963]
 l_d976:
-	move.w	#0x2af0,d2                      	| [$d976: ldx    #$2af0]
+	move.w	#scroll_offsets_2af0,d2         	| [$d976: ldx    #scroll_offsets_2af0]
 	move.b	#0x00,d0                        	| [$d979: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$d979: ldd    #$0000]
 l_d97c:
@@ -21965,18 +21980,21 @@ l_fc55:
 	addq.b	#1,(a0)                         	| [...]
 animate_runners_in_title_fc80:
 	jbsr	l_fd07                            	| [$fc80: jsr    $fd07]
-	move.w	#0x1842,d4                      	| [$fc83: ldu    #$1842]
-	GET_REG_ADDRESS	0,d4                   	| [$fc86: lda    ,u]
+	move.w	#scroll_registers_1840+2,d4     	| [$fc83: ldu    #scroll_registers_1840+2]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$fc86: lda    ,u] [scroll_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xe0,d0                         	| [$fc88: cmpa   #$e0]
 	jne	l_fc8f                             	| [$fc8a: bne    $fc8f]
+* title reached scroll final position: next state
 	GET_ADDRESS	display_state_2b40         	| [$fc8c: inc    display_state_2b40]
 	addq.b	#1,(a0)                         	| [...]
+* scroll title to the left
 l_fc8f:
-	GET_REG_ADDRESS	0,d4                   	| [$fc8f: inc    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$fc8f: inc    ,u+] [scroll_address]
 	addq.w	#1,d4                           	| [...]
 	addq.b	#1,(a0)                         	| [...]
-	cmp.w	#0x1850,d4                       	| [$fc91: cmpu   #$1850]
+	SCROLL_BYTE_DIRTY | [...]
+	cmp.w	#scroll_registers_1840+0x10,d4   	| [$fc91: cmpu   #scroll_registers_1840+$10]
 	jne	l_fc8f                             	| [$fc95: bne    $fc8f]
 	rts                                    	| [$fc97: rts]
 

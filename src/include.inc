@@ -21,12 +21,21 @@
 	.endm
 
 	.macro	VIDEO_BYTE_DIRTY
-	| called when a write was done in a0
+	| called when a write to video memory was done in a0
 	jbsr	osd_video_byte_dirty
 	.endm
 
+	.macro	SCROLL_BYTE_DIRTY
+	| called when a write to scroll memory was done in a0
+	*jbsr	osd_scroll_byte_dirty
+	.endm
+	.macro	SCROLL_WORD_DIRTY
+	| called when a word write to scroll memory was done in a0
+	*jbsr	osd_scroll_byte_dirty
+	.endm
+
 	.macro	VIDEO_WORD_DIRTY
-	| called when a write was done in a0
+	| called when a word write to video memory was done in a0
 	jbsr	osd_video_word_dirty
 	.endm
 
@@ -47,20 +56,40 @@
 	
 * dev mode, more checks about the address
 get_address:
-	cmp.l	#0x6000,a0
+	cmp.w	#0x6000,a0
 	jcc		10f		| rom: ok
-	cmp.l	#0x4000,a0
+	cmp.w	#0x4000,a0
 	jcs		0f
 	BREAKPOINT	"unsupported address range 0x4000-0x5FFF"
 	illegal
 0:
-	cmp.l	#0x1800,a0
+	cmp.w	#0x1800,a0
 	jcc		0f
 	BREAKPOINT	"unsupported address range 0-0x1800"
 	illegal
 0:
+	cmp.w	#0x1860,a0
+	jcc		0f
+	* address < 0x1860, check if scroll
+	cmp.w	#0x1840,a0
+	jcs		0f
+	* <= 0x1840: scroll
+	BREAKPOINT	"unsupported LSB scroll address range 0x1840-0x185F"
+	jra		10f
+0:
+	* we ruled out < 0x1860, now check 0x1c40-0x1c5f interval
+	cmp.w	#0x1C60,a0
+	jcc		0f
+	* address < 0x1C60, check if scroll
+	cmp.w	#0x1C40,a0
+	jcs		0f
+	* <= 0x1840: scroll
+	BREAKPOINT	"unsupported MSB scroll address range 0x1C40-0x1C5F"
+	jra		10f
+0:
+	
 	* 0X1800 <= range < 0x4000, ram, video ram & special ram/scroll
-	cmp.l	#0x3000,a0
+	cmp.w	#0x3000,a0
 	jcs		0f
 	* video/attribute: must be done without "get_address"
 	BREAKPOINT	"unsupported address range 0x3000-0x3FFF"
