@@ -52,7 +52,7 @@ def get_sprite_names():
 
     return rval,groups
 
-alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+26-48))
+alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))
 
 if __name__ == "__main__":
     raise Exception("no main!")
