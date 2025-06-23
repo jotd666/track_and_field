@@ -66,6 +66,7 @@ get_address:
 	cmp.w	#0x1800,a0
 	jcc		0f
 	BREAKPOINT	"unsupported address range 0-0x1800"
+	jbsr	osd_dump_logs
 	illegal
 0:
 	cmp.w	#0x1860,a0
@@ -314,6 +315,7 @@ get_address:
 	lea	\offset,a0
 	add.l	\reg,a0
 	.endif
+	GET_ADDRESS_FUNC
 	READ_BE_WORD	a0
 	GET_ADDRESS_FUNC
 	.endm
@@ -349,6 +351,7 @@ get_address:
 	lea	\offset,a0
 	add.l	\reg,a0
 	.endif
+	GET_ADDRESS_FUNC
 	READ_BE_WORD	a0
 	GET_UNCHECKED_ADDRESS_FUNC
 	.endm

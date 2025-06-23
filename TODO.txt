@@ -1,4 +1,3 @@
-- copperlist for row scrolling
 - avoid 2 first & last tile rows!
 - sprites update at least to log them!
 - reapply the +2 trick to clip left sprites
@@ -6,7 +5,7 @@
 - read_system_inputs returns all 0 if uncommented???
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
-- 9A20: bug??? WTF	
+- 91ca: debug GET_INDIRECT_ADDRESS_REGS with MAME probably missing GET_ADDRESS somewhere!
 - converter: .global	cpu_init in include
 - patch inputs/system cf post_process.py
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)

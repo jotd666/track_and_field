@@ -1370,10 +1370,13 @@ setup_players_screen_6936:
 6A7E: 48             ASLA
 6A7F: 10 8E A8 A6    LDY    #table_a8a6
 6A83: 6E B6          JMP    [A,Y]	; [jump_table]
+
+init_game_playfield_6a85:
 6A85: 4F             CLRA
 6A86: 5F             CLRB
+; reset sprites & scrolling to 0
 6A87: 8E 18 00       LDX    #sprite_ram_1800
-6A8A: ED 81          STD    ,X++
+6A8A: ED 81          STD    ,X++			; [scroll_address_word] wrong tag but does the job
 6A8C: 8C 1F 00       CMPX   #$1F00
 6A8F: 26 F9          BNE    $6A8A
 6A91: 8E 28 94       LDX    #$2894
@@ -7153,7 +7156,7 @@ partially_reset_scrolling_8c3e:
 99D4: 81 02          CMPA   #$02
 99D6: 26 03          BNE    $99DB
 99D8: 33 C8 40       LEAU   $40,U
-99DB: E1 C4          CMPB   ,U
+99DB: E1 C4          CMPB   ,U			; [video_address]
 99DD: 27 01          BEQ    $99E0
 99DF: 39             RTS
 
@@ -7188,7 +7191,7 @@ partially_reset_scrolling_8c3e:
 
 9A1C: 96 D6          LDA    $D6
 9A1E: 26 09          BNE    $9A29
-9A20: A6 98 03       LDA    [$03,X]
+9A20: A6 98 03       LDA    [$03,X]	; [video_address]
 9A23: 91 E3          CMPA   $E3
 9A25: 26 02          BNE    $9A29
 9A27: 0C D6          INC    $D6
@@ -8403,7 +8406,7 @@ table_a8a2:
 	dc.w	$6a7c	; $a8a2
 	dc.w	$6de4	; $a8a4
 table_a8a6:
-	dc.w	$6a85	; $a8a6
+	dc.w	init_game_playfield_6a85	; $a8a6
 	dc.w	$6b4b	; $a8a8
 	dc.w	$6c65	; $a8aa
 	dc.w	$6d2c	; $a8ac

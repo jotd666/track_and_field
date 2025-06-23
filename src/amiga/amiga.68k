@@ -1950,8 +1950,8 @@ platform_init:
 	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
 	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
  	*         VVHH
-    move.w #0x2499-0X10+0x40,diwstrt(a5)
-    move.w #0x2479+0x40,diwstop(a5)
+    move.w #0x2499-0X18+0x40,diwstrt(a5)
+    move.w #0x2479+0x48,diwstop(a5)
 *	cmp.l	#NTSC_MONITOR_ID,monitor
 *	jne		0f
 *    move.w #0xFC81,diwstop(a5)
