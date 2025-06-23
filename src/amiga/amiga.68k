@@ -872,14 +872,15 @@ _vblank:
 	subq.w	#1,delay_timer
 		
 	jbsr		do_irq
+	jbsr	really_update_scroll
 	
 	tst.b	frameskip
 	jeq		0f
 	eor.b	#1,flip_flop
 	jeq		23f
 0:
-	bsr		really_update_tiles
-	bsr		really_update_sprites
+	jbsr		really_update_tiles
+	jbsr		really_update_sprites
 	
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
@@ -1024,6 +1025,35 @@ add_10000_points:
 	move.l	(a7)+,a6
 	rts
 
+* we're going to scan for scroll values
+really_update_scroll:
+	GET_MEMORY_START_AND_DP
+	move.b	#0,0x100
+	lea	(0x1842,a6),a6		| disregard 2 first rows, hidden
+	move.w	#NB_SCROLL_ROWS-1,d7
+	lea		scroll_table,a2
+	lea		scroll_row_copper_address_table,a1
+	move.l		background_ptr,a4
+0:
+	* get LSB+MSB scroll value
+	move.b	(0x400,a6),d5
+	moveq	#0,d5		| TEMP
+	rol.w	#8,d5
+	move.b	(a6)+,d5
+	move.l	(a1)+,a0	| get address of bpl1con value
+	move.w	(a2,d5.w*4),(a0)	| set bplcon value
+	move.l	a4,d0				| base address
+	add.w	(2,a2,d5.w*4),d0	| bytes offset
+	addq	#4,a0				| pointer on first bitplane
+	movem.l	a0-a1/d0-d2,-(a7)
+	jbsr	set_static_bitplanes
+	movem.l	(a7)+,a0-a1/d0-d2
+	
+	add.w	#BG_NB_BYTES_PER_ROW*8,a4	| next row address
+	dbf		d7,0b
+	rts
+	
+	
 * we're going to scan for dirty tiles (0x400 array)
 * an optimization is to also have flags for 0x20-size regions
 * if the value is 0, then no need to try to refresh the next
@@ -1767,6 +1797,15 @@ switch_screen_buffers:
 	move.l	a3,bob_previous_displayed_sprites
 	move.l	a2,bob_previous_drawn_sprites
 
+	* fetch 0-scroll value from table
+	* apply to both plane sets (tiles & bobs)
+	lea		scroll_table,a2
+	move.w	(a2),d0
+	move.w	d0,reset_bplcon1_1
+	move.w	d0,reset_bplcon1_2
+
+ 	lea	tiles_bitplanes+2,a0
+    move.l	background_ptr,d0
 	jbra		set_static_bitplanes
 	.endif
 	
@@ -2443,12 +2482,11 @@ HW_SpriteYTable_\height:
 
 	DEF_HW_SPRITE_Y_TABLE	16
 
+* < A0: copperlist address for bitplane pointers
+* < D0: first bitplane address
 set_static_bitplanes:
-	movem.l	a0-a1/d0-d2,-(a7)
- 	lea	tiles_bitplanes+2,a0
     moveq #NB_TILE_PLANES-1,d1
  	move.l	#BG_SCREEN_PLANE_SIZE,d2
-    move.l	background_ptr,d0
 1:
     swap d0
     move.w d0,(a0)
@@ -2457,7 +2495,6 @@ set_static_bitplanes:
     addq.w  #8,a0
     add.l d2,d0
     dbf d1,1b
-	movem.l	(a7)+,a0-a1/d0-d2
     rts
 
 set_bob_bitplanes:
@@ -2762,10 +2799,6 @@ toggle_pause:
 	rts
 
 	
-set_row_scroll:
-	*lea		scroll_table,a2
-	*move.w	(a2,d2.w*4),fine_x_scroll_value
-	rts
     
 * < D0: numbers of vertical positions to wait
 beamdelay:
@@ -2920,12 +2953,13 @@ fg_screen_data_2:
 	.set	offset,0
 scroll_row_copper_address_table:
 	.rept	NB_SCROLL_ROWS/2
-	.long	scroll_rows_first_half+6+offset*8
-	.set	offset,offset+8
+	.long	scroll_rows_first_half+6+offset
+	.set	offset,offset+40
 	.endr
+	.set	offset,0
 	.rept	NB_SCROLL_ROWS/2
-	.long	scroll_rows_second_half+6+offset*8
-	.set	offset,offset+8
+	.long	scroll_rows_second_half+6+offset
+	.set	offset,offset+40
 	.endr
 
 background_ptr:
@@ -3051,7 +3085,9 @@ character_log_table:
 	.macro  HALF_SCROLL_ROWS
 	.rept	NB_SCROLL_ROWS/2
 	.word	0x01+(y_start*256),0xFFFE
-	.word	bplcon1,0
+	.word	bplcon1
+	.word	0
+	DECL_EVEN_BITPLANES	4,4
 	.set	y_start,y_start+8
 	.endr
 	.endm 
@@ -3085,6 +3121,10 @@ bobs_bitplanes:
 	DECL_EVEN_BITPLANES	0,4
 tiles_bitplanes:
 	DECL_EVEN_BITPLANES	4,4
+	* set 0-scroll value value for both plane sets
+	.word	bplcon1
+reset_bplcon1_1:
+	.word 	0
 
 *game_sprite_colors:
 *	DECL_COLORS	16,16
@@ -3113,6 +3153,10 @@ scroll_rows_second_half:
 
 	* pal limit
     .word  0xFFCF,0xFFFE       | PAL wait
+	.word	bplcon1
+	* set 0-scroll value value for both plane sets
+reset_bplcon1_2:
+	.word	0			| reset scrolling
 	.word	0x1601,0xFFFE
 
 	| no bobs from now on, get a LOT of drawing time
