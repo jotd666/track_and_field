@@ -38,6 +38,8 @@ dsw1_copy_2c = $2c
 dsw2_copy_2d = $2d
 copy_of_inputs_30 = $30
 hammer_speed_38 = $38
+chrono_hundredth_second_7e = $7e
+chrono_second_7f = $7f
 p1_attempts_left_81 = $81
 p1_attempts_left_a1 = $A1
 current_level_84 = $84
@@ -529,9 +531,12 @@ write_copyright_text_61c3:
 63C0: 33 46          LEAU   $6,U
 63C2: 30 01          LEAX   $1,X
 63C4: 20 C9          BRA    $638F
+
+draw_chrono_63c6:
 63C6: 86 BF          LDA    #$BF
 63C8: B4 3A D7       ANDA   $3AD7
 63CB: 8A 80          ORA    #$80
+; chrono attributes
 63CD: B7 3A 9B       STA    $3A9B
 63D0: B7 3A 9A       STA    $3A9A
 63D3: B7 3A 98       STA    $3A98
@@ -541,33 +546,33 @@ write_copyright_text_61c3:
 63DF: B7 3A D8       STA    $3AD8
 63E2: B7 3A D7       STA    $3AD7
 63E5: 86 0F          LDA    #$0F
-63E7: 94 7E          ANDA   $7E
+63E7: 94 7E          ANDA   chrono_hundredth_second_7e
 63E9: 48             ASLA
-63EA: B7 32 9B       STA    $329B
+63EA: B7 32 9B       STA    $329B	; [video_address] (chrono colon, upper tile)
 63ED: 4C             INCA
-63EE: B7 32 DB       STA    $32DB
+63EE: B7 32 DB       STA    $32DB	; [video_address] (chrono colon, lower tile)
 63F1: 86 F0          LDA    #$F0
-63F3: 94 7E          ANDA   $7E
+63F3: 94 7E          ANDA   chrono_hundredth_second_7e
 63F5: 44             LSRA
 63F6: 44             LSRA
 63F7: 44             LSRA
-63F8: B7 32 9A       STA    $329A
+63F8: B7 32 9A       STA    $329A	; [video_address] (chrono 10th second digit, upper tile)
 63FB: 4C             INCA
-63FC: B7 32 DA       STA    $32DA
+63FC: B7 32 DA       STA    $32DA	; [video_address] (chrono 10th second digit, lower tile)
 63FF: 86 0F          LDA    #$0F
-6401: 94 7F          ANDA   $7F
+6401: 94 7F          ANDA   chrono_second_7f
 6403: 48             ASLA
-6404: B7 32 98       STA    $3298
+6404: B7 32 98       STA    $3298	; [video_address] (chrono second unit digit, upper tile)
 6407: 4C             INCA
-6408: B7 32 D8       STA    $32D8
+6408: B7 32 D8       STA    $32D8	; [video_address] (chrono second unit digit, lower tile)
 640B: 86 F0          LDA    #$F0
-640D: 94 7F          ANDA   $7F
+640D: 94 7F          ANDA   chrono_second_7f
 640F: 44             LSRA
 6410: 44             LSRA
 6411: 44             LSRA
-6412: B7 32 97       STA    $3297
+6412: B7 32 97       STA    $3297	; [video_address] (chrono 1x second digit, upper tile)
 6415: 4C             INCA
-6416: B7 32 D7       STA    $32D7
+6416: B7 32 D7       STA    $32D7	; [video_address] (chrono 1x second digit, lower tile)
 6419: 39             RTS
 
 641A: FC 2A E1       LDD    $2AE1
@@ -1962,8 +1967,8 @@ init_game_playfield_6a85:
 6FB5: 27 02          BEQ    $6FB9
 6FB7: 86 88          LDA    #$88
 6FB9: 7E 85 0E       JMP    $850E
-6FBC: 0F 7E          CLR    $7E
-6FBE: 0F 7F          CLR    $7F
+6FBC: 0F 7E          CLR    chrono_hundredth_second_7e
+6FBE: 0F 7F          CLR    chrono_second_7f
 6FC0: 0F FE          CLR    $FE
 6FC2: 0F FF          CLR    $FF
 6FC4: 7F 2A 5E       CLR    $2A5E
@@ -3307,7 +3312,7 @@ init_game_playfield_6a85:
 7A86: 97 FB          STA    $FB
 7A88: BD D7 FF       JSR    $D7FF
 7A8B: BD CE 69       JSR    $CE69
-7A8E: 96 7F          LDA    $7F
+7A8E: 96 7F          LDA    chrono_second_7f
 7A90: 81 40          CMPA   #$40
 7A92: 10 27 00 54    LBEQ   $7AEA
 7A96: BD 88 C8       JSR    $88C8
@@ -3360,7 +3365,7 @@ init_game_playfield_6a85:
 7AFF: BD 9F 15       JSR    $9F15
 7B02: 0A DF          DEC    $DF
 7B04: 20 D7          BRA    $7ADD
-7B06: 96 7F          LDA    $7F
+7B06: 96 7F          LDA    chrono_second_7f
 7B08: 81 03          CMPA   #$03
 7B0A: 25 03          BCS    $7B0F
 7B0C: BD 90 12       JSR    $9012
@@ -3605,7 +3610,7 @@ init_game_playfield_6a85:
 7D0B: 39             RTS
 
 7D0C: BD D7 FF       JSR    $D7FF
-7D0F: 96 7F          LDA    $7F
+7D0F: 96 7F          LDA    chrono_second_7f
 7D11: 81 40          CMPA   #$40
 7D13: 27 EA          BEQ    $7CFF
 7D15: 8E 28 A0       LDX    #$28A0
@@ -3629,7 +3634,7 @@ init_game_playfield_6a85:
 7D44: 26 18          BNE    $7D5E
 7D46: B6 2A 9A       LDA    $2A9A
 7D49: 26 13          BNE    $7D5E
-7D4B: DC 7E          LDD    $7E
+7D4B: DC 7E          LDD    chrono_hundredth_second_7e
 7D4D: 10 83 70 04    CMPD   #$7004
 7D51: 26 0B          BNE    $7D5E
 7D53: 86 01          LDA    #$01
@@ -3951,7 +3956,7 @@ init_game_playfield_6a85:
 7FD7: 97 FB          STA    $FB
 7FD9: BD D7 FF       JSR    $D7FF
 7FDC: BD CE 69       JSR    $CE69
-7FDF: 96 7F          LDA    $7F
+7FDF: 96 7F          LDA    chrono_second_7f
 7FE1: 81 40          CMPA   #$40
 7FE3: 25 26          BCS    $800B
 7FE5: 8E 28 A0       LDX    #$28A0
@@ -8359,7 +8364,7 @@ event_table_a41f:
 	dc.w	$6482	; $a427
 	dc.w	$62ad	; $a429
 	dc.w	$62d2	; $a42b
-	dc.w	$63c6	; $a42d
+	dc.w	draw_chrono_63c6	; $a42d
 	dc.w	$641a	; $a42f
 	dc.w	$64d9	; $a431
 	dc.w	$654c	; $a433
@@ -8918,7 +8923,7 @@ CE64: 27 02          BEQ    $CE68
 CE66: 33 48          LEAU   $8,U
 CE68: 39             RTS
 
-CE69: 96 7E          LDA    $7E
+CE69: 96 7E          LDA    chrono_hundredth_second_7e
 CE6B: 84 07          ANDA   #$07
 CE6D: 27 01          BEQ    $CE70
 CE6F: 39             RTS
@@ -10077,24 +10082,24 @@ D7FB: 5A             DECB
 D7FC: 26 F8          BNE    $D7F6
 D7FE: 39             RTS
 
-D7FF: 96 7E          LDA    $7E
+D7FF: 96 7E          LDA    chrono_hundredth_second_7e
 D801: 8B 01          ADDA   #$01
 D803: 19             DAA
-D804: 97 7E          STA    $7E
+D804: 97 7E          STA    chrono_hundredth_second_7e
 D806: 25 11          BCS    $D819
 D808: 84 0F          ANDA   #$0F
 D80A: 27 14          BEQ    $D820
 D80C: 81 05          CMPA   #$05
 D80E: 27 10          BEQ    $D820
-D810: 96 7E          LDA    $7E
+D810: 96 7E          LDA    chrono_hundredth_second_7e
 D812: 8B 01          ADDA   #$01
 D814: 19             DAA
-D815: 97 7E          STA    $7E
+D815: 97 7E          STA    chrono_hundredth_second_7e
 D817: 20 07          BRA    $D820
-D819: 96 7F          LDA    $7F
+D819: 96 7F          LDA    chrono_second_7f
 D81B: 8B 01          ADDA   #$01
 D81D: 19             DAA
-D81E: 97 7F          STA    $7F
+D81E: 97 7F          STA    chrono_second_7f
 D820: 0D EA          TST    $EA
 D822: 27 06          BEQ    $D82A
 D824: CC 07 00       LDD    #$0700
@@ -11016,7 +11021,7 @@ E285: 10 8E EE 0A    LDY    #table_ee0a
 E289: 6E B6          JMP    [A,Y]	; [jump_table]
 
 E28B: BD D7 FF       JSR    $D7FF
-E28E: DC 7E          LDD    $7E
+E28E: DC 7E          LDD    chrono_hundredth_second_7e
 E290: 10 83 70 02    CMPD   #$7002
 E294: 26 0B          BNE    $E2A1
 E296: 0D 22          TST    $22
@@ -11473,7 +11478,7 @@ E674: DD B0          STD    $B0
 E676: DD B2          STD    $B2
 E678: FD 2B 18       STD    $2B18
 E67B: FD 2B 20       STD    $2B20
-E67E: DD 7E          STD    $7E
+E67E: DD 7E          STD    chrono_hundredth_second_7e
 E680: 97 EA          STA    $EA
 E682: FD 29 9C       STD    $299C
 E685: FD 29 9E       STD    $299E
@@ -11562,7 +11567,7 @@ E74D: 86 05          LDA    #$05
 E74F: 97 06          STA    $06
 E751: 16 02 40       LBRA   $E994
 E754: BD D7 FF       JSR    $D7FF
-E757: DC 7E          LDD    $7E
+E757: DC 7E          LDD    chrono_hundredth_second_7e
 E759: C1 40          CMPB   #$40
 E75B: 27 D9          BEQ    $E736
 E75D: 0D 22          TST    $22
@@ -13113,7 +13118,7 @@ F676: 96 DF          LDA    $DF
 F678: A6 A6          LDA    A,Y
 F67A: 1F 89          TFR    A,B
 F67C: ED 88 7C       STD    $7C,X
-F67F: A7 88 7E       STA    $7E,X
+F67F: A7 88 7E       STA    chrono_hundredth_second_7e,X
 F682: 8E 28 A0       LDX    #$28A0
 F685: EC 0E          LDD    $E,X
 F687: C3 00 04       ADDD   #$0004
