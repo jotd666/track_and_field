@@ -129,11 +129,12 @@ BIT_INSERT_COIN_2 = 1
 BIT_START_1P = 3
 BIT_START_2P = 4
 
-BIT_LEFT = 0
-BIT_RIGHT = 1
-BIT_UP = 2
+BIT_RIGHT = 0
+BIT_FIRE = 1
+BIT_LEFT = 2
+* not used?
 BIT_DOWN = 3
-BIT_FIRE = 4
+BIT_UP = 4
 
 .macro	GET_MEMORY_START_AND_DP
 	move.l	m6809_direct_page_pointer,a4
@@ -218,6 +219,7 @@ start:
 		* read/write on memory
 		.ifndef	RELEASE
 		.global	osd_log_cpu
+		.global osd_get_last_known_pc
 		.global	osd_read_file
 		.global	osd_write_file
 		.global	osd_dump_logs
@@ -914,6 +916,7 @@ osd_log_cpu:
 	CHECK_ZERO_MSW	d2
 	CHECK_ZERO_MSW	d3
 	CHECK_ZERO_MSW	d4
+	move.w	(6,a7),last_known_m6809_pc
 
 	move.l	a6,-(a7)
 	* check if cpu log is enabled
@@ -950,7 +953,11 @@ osd_cpu_logging_control:
 osd_blitz:
 	blitz
 	rts
-	
+
+osd_get_last_known_pc:
+	move.w	last_known_m6809_pc,d6
+	rts
+
 osd_break:
 	* sends a WinUAE command to enter WinUAE debugger
 	.ifndef	RELEASE
@@ -1019,7 +1026,7 @@ is_game_playing:
 	move.l	a6,-(a7)
 	GET_MEMORY_START_AND_DP
 	*tst.b	game_in_play_9669(a6)
-	moveq	#0,d0
+	cmp.l	a6,a6
 	move.l	(a7)+,a6
 	rts
 	
@@ -2563,9 +2570,8 @@ osd_read_inputs_2:
 	rts
 	
 osd_read_system_inputs:
-	moveq	#-1,d0
+	st.b	d0
 
-	rts
 	movem.l	a0/d1,-(a7)
 	lea		keyboard_table(pc),a0
 	* misc control keys
@@ -2934,6 +2940,9 @@ keyboard_table:
 interrupt_mode:
 	.word	0
 	
+	
+last_known_m6809_pc:
+	.word	-1
 pause_flag:
 	.word	0
 frameskip:

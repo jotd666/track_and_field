@@ -65,8 +65,8 @@ get_address:
 0:
 	cmp.w	#0x1800,a0
 	jcc		0f
-	BREAKPOINT	"unsupported address range 0-0x1800"
-	jbsr	osd_dump_logs
+	jbsr	osd_get_last_known_pc
+	BREAKPOINT	"unsupported address range 0-0x1800, PC in D6"
 	illegal
 0:
 * no need to treat that as special memory, just check what scroll
@@ -95,7 +95,8 @@ get_address:
 	cmp.w	#0x3080,a0		| 3000->3080 is not visible anyway!
 	jcs		0f
 	* video/attribute: must be done without "get_address"
-	BREAKPOINT	"unsupported address range 0x3000-0x3FFF"
+	jbsr	osd_get_last_known_pc
+	BREAKPOINT	"unsupported address range 0x3000-0x3FFF, PC in D6"
 0:
 10:
 	lea		(a6,a0.l),a0
