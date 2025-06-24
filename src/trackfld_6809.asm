@@ -2224,13 +2224,13 @@ init_game_playfield_6a85:
 71F9: 97 49          STA    $49
 71FB: 86 0A          LDA    #$0A
 71FD: A7 80          STA    ,X+
-71FF: A7 80          STA    ,X+
+71FF: A7 80          STA    ,X+		; [video_address]
 7201: 86 09          LDA    #$09
-7203: A7 80          STA    ,X+
+7203: A7 80          STA    ,X+		; [video_address]
 7205: 86 06          LDA    #$06
 7207: 97 48          STA    $48
 7209: 86 0A          LDA    #$0A
-720B: A7 80          STA    ,X+
+720B: A7 80          STA    ,X+		; [video_address]
 720D: 0A 48          DEC    $48
 720F: 26 FA          BNE    $720B
 7211: 30 88 37       LEAX   $37,X
@@ -7065,7 +7065,7 @@ partially_reset_scrolling_8c3e:
 991A: 96 97          LDA    $97
 991C: 26 21          BNE    $993F
 991E: BD 88 52       JSR    $8852
-9921: A6 A4          LDA    ,Y
+9921: A6 A4          LDA    ,Y		; [video_address]
 9923: 81 52          CMPA   #$52
 9925: 27 01          BEQ    $9928
 9927: 39             RTS
@@ -7293,7 +7293,7 @@ partially_reset_scrolling_8c3e:
 9AF0: 35 10          PULS   X
 9AF2: 39             RTS
 
-9AF3: A6 98 03       LDA    [$03,X]
+9AF3: A6 98 03       LDA    [$03,X]		; [video_address]
 9AF6: 81 5D          CMPA   #$5D
 9AF8: 27 03          BEQ    $9AFD
 9AFA: C6 01          LDB    #$01

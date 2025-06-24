@@ -82,20 +82,21 @@ with open(source_dir / "conv.s") as f:
                         lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
                     break
 
-        if "[scroll_address" in line:
-            # give me the original instruction
-            line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
-            # if it's a write, insert a "SCROLL_DIRTY" macro after the write
-            for j in range(i+1,len(lines)):
-                next_line = lines[j]
-                if "[...]" not in next_line:
-                    break
-                if ",(a0)" in next_line or "clr" in next_line or "MOVE_W_FROM_REG" in next_line:
-                    if any(x in next_line for x in ["address_word","MOVE_W_FROM_REG"]):
-                        lines[j] = next_line+"\tSCROLL_WORD_DIRTY | [...]\n"
-                    else:
-                        lines[j] = next_line+"\tSCROLL_BYTE_DIRTY | [...]\n"
-                    break
+# not really needed
+##        if "[scroll_address" in line:
+##            # give me the original instruction
+##            line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
+##            # if it's a write, insert a "SCROLL_DIRTY" macro after the write
+##            for j in range(i+1,len(lines)):
+##                next_line = lines[j]
+##                if "[...]" not in next_line:
+##                    break
+##                if ",(a0)" in next_line or "clr" in next_line or "MOVE_W_FROM_REG" in next_line:
+##                    if any(x in next_line for x in ["address_word","MOVE_W_FROM_REG"]):
+##                        lines[j] = next_line+"\tSCROLL_WORD_DIRTY | [...]\n"
+##                    else:
+##                        lines[j] = next_line+"\tSCROLL_BYTE_DIRTY | [...]\n"
+##                    break
 
         if "dsw1_1283" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)

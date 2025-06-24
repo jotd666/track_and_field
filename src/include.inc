@@ -69,28 +69,30 @@ get_address:
 	jbsr	osd_dump_logs
 	illegal
 0:
-	cmp.w	#0x1860,a0
-	jcc		0f
-	* address < 0x1860, check if scroll
-	cmp.w	#0x1840,a0
-	jcs		0f
-	* <= 0x1840: scroll
-	BREAKPOINT	"unsupported LSB scroll address range 0x1840-0x185F"
-	jra		10f
-0:
-	* we ruled out < 0x1860, now check 0x1c40-0x1c5f interval
-	cmp.w	#0x1C60,a0
-	jcc		0f
-	* address < 0x1C60, check if scroll
-	cmp.w	#0x1C40,a0
-	jcs		0f
-	* <= 0x1840: scroll
-	BREAKPOINT	"unsupported MSB scroll address range 0x1C40-0x1C5F"
-	jra		10f
-0:
+* no need to treat that as special memory, just check what scroll
+* address has changed at each vblank
+*	cmp.w	#0x1860,a0
+*	jcc		0f
+*	* address < 0x1860, check if scroll
+*	cmp.w	#0x1840,a0
+*	jcs		0f
+*	* <= 0x1840: scroll
+*	BREAKPOINT	"unsupported LSB scroll address range 0x1840-0x185F"
+*	jra		10f
+*0:
+*	* we ruled out < 0x1860, now check 0x1c40-0x1c5f interval
+*	cmp.w	#0x1C60,a0
+*	jcc		0f
+*	* address < 0x1C60, check if scroll
+*	cmp.w	#0x1C40,a0
+*	jcs		0f
+*	* <= 0x1840: scroll
+*	BREAKPOINT	"unsupported MSB scroll address range 0x1C40-0x1C5F"
+*	jra		10f
+*0:
 	
 	* 0X1800 <= range < 0x4000, ram, video ram & special ram/scroll
-	cmp.w	#0x3000,a0
+	cmp.w	#0x3080,a0		| 3000->3080 is not visible anyway!
 	jcs		0f
 	* video/attribute: must be done without "get_address"
 	BREAKPOINT	"unsupported address range 0x3000-0x3FFF"
@@ -190,12 +192,6 @@ get_address:
 	move.w	(sp)+,ccr
 	.endm
 
-* registers must be masked out to proper size before use
-	.macro	GET_INDIRECT_ADDRESS_REGS	reg1,reg2,destreg
-	move.l	\reg1,a0
-	add.l	\reg2,a0
-	move.w	(a0),\destreg
-	.endm
 
 	.macro	MOVE_W_TO_REG	src,dest
 	move.w	(\src),\dest
@@ -252,24 +248,24 @@ get_address:
 	jmp	(\reg)
 	.endm
 
+
+	.endif
+
 * registers must be masked out to proper size before use
 	.macro	GET_INDIRECT_ADDRESS_REGS	reg1,reg2,destreg
 	move.l	\reg1,a0
 	add.l	\reg2,a0
-	move.b	(a0),\destreg
-	lsl.w	#8,\destreg
-	move.b	(1,a0),\destreg
+	GET_ADDRESS_FUNC
+	MOVE_W_TO_REG	a0,\destreg
 	.endm
-
-	.endif
-
 
 
 	.macro READ_BE_WORD	srcreg
+	moveq	#0,d6
 	move.b	(\srcreg),d6
 	lsl.w	#8,d6
 	move.b	(1,\srcreg),d6
-	move.w	d6,\srcreg
+	move.l	d6,\srcreg
 	.endm
 
 
@@ -309,13 +305,7 @@ get_address:
 	.endm
 
 	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
-	.ifeq	\offset
-	move.l	\reg,a0
-	.else
-	lea	\offset,a0
-	add.l	\reg,a0
-	.endif
-	GET_ADDRESS_FUNC
+	GET_REG_ADDRESS		\offset,\reg
 	READ_BE_WORD	a0
 	GET_ADDRESS_FUNC
 	.endm
@@ -335,6 +325,7 @@ get_address:
 	READ_BE_WORD	a0
 	GET_ADDRESS_FUNC
 	.endm
+	
 	.macro GET_REG_UNCHECKED_ADDRESS	offset,reg
 	.ifeq	\offset
 	move.l	\reg,a0
@@ -344,6 +335,7 @@ get_address:
 	.endif
 	GET_UNCHECKED_ADDRESS_FUNC
 	.endm
+	
 	.macro GET_REG_INDIRECT_UNCHECKED_ADDRESS	offset,reg
 	.ifeq	\offset
 	move.l	\reg,a0

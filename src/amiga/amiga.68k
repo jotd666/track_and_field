@@ -898,7 +898,23 @@ _vblank:
 	
 	.ifndef	RELEASE
 
+	.macro	CHECK_ZERO_MSW	reg
+	swap	\reg
+	tst		\reg
+	jeq		0f
+	move.w	(6,a7),d6
+	BREAKPOINT		"\reg MSW is not zero, PC=check d6!"
+0:
+	swap	\reg
+	.endm
+	
 osd_log_cpu:
+	* first, check that registers don't have a wrong longword mask
+	CHECK_ZERO_MSW	d1
+	CHECK_ZERO_MSW	d2
+	CHECK_ZERO_MSW	d3
+	CHECK_ZERO_MSW	d4
+
 	move.l	a6,-(a7)
 	* check if cpu log is enabled
 	tst.b	cpu_log_enable
@@ -1030,7 +1046,6 @@ add_10000_points:
 * we're going to scan for scroll values
 really_update_scroll:
 	GET_MEMORY_START_AND_DP
-	move.b	#0,0x100
 	lea	(0x1842,a6),a6		| disregard 2 first rows, hidden
 	move.w	#NB_SCROLL_ROWS-1,d7
 	lea		scroll_table,a2
