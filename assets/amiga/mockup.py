@@ -91,4 +91,4 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
     print(f"nb active: {nb_active}")
 
 
-process(r"amiga")
+process(r"sprite_ram_1800")

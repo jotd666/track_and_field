@@ -2,9 +2,10 @@
 - scrolling: double tile write to simulate wrap: trriple width
 - scrolling: shifted rows (dash)
 - level select
+- scroll optim: only change copperlist if previous value is different
 - player frame wrong symmetry in tiles
 - 110m hurdles demo seems to never end...
-- reapply the +2 trick to clip left sprites: no, shift bob planes then add X to bobs
+- long jump demo doesn't work properly: foul
 - group sprites horizontally
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!

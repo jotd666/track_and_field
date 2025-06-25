@@ -38,9 +38,10 @@ BORDERBLANK = 1
 BASE_BPLCON3_VALUE = (1<<12)+(BORDERBLANK<<5)  | dpf second playfield palette starts at color 16!
 BASE_BPLCON2_VALUE = 0x0024		| sprites above all playfields
 
-SPRITE_X_CORRECTION = 0
+SPRITE_X_CORRECTION = 32
 SPRITE_Y_CORRECTION = 0
 SPRITE_HEIGHT = 16
+SPRITE_WIDTH = 16
 
 Y_MAX = 256
 
@@ -1053,7 +1054,7 @@ add_10000_points:
 * we're going to scan for scroll values
 really_update_scroll:
 	GET_MEMORY_START_AND_DP
-	lea	(0x1842,a6),a6		| disregard 2 first rows, hidden
+	lea	(0x1840,a6),a6
 	move.w	#NB_SCROLL_ROWS-1,d7
 	lea		scroll_table,a2
 	lea		scroll_row_copper_address_table,a1
@@ -1333,6 +1334,12 @@ update_one_bob:
 	move.l	d2,a3
 	moveq	#0,d2	| no y-clip
 	* note down that this bob will have to be erased
+	btst	#6,d3
+	jne		101f
+	* flip
+	neg.w	d4
+101:
+
 	move.w	d0,(a6)+			| store current sprite attributes to previous ones
 	move.w	d1,(a6)+			| store current sprite attributes to previous ones
 	move.w	d4,(a6)+			| store height
@@ -1342,15 +1349,23 @@ update_one_bob:
 	move.w	d5,d2			    | width in bytes, 4 for 16 pixels+shift
 	moveq	#0,d5			    | Y-offset
 
-	btst	#6,d3
-	jne		101f
-	* flip
-	neg.w	d4
-101:
 
 
 	moveq	#NB_BOB_PLANES,d3		| 5 planes
-
+	cmp.w	#256+SPRITE_X_CORRECTION-SPRITE_WIDTH,d0
+	jcs		102f
+	* too far on the right: wrap around (means: blit twice)
+	movem.l	d0-d6/a0/a1/a3,-(a7)
+	sub.w	#0x100,d0
+	move.w	d0,(a6)+			| store current sprite attributes to previous ones
+	move.w	d1,(a6)+			| store current sprite attributes to previous ones
+	move.w	d4,(a6)+			| store height
+	move.w	d2,(a6)+			| store width in bytes
+	clr.b	(a6)+				| not a star
+	move.b	d6,(a6)+		    | active planes (helps for erase)
+	bsr		blit_planes_any_internal_cookie_cut
+	movem.l	(a7)+,d0-d6/a0/a1/a3
+102:
 	bsr		blit_planes_any_internal_cookie_cut
 	move.l	(a7)+,a0
 	rts
@@ -1463,15 +1478,12 @@ osd_dump_logs:
 	move.l	#16*NB_POSSIBLE_TILES,d0
 	jbsr	resload_SaveFile(a2)
 		
-*	GET_MEMORY_START_AND_DP
-*	lea		sprites_ram_name_A000(pc),a0
-*	lea	(0x2000,a6),a1		| sprites
-*	move.l	#0x200,d0
-*	jbsr	resload_SaveFile(a2)
-*	lea		sprites_ram_name_A200(pc),a0
-*	lea	(0x2200,a6),a1		| sprites
-*	move.l	#0x200,d0
-*	jbsr	resload_SaveFile(a2)
+	GET_MEMORY_START_AND_DP
+	lea		sprites_ram_name_1800(pc),a0
+	lea	(0x1800,a6),a1		| sprites
+	move.l	#0x440,d0
+	jbsr	resload_SaveFile(a2)
+
 	
 	jbsr	save_cpu_log
 	
@@ -1495,12 +1507,11 @@ save_cpu_log:
 0:	
 	rts
 	
-sprites_ram_name_4040:
-	.asciz	"sprite_ram_4040"
-sprites_ram_name_A000:
-	.asciz	"sprite_ram_A000"
-sprites_ram_name_A200:
-	.asciz	"sprite_ram_A200"
+
+sprites_ram_name_1800:
+	.asciz	"sprite_ram_1800"
+
+
 sprite_log_name:
 	.asciz	"used_sprites"
 character_log_name:
