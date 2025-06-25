@@ -1,9 +1,9 @@
 - avoid 2 first & last tile rows!
-- scrolling: double tile write to simulate wrap
+- scrolling: double tile write to simulate wrap: trriple width
 - scrolling: shifted rows (dash)
-- tiles corrupt (dash/hurdles)
-- timer corrupt
-- sprites update at least to log them!
+- level select
+- player frame wrong symmetry in tiles
+- 110m hurdles demo seems to never end...
 - reapply the +2 trick to clip left sprites: no, shift bob planes then add X to bobs
 - group sprites horizontally
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]

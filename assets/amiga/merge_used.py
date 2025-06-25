@@ -35,4 +35,4 @@ def merge(used_name,nb_items):
             f.write(contents)
 
 merge("used_sprites",256)
-merge("used_tiles",512)
+merge("used_tiles",512+256)

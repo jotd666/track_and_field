@@ -2174,7 +2174,7 @@ init_game_playfield_6a85:
 7188: D6 84          LDB    current_level_84
 718A: C1 04          CMPB   #$04
 718C: 27 1A          BEQ    $71A8
-718E: A7 80          STA    ,X+
+718E: A7 80          STA    ,X+		; [video_address]
 7190: 8C 3C 00       CMPX   #$3C00
 7193: 26 F9          BNE    $718E
 7195: D6 84          LDB    current_level_84
@@ -2182,12 +2182,12 @@ init_game_playfield_6a85:
 7199: 27 04          BEQ    $719F
 719B: C1 02          CMPB   #$02
 719D: 26 12          BNE    $71B1
-719F: A7 80          STA    ,X+
+719F: A7 80          STA    ,X+		; [video_address]
 71A1: 8C 3C 80       CMPX   #$3C80
 71A4: 26 F9          BNE    $719F
 71A6: 20 09          BRA    $71B1
 71A8: 8A 80          ORA    #$80
-71AA: A7 80          STA    ,X+
+71AA: A7 80          STA    ,X+		; [video_address]
 71AC: 8C 3B C0       CMPX   #$3BC0
 71AF: 26 F9          BNE    $71AA
 71B1: 20 29          BRA    $71DC
@@ -5099,12 +5099,12 @@ queue_event_84f5:
 8925: 33 CB          LEAU   D,U
 8927: 20 02          BRA    $892B
 8929: 33 5B          LEAU   -$5,U
-892B: A6 C4          LDA    ,U
-892D: A7 45          STA    $5,U
-892F: EC 41          LDD    $1,U
-8931: ED 46          STD    $6,U
-8933: EC 43          LDD    $3,U
-8935: ED 48          STD    $8,U
+892B: A6 C4          LDA    ,U		; [video_address]
+892D: A7 45          STA    $5,U		; [video_address]
+892F: EC 41          LDD    $1,U		; [video_address]
+8931: ED 46          STD    $6,U		; [video_address]
+8933: EC 43          LDD    $3,U		; [video_address]
+8935: ED 48          STD    $8,U		; [video_address]
 8937: 0A 48          DEC    $48
 8939: 26 EE          BNE    $8929
 893B: 96 84          LDA    current_level_84
@@ -5125,11 +5125,11 @@ queue_event_84f5:
 8958: 20 03          BRA    $895D
 895A: 96 DF          LDA    $DF
 895C: 4C             INCA
-895D: A7 C0          STA    ,U+
+895D: A7 C0          STA    ,U+		; [video_address]
 895F: EC 81          LDD    ,X++
-8961: ED C1          STD    ,U++
+8961: ED C1          STD    ,U++		; [video_address_word]
 8963: EC 84          LDD    ,X
-8965: ED C4          STD    ,U
+8965: ED C4          STD    ,U		; [video_address]
 8967: 39             RTS
 
 8968: 0F 62          CLR    $62
@@ -10207,7 +10207,7 @@ D8F0: EC A1          LDD    ,Y++
 D8F2: ED 81          STD    ,X++		; [video_address_word]
 D8F4: 30 01          LEAX   $1,X
 D8F6: EC A1          LDD    ,Y++
-D8F8: ED 81          STD    ,X++
+D8F8: ED 81          STD    ,X++		; [video_address]
 D8FA: A6 A1          LDA    ,Y++
 D8FC: A7 84          STA    ,X		; [video_address]
 D8FE: 30 88 38       LEAX   $38,X

@@ -25,7 +25,7 @@ AFB_68030 = 2
 NO68020 = 1
 
 NB_POSSIBLE_SPRITES = 256
-NB_POSSIBLE_TILES = 512
+NB_POSSIBLE_TILES = 768
 
 NB_SCROLL_ROWS = 28
 
@@ -2121,7 +2121,8 @@ osd_video_byte_dirty:
 	.ifndef	RELEASE
 	cmp.l	#0x4000,d7
 	jcs		0f
-	BREAKPOINT	"write videoram out of range (D7 >= $3800)"
+	jbsr	osd_get_last_known_pc
+	BREAKPOINT	"write videoram out of range (D7 >= $3800), PC in D6"
 	jra		osd_video_dirty_out
 0:
 	.endif
@@ -2133,7 +2134,8 @@ osd_video_byte_dirty:
 
 	* should not happen
 	add.w	#0x3000,d7
-	BREAKPOINT	"write videoram out of range (D7 < $3000)"
+	jbsr	osd_get_last_known_pc
+	BREAKPOINT	"write videoram out of range (D7 < $3000), PC in D6"
 	jra		osd_video_dirty_out
 	.endif
 1:	
@@ -2225,6 +2227,10 @@ update_bg_tile:
 	bclr	#6,d3
 	jeq		0f
 	bset	#8,d2			| add 0x100
+0:
+	bclr	#7,d3
+	jeq		0f
+	bset	#9,d2			| add 0x200
 0:
 	.ifne	OPT_ENABLE_LOGGING
 	lea		character_log_table,a0
@@ -3060,11 +3066,12 @@ scroll_table:
 sprite_log_table:
 	* 16 cluts, 256 tiles
 	* a lot of combinations aren't used (fortunately!)
-	ds.b	16*NB_POSSIBLE_SPRITES
+	.skip	16*NB_POSSIBLE_SPRITES
 character_log_table:
-	* 16 cluts, 256 tiles
+	* 16 cluts, 768 tiles
 	* a lot of combinations aren't used (fortunately!)
-	ds.b	16*NB_POSSIBLE_TILES
+	.skip	16*NB_POSSIBLE_TILES
+	.skip	16*(1024-NB_POSSIBLE_TILES)  | just in case of a bug
 	.endif
 	.endif
 

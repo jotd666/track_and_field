@@ -44,6 +44,8 @@ dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
 copy_of_inputs_30 = 0x30
 hammer_speed_38 = 0x38
+chrono_hundredth_second_7e = 0x7e
+chrono_second_7f = 0x7f
 p1_attempts_left_81 = 0x81
 p1_attempts_left_a1 = 0xA1
 current_level_84 = 0x84
@@ -820,11 +822,13 @@ l_63a5:
 	addq.w	#0x6,d4                         	| [$63c0: leau   $6,u]
 	addq.w	#0x1,d2                         	| [$63c2: leax   $1,x]
 	jra	l_638f                             	| [$63c4: bra    $638f]
-l_63c6:
+
+draw_chrono_63c6:
 	move.b	#0xbf,d0                        	| [$63c6: lda    #$bf]
 	GET_UNCHECKED_ADDRESS	0x3ad7                     	| [$63c8: anda   $3ad7] [video_address]
 	and.b	(a0),d0                          	| [...]
 	or.b	#0x80,d0                          	| [$63cb: ora    #$80]
+* chrono attributes
 	GET_UNCHECKED_ADDRESS	0x3a9b                     	| [$63cd: sta    $3a9b] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
@@ -850,51 +854,51 @@ l_63c6:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0f,d0                        	| [$63e5: lda    #$0f]
-	GET_DP_ADDRESS	0x7e                    	| [$63e7: anda   $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$63e7: anda   chrono_hundredth_second_7e]
 	and.b	(a0),d0                          	| [...]
 	asl.b	#1,d0                            	| [$63e9: asla]
-	GET_UNCHECKED_ADDRESS	0x329b                     	| [$63ea: sta    $329b] [video_address]
+	GET_UNCHECKED_ADDRESS	0x329b                     	| [$63ea: sta    $329b] [video_address] (chrono colon, upper tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	addq.b	#1,d0                           	| [$63ed: inca]
-	GET_UNCHECKED_ADDRESS	0x32db                     	| [$63ee: sta    $32db] [video_address]
+	GET_UNCHECKED_ADDRESS	0x32db                     	| [$63ee: sta    $32db] [video_address] (chrono colon, lower tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0xf0,d0                        	| [$63f1: lda    #$f0]
-	GET_DP_ADDRESS	0x7e                    	| [$63f3: anda   $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$63f3: anda   chrono_hundredth_second_7e]
 	and.b	(a0),d0                          	| [...]
                                          | [$63f5: lsra]
                                          | [$63f6: lsra]
 	lsr.b	#3,d0                            	| [$63f7: lsra]
-	GET_UNCHECKED_ADDRESS	0x329a                     	| [$63f8: sta    $329a] [video_address]
+	GET_UNCHECKED_ADDRESS	0x329a                     	| [$63f8: sta    $329a] [video_address] (chrono 10th second digit, upper tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	addq.b	#1,d0                           	| [$63fb: inca]
-	GET_UNCHECKED_ADDRESS	0x32da                     	| [$63fc: sta    $32da] [video_address]
+	GET_UNCHECKED_ADDRESS	0x32da                     	| [$63fc: sta    $32da] [video_address] (chrono 10th second digit, lower tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0f,d0                        	| [$63ff: lda    #$0f]
-	GET_DP_ADDRESS	0x7f                    	| [$6401: anda   $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$6401: anda   chrono_second_7f]
 	and.b	(a0),d0                          	| [...]
 	asl.b	#1,d0                            	| [$6403: asla]
-	GET_UNCHECKED_ADDRESS	0x3298                     	| [$6404: sta    $3298] [video_address]
+	GET_UNCHECKED_ADDRESS	0x3298                     	| [$6404: sta    $3298] [video_address] (chrono second unit digit, upper tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	addq.b	#1,d0                           	| [$6407: inca]
-	GET_UNCHECKED_ADDRESS	0x32d8                     	| [$6408: sta    $32d8] [video_address]
+	GET_UNCHECKED_ADDRESS	0x32d8                     	| [$6408: sta    $32d8] [video_address] (chrono second unit digit, lower tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0xf0,d0                        	| [$640b: lda    #$f0]
-	GET_DP_ADDRESS	0x7f                    	| [$640d: anda   $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$640d: anda   chrono_second_7f]
 	and.b	(a0),d0                          	| [...]
                                          | [$640f: lsra]
                                          | [$6410: lsra]
 	lsr.b	#3,d0                            	| [$6411: lsra]
-	GET_UNCHECKED_ADDRESS	0x3297                     	| [$6412: sta    $3297] [video_address]
+	GET_UNCHECKED_ADDRESS	0x3297                     	| [$6412: sta    $3297] [video_address] (chrono 1x second digit, upper tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	addq.b	#1,d0                           	| [$6415: inca]
-	GET_UNCHECKED_ADDRESS	0x32d7                     	| [$6416: sta    $32d7] [video_address]
+	GET_UNCHECKED_ADDRESS	0x32d7                     	| [$6416: sta    $32d7] [video_address] (chrono 1x second digit, lower tile) [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	rts                                    	| [$6419: rts]
@@ -3595,10 +3599,10 @@ l_6fb9:
 	jmp	l_850e                             	| [$6fb9: jmp    $850e]
 l_6fbc:
 	LOG_REGS	6fbc   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$6fbc: clr    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$6fbc: clr    chrono_hundredth_second_7e]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	6fbe   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$6fbe: clr    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$6fbe: clr    chrono_second_7f]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	6fc0   | added by add_reg_log.py
 	GET_DP_ADDRESS	0xfe                    	| [$6fc0: clr    $fe]
@@ -4120,9 +4124,10 @@ l_7188:
 	jeq	l_71a8                             	| [$718c: beq    $71a8]
 l_718e:
 	LOG_REGS	718e   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$718e: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$718e: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	7190   | added by add_reg_log.py
 	cmp.w	#0x3c00,d2                       	| [$7190: cmpx   #$3c00]
 	LOG_REGS	7193   | added by add_reg_log.py
@@ -4140,9 +4145,10 @@ l_718e:
 	jne	l_71b1                             	| [$719d: bne    $71b1]
 l_719f:
 	LOG_REGS	719f   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$719f: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$719f: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	71a1   | added by add_reg_log.py
 	cmp.w	#0x3c80,d2                       	| [$71a1: cmpx   #$3c80]
 	LOG_REGS	71a4   | added by add_reg_log.py
@@ -4154,9 +4160,10 @@ l_71a8:
 	or.b	#0x80,d0                          	| [$71a8: ora    #$80]
 l_71aa:
 	LOG_REGS	71aa   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$71aa: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$71aa: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	71ac   | added by add_reg_log.py
 	cmp.w	#0x3bc0,d2                       	| [$71ac: cmpx   #$3bc0]
 	LOG_REGS	71af   | added by add_reg_log.py
@@ -7003,7 +7010,7 @@ l_7a80:
 	LOG_REGS	7a8b   | added by add_reg_log.py
 	jbsr	l_ce69                            	| [$7a8b: jsr    $ce69]
 	LOG_REGS	7a8e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$7a8e: lda    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$7a8e: lda    chrono_second_7f]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7a90   | added by add_reg_log.py
 	cmp.b	#0x40,d0                         	| [$7a90: cmpa   #$40]
@@ -7134,7 +7141,7 @@ l_7b02:
 	jra	l_7add                             	| [$7b04: bra    $7add]
 l_7b06:
 	LOG_REGS	7b06   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$7b06: lda    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$7b06: lda    chrono_second_7f]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7b08   | added by add_reg_log.py
 	cmp.b	#0x03,d0                         	| [$7b08: cmpa   #$03]
@@ -7776,7 +7783,7 @@ l_7d0c:
 	LOG_REGS	7d0c   | added by add_reg_log.py
 	jbsr	l_d7ff                            	| [$7d0c: jsr    $d7ff]
 	LOG_REGS	7d0f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$7d0f: lda    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$7d0f: lda    chrono_second_7f]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7d11   | added by add_reg_log.py
 	cmp.b	#0x40,d0                         	| [$7d11: cmpa   #$40]
@@ -7827,9 +7834,9 @@ l_7d3f:
 	LOG_REGS	7d49   | added by add_reg_log.py
 	jne	l_7d5e                             	| [$7d49: bne    $7d5e]
 	LOG_REGS	7d4b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$7d4b: ldd    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$7d4b: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	7d4b   | added by add_reg_log.py
-	LOAD_D                                 	| [$7d4b: ldd    $7e]
+	LOAD_D                                 	| [$7d4b: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	7d4d   | added by add_reg_log.py
 	cmp.w	#0x7004,d1                       	| [$7d4d: cmpd   #$7004]
 	LOG_REGS	7d51   | added by add_reg_log.py
@@ -8604,7 +8611,7 @@ l_7fd1:
 	LOG_REGS	7fdc   | added by add_reg_log.py
 	jbsr	l_ce69                            	| [$7fdc: jsr    $ce69]
 	LOG_REGS	7fdf   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$7fdf: lda    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$7fdf: lda    chrono_second_7f]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7fe1   | added by add_reg_log.py
 	cmp.b	#0x40,d0                         	| [$7fe1: cmpa   #$40]
@@ -11482,25 +11489,28 @@ l_8929:
 	subq.w	#0x5,d4                         	| [$8929: leau   -$5,u]
 l_892b:
 	LOG_REGS	892b   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d4                   	| [$892b: lda    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$892b: lda    ,u] [video_address]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	892d   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x5,d4                 	| [$892d: sta    $5,u]
+	GET_REG_UNCHECKED_ADDRESS	0x5,d4                 	| [$892d: sta    $5,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	892f   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x1,d4                 	| [$892f: ldd    $1,u]
+	GET_REG_UNCHECKED_ADDRESS	0x1,d4                 	| [$892f: ldd    $1,u] [video_address]
 	LOG_REGS	892f   | added by add_reg_log.py
-	LOAD_D                                 	| [$892f: ldd    $1,u]
+	LOAD_D                                 	| [$892f: ldd    $1,u] [video_address]
 	LOG_REGS	8931   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x6,d4                 	| [$8931: std    $6,u]
+	GET_REG_UNCHECKED_ADDRESS	0x6,d4                 	| [$8931: std    $6,u] [video_address]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	8933   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x3,d4                 	| [$8933: ldd    $3,u]
+	GET_REG_UNCHECKED_ADDRESS	0x3,d4                 	| [$8933: ldd    $3,u] [video_address]
 	LOG_REGS	8933   | added by add_reg_log.py
-	LOAD_D                                 	| [$8933: ldd    $3,u]
+	LOAD_D                                 	| [$8933: ldd    $3,u] [video_address]
 	LOG_REGS	8935   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x8,d4                 	| [$8935: std    $8,u]
+	GET_REG_UNCHECKED_ADDRESS	0x8,d4                 	| [$8935: std    $8,u] [video_address]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	8937   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x48                    	| [$8937: dec    $48]
 	subq.b	#1,(a0)                         	| [...]
@@ -11554,25 +11564,28 @@ l_895a:
 	addq.b	#1,d0                           	| [$895c: inca]
 l_895d:
 	LOG_REGS	895d   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d4                   	| [$895d: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$895d: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	895f   | added by add_reg_log.py
 	GET_REG_ADDRESS	0,d2                   	| [$895f: ldd    ,x++]
 	addq.w	#2,d2                           	| [...]
 	LOG_REGS	895f   | added by add_reg_log.py
 	LOAD_D                                 	| [$895f: ldd    ,x++]
 	LOG_REGS	8961   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d4                   	| [$8961: std    ,u++]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$8961: std    ,u++] [video_address_word]
 	addq.w	#2,d4                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	8963   | added by add_reg_log.py
 	GET_REG_ADDRESS	0,d2                   	| [$8963: ldd    ,x]
 	LOG_REGS	8963   | added by add_reg_log.py
 	LOAD_D                                 	| [$8963: ldd    ,x]
 	LOG_REGS	8965   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d4                   	| [$8965: std    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$8965: std    ,u] [video_address]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	8967   | added by add_reg_log.py
 	rts                                    	| [$8967: rts]
 
@@ -19987,7 +20000,7 @@ event_table_a41f:
 	.long	l_6482                           	|  $a427
 	.long	l_62ad                           	|  $a429
 	.long	l_62d2                           	|  $a42b
-	.long	l_63c6                           	|  $a42d
+	.long	draw_chrono_63c6                 	|  $a42d
 	.long	l_641a                           	|  $a42f
 	.long	l_64d9                           	|  $a431
 	.long	l_654c                           	|  $a433
@@ -21145,7 +21158,7 @@ l_ce68:
 
 l_ce69:
 	LOG_REGS	ce69   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$ce69: lda    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$ce69: lda    chrono_hundredth_second_7e]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	ce6b   | added by add_reg_log.py
 	and.b	#0x07,d0                         	| [$ce6b: anda   #$07]
@@ -24155,14 +24168,14 @@ l_d7f6:
 
 l_d7ff:
 	LOG_REGS	d7ff   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$d7ff: lda    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$d7ff: lda    chrono_hundredth_second_7e]
 	move.b	(a0),d0                         	| [...]
 	CLR_XC_FLAGS
 	move.b	#0x01,d6	| [...]
 	abcd	d6,d0	| [...]
 	PUSH_SR
 	LOG_REGS	d804   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$d804: sta    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$d804: sta    chrono_hundredth_second_7e]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 	LOG_REGS	d806   | added by add_reg_log.py
@@ -24176,25 +24189,25 @@ l_d7ff:
 	LOG_REGS	d80e   | added by add_reg_log.py
 	jeq	l_d820                             	| [$d80e: beq    $d820]
 	LOG_REGS	d810   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$d810: lda    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$d810: lda    chrono_hundredth_second_7e]
 	move.b	(a0),d0                         	| [...]
 	CLR_XC_FLAGS
 	move.b	#0x01,d6	| [...]
 	abcd	d6,d0	| [...]
 	LOG_REGS	d815   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$d815: sta    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$d815: sta    chrono_hundredth_second_7e]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	d817   | added by add_reg_log.py
 	jra	l_d820                             	| [$d817: bra    $d820]
 l_d819:
 	LOG_REGS	d819   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$d819: lda    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$d819: lda    chrono_second_7f]
 	move.b	(a0),d0                         	| [...]
 	CLR_XC_FLAGS
 	move.b	#0x01,d6	| [...]
 	abcd	d6,d0	| [...]
 	LOG_REGS	d81e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7f                    	| [$d81e: sta    $7f]
+	GET_DP_ADDRESS	chrono_second_7f        	| [$d81e: sta    chrono_second_7f]
 	move.b	d0,(a0)                         	| [...]
 l_d820:
 	LOG_REGS	d820   | added by add_reg_log.py
@@ -24500,9 +24513,10 @@ l_d8ee:
 	LOG_REGS	d8f6   | added by add_reg_log.py
 	LOAD_D                                 	| [$d8f6: ldd    ,y++]
 	LOG_REGS	d8f8   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$d8f8: std    ,x++]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$d8f8: std    ,x++] [video_address]
 	addq.w	#2,d2                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	d8fa   | added by add_reg_log.py
 	GET_REG_ADDRESS	0,d3                   	| [$d8fa: lda    ,y++]
 	addq.w	#2,d3                           	| [...]
@@ -26628,9 +26642,9 @@ l_e28b:
 	LOG_REGS	e28b   | added by add_reg_log.py
 	jbsr	l_d7ff                            	| [$e28b: jsr    $d7ff]
 	LOG_REGS	e28e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$e28e: ldd    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$e28e: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	e28e   | added by add_reg_log.py
-	LOAD_D                                 	| [$e28e: ldd    $7e]
+	LOAD_D                                 	| [$e28e: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	e290   | added by add_reg_log.py
 	cmp.w	#0x7002,d1                       	| [$e290: cmpd   #$7002]
 	LOG_REGS	e294   | added by add_reg_log.py
@@ -27746,7 +27760,7 @@ l_e66a:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e67e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$e67e: std    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$e67e: std    chrono_hundredth_second_7e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	e680   | added by add_reg_log.py
 	GET_DP_ADDRESS	0xea                    	| [$e680: sta    $ea]
@@ -27997,9 +28011,9 @@ l_e754:
 	LOG_REGS	e754   | added by add_reg_log.py
 	jbsr	l_d7ff                            	| [$e754: jsr    $d7ff]
 	LOG_REGS	e757   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x7e                    	| [$e757: ldd    $7e]
+	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$e757: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	e757   | added by add_reg_log.py
-	LOAD_D                                 	| [$e757: ldd    $7e]
+	LOAD_D                                 	| [$e757: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	e759   | added by add_reg_log.py
 	cmp.b	#0x40,d1                         	| [$e759: cmpb   #$40]
 	LOG_REGS	e75b   | added by add_reg_log.py
@@ -31927,7 +31941,7 @@ l_f637:
 	GET_REG_ADDRESS	0x7c,d2                	| [$f67c: std    $7c,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	f67f   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x7e,d2                	| [$f67f: sta    $7e,x]
+	GET_REG_ADDRESS	chrono_hundredth_second_7e,d2	| [$f67f: sta    chrono_hundredth_second_7e,x]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f682   | added by add_reg_log.py
 	move.w	#0x28a0,d2                      	| [$f682: ldx    #$28a0]

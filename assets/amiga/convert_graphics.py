@@ -7,7 +7,7 @@ from shared import *
 sprite_names,grouped_sprites = get_sprite_names()
 
 NB_SPRITES = 0x100
-NB_TILES = 0x200
+NB_TILES = 0x300
 
 dump_it = True
 
