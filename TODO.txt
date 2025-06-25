@@ -1,14 +1,20 @@
-- avoid 2 first & last tile rows!
-- scrolling: double tile write to simulate wrap: trriple width
-- scrolling: shifted rows (dash)
-- level select
-- scroll optim: only change copperlist if previous value is different
-- player frame wrong symmetry in tiles
+**** CPU conversion issue!! *****
+- 100m dash: cpu player "jumps" in x position
+- long jump: 2 girl sprites in the background don't move with scrolling
+- 100m dash: even when qualifying with lower time, race lost unless CPU wins!
 - 110m hurdles demo seems to never end...
-- long jump demo doesn't work properly: foul
-- group sprites horizontally
+- high jump: character rises and rises...
+- long jump demo/game doesn't work properly: foul each time
+**** CPU conversion issue!! *****
+
+- player frame wrong symmetry in tiles
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
 - converter: .global	cpu_init in include
+
+
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes
+- scroll optim: only change copperlist if previous value is different
+- group sprites horizontally
+- optimize code manually in the end

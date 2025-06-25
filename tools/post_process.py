@@ -105,16 +105,18 @@ with open(source_dir / "conv.s") as f:
 
         if "multiply_ab" in line and "MAKE_D" in lines[i+1]:
             lines[i+1] = ""
-        if "tfr" in line and "POP_SR" in lines[i+1]:
+        if "tfr" in line and "POP_SR" in lines[i+1] and "PUSH_SR" in lines[i-1]:
             # we don't need to save SR in this game when a TFR is done
             lines[i-1] = ""
             lines[i+1] = ""
-        if "rox" in line and "POP_SR" in lines[i-1]:
+        if "rox" in line and "POP_SR" in lines[i-1] and "PUSH_SR" in lines[i-3]:
             # we don't need to save SR as roxx uses X flag
             lines[i-3] = ""
             lines[i-1] = ""
 
-
+        if "[$6853" in line:
+            # insert level select cheat
+            line = line + "\tGET_DP_ADDRESS\tcurrent_level_84\n\tmove.b\tstart_level,(a0)\n"
         line = re.sub(tablere,subt,line)
         if "[$83bd" in line or "[$9db1" in line or "[$d804" in line:
             line = "\tPUSH_SR\n"+line

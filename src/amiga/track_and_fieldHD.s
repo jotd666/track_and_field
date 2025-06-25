@@ -47,12 +47,8 @@ _config
 	IFD		CHIP_ONLY
 	dc.b	"C2:X:break at startup:31;"
 	ENDC
-	dc.b	"C3:L:start level:neptune 1,nepture 2,"
-	dc.b	"uranus 1,uranus 2,uranus 3,"
-	dc.b	"saturn 1,saturn 2,saturn 3,"
-	dc.b	"jupiter 3,jupiter 2,jupiter 1,"
-	dc.b	"mars 1,mars 2,mars 3,"
-	dc.b	"earth 3,earth 2,earth 1"
+	dc.b	"C3:L:start level:100m dash,long jump,javelin throw,"
+	dc.b	"110m hurdles,hammer throw,high jump"
 	dc.b	";C4:L:start lives:3,4,5;"
 	dc.b	"C5:L:difficulty level:1 (easiest),2,3,4,5 (average),6,7,8 (hardest);"
 	dc.b	0

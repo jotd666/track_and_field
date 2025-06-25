@@ -40,18 +40,24 @@ boot_state_03 = 0x03
 event_pointer_18 = 0x18
 event_pointer_1a = 0x1a
 copy_of_screen_flipped_21 = 0x21
+number_of_credits_23 = 0x23
 dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
 copy_of_inputs_30 = 0x30
+copy_of_inputs_31 = 0x31
+copy_of_inputs_32 = 0x32
 hammer_speed_38 = 0x38
+nb_players_48 = 0x48
+nb_players_minus_one_60 = 0x60
 chrono_hundredth_second_7e = 0x7e
 chrono_second_7f = 0x7f
 p1_attempts_left_81 = 0x81
 p1_attempts_left_a1 = 0xA1
 current_level_84 = 0x84
+high_jump_fault_9f = 0x9F
 jump_foul_c9 = 0xc9
 false_start_d9 = 0xD9
-high_jump_fault_9f = 0x9F
+display_chrono_ea = 0xea
 
 * memory offsets
 watchdog_1000 = 0x1000
@@ -249,7 +255,7 @@ l_60db:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 l_60ee:
 	move.b	#0x64,d0                        	| [$60ee: lda    #$64]
-	GET_DP_ADDRESS	0x48                    	| [$60f0: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$60f0: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x00,d0                        	| [$60f2: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$60f2: ldd    #$0000]
@@ -262,7 +268,7 @@ l_60f8:
 	GET_REG_ADDRESS	0,d2                   	| [$60fa: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	0x48                    	| [$60fc: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$60fc: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_60f8                             	| [$60fe: bne    $60f8]
 	jbsr	osd_read_dsw_2 |  [$6100: lda    dsw2_1200]
@@ -321,7 +327,7 @@ l_6120:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6114                             	| [$613f: bne    $6114]
 	move.b	#0x64,d0                        	| [$6141: lda    #$64]
-	GET_DP_ADDRESS	0x48                    	| [$6143: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6143: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_6145:
 	move.w	#0xa4c3,d3                      	| [$6145: ldy    #$a4c3]
@@ -342,7 +348,7 @@ l_6145:
 	GET_REG_ADDRESS	0,d2                   	| [$6153: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	0x48                    	| [$6155: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6155: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6145                             	| [$6157: bne    $6145]
 l_6159:
@@ -498,7 +504,7 @@ l_61f8:
 l_61f9:
 	move.w	#0x2aa0,d2                      	| [$61f9: ldx    #$2aa0]
 	move.w	#0x30c1,d4                      	| [$61fc: ldu    #$30c1]
-	GET_DP_ADDRESS	0x60                    	| [$61ff: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$61ff: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$6201: inca]
 	GET_DP_ADDRESS	0x40                    	| [$6202: sta    $40]
@@ -1359,7 +1365,7 @@ l_664a:
 	cmp.b	#0x0f,d0                         	| [$664e: cmpa   #$0f]
 	jne	l_6657                             	| [$6650: bne    $6657]
 	move.b	#0x63,d0                        	| [$6652: lda    #$63]
-	GET_DP_ADDRESS	0x23                    	| [$6654: sta    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$6654: sta    number_of_credits_23]
 	move.b	d0,(a0)                         	| [...]
 	rts                                    	| [$6656: rts]
 
@@ -1390,7 +1396,7 @@ l_666a:
 	and.b	(a0),d0                          	| [...]
 	and.b	#0x07,d0                         	| [$6677: anda   #$07]
 	jeq	l_66a4                             	| [$6679: beq    $66a4]
-	GET_DP_ADDRESS	0x48                    	| [$667b: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$667b: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x22                    	| [$667d: lda    $22]
 	move.b	(a0),d0                         	| [...]
@@ -1408,7 +1414,7 @@ l_6686:
 	move.b	#0x02,d0                        	| [$6693: lda    #$02]
 	jbsr	l_8512                            	| [$6695: jsr    $8512]
 	jbsr	l_66af                            	| [$6698: bsr    $66af]
-	GET_DP_ADDRESS	0x48                    	| [$669a: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$669a: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	BIT	#0x01,d0                           	| [$669c: bita   #$01]
 	jne	l_66a5                             	| [$669e: bne    $66a5]
@@ -1430,13 +1436,13 @@ l_66aa:
 	rts                                    	| [$66ae: rts]
 
 l_66af:
-	GET_DP_ADDRESS	0x48                    	| [$66af: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$66af: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	BIT	#0x01,d0                           	| [$66b1: bita   #$01]
 	jne	l_66be                             	| [$66b3: bne    $66be]
 	BIT	#0x02,d0                           	| [$66b5: bita   #$02]
 	jne	l_66d0                             	| [$66b7: bne    $66d0]
-	GET_DP_ADDRESS	0x23                    	| [$66b9: inc    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$66b9: inc    number_of_credits_23]
 	addq.b	#1,(a0)                         	| [...]
 	jra	l_66e0                             	| [$66bb: bra    $66e0]
 l_66bd:
@@ -1452,9 +1458,9 @@ l_66be:
 	jne	l_66bd                             	| [$66c4: bne    $66bd]
 	GET_DP_ADDRESS	0x29                    	| [$66c6: lda    $29]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	0x23                    	| [$66c8: adda   $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$66c8: adda   number_of_credits_23]
 	add.b	(a0),d0                          	| [...]
-                                         | [$66ca: sta    $23]
+                                         | [$66ca: sta    number_of_credits_23]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x25                    	| [$66cc: clr    $25]
 	clr.b	(a0)                         	| [...]
@@ -1469,19 +1475,19 @@ l_66d0:
 	jne	l_66bd                             	| [$66d6: bne    $66bd]
 	GET_DP_ADDRESS	0x2b                    	| [$66d8: lda    $2b]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	0x23                    	| [$66da: adda   $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$66da: adda   number_of_credits_23]
 	add.b	(a0),d0                          	| [...]
-                                         | [$66dc: sta    $23]
+                                         | [$66dc: sta    number_of_credits_23]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x27                    	| [$66de: clr    $27]
 	clr.b	(a0)                         	| [...]
 l_66e0:
-	GET_DP_ADDRESS	0x23                    	| [$66e0: lda    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$66e0: lda    number_of_credits_23]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x64,d0                         	| [$66e2: cmpa   #$64]
 	jcs	l_66ea                             	| [$66e4: bcs    $66ea]
 	move.b	#0x63,d0                        	| [$66e6: lda    #$63]
-	GET_DP_ADDRESS	0x23                    	| [$66e8: sta    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$66e8: sta    number_of_credits_23]
 	move.b	d0,(a0)                         	| [...]
 l_66ea:
 	rts                                    	| [$66ea: rts]
@@ -1644,55 +1650,58 @@ l_67c4:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	cmp.w	#0x2c00,d2                       	| [$67c6: cmpx   #$2c00]
 	jne	l_67c4                             	| [$67c9: bne    $67c4]
-	GET_DP_ADDRESS	0x23                    	| [$67cb: ldb    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$67cb: ldb    number_of_credits_23]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	copy_of_inputs_30       	| [$67cd: lda    copy_of_inputs_30]
 	move.b	(a0),d0                         	| [...]
 	BIT	#0x08,d0                           	| [$67cf: bita   #$08]
-	jne	l_67e5                             	| [$67d1: bne    $67e5]
+	jne	one_player_start_67e5              	| [$67d1: bne    one_player_start_67e5]
 	BIT	#0x10,d0                           	| [$67d3: bita   #$10]
-	jne	l_67ee                             	| [$67d5: bne    $67ee]
-	GET_DP_ADDRESS	0x31                    	| [$67d7: lda    $31]
+	jne	two_player_start_67ee              	| [$67d5: bne    two_player_start_67ee]
+	GET_DP_ADDRESS	copy_of_inputs_31       	| [$67d7: lda    copy_of_inputs_31]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x08,d0                         	| [$67d9: anda   #$08]
-	jne	l_67f8                             	| [$67db: bne    $67f8]
-	GET_DP_ADDRESS	0x32                    	| [$67dd: lda    $32]
+	jne	three_player_start_67f8            	| [$67db: bne    three_player_start_67f8]
+	GET_DP_ADDRESS	copy_of_inputs_32       	| [$67dd: lda    copy_of_inputs_32]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x08,d0                         	| [$67df: anda   #$08]
-	jne	l_6802                             	| [$67e1: bne    $6802]
+	jne	four_player_start_6802             	| [$67e1: bne    four_player_start_6802]
 l_67e3:
 	moveq	#0,d1                            	| [$67e3: clrb]
 	rts                                    	| [$67e4: rts]
 
-l_67e5:
+one_player_start_67e5:
 	sub.b	#0x01,d1                         	| [$67e5: subb   #$01]
 	jcs	l_67e3                             	| [$67e7: bcs    $67e3]
-	GET_DP_ADDRESS	0x23                    	| [$67e9: stb    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$67e9: stb    number_of_credits_23]
 	move.b	d1,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$67eb: clra]
-	jra	l_680a                             	| [$67ec: bra    $680a]
-l_67ee:
+	jra	start_a_game_680a                  	| [$67ec: bra    start_a_game_680a]
+
+two_player_start_67ee:
 	sub.b	#0x02,d1                         	| [$67ee: subb   #$02]
 	jcs	l_67e3                             	| [$67f0: bcs    $67e3]
-	GET_DP_ADDRESS	0x23                    	| [$67f2: stb    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$67f2: stb    number_of_credits_23]
 	move.b	d1,(a0)                         	| [...]
 	move.b	#0x01,d0                        	| [$67f4: lda    #$01]
-	jra	l_680a                             	| [$67f6: bra    $680a]
-l_67f8:
+	jra	start_a_game_680a                  	| [$67f6: bra    start_a_game_680a]
+
+three_player_start_67f8:
 	sub.b	#0x03,d1                         	| [$67f8: subb   #$03]
 	jcs	l_67e3                             	| [$67fa: bcs    $67e3]
-	GET_DP_ADDRESS	0x23                    	| [$67fc: stb    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$67fc: stb    number_of_credits_23]
 	move.b	d1,(a0)                         	| [...]
 	move.b	#0x02,d0                        	| [$67fe: lda    #$02]
-	jra	l_680a                             	| [$6800: bra    $680a]
-l_6802:
+	jra	start_a_game_680a                  	| [$6800: bra    start_a_game_680a]
+
+four_player_start_6802:
 	sub.b	#0x04,d1                         	| [$6802: subb   #$04]
 	jcs	l_67e3                             	| [$6804: bcs    $67e3]
-	GET_DP_ADDRESS	0x23                    	| [$6806: stb    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$6806: stb    number_of_credits_23]
 	move.b	d1,(a0)                         	| [...]
 	move.b	#0x03,d0                        	| [$6808: lda    #$03]
-l_680a:
-	GET_DP_ADDRESS	0x60                    	| [$680a: sta    $60]
+start_a_game_680a:
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$680a: sta    nb_players_minus_one_60]
 	move.b	d0,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$680c: clra]
 	moveq	#0,d1                            	| [$680d: clrb]
@@ -1726,10 +1735,10 @@ l_6829:
 	GET_DP_ADDRESS	0x49                    	| [$6829: sta    $49]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0x2b80,d2                      	| [$682b: ldx    #$2b80]
-	GET_DP_ADDRESS	0x60                    	| [$682e: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$682e: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$6830: inca]
-	GET_DP_ADDRESS	0x48                    	| [$6831: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6831: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_6833:
 	move.b	#0x01,d0                        	| [$6833: lda    #$01]
@@ -1744,9 +1753,10 @@ l_6833:
 	GET_REG_ADDRESS	0x1f,d2                	| [$683d: clr    $1f,x]
 	clr.b	(a0)                         	| [...]
 	add.w	#0x20,d2                         	| [$6840: leax   $20,x]
-	GET_DP_ADDRESS	0x48                    	| [$6843: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6843: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6833                             	| [$6845: bne    $6833]
+* clear game variables (level, etc...)
 	moveq	#0,d0                            	| [$6847: clra]
 	moveq	#0,d1                            	| [$6848: clrb]
 	move.w	#0x2866,d2                      	| [$6849: ldx    #$2866]
@@ -1758,6 +1768,8 @@ l_684c:
 	cmp.w	#0x28a0,d2                       	| [$684e: cmpx   #$28a0]
 	jne	l_684c                             	| [$6851: bne    $684c]
 	move.w	#0x2fe8,d2                      	| [$6853: ldx    #$2fe8]
+	GET_DP_ADDRESS	current_level_84
+	move.b	start_level,(a0)
 l_6856:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$6856: std    ,x++]
@@ -1799,7 +1811,7 @@ l_687f:
 	jne	l_687f                             	| [$6884: bne    $687f]
 	move.w	#0x2aa0,d2                      	| [$6886: ldx    #$2aa0]
 	move.b	#0x01,d0                        	| [$6889: lda    #$01]
-	GET_DP_ADDRESS	0x60                    	| [$688b: ldb    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$688b: ldb    nb_players_minus_one_60]
 	move.b	(a0),d1                         	| [...]
 	addq.b	#1,d1                           	| [$688d: incb]
 l_688e:
@@ -1885,7 +1897,7 @@ l_6903:
 	move.b	#0x01,d0                        	| [$6903: ldd    #$0101]
 	move.w	#0x0101,d1                      	| [$6903: ldd    #$0101]
 	jbsr	queue_event_84f5                  	| [$6906: jsr    queue_event_84f5]
-	GET_DP_ADDRESS	0x23                    	| [$6909: ldb    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$6909: ldb    number_of_credits_23]
 	move.b	(a0),d1                         	| [...]
 	jeq	l_691a                             	| [$690b: beq    $691a]
 	cmp.b	#0x04,d1                         	| [$690d: cmpb   #$04]
@@ -1977,7 +1989,7 @@ l_6971:
 	jne	l_699d                             	| [$6983: bne    $699d]
 l_6985:
 	move.b	#0x04,d0                        	| [$6985: lda    #$04]
-	GET_DP_ADDRESS	0x48                    	| [$6987: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6987: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_6989:
 	move.w	#0xa89d,d3                      	| [$6989: ldy    #$a89d]
@@ -1994,7 +2006,7 @@ l_6991:
 	GET_DP_ADDRESS	0x49                    	| [$6995: dec    $49]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6991                             	| [$6997: bne    $6991]
-	GET_DP_ADDRESS	0x48                    	| [$6999: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6999: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6989                             	| [$699b: bne    $6989]
 l_699d:
@@ -2014,7 +2026,7 @@ l_69a0:
 	eor.b	d6,d1                          	| [...]
 l_69ab:
 	move.b	#0x0b,d0                        	| [$69ab: lda    #$0b]
-	GET_DP_ADDRESS	0x48                    	| [$69ad: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$69ad: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_69af:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$69af: stb    $0800,u] [video_address]
@@ -2027,7 +2039,7 @@ l_69af:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$69b7: leau   -$40,u]
-	GET_DP_ADDRESS	0x48                    	| [$69ba: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$69ba: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_69af                             	| [$69bc: bne    $69af]
 	add.w	#0x02c1,d4                       	| [$69be: leau   $02c1,u]
@@ -2417,7 +2429,7 @@ l_6b8b:
 	LOG_REGS	6b8b   | added by add_reg_log.py
 	move.b	#0x0b,d0                        	| [$6b8b: lda    #$0b]
 	LOG_REGS	6b8d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$6b8d: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6b8d: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_6b8f:
 	LOG_REGS	6b8f   | added by add_reg_log.py
@@ -2435,7 +2447,7 @@ l_6b8f:
 	LOG_REGS	6b97   | added by add_reg_log.py
 	sub.w	#0x40,d4                         	| [$6b97: leau   -$40,u]
 	LOG_REGS	6b9a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$6b9a: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6b9a: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	6b9c   | added by add_reg_log.py
 	jne	l_6b8f                             	| [$6b9c: bne    $6b8f]
@@ -2500,7 +2512,7 @@ l_6bd3:
 	LOG_REGS	6bd3   | added by add_reg_log.py
 	move.b	#0x05,d0                        	| [$6bd3: lda    #$05]
 	LOG_REGS	6bd5   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$6bd5: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6bd5: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_6bd7:
 	LOG_REGS	6bd7   | added by add_reg_log.py
@@ -2518,7 +2530,7 @@ l_6bd7:
 	LOG_REGS	6bdf   | added by add_reg_log.py
 	sub.w	#0x40,d4                         	| [$6bdf: leau   -$40,u]
 	LOG_REGS	6be2   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$6be2: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6be2: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	6be4   | added by add_reg_log.py
 	jne	l_6bd7                             	| [$6be4: bne    $6bd7]
@@ -2574,7 +2586,7 @@ l_6c10:
 	LOG_REGS	6c10   | added by add_reg_log.py
 	move.b	#0x05,d0                        	| [$6c10: lda    #$05]
 	LOG_REGS	6c12   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$6c12: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6c12: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_6c14:
 	LOG_REGS	6c14   | added by add_reg_log.py
@@ -2592,7 +2604,7 @@ l_6c14:
 	LOG_REGS	6c1c   | added by add_reg_log.py
 	sub.w	#0x40,d4                         	| [$6c1c: leau   -$40,u]
 	LOG_REGS	6c1f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$6c1f: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$6c1f: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	6c21   | added by add_reg_log.py
 	jne	l_6c14                             	| [$6c21: bne    $6c14]
@@ -3915,7 +3927,7 @@ l_70d2:
 	LOG_REGS	70d5   | added by add_reg_log.py
 	subq.b	#1,d0                           	| [$70d5: deca]
 	LOG_REGS	70d6   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$70d6: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$70d6: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	70d8   | added by add_reg_log.py
 	GET_DP_ADDRESS	0xdf                    	| [$70d8: lda    $df]
@@ -3923,7 +3935,7 @@ l_70d2:
 	LOG_REGS	70da   | added by add_reg_log.py
 	and.b	#0x01,d0                         	| [$70da: anda   #$01]
 	LOG_REGS	70dc   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$70dc: cmpa   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$70dc: cmpa   nb_players_48]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	70de   | added by add_reg_log.py
 	jeq	l_70ea                             	| [$70de: beq    $70ea]
@@ -4195,7 +4207,7 @@ l_71b3:
 	LOG_REGS	71c5   | added by add_reg_log.py
 	move.b	#0x09,d0                        	| [$71c5: lda    #$09]
 	LOG_REGS	71c7   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$71c7: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$71c7: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	71c9   | added by add_reg_log.py
 	move.b	#0x0a,d0                        	| [$71c9: lda    #$0a]
@@ -4214,7 +4226,7 @@ l_71d3:
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	71d5   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$71d5: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$71d5: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	71d7   | added by add_reg_log.py
 	jne	l_71d3                             	| [$71d7: bne    $71d3]
@@ -4284,7 +4296,7 @@ l_71fb:
 	LOG_REGS	7205   | added by add_reg_log.py
 	move.b	#0x06,d0                        	| [$7205: lda    #$06]
 	LOG_REGS	7207   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7207: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7207: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	7209   | added by add_reg_log.py
 	move.b	#0x0a,d0                        	| [$7209: lda    #$0a]
@@ -4295,7 +4307,7 @@ l_720b:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	720d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$720d: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$720d: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	720f   | added by add_reg_log.py
 	jne	l_720b                             	| [$720f: bne    $720b]
@@ -4528,7 +4540,7 @@ l_72bc:
 	LOG_REGS	72bc   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$72bc: lda    #$04]
 	LOG_REGS	72be   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$72be: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$72be: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_72c0:
 	LOG_REGS	72c0   | added by add_reg_log.py
@@ -4563,7 +4575,7 @@ l_72c0:
 	jcs	l_72e2                             	| [$72d8: bcs    $72e2]
 l_72da:
 	LOG_REGS	72da   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$72da: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$72da: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	72dc   | added by add_reg_log.py
 	jne	l_72c0                             	| [$72dc: bne    $72c0]
@@ -4648,7 +4660,7 @@ l_72fb:
 	GET_DP_ADDRESS	0x80                    	| [$7319: lda    $80]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	731b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$731b: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$731b: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	731d   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x80                    	| [$731d: clr    $80]
@@ -4656,7 +4668,7 @@ l_72fb:
 	LOG_REGS	731f   | added by add_reg_log.py
 	jbsr	l_8a2a                            	| [$731f: jsr    $8a2a]
 	LOG_REGS	7322   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7322: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7322: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7324   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x80                    	| [$7324: sta    $80]
@@ -4773,7 +4785,7 @@ l_7378:
 	LOG_REGS	7385   | added by add_reg_log.py
 	jeq	l_738b                             	| [$7385: beq    $738b]
 	LOG_REGS	7387   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$7387: cmpa   $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$7387: cmpa   nb_players_minus_one_60]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	7389   | added by add_reg_log.py
 	jeq	l_73af                             	| [$7389: beq    $73af]
@@ -4781,7 +4793,7 @@ l_738b:
 	LOG_REGS	738b   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$738b: lda    #$04]
 	LOG_REGS	738d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$738d: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$738d: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_738f:
 	LOG_REGS	738f   | added by add_reg_log.py
@@ -4817,7 +4829,7 @@ l_738f:
 	jcs	l_72e2                             	| [$73a7: lbcs   $72e2]
 l_73ab:
 	LOG_REGS	73ab   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$73ab: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$73ab: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	73ad   | added by add_reg_log.py
 	jne	l_738f                             	| [$73ad: bne    $738f]
@@ -5009,7 +5021,7 @@ l_742b:
 	GET_DP_ADDRESS	0xdf                    	| [$743f: sta    $df]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	7441   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7441: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7441: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_7443:
 	LOG_REGS	7443   | added by add_reg_log.py
@@ -5032,7 +5044,7 @@ l_7443:
 	GET_DP_ADDRESS	0xdf                    	| [$7453: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7455   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7455: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7455: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7457   | added by add_reg_log.py
 	jne	l_7443                             	| [$7457: bne    $7443]
@@ -5175,12 +5187,12 @@ l_74a9:
 	GET_DP_ADDRESS	0x49                    	| [$74b9: clr    $49]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	74bb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$74bb: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$74bb: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	74bd   | added by add_reg_log.py
 	addq.b	#1,d0                           	| [$74bd: inca]
 	LOG_REGS	74be   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$74be: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$74be: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_74c0:
 	LOG_REGS	74c0   | added by add_reg_log.py
@@ -5279,7 +5291,7 @@ l_7506:
 	LOG_REGS	7508   | added by add_reg_log.py
 	addq.w	#0x3,d4                         	| [$7508: leau   $3,u]
 	LOG_REGS	750a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$750a: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$750a: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	750c   | added by add_reg_log.py
 	jne	l_74c0                             	| [$750c: bne    $74c0]
@@ -5317,7 +5329,7 @@ l_751d:
 	clr.b	(a0)                         	| [...]
 l_7528:
 	LOG_REGS	7528   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$7528: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$7528: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	752a   | added by add_reg_log.py
 	jeq	l_754f                             	| [$752a: beq    $754f]
@@ -5398,7 +5410,7 @@ l_755f:
 	LOG_REGS	7569   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$7569: lda    #$04]
 	LOG_REGS	756b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$756b: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$756b: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	756d   | added by add_reg_log.py
 	moveq	#0,d0                            	| [$756d: clra]
@@ -5416,7 +5428,7 @@ l_756f:
 	LOG_REGS	7573   | added by add_reg_log.py
 	add.w	#0x20,d2                         	| [$7573: leax   $20,x]
 	LOG_REGS	7576   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7576: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7576: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7578   | added by add_reg_log.py
 	jne	l_756f                             	| [$7578: bne    $756f]
@@ -5468,7 +5480,7 @@ l_759e:
 	LOG_REGS	759e   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$759e: lda    #$04]
 	LOG_REGS	75a0   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$75a0: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$75a0: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_75a2:
 	LOG_REGS	75a2   | added by add_reg_log.py
@@ -5497,7 +5509,7 @@ l_75a2:
                                          | [$75b6: sta    $df]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	75b8   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$75b8: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$75b8: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	75ba   | added by add_reg_log.py
 	jne	l_75a2                             	| [$75ba: bne    $75a2]
@@ -5595,7 +5607,7 @@ l_75f7:
 	LOG_REGS	75fd   | added by add_reg_log.py
 	jeq	l_7606                             	| [$75fd: beq    $7606]
 	LOG_REGS	75ff   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x23                    	| [$75ff: lda    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$75ff: lda    number_of_credits_23]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7601   | added by add_reg_log.py
 	jeq	l_7606                             	| [$7601: beq    $7606]
@@ -5740,7 +5752,7 @@ l_766d:
 	LOG_REGS	7673   | added by add_reg_log.py
 	jeq	l_767c                             	| [$7673: beq    $767c]
 	LOG_REGS	7675   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x23                    	| [$7675: lda    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$7675: lda    number_of_credits_23]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	7677   | added by add_reg_log.py
 	jeq	l_767c                             	| [$7677: beq    $767c]
@@ -5769,7 +5781,7 @@ l_7684:
 	LOG_REGS	768a   | added by add_reg_log.py
 	jeq	l_7693                             	| [$768a: beq    $7693]
 	LOG_REGS	768c   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x23                    	| [$768c: lda    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$768c: lda    number_of_credits_23]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	768e   | added by add_reg_log.py
 	jeq	l_7693                             	| [$768e: beq    $7693]
@@ -5875,7 +5887,7 @@ l_76d2:
 	LOG_REGS	76dd   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$76dd: lda    #$02]
 	LOG_REGS	76df   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$76df: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$76df: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_76e1:
 	LOG_REGS	76e1   | added by add_reg_log.py
@@ -5910,7 +5922,7 @@ l_76e1:
 	LOG_REGS	76f5   | added by add_reg_log.py
 	add.w	#0x0160,d2                       	| [$76f5: leax   $0160,x]
 	LOG_REGS	76f9   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$76f9: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$76f9: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	76fb   | added by add_reg_log.py
 	jne	l_76e1                             	| [$76fb: bne    $76e1]
@@ -6311,7 +6323,7 @@ l_7810:
 	LOG_REGS	784d   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$784d: lda    #$02]
 	LOG_REGS	784f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$784f: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$784f: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	7851   | added by add_reg_log.py
 	move.b	#0x10,d0                        	| [$7851: lda    #$10]
@@ -6335,7 +6347,7 @@ l_7855:
 	LOG_REGS	785e   | added by add_reg_log.py
 	add.w	#0x3d,d4                         	| [$785e: leau   $3d,u]
 	LOG_REGS	7861   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7861: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7861: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7863   | added by add_reg_log.py
 	jne	l_7853                             	| [$7863: bne    $7853]
@@ -6383,7 +6395,7 @@ l_7876:
 	LOG_REGS	788b   | added by add_reg_log.py
 	move.b	#0x01,d0                        	| [$788b: lda    #$01]
 	LOG_REGS	788d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0xea                    	| [$788d: sta    $ea]
+	GET_DP_ADDRESS	display_chrono_ea       	| [$788d: sta    display_chrono_ea]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	788f   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x09                    	| [$788f: clr    $09]
@@ -6925,7 +6937,7 @@ l_7a41:
 	GET_DP_ADDRESS	0xdf                    	| [$7a4e: sta    $df]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	7a50   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7a50: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7a50: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_7a52:
 	LOG_REGS	7a52   | added by add_reg_log.py
@@ -6948,7 +6960,7 @@ l_7a52:
 	GET_DP_ADDRESS	0xdf                    	| [$7a60: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7a62   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7a62: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7a62: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7a64   | added by add_reg_log.py
 	jne	l_7a52                             	| [$7a64: bne    $7a52]
@@ -7006,7 +7018,7 @@ l_7a80:
 	GET_DP_ADDRESS	0xfb                    	| [$7a86: sta    $fb]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	7a88   | added by add_reg_log.py
-	jbsr	l_d7ff                            	| [$7a88: jsr    $d7ff]
+	jbsr	chrono_tick_d7ff                  	| [$7a88: jsr    chrono_tick_d7ff]
 	LOG_REGS	7a8b   | added by add_reg_log.py
 	jbsr	l_ce69                            	| [$7a8b: jsr    $ce69]
 	LOG_REGS	7a8e   | added by add_reg_log.py
@@ -7745,7 +7757,7 @@ l_7ceb:
 	LOG_REGS	7cf3   | added by add_reg_log.py
 	jbsr	l_9066                            	| [$7cf3: jsr    $9066]
 	LOG_REGS	7cf6   | added by add_reg_log.py
-	GET_DP_ADDRESS	0xea                    	| [$7cf6: clr    $ea]
+	GET_DP_ADDRESS	display_chrono_ea       	| [$7cf6: clr    display_chrono_ea]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	7cf8   | added by add_reg_log.py
 	GET_DP_ADDRESS	0xeb                    	| [$7cf8: clr    $eb]
@@ -7781,7 +7793,7 @@ l_7cff:
 
 l_7d0c:
 	LOG_REGS	7d0c   | added by add_reg_log.py
-	jbsr	l_d7ff                            	| [$7d0c: jsr    $d7ff]
+	jbsr	chrono_tick_d7ff                  	| [$7d0c: jsr    chrono_tick_d7ff]
 	LOG_REGS	7d0f   | added by add_reg_log.py
 	GET_DP_ADDRESS	chrono_second_7f        	| [$7d0f: lda    chrono_second_7f]
 	move.b	(a0),d0                         	| [...]
@@ -7822,7 +7834,7 @@ l_7d0c:
 
 l_7d3f:
 	LOG_REGS	7d3f   | added by add_reg_log.py
-	jbsr	l_d7ff                            	| [$7d3f: jsr    $d7ff]
+	jbsr	chrono_tick_d7ff                  	| [$7d3f: jsr    chrono_tick_d7ff]
 	LOG_REGS	7d42   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x22                    	| [$7d42: lda    $22]
 	move.b	(a0),d0                         	| [...]
@@ -8067,7 +8079,7 @@ l_7e17:
 	LOG_REGS	7e1a   | added by add_reg_log.py
 	move.b	#0x08,d0                        	| [$7e1a: lda    #$08]
 	LOG_REGS	7e1c   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7e1c: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7e1c: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_7e1e:
 	LOG_REGS	7e1e   | added by add_reg_log.py
@@ -8078,7 +8090,7 @@ l_7e1e:
 	addq.w	#2,d4                           	| [...]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	7e24   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7e24: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7e24: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7e26   | added by add_reg_log.py
 	jne	l_7e1e                             	| [$7e26: bne    $7e1e]
@@ -8298,13 +8310,13 @@ l_7ec1:
 	addq.b	#1,d0                           	| [$7ee1: inca]
 l_7ee2:
 	LOG_REGS	7ee2   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7ee2: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7ee2: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_7ee4:
 	LOG_REGS	7ee4   | added by add_reg_log.py
 	jbsr	l_867e                            	| [$7ee4: jsr    $867e]
 	LOG_REGS	7ee7   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$7ee7: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$7ee7: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	7ee9   | added by add_reg_log.py
 	jne	l_7ee4                             	| [$7ee9: bne    $7ee4]
@@ -8607,7 +8619,7 @@ l_7fd1:
 	GET_DP_ADDRESS	0xfb                    	| [$7fd7: sta    $fb]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	7fd9   | added by add_reg_log.py
-	jbsr	l_d7ff                            	| [$7fd9: jsr    $d7ff]
+	jbsr	chrono_tick_d7ff                  	| [$7fd9: jsr    chrono_tick_d7ff]
 	LOG_REGS	7fdc   | added by add_reg_log.py
 	jbsr	l_ce69                            	| [$7fdc: jsr    $ce69]
 	LOG_REGS	7fdf   | added by add_reg_log.py
@@ -9662,7 +9674,7 @@ l_8368:
 	LOG_REGS	836e   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$836e: lda    #$03]
 	LOG_REGS	8370   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8370: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8370: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_8372:
 	LOG_REGS	8372   | added by add_reg_log.py
@@ -9678,7 +9690,7 @@ l_8379:
 	LOG_REGS	837c   | added by add_reg_log.py
 	addq.w	#0x2,d4                         	| [$837c: leau   $2,u]
 	LOG_REGS	837e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$837e: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$837e: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8380   | added by add_reg_log.py
 	jne	l_8372                             	| [$8380: bne    $8372]
@@ -10894,7 +10906,7 @@ l_8758:
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$8765: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	8767   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8767: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8767: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8769   | added by add_reg_log.py
 	jeq	l_8775                             	| [$8769: beq    $8775]
@@ -10904,7 +10916,7 @@ l_876b:
 	LOG_REGS	876e   | added by add_reg_log.py
 	add.w	#0x3b,d4                         	| [$876e: leau   $3b,u]
 	LOG_REGS	8771   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8771: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8771: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8773   | added by add_reg_log.py
 	jne	l_876b                             	| [$8773: bne    $876b]
@@ -11109,7 +11121,7 @@ l_87fb:
 	LOG_REGS	8810   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$8810: lda    #$04]
 	LOG_REGS	8812   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8812: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8812: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_8814:
 	LOG_REGS	8814   | added by add_reg_log.py
@@ -11129,7 +11141,7 @@ l_8814:
 	LOG_REGS	881d   | added by add_reg_log.py
 	add.w	#0x20,d2                         	| [$881d: leax   $20,x]
 	LOG_REGS	8820   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8820: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8820: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8822   | added by add_reg_log.py
 	jne	l_8814                             	| [$8822: bne    $8814]
@@ -11290,7 +11302,7 @@ l_888a:
 	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$8892: ldb    b,y]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	8894   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8894: stb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8894: stb    nb_players_48]
 	move.b	d1,(a0)                         	| [...]
 	LOG_REGS	8896   | added by add_reg_log.py
 	move.w	#0xaf62,d3                      	| [$8896: ldy    #$af62]
@@ -11305,7 +11317,7 @@ l_888a:
 	move.w	#0xaf62,d3                      	| [$88a0: ldy    #$af62]
 l_88a4:
 	LOG_REGS	88a4   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$88a4: ldb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$88a4: ldb    nb_players_48]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	88a6   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x73                    	| [$88a6: eorb   $73]
@@ -11314,7 +11326,7 @@ l_88a4:
 	LOG_REGS	88a8   | added by add_reg_log.py
 	move.b	#0x05,d0                        	| [$88a8: lda    #$05]
 	LOG_REGS	88aa   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$88aa: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$88aa: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_88ac:
 	LOG_REGS	88ac   | added by add_reg_log.py
@@ -11345,7 +11357,7 @@ l_88b0:
 	LOG_REGS	88bf   | added by add_reg_log.py
 	add.w	#0x00c1,d4                       	| [$88bf: leau   $00c1,u]
 	LOG_REGS	88c3   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$88c3: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$88c3: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	88c5   | added by add_reg_log.py
 	jne	l_88ac                             	| [$88c5: bne    $88ac]
@@ -11378,7 +11390,7 @@ l_88da:
 	LOG_REGS	88da   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$88da: lda    #$04]
 	LOG_REGS	88dc   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$88dc: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$88dc: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_88de:
 	LOG_REGS	88de   | added by add_reg_log.py
@@ -11402,7 +11414,7 @@ l_88de:
 	LOG_REGS	88ed   | added by add_reg_log.py
 	addq.w	#0x5,d3                         	| [$88ed: leay   $5,y]
 	LOG_REGS	88ef   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$88ef: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$88ef: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	88f1   | added by add_reg_log.py
 	jne	l_88de                             	| [$88f1: bne    $88de]
@@ -11437,7 +11449,7 @@ l_8902:
 	LOG_REGS	8904   | added by add_reg_log.py
 	subq.w	#0x1,d4                         	| [$8904: leau   -$1,u]
 	LOG_REGS	8906   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8906: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8906: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	8908   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x49                    	| [$8908: sta    $49]
@@ -11464,13 +11476,13 @@ l_890a:
 	jne	l_890a                             	| [$8917: bne    $890a]
 l_8919:
 	LOG_REGS	8919   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8919: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8919: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	891b   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x49                    	| [$891b: suba   $49]
 	sub.b	(a0),d0                          	| [...]
 	LOG_REGS	891d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$891d: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$891d: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	891f   | added by add_reg_log.py
 	jeq	l_893b                             	| [$891f: beq    $893b]
@@ -11500,7 +11512,7 @@ l_892b:
 	LOG_REGS	892f   | added by add_reg_log.py
 	LOAD_D                                 	| [$892f: ldd    $1,u] [video_address]
 	LOG_REGS	8931   | added by add_reg_log.py
-	GET_REG_UNCHECKED_ADDRESS	0x6,d4                 	| [$8931: std    $6,u] [video_address]
+	GET_REG_UNCHECKED_ADDRESS	0x6,d4                 	| [$8931: std    $6,u] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	8933   | added by add_reg_log.py
@@ -11508,11 +11520,11 @@ l_892b:
 	LOG_REGS	8933   | added by add_reg_log.py
 	LOAD_D                                 	| [$8933: ldd    $3,u] [video_address]
 	LOG_REGS	8935   | added by add_reg_log.py
-	GET_REG_UNCHECKED_ADDRESS	0x8,d4                 	| [$8935: std    $8,u] [video_address]
+	GET_REG_UNCHECKED_ADDRESS	0x8,d4                 	| [$8935: std    $8,u] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	8937   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8937: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8937: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8939   | added by add_reg_log.py
 	jne	l_8929                             	| [$8939: bne    $8929]
@@ -11741,13 +11753,13 @@ l_89b3:
 	GET_ADDRESS	0x2abc                     	| [$89d3: ora    $2abc]
 	or.b	(a0),d0                           	| [...]
 	LOG_REGS	89d6   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$89d6: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$89d6: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	89d8   | added by add_reg_log.py
 	GET_REG_ADDRESS	0x1,d3                 	| [$89d8: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	89da   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$89da: adda   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$89da: adda   nb_players_48]
 	CLR_XC_FLAGS
 	move.b	(a0),d6	| [...]
 	abcd	d6,d0	| [...]
@@ -12303,7 +12315,7 @@ l_8b7c:
 	LOG_REGS	8b7c   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$8b7c: lda    #$03]
 	LOG_REGS	8b7e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8b7e: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8b7e: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_8b80:
 	LOG_REGS	8b80   | added by add_reg_log.py
@@ -12331,7 +12343,7 @@ l_8b8f:
 	LOG_REGS	8b91   | added by add_reg_log.py
 	sub.w	#0x40,d4                         	| [$8b91: leau   -$40,u]
 	LOG_REGS	8b94   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8b94: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8b94: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8b96   | added by add_reg_log.py
 	jne	l_8b80                             	| [$8b96: bne    $8b80]
@@ -12363,7 +12375,7 @@ l_8ba3:
 	LOG_REGS	8baf   | added by add_reg_log.py
 	move.b	#0x0c,d0                        	| [$8baf: lda    #$0c]
 	LOG_REGS	8bb1   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8bb1: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8bb1: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8bb3   | added by add_reg_log.py
 	move.b	#0x55,d0                        	| [$8bb3: ldd    #$5540]
@@ -12380,7 +12392,7 @@ l_8bb6:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	8bbc   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8bbc: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8bbc: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8bbe   | added by add_reg_log.py
 	jne	l_8bb6                             	| [$8bbe: bne    $8bb6]
@@ -12421,7 +12433,7 @@ l_8bd0:
 	LOG_REGS	8bd9   | added by add_reg_log.py
 	move.b	#0x0c,d0                        	| [$8bd9: lda    #$0c]
 	LOG_REGS	8bdb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8bdb: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8bdb: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8bdd   | added by add_reg_log.py
 	move.b	#0x10,d0                        	| [$8bdd: lda    #$10]
@@ -12436,7 +12448,7 @@ l_8bdf:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	8be5   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8be5: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8be5: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8be7   | added by add_reg_log.py
 	jne	l_8bdf                             	| [$8be7: bne    $8bdf]
@@ -12476,7 +12488,7 @@ l_8bdf:
 	LOG_REGS	8c02   | added by add_reg_log.py
 	move.b	#0x0c,d0                        	| [$8c02: lda    #$0c]
 	LOG_REGS	8c04   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8c04: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8c04: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8c06   | added by add_reg_log.py
 	move.b	#0x55,d0                        	| [$8c06: ldd    #$5560]
@@ -12493,7 +12505,7 @@ l_8c09:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	8c0f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8c0f: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8c0f: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8c11   | added by add_reg_log.py
 	jne	l_8c09                             	| [$8c11: bne    $8c09]
@@ -12615,7 +12627,7 @@ l_8c52:
 	LOG_REGS	8c69   | added by add_reg_log.py
 	move.b	#0x01,d0                        	| [$8c69: lda    #$01]
 	LOG_REGS	8c6b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8c6b: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8c6b: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8c6d   | added by add_reg_log.py
 	move.w	#0x2a80,d2                      	| [$8c6d: ldx    #$2a80]
@@ -12638,7 +12650,7 @@ l_8c52:
 	GET_REG_ADDRESS	0x3,d3                 	| [$8c7c: sta    $3,y]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8c7e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$8c7e: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$8c7e: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	8c80   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4d                    	| [$8c80: sta    $4d]
@@ -12647,7 +12659,7 @@ l_8c52:
 	jeq	l_8cce                             	| [$8c82: beq    $8cce]
 l_8c84:
 	LOG_REGS	8c84   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8c84: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8c84: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	8c86   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x49                    	| [$8c86: sta    $49]
@@ -12717,7 +12729,7 @@ l_8cad:
 	jne	l_8cad                             	| [$8cb9: bne    $8cad]
 l_8cbb:
 	LOG_REGS	8cbb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8cbb: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8cbb: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	8cbd   | added by add_reg_log.py
 	addq.b	#1,d0                           	| [$8cbd: inca]
@@ -12738,7 +12750,7 @@ l_8cbb:
 	GET_REG_ADDRESS	0x2,d4                 	| [$8cc6: std    $2,u]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	8cc8   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8cc8: inc    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8cc8: inc    nb_players_48]
 	addq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8cca   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4d                    	| [$8cca: dec    $4d]
@@ -13129,7 +13141,7 @@ l_8dd7:
 	LOG_REGS	8de0   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$8de0: lda    #$02]
 	LOG_REGS	8de2   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8de2: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8de2: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_8de4:
 	LOG_REGS	8de4   | added by add_reg_log.py
@@ -13162,7 +13174,7 @@ l_8df2:
 	LOG_REGS	8df8   | added by add_reg_log.py
 	add.w	#0x34,d4                         	| [$8df8: leau   $34,u]
 	LOG_REGS	8dfb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8dfb: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8dfb: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8dfd   | added by add_reg_log.py
 	jne	l_8de4                             	| [$8dfd: bne    $8de4]
@@ -13214,7 +13226,7 @@ l_8e20:
 	LOG_REGS	8e23   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$8e23: lda    #$03]
 	LOG_REGS	8e25   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8e25: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8e25: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8e27   | added by add_reg_log.py
 	move.b	#0x10,d0                        	| [$8e27: lda    #$10]
@@ -13238,7 +13250,7 @@ l_8e2b:
 	LOG_REGS	8e34   | added by add_reg_log.py
 	add.w	#0x3c,d4                         	| [$8e34: leau   $3c,u]
 	LOG_REGS	8e37   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8e37: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8e37: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8e39   | added by add_reg_log.py
 	jne	l_8e29                             	| [$8e39: bne    $8e29]
@@ -13249,7 +13261,7 @@ l_8e2b:
 	LOG_REGS	8e41   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$8e41: lda    #$04]
 	LOG_REGS	8e43   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8e43: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8e43: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8e45   | added by add_reg_log.py
 	move.b	#0x40,d1                        	| [$8e45: ldb    #$40]
@@ -13281,7 +13293,7 @@ l_8e4b:
 	LOG_REGS	8e57   | added by add_reg_log.py
 	add.w	#0x39,d4                         	| [$8e57: leau   $39,u]
 	LOG_REGS	8e5a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8e5a: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8e5a: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8e5c   | added by add_reg_log.py
 	jne	l_8e47                             	| [$8e5c: bne    $8e47]
@@ -13379,7 +13391,7 @@ l_8e77:
 	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$8ea3: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	8ea5   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8ea5: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8ea5: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8ea7   | added by add_reg_log.py
 	GET_ADDRESS	0x2abb                     	| [$8ea7: lda    $2abb]
@@ -13395,7 +13407,7 @@ l_8e77:
 	moveq	#0,d0                            	| [$8eb0: clra]
 l_8eb1:
 	LOG_REGS	8eb1   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8eb1: subb   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8eb1: subb   nb_players_48]
 	sub.b	(a0),d1                          	| [...]
 	LOG_REGS	8eb3   | added by add_reg_log.py
 	jcs	l_8eb8                             	| [$8eb3: bcs    $8eb8]
@@ -13656,7 +13668,7 @@ l_8f52:
 	LOG_REGS	8f78   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$8f78: lda    #$03]
 	LOG_REGS	8f7a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8f7a: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8f7a: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8f7c   | added by add_reg_log.py
 	move.l	(sp)+,d1                        	| [$8f7c: puls   b]
@@ -13675,7 +13687,7 @@ l_8f7e:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	8f86   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8f86: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8f86: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	8f88   | added by add_reg_log.py
 	jne	l_8f7e                             	| [$8f88: bne    $8f7e]
@@ -13831,7 +13843,7 @@ l_8ff6:
 	LOG_REGS	8ff9   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$8ff9: lda    #$04]
 	LOG_REGS	8ffb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$8ffb: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$8ffb: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	8ffd   | added by add_reg_log.py
 	move.b	#0x10,d0                        	| [$8ffd: lda    #$10]
@@ -13855,7 +13867,7 @@ l_9001:
 	LOG_REGS	900a   | added by add_reg_log.py
 	add.w	#0x39,d4                         	| [$900a: leau   $39,u]
 	LOG_REGS	900d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$900d: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$900d: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	900f   | added by add_reg_log.py
 	jne	l_8fff                             	| [$900f: bne    $8fff]
@@ -13890,7 +13902,7 @@ l_9028:
 	LOG_REGS	9028   | added by add_reg_log.py
 	move.b	#0x0e,d0                        	| [$9028: lda    #$0e]
 	LOG_REGS	902a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$902a: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$902a: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	902c   | added by add_reg_log.py
 	move.w	#0xa9ce,d3                      	| [$902c: ldy    #$a9ce]
@@ -13914,7 +13926,7 @@ l_903f:
 	LOG_REGS	903f   | added by add_reg_log.py
 	move.b	#0x05,d0                        	| [$903f: lda    #$05]
 	LOG_REGS	9041   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9041: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9041: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	9043   | added by add_reg_log.py
 	move.w	#0xa9c9,d3                      	| [$9043: ldy    #$a9c9]
@@ -13935,7 +13947,7 @@ l_9047:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	9051   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9051: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9051: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	9053   | added by add_reg_log.py
 	jne	l_9047                             	| [$9053: bne    $9047]
@@ -14025,7 +14037,7 @@ l_9087:
 	move.b	(a0),d0                         	| [...]
 l_9097:
 	LOG_REGS	9097   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9097: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9097: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	9099   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x49                    	| [$9099: sta    $49]
@@ -14055,7 +14067,7 @@ l_90aa:
 	LOG_REGS	90aa   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$90aa: lda    #$03]
 	LOG_REGS	90ac   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$90ac: suba   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$90ac: suba   nb_players_48]
 	sub.b	(a0),d0                          	| [...]
 	LOG_REGS	90ae   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x49                    	| [$90ae: sta    $49]
@@ -15002,13 +15014,13 @@ l_93cd:
 	LOG_REGS	93cd   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$93cd: lda    #$02]
 	LOG_REGS	93cf   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$93cf: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$93cf: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_93d1:
 	LOG_REGS	93d1   | added by add_reg_log.py
 	jbsr	l_944c                            	| [$93d1: jsr    $944c]
 	LOG_REGS	93d4   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$93d4: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$93d4: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	93d6   | added by add_reg_log.py
 	jne	l_93d1                             	| [$93d6: bne    $93d1]
@@ -15232,7 +15244,7 @@ l_9488:
 	LOG_REGS	948e   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$948e: lda    #$03]
 	LOG_REGS	9490   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9490: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9490: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	9492   | added by add_reg_log.py
 	GET_REG_ADDRESS	0,d3                   	| [$9492: lda    ,y+]
@@ -15268,7 +15280,7 @@ l_949c:
 	addq.w	#1,d3                           	| [...]
 	add.b	(a0),d0                          	| [...]
 	LOG_REGS	94a7   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$94a7: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$94a7: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	94a9   | added by add_reg_log.py
 	jne	l_9494                             	| [$94a9: bne    $9494]
@@ -15513,7 +15525,7 @@ l_9542:
 	GET_REG_ADDRESS	0,d4                   	| [$9568: suba   ,u]
 	sub.b	(a0),d0                          	| [...]
 	LOG_REGS	956a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$956a: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$956a: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	956c   | added by add_reg_log.py
 	GET_REG_ADDRESS	-0x1,d3                	| [$956c: dec    -$1,y]
@@ -15548,7 +15560,7 @@ l_9542:
 	subq.b	#1,(a0)                         	| [...]
 l_9584:
 	LOG_REGS	9584   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9584: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9584: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 l_9586:
 	LOG_REGS	9586   | added by add_reg_log.py
@@ -15571,7 +15583,7 @@ l_9586:
 	GET_REG_ADDRESS	-0x1,d4                	| [$9592: suba   -$1,u]
 	sub.b	(a0),d0                          	| [...]
 	LOG_REGS	9594   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9594: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9594: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	9596   | added by add_reg_log.py
 	GET_REG_ADDRESS	-0x2,d3                	| [$9596: dec    -$2,y]
@@ -15593,7 +15605,7 @@ l_9586:
 	subq.b	#1,(a0)                         	| [...]
 l_95a4:
 	LOG_REGS	95a4   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$95a4: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$95a4: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 l_95a6:
 	LOG_REGS	95a6   | added by add_reg_log.py
@@ -15616,13 +15628,13 @@ l_95a6:
 	GET_REG_ADDRESS	-0x2,d4                	| [$95b2: suba   -$2,u]
 	sub.b	(a0),d0                          	| [...]
 	LOG_REGS	95b4   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$95b4: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$95b4: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	95b6   | added by add_reg_log.py
 	GET_REG_ADDRESS	-0x3,d3                	| [$95b6: dec    -$3,y]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	95b8   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$95b8: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$95b8: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 l_95ba:
 	LOG_REGS	95ba   | added by add_reg_log.py
@@ -16098,7 +16110,7 @@ l_9744:
 	GET_ADDRESS	0x2afb                     	| [$9748: lda    $2afb]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	974b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$974b: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$974b: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	974d   | added by add_reg_log.py
 	jeq	l_9769                             	| [$974d: beq    $9769]
@@ -16126,7 +16138,7 @@ l_975a:
 	LOG_REGS	9762   | added by add_reg_log.py
 	jbsr	l_9b1d                            	| [$9762: jsr    $9b1d]
 	LOG_REGS	9765   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9765: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9765: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	9767   | added by add_reg_log.py
 	jne	l_974f                             	| [$9767: bne    $974f]
@@ -16135,7 +16147,7 @@ l_9769:
 	GET_ADDRESS	0x2af5                     	| [$9769: lda    $2af5]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	976c   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$976c: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$976c: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	976e   | added by add_reg_log.py
 	jeq	l_978a                             	| [$976e: beq    $978a]
@@ -16163,7 +16175,7 @@ l_977b:
 	LOG_REGS	9783   | added by add_reg_log.py
 	jbsr	l_9b5c                            	| [$9783: jsr    $9b5c]
 	LOG_REGS	9786   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9786: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9786: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	9788   | added by add_reg_log.py
 	jne	l_9770                             	| [$9788: bne    $9770]
@@ -16175,7 +16187,7 @@ l_978c:
 	GET_ADDRESS	0x2afb                     	| [$978c: lda    $2afb]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	978f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$978f: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$978f: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	9791   | added by add_reg_log.py
 	jeq	l_97af                             	| [$9791: beq    $97af]
@@ -16206,7 +16218,7 @@ l_979e:
 	LOG_REGS	97a8   | added by add_reg_log.py
 	jbsr	l_9b1d                            	| [$97a8: jsr    $9b1d]
 	LOG_REGS	97ab   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$97ab: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$97ab: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	97ad   | added by add_reg_log.py
 	jne	l_9793                             	| [$97ad: bne    $9793]
@@ -16215,7 +16227,7 @@ l_97af:
 	GET_ADDRESS	0x2af5                     	| [$97af: lda    $2af5]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	97b2   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$97b2: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$97b2: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	97b4   | added by add_reg_log.py
 	jeq	l_97d2                             	| [$97b4: beq    $97d2]
@@ -16246,7 +16258,7 @@ l_97c1:
 	LOG_REGS	97cb   | added by add_reg_log.py
 	jbsr	l_9b5c                            	| [$97cb: jsr    $9b5c]
 	LOG_REGS	97ce   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$97ce: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$97ce: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	97d0   | added by add_reg_log.py
 	jne	l_97b6                             	| [$97d0: bne    $97b6]
@@ -16802,7 +16814,7 @@ l_998b:
 	LOG_REGS	9992   | added by add_reg_log.py
 	jbsr	l_8854                            	| [$9992: jsr    $8854]
 	LOG_REGS	9995   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$9995: lda    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9995: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	9997   | added by add_reg_log.py
 	cmp.b	#0x52,d0                         	| [$9997: cmpa   #$52]
@@ -16912,7 +16924,7 @@ l_99e7:
 	LOG_REGS	99e9   | added by add_reg_log.py
 	jne	l_99f2                             	| [$99e9: bne    $99f2]
 	LOG_REGS	99eb   | added by add_reg_log.py
-	GET_REG_INDIRECT_ADDRESS	0x03,d2       	| [$99eb: lda    [$03,x]]
+	GET_REG_INDIRECT_UNCHECKED_ADDRESS	0x03,d2       	| [$99eb: lda    [$03,x]] [video_address]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	99ee   | added by add_reg_log.py
 	cmp.b	#0xab,d0                         	| [$99ee: cmpa   #$ab]
@@ -18155,7 +18167,7 @@ l_9e10:
 	LOG_REGS	9e15   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$9e15: lda    #$02]
 	LOG_REGS	9e17   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9e17: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9e17: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_9e19:
 	LOG_REGS	9e19   | added by add_reg_log.py
@@ -18163,7 +18175,7 @@ l_9e19:
 	LOG_REGS	9e1b   | added by add_reg_log.py
 	jbsr	l_8d46                            	| [$9e1b: jsr    $8d46]
 	LOG_REGS	9e1e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9e1e: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9e1e: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	9e20   | added by add_reg_log.py
 	jne	l_9e19                             	| [$9e20: bne    $9e19]
@@ -18458,7 +18470,7 @@ l_9f15:
 	LOG_REGS	9f17   | added by add_reg_log.py
 	jne	l_9f1b                             	| [$9f17: bne    $9f1b]
 	LOG_REGS	9f19   | added by add_reg_log.py
-	GET_DP_ADDRESS	0xea                    	| [$9f19: clr    $ea]
+	GET_DP_ADDRESS	display_chrono_ea       	| [$9f19: clr    display_chrono_ea]
 	clr.b	(a0)                         	| [...]
 l_9f1b:
 	LOG_REGS	9f1b   | added by add_reg_log.py
@@ -18616,7 +18628,7 @@ l_9fa9:
 	LOG_REGS	9fa9   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$9fa9: lda    #$03]
 	LOG_REGS	9fab   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9fab: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9fab: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_9fad:
 	LOG_REGS	9fad   | added by add_reg_log.py
@@ -18653,7 +18665,7 @@ l_9fb5:
 	LOG_REGS	9fc4   | added by add_reg_log.py
 	add.w	#0x0141,d4                       	| [$9fc4: leau   $0141,u]
 	LOG_REGS	9fc8   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$9fc8: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$9fc8: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	9fca   | added by add_reg_log.py
 	jne	l_9fad                             	| [$9fca: bne    $9fad]
@@ -19605,7 +19617,7 @@ l_a2dd:
 
 l_a2de:
 	LOG_REGS	a2de   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x23,d2                	| [$a2de: lda    $23,x]
+	GET_REG_ADDRESS	number_of_credits_23,d2	| [$a2de: lda    number_of_credits_23,x]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	a2e1   | added by add_reg_log.py
 	GET_REG_ADDRESS	0x2,d2                 	| [$a2e1: sta    $2,x]
@@ -19862,13 +19874,13 @@ l_a3b5:
 	LOG_REGS	a3b8   | added by add_reg_log.py
 	lsr.b	#2,d0                            	| [$a3b8: lsra]
 	LOG_REGS	a3b9   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$a3b9: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$a3b9: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	a3bb   | added by add_reg_log.py
 	move.b	#0x5c,d0                        	| [$a3bb: ldd    #$5c14]
 	LOG_REGS	a3bb   | added by add_reg_log.py
 	move.w	#0x5c14,d1                      	| [$a3bb: ldd    #$5c14]
-                                         | [$a3be: addb   $48]
+                                         | [$a3be: addb   nb_players_48]
 	add.b	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	a3c0   | added by add_reg_log.py
@@ -19961,7 +19973,7 @@ l_a401:
 	LOG_REGS	a401   | added by add_reg_log.py
 	move.b	#0x10,d0                        	| [$a401: lda    #$10]
 	LOG_REGS	a403   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$a403: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$a403: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_a405:
 	LOG_REGS	a405   | added by add_reg_log.py
@@ -19979,7 +19991,7 @@ l_a405:
 	LOG_REGS	a40d   | added by add_reg_log.py
 	sub.w	#0x40,d4                         	| [$a40d: leau   -$40,u]
 	LOG_REGS	a410   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$a410: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$a410: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	a412   | added by add_reg_log.py
 	jne	l_a405                             	| [$a412: bne    $a405]
@@ -23487,7 +23499,7 @@ l_d59d:
 
 l_d5a5:
 	LOG_REGS	d5a5   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$d5a5: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$d5a5: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	d5a7   | added by add_reg_log.py
 	jeq	l_d5c5                             	| [$d5a7: beq    $d5c5]
@@ -24166,7 +24178,9 @@ l_d7f6:
 	LOG_REGS	d7fe   | added by add_reg_log.py
 	rts                                    	| [$d7fe: rts]
 
-l_d7ff:
+* add 1/100th of a second, but called at 60Hz so tricks are
+* done to add more than once at times
+chrono_tick_d7ff:
 	LOG_REGS	d7ff   | added by add_reg_log.py
 	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$d7ff: lda    chrono_hundredth_second_7e]
 	move.b	(a0),d0                         	| [...]
@@ -24179,7 +24193,9 @@ l_d7ff:
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 	LOG_REGS	d806   | added by add_reg_log.py
-	jcs	l_d819                             	| [$d806: bcs    $d819]
+	jcs	l_d819                             	| [$d806: bcs    $d819] hundredth wrapped? 99->00?
+* not wrapped, make up for routine being called only every 1/60th of
+* a second and not every 1/100th
 	LOG_REGS	d808   | added by add_reg_log.py
 	and.b	#0x0f,d0                         	| [$d808: anda   #$0f]
 	LOG_REGS	d80a   | added by add_reg_log.py
@@ -24211,10 +24227,11 @@ l_d819:
 	move.b	d0,(a0)                         	| [...]
 l_d820:
 	LOG_REGS	d820   | added by add_reg_log.py
-	GET_DP_ADDRESS	0xea                    	| [$d820: tst    $ea]
+	GET_DP_ADDRESS	display_chrono_ea       	| [$d820: tst    display_chrono_ea]
 	tst.b	(a0)                             	| [...]
 	LOG_REGS	d822   | added by add_reg_log.py
 	jeq	l_d82a                             	| [$d822: beq    $d82a]
+* send draw chrono event
 	LOG_REGS	d824   | added by add_reg_log.py
 	move.b	#0x07,d0                        	| [$d824: ldd    #$0700]
 	LOG_REGS	d824   | added by add_reg_log.py
@@ -24236,7 +24253,7 @@ l_d82b:
 	LOG_REGS	d831   | added by add_reg_log.py
 	jeq	l_d849                             	| [$d831: beq    $d849]
 	LOG_REGS	d833   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x23                    	| [$d833: lda    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$d833: lda    number_of_credits_23]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	d835   | added by add_reg_log.py
 	move.b	#0x0a,d1                        	| [$d835: ldb    #$0a]
@@ -24454,7 +24471,7 @@ l_d8c4:
 	LOG_REGS	d8d5   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$d8d5: lda    #$03]
 	LOG_REGS	d8d7   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$d8d7: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$d8d7: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_d8d9:
 	LOG_REGS	d8d9   | added by add_reg_log.py
@@ -24528,7 +24545,7 @@ l_d8ee:
 	LOG_REGS	d8fe   | added by add_reg_log.py
 	add.w	#0x38,d2                         	| [$d8fe: leax   $38,x]
 	LOG_REGS	d901   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$d901: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$d901: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	d903   | added by add_reg_log.py
 	jne	l_d8d9                             	| [$d903: bne    $d8d9]
@@ -24705,7 +24722,7 @@ l_d993:
 	LOG_REGS	d999   | added by add_reg_log.py
 	move.b	#0x11,d0                        	| [$d999: lda    #$11]
 	LOG_REGS	d99b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$d99b: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$d99b: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	d99d   | added by add_reg_log.py
 	move.b	#0x10,d0                        	| [$d99d: lda    #$10]
@@ -24729,7 +24746,7 @@ l_d9a1:
 	LOG_REGS	d9aa   | added by add_reg_log.py
 	add.w	#0x20,d4                         	| [$d9aa: leau   $20,u]
 	LOG_REGS	d9ad   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$d9ad: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$d9ad: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	d9af   | added by add_reg_log.py
 	jne	l_d99f                             	| [$d9af: bne    $d99f]
@@ -25089,7 +25106,7 @@ l_dadf:
 
 l_dae7:
 	LOG_REGS	dae7   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$dae7: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$dae7: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	dae9   | added by add_reg_log.py
 	jeq	l_db00                             	| [$dae9: beq    $db00]
@@ -25203,7 +25220,7 @@ l_db2b:
 	GET_DP_ADDRESS	0x07                    	| [$db51: clr    $07]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	db53   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$db53: lda    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$db53: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	db55   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x50                    	| [$db55: sta    $50]
@@ -25568,7 +25585,7 @@ l_df18:
 	add.w	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	df56   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$df56: std    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$df56: std    nb_players_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	df58   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4b                    	| [$df58: lda    $4b]
@@ -25578,11 +25595,11 @@ l_df18:
 	LOG_REGS	df5c   | added by add_reg_log.py
 	jbsr	multiply_ab                       	| [$df5c: mul]
 	LOG_REGS	df5d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$df5d: addd   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$df5d: addd   nb_players_48]
 	add.w	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	df5f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$df5f: std    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$df5f: std    nb_players_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	df61   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4a                    	| [$df61: ldb    $4a]
@@ -25592,11 +25609,11 @@ l_df18:
 	LOG_REGS	df65   | added by add_reg_log.py
 	jbsr	multiply_ab                       	| [$df65: mul]
 	LOG_REGS	df66   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$df66: addd   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$df66: addd   nb_players_48]
 	add.w	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	df68   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$df68: std    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$df68: std    nb_players_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	df6a   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4a                    	| [$df6a: ldb    $4a]
@@ -25606,9 +25623,9 @@ l_df18:
 	LOG_REGS	df6e   | added by add_reg_log.py
 	jbsr	multiply_ab                       	| [$df6e: mul]
 	LOG_REGS	df6f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$df6f: addb   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$df6f: addb   nb_players_48]
 	add.b	(a0),d1                          	| [...]
-                                         | [$df71: stb    $48]
+                                         | [$df71: stb    nb_players_48]
 	move.b	d1,(a0)                         	| [...]
 	LOG_REGS	df73   | added by add_reg_log.py
 	GET_REG_ADDRESS	0x38,d3                	| [$df73: lda    $38,y]
@@ -25904,7 +25921,7 @@ l_e026:
 	GET_DP_ADDRESS	0x51                    	| [$e030: sta    $51]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	e032   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e032: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e032: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	e034   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4e                    	| [$e034: ldb    $4e]
@@ -26231,6 +26248,7 @@ l_e128:
 	LOG_REGS	e143   | added by add_reg_log.py
 	rts                                    	| [$e143: rts]
 
+* long jump
 l_e144:
 	LOG_REGS	e144   | added by add_reg_log.py
 	moveq	#0,d1                            	| [$e144: clrb]
@@ -26269,22 +26287,25 @@ l_e151:
 l_e162:
 	MAKE_D                                 	| [...]
 	LOG_REGS	e162   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e162: std    ,x++]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e162: std    ,x++] [video_address_word]
 	addq.w	#2,d2                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e164   | added by add_reg_log.py
 	move.b	#0xa7,d0                        	| [$e164: lda    #$a7]
 	LOG_REGS	e166   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e166: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e166: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e168   | added by add_reg_log.py
 	GET_REG_ADDRESS	0,d3                   	| [$e168: ldd    ,y]
 	LOG_REGS	e168   | added by add_reg_log.py
 	LOAD_D                                 	| [$e168: ldd    ,y]
 	LOG_REGS	e16a   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e16a: std    ,x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e16a: std    ,x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e16c   | added by add_reg_log.py
 	add.w	#0x07fd,d2                       	| [$e16c: leax   $07fd,x]
 	LOG_REGS	e170   | added by add_reg_log.py
@@ -26294,17 +26315,20 @@ l_e162:
 	move.b	d0,d1                           	| [$e173: tfr    a,b]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e175   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e175: std    ,x++]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e175: std    ,x++] [video_address_word]
 	addq.w	#2,d2                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e177   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e177: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e177: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e179   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e179: std    ,x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e179: std    ,x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e17b   | added by add_reg_log.py
 	GET_ADDRESS	0x2848                     	| [$e17b: stx    $2848]
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
@@ -26345,21 +26369,24 @@ l_e190:
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1a1   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e1a1: std    ,x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e1a1: std    ,x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1a3   | added by add_reg_log.py
 	move.b	#0x09,d0                        	| [$e1a3: lda    #$09]
 	subq.w	#1,d2                           	| [...]
 	LOG_REGS	e1a5   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e1a5: sta    ,-x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e1a5: sta    ,-x] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e1a7   | added by add_reg_log.py
 	moveq	#0,d0                            	| [$e1a7: clra]
 	MAKE_D                                 	| [...]
 	subq.w	#2,d2                           	| [...]
 	LOG_REGS	e1a8   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d2                   	| [$e1a8: std    ,--x]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$e1a8: std    ,--x] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1aa   | added by add_reg_log.py
 	GET_ADDRESS	0x2809                     	| [$e1aa: inc    $2809]
 	addq.b	#1,(a0)                         	| [...]
@@ -26375,23 +26402,26 @@ l_e1ae:
 	move.w	#0x2324,d1                      	| [$e1b2: ldd    #$2324]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1b5   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e1b5: std    ,y++]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e1b5: std    ,y++] [video_address_word]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1b7   | added by add_reg_log.py
 	move.b	#0x11,d0                        	| [$e1b7: ldd    #$1122]
 	LOG_REGS	e1b7   | added by add_reg_log.py
 	move.w	#0x1122,d1                      	| [$e1b7: ldd    #$1122]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1ba   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e1ba: std    ,y++]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e1ba: std    ,y++] [video_address_word]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1bc   | added by add_reg_log.py
 	move.b	#0x24,d0                        	| [$e1bc: lda    #$24]
 	LOG_REGS	e1be   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e1be: sta    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e1be: sta    ,y] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e1c0   | added by add_reg_log.py
 	GET_ADDRESS	0x283f                     	| [$e1c0: lda    $283f]
 	move.b	(a0),d0                         	| [...]
@@ -26413,15 +26443,18 @@ l_e1cc:
 l_e1cf:
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1cf   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x07fc,d3              	| [$e1cf: std    $07fc,y]
+	GET_REG_UNCHECKED_ADDRESS	0x07fc,d3              	| [$e1cf: std    $07fc,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1d3   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x07fe,d3              	| [$e1d3: std    $07fe,y]
+	GET_REG_UNCHECKED_ADDRESS	0x07fe,d3              	| [$e1d3: std    $07fe,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1d7   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x0800,d3              	| [$e1d7: sta    $0800,y]
+	GET_REG_UNCHECKED_ADDRESS	0x0800,d3              	| [$e1d7: sta    $0800,y] [video_address_word]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e1db   | added by add_reg_log.py
 	rts                                    	| [$e1db: rts]
 
@@ -26434,32 +26467,38 @@ l_e1dc:
 	move.w	#0x1010,d1                      	| [$e1e0: ldd    #$1010]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1e3   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e1e3: std    ,y++]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e1e3: std    ,y++] [video_address_word]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1e5   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e1e5: std    ,y++]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e1e5: std    ,y++] [video_address_word]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1e7   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e1e7: sta    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e1e7: sta    ,y] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e1e9   | added by add_reg_log.py
 	move.b	#0x08,d0                        	| [$e1e9: ldd    #$0808]
 	LOG_REGS	e1e9   | added by add_reg_log.py
 	move.w	#0x0808,d1                      	| [$e1e9: ldd    #$0808]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1ec   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x07fc,d3              	| [$e1ec: std    $07fc,y]
+	GET_REG_UNCHECKED_ADDRESS	0x07fc,d3              	| [$e1ec: std    $07fc,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e1f0   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x07fe,d3              	| [$e1f0: std    $07fe,y]
+	GET_REG_UNCHECKED_ADDRESS	0x07fe,d3              	| [$e1f0: std    $07fe,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	e1f4   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x0800,d3              	| [$e1f4: sta    $0800,y]
+	GET_REG_UNCHECKED_ADDRESS	0x0800,d3              	| [$e1f4: sta    $0800,y] [video_address_word]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e1f8   | added by add_reg_log.py
 	rts                                    	| [$e1f8: rts]
 
@@ -26640,7 +26679,7 @@ l_e282:
 
 l_e28b:
 	LOG_REGS	e28b   | added by add_reg_log.py
-	jbsr	l_d7ff                            	| [$e28b: jsr    $d7ff]
+	jbsr	chrono_tick_d7ff                  	| [$e28b: jsr    chrono_tick_d7ff]
 	LOG_REGS	e28e   | added by add_reg_log.py
 	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$e28e: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	e28e   | added by add_reg_log.py
@@ -26728,7 +26767,7 @@ l_e2e5:
 	LOG_REGS	e2e5   | added by add_reg_log.py
 	jbsr	l_8852                            	| [$e2e5: jsr    $8852]
 	LOG_REGS	e2e8   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e2e8: lda    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e2e8: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	e2ea   | added by add_reg_log.py
 	cmp.b	#0xad,d0                         	| [$e2ea: cmpa   #$ad]
@@ -26976,8 +27015,9 @@ l_e3c3:
 	addq.b	#1,d1                           	| [$e3d8: incb]
 	and.l	#0xFF,d1                         	| [masking out]
 	LOG_REGS	e3d9   | added by add_reg_log.py
-	GET_REG_ADDRESS_FROM_REG	d1,d2         	| [$e3d9: sta    b,x]
+	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d2         	| [$e3d9: sta    b,x] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	e3db   | added by add_reg_log.py
 	move.b	#0x82,d0                        	| [$e3db: lda    #$82]
 	LOG_REGS	e3dd   | added by add_reg_log.py
@@ -27208,7 +27248,7 @@ l_e493:
 	jbsr	l_deff                            	| [$e499: jsr    $deff]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e49c   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e49c: std    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e49c: std    nb_players_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	e49e   | added by add_reg_log.py
 	GET_ADDRESS	0x2ac9                     	| [$e49e: tst    $2ac9]
@@ -27281,9 +27321,9 @@ l_e4e0:
 	LOG_REGS	e4e0   | added by add_reg_log.py
 	move.w	#0x28a0,d2                      	| [$e4e0: ldx    #$28a0]
 	LOG_REGS	e4e3   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e4e3: ldd    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e4e3: ldd    nb_players_48]
 	LOG_REGS	e4e3   | added by add_reg_log.py
-	LOAD_D                                 	| [$e4e3: ldd    $48]
+	LOAD_D                                 	| [$e4e3: ldd    nb_players_48]
 	LOG_REGS	e4e5   | added by add_reg_log.py
 	GET_DP_ADDRESS	0xa2                    	| [$e4e5: adda   $a2]
 	add.b	(a0),d0                          	| [...]
@@ -27763,7 +27803,7 @@ l_e66a:
 	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$e67e: std    chrono_hundredth_second_7e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	e680   | added by add_reg_log.py
-	GET_DP_ADDRESS	0xea                    	| [$e680: sta    $ea]
+	GET_DP_ADDRESS	display_chrono_ea       	| [$e680: sta    display_chrono_ea]
 	move.b	d0,(a0)                         	| [...]
 	MAKE_D                                 	| [...]
 	LOG_REGS	e682   | added by add_reg_log.py
@@ -27915,6 +27955,7 @@ l_e6fc:
 	LOG_REGS	e6fc   | added by add_reg_log.py
 	rts                                    	| [$e6fc: rts]
 
+* javelin
 l_e6fd:
 	LOG_REGS	e6fd   | added by add_reg_log.py
 	jbsr	l_e1ae                            	| [$e6fd: jsr    $e1ae]
@@ -28009,7 +28050,7 @@ l_e744:
 	jra	l_e994                             	| [$e751: lbra   $e994]
 l_e754:
 	LOG_REGS	e754   | added by add_reg_log.py
-	jbsr	l_d7ff                            	| [$e754: jsr    $d7ff]
+	jbsr	chrono_tick_d7ff                  	| [$e754: jsr    chrono_tick_d7ff]
 	LOG_REGS	e757   | added by add_reg_log.py
 	GET_DP_ADDRESS	chrono_hundredth_second_7e	| [$e757: ldd    chrono_hundredth_second_7e]
 	LOG_REGS	e757   | added by add_reg_log.py
@@ -28080,7 +28121,7 @@ l_e772:
 	LOG_REGS	e79e   | added by add_reg_log.py
 	add.w	#0x40,d3                         	| [$e79e: leay   $40,y]
 	LOG_REGS	e7a1   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e7a1: cmpa   ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e7a1: cmpa   ,y] [video_address]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	e7a3   | added by add_reg_log.py
 	jne	l_e7a8                             	| [$e7a3: bne    $e7a8]
@@ -28088,7 +28129,7 @@ l_e772:
 	jbsr	l_e7ed                            	| [$e7a5: jsr    $e7ed]
 l_e7a8:
 	LOG_REGS	e7a8   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$e7a8: cmpb   ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$e7a8: cmpb   ,y] [video_address]
 	cmp.b	(a0),d1                          	| [...]
 	LOG_REGS	e7aa   | added by add_reg_log.py
 	jeq	l_e7fa                             	| [$e7aa: lbeq   $e7fa]
@@ -28100,7 +28141,7 @@ l_e7a8:
 	add.w	#0x40,d3                         	| [$e7b4: leay   $40,y]
 l_e7b7:
 	LOG_REGS	e7b7   | added by add_reg_log.py
-	GET_REG_ADDRESS	-0x1,d3                	| [$e7b7: cmpa   -$1,y]
+	GET_REG_UNCHECKED_ADDRESS	-0x1,d3                	| [$e7b7: cmpa   -$1,y] [video_address]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	e7b9   | added by add_reg_log.py
 	jne	l_e7be                             	| [$e7b9: bne    $e7be]
@@ -28108,7 +28149,7 @@ l_e7b7:
 	jbsr	l_e7ed                            	| [$e7bb: jsr    $e7ed]
 l_e7be:
 	LOG_REGS	e7be   | added by add_reg_log.py
-	GET_REG_ADDRESS	-0x1,d3                	| [$e7be: cmpb   -$1,y]
+	GET_REG_UNCHECKED_ADDRESS	-0x1,d3                	| [$e7be: cmpb   -$1,y] [video_address]
 	cmp.b	(a0),d1                          	| [...]
 	LOG_REGS	e7c0   | added by add_reg_log.py
 	jeq	l_e7fa                             	| [$e7c0: lbeq   $e7fa]
@@ -28460,7 +28501,7 @@ l_e8dd:
 	LOG_REGS	e903   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$e903: lda    #$02]
 	LOG_REGS	e905   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e905: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e905: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_e907:
 	LOG_REGS	e907   | added by add_reg_log.py
@@ -28491,7 +28532,7 @@ l_e907:
 	GET_DP_ADDRESS	0x49                    	| [$e91e: inc    $49]
 	addq.b	#1,(a0)                         	| [...]
 	LOG_REGS	e920   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e920: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e920: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	e922   | added by add_reg_log.py
 	jne	l_e907                             	| [$e922: bne    $e907]
@@ -28718,7 +28759,7 @@ l_e9c4:
 	LOG_REGS	e9d4   | added by add_reg_log.py
 	jbsr	l_fb6a                            	| [$e9d4: jsr    $fb6a]
 	LOG_REGS	e9d7   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e9d7: stb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e9d7: stb    nb_players_48]
 	move.b	d1,(a0)                         	| [...]
 	LOG_REGS	e9d9   | added by add_reg_log.py
 	tst.b	d1                               	| [$e9d9: cmpb   #$00]
@@ -28742,7 +28783,7 @@ l_e9e4:
 	LOG_REGS	e9e8   | added by add_reg_log.py
 	move.w	#0xef53,d3                      	| [$e9e8: ldy    #$ef53]
 	LOG_REGS	e9ec   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e9ec: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e9ec: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	e9ee   | added by add_reg_log.py
 	move.b	#0x06,d1                        	| [$e9ee: ldb    #$06]
@@ -28758,7 +28799,7 @@ l_e9f3:
 	LOG_REGS	e9f9   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$e9f9: lda    #$03]
 	LOG_REGS	e9fb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$e9fb: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$e9fb: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_e9fd:
 	LOG_REGS	e9fd   | added by add_reg_log.py
@@ -28797,7 +28838,7 @@ l_e9fd:
 	LOG_REGS	ea16   | added by add_reg_log.py
 	move.l	(sp)+,d3                        	| [$ea16: puls   y]
 	LOG_REGS	ea18   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$ea18: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$ea18: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	ea1a   | added by add_reg_log.py
 	jne	l_e9fd                             	| [$ea1a: bne    $e9fd]
@@ -28859,7 +28900,7 @@ l_ea1d:
 	LOG_REGS	ea4a   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$ea4a: lda    #$02]
 	LOG_REGS	ea4c   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$ea4c: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$ea4c: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_ea4e:
 	LOG_REGS	ea4e   | added by add_reg_log.py
@@ -28886,7 +28927,7 @@ l_ea4e:
 	GET_REG_ADDRESS	0,d4                   	| [$ea5f: sta    ,u]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	ea61   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$ea61: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$ea61: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	ea63   | added by add_reg_log.py
 	jne	l_ea4e                             	| [$ea63: bne    $ea4e]
@@ -29065,7 +29106,7 @@ l_eae9:
 	GET_DP_ADDRESS	0xd8                    	| [$eae9: ldb    $d8]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	eaeb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$eaeb: stb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$eaeb: stb    nb_players_48]
 	move.b	d1,(a0)                         	| [...]
 	LOG_REGS	eaed   | added by add_reg_log.py
 	move.w	#0xed7b,d3                      	| [$eaed: ldy    #$ed7b]
@@ -29077,7 +29118,7 @@ l_eae9:
 	moveq	#0,d1                            	| [$eaf3: clrb]
 l_eaf4:
 	LOG_REGS	eaf4   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$eaf4: suba   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$eaf4: suba   nb_players_48]
 	sub.b	(a0),d0                          	| [...]
 	LOG_REGS	eaf6   | added by add_reg_log.py
 	jcs	l_eafb                             	| [$eaf6: bcs    $eafb]
@@ -29121,7 +29162,7 @@ l_eafb:
 	GET_ADDRESS	0x2ad9                     	| [$eb12: stb    $2ad9]
 	move.b	d1,(a0)                         	| [...]
 	LOG_REGS	eb15   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$eb15: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$eb15: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	eb17   | added by add_reg_log.py
 	move.b	#0x05,d1                        	| [$eb17: ldb    #$05]
@@ -29502,7 +29543,7 @@ l_ec73:
 	LOG_REGS	ec78   | added by add_reg_log.py
 	jeq	l_ec8b                             	| [$ec78: beq    $ec8b]
 	LOG_REGS	ec7a   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$ec7a: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$ec7a: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	ec7c   | added by add_reg_log.py
 	and.b	#0x0f,d0                         	| [$ec7c: anda   #$0f]
@@ -29511,7 +29552,7 @@ l_ec73:
 	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$ec7e: sta    b,y]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	ec80   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$ec80: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$ec80: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
                                          | [$ec82: asra]
                                          | [$ec83: asra]
@@ -29618,7 +29659,7 @@ l_ecb7:
 	LOG_REGS	ecd5   | added by add_reg_log.py
 	move.b	#0x8a,d0                        	| [$ecd5: lda    #$8a]
 	LOG_REGS	ecd7   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$ecd7: cmpa   ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$ecd7: cmpa   ,y] [video_address]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	ecd9   | added by add_reg_log.py
 	jeq	l_ecea                             	| [$ecd9: beq    $ecea]
@@ -29632,7 +29673,7 @@ l_ece4:
 	LOG_REGS	ece4   | added by add_reg_log.py
 	add.b	#0x08,d1                         	| [$ece4: addb   #$08]
 	LOG_REGS	ece6   | added by add_reg_log.py
-	GET_REG_ADDRESS	-0x1,d3                	| [$ece6: cmpa   -$1,y]
+	GET_REG_UNCHECKED_ADDRESS	-0x1,d3                	| [$ece6: cmpa   -$1,y] [video_address]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	ece8   | added by add_reg_log.py
 	jne	l_ecf5                             	| [$ece8: bne    $ecf5]
@@ -29686,7 +29727,7 @@ l_ed09:
 	LOG_REGS	ed12   | added by add_reg_log.py
 	move.b	#0x6d,d0                        	| [$ed12: lda    #$6d]
 	LOG_REGS	ed14   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$ed14: cmpa   ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$ed14: cmpa   ,y] [video_address]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	ed16   | added by add_reg_log.py
 	jeq	l_ed27                             	| [$ed16: beq    $ed27]
@@ -29700,7 +29741,7 @@ l_ed21:
 	LOG_REGS	ed21   | added by add_reg_log.py
 	subq.w	#0x1,d3                         	| [$ed21: leay   -$1,y]
 	LOG_REGS	ed23   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$ed23: cmpa   ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$ed23: cmpa   ,y] [video_address]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	ed25   | added by add_reg_log.py
 	jne	l_ed60                             	| [$ed25: bne    $ed60]
@@ -29723,8 +29764,9 @@ l_ed27:
 	LOG_REGS	ed38   | added by add_reg_log.py
 	jne	l_ed47                             	| [$ed38: bne    $ed47]
 	LOG_REGS	ed3a   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x3f,d3                	| [$ed3a: stb    $3f,y]
+	GET_REG_UNCHECKED_ADDRESS	0x3f,d3                	| [$ed3a: stb    $3f,y] [video_address]
 	move.b	d1,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	ed3d   | added by add_reg_log.py
 	move.b	#0x06,d1                        	| [$ed3d: ldb    #$06]
 	LOG_REGS	ed3f   | added by add_reg_log.py
@@ -29732,14 +29774,16 @@ l_ed27:
 	move.b	(a0),d6	| [...]
 	eor.b	d6,d1                          	| [...]
 	LOG_REGS	ed41   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x083f,d3              	| [$ed41: stb    $083f,y]
+	GET_REG_UNCHECKED_ADDRESS	0x083f,d3              	| [$ed41: stb    $083f,y] [video_address]
 	move.b	d1,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	ed45   | added by add_reg_log.py
 	jra	l_ed51                             	| [$ed45: bra    $ed51]
 l_ed47:
 	LOG_REGS	ed47   | added by add_reg_log.py
-	GET_REG_ADDRESS	-0x1,d3                	| [$ed47: stb    -$1,y]
+	GET_REG_UNCHECKED_ADDRESS	-0x1,d3                	| [$ed47: stb    -$1,y] [video_address]
 	move.b	d1,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	ed49   | added by add_reg_log.py
 	move.b	#0x06,d1                        	| [$ed49: ldb    #$06]
 	LOG_REGS	ed4b   | added by add_reg_log.py
@@ -29747,14 +29791,16 @@ l_ed47:
 	move.b	(a0),d6	| [...]
 	eor.b	d6,d0                          	| [...]
 	LOG_REGS	ed4d   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x07ff,d3              	| [$ed4d: stb    $07ff,y]
+	GET_REG_UNCHECKED_ADDRESS	0x07ff,d3              	| [$ed4d: stb    $07ff,y] [video_address]
 	move.b	d1,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 l_ed51:
 	LOG_REGS	ed51   | added by add_reg_log.py
 	add.b	#0x8e,d0                         	| [$ed51: adda   #$8e]
 	LOG_REGS	ed53   | added by add_reg_log.py
-	GET_REG_ADDRESS	0,d3                   	| [$ed53: sta    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$ed53: sta    ,y] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	LOG_REGS	ed55   | added by add_reg_log.py
 	move.b	#0x06,d0                        	| [$ed55: lda    #$06]
 	LOG_REGS	ed57   | added by add_reg_log.py
@@ -29762,8 +29808,9 @@ l_ed51:
 	move.b	(a0),d6	| [...]
 	eor.b	d6,d0                          	| [...]
 	LOG_REGS	ed59   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x0800,d3              	| [$ed59: sta    $0800,y]
+	GET_REG_UNCHECKED_ADDRESS	0x0800,d3              	| [$ed59: sta    $0800,y] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 l_ed5d:
 	LOG_REGS	ed5d   | added by add_reg_log.py
 	GET_ADDRESS	0x2b28                     	| [$ed5d: inc    $2b28]
@@ -29887,7 +29934,7 @@ high_scores_effb:
 	LOG_REGS	f010   | added by add_reg_log.py
 	jeq	l_f018                             	| [$f010: beq    $f018]
 	LOG_REGS	f012   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x23                    	| [$f012: tst    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$f012: tst    number_of_credits_23]
 	tst.b	(a0)                             	| [...]
 	LOG_REGS	f014   | added by add_reg_log.py
 	jne	l_76a5                             	| [$f014: lbne   $76a5]
@@ -30020,7 +30067,7 @@ l_f084:
 	LOG_REGS	f086   | added by add_reg_log.py
 	move.b	#0x0a,d0                        	| [$f086: lda    #$0a]
 	LOG_REGS	f088   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f088: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f088: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f08a   | added by add_reg_log.py
 	move.w	#0x2a93,d2                      	| [$f08a: ldx    #$2a93]
@@ -30128,7 +30175,7 @@ l_f0ce:
 	subq.w	#0x3,d3                         	| [$f0d6: leay   -$3,y]
 l_f0d8:
 	LOG_REGS	f0d8   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f0d8: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f0d8: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f0da   | added by add_reg_log.py
 	jne	l_f091                             	| [$f0da: bne    $f091]
@@ -30141,7 +30188,7 @@ l_f0d8:
 	jne	l_f0f8                             	| [$f0e1: bne    $f0f8]
 l_f0e3:
 	LOG_REGS	f0e3   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f0e3: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f0e3: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	f0e5   | added by add_reg_log.py
 	addq.b	#1,d0                           	| [$f0e5: inca]
@@ -30233,7 +30280,7 @@ l_f129:
 	GET_DP_ADDRESS	0xdf                    	| [$f129: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	f12b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$f12b: cmpa   $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f12b: cmpa   nb_players_minus_one_60]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	f12d   | added by add_reg_log.py
 	jeq	l_f15d                             	| [$f12d: beq    $f15d]
@@ -30530,7 +30577,7 @@ l_f20e:
 	LOG_REGS	f215   | added by add_reg_log.py
 	move.b	#0x09,d0                        	| [$f215: lda    #$09]
 	LOG_REGS	f217   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f217: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f217: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_f219:
 	LOG_REGS	f219   | added by add_reg_log.py
@@ -30547,7 +30594,7 @@ l_f219:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	f220   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f220: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f220: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f222   | added by add_reg_log.py
 	jne	l_f219                             	| [$f222: bne    $f219]
@@ -30636,7 +30683,7 @@ l_f271:
 	LOG_REGS	f273   | added by add_reg_log.py
 	move.b	#0x03,d0                        	| [$f273: lda    #$03]
 	LOG_REGS	f275   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f275: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f275: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f277   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x49                    	| [$f277: clr    $49]
@@ -30718,7 +30765,7 @@ l_f2a8:
 	LOG_REGS	f2a8   | added by add_reg_log.py
 	addq.w	#0x1,d2                         	| [$f2a8: leax   $1,x]
 	LOG_REGS	f2aa   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f2aa: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f2aa: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f2ac   | added by add_reg_log.py
 	jne	l_f279                             	| [$f2ac: bne    $f279]
@@ -30874,7 +30921,7 @@ l_f312:
 	LOG_REGS	f31b   | added by add_reg_log.py
 	move.b	#0x0b,d0                        	| [$f31b: lda    #$0b]
 	LOG_REGS	f31d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f31d: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f31d: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f31f   | added by add_reg_log.py
 	GET_ADDRESS	0x299c                     	| [$f31f: lda    $299c]
@@ -30897,7 +30944,7 @@ l_f32d:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	f32f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f32f: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f32f: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f331   | added by add_reg_log.py
 	jne	l_f32d                             	| [$f331: bne    $f32d]
@@ -30939,7 +30986,7 @@ l_f346:
 	LOG_REGS	f34d   | added by add_reg_log.py
 	move.b	#0x20,d0                        	| [$f34d: lda    #$20]
 	LOG_REGS	f34f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f34f: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f34f: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f351   | added by add_reg_log.py
 	move.w	#0x39c0,d4                      	| [$f351: ldu    #$39c0]
@@ -30984,7 +31031,7 @@ l_f36c:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	f370   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f370: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f370: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f372   | added by add_reg_log.py
 	jne	l_f36c                             	| [$f372: bne    $f36c]
@@ -31122,7 +31169,7 @@ l_f3d7:
 	GET_DP_ADDRESS	0xdf                    	| [$f3d7: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	f3d9   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$f3d9: cmpa   $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f3d9: cmpa   nb_players_minus_one_60]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	f3db   | added by add_reg_log.py
 	jeq	l_f41a                             	| [$f3db: beq    $f41a]
@@ -31151,7 +31198,7 @@ l_f3d7:
 	LOG_REGS	f3f1   | added by add_reg_log.py
 	move.b	#0x18,d0                        	| [$f3f1: lda    #$18]
 	LOG_REGS	f3f3   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f3f3: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f3f3: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f3f5   | added by add_reg_log.py
 	move.b	#0x00,d0                        	| [$f3f5: ldd    #$00f0]
@@ -31173,7 +31220,7 @@ l_f3ff:
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	f403   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f403: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f403: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f405   | added by add_reg_log.py
 	jne	l_f3ff                             	| [$f405: bne    $f3ff]
@@ -31207,7 +31254,7 @@ l_f41a:
 	GET_DP_ADDRESS	0xdf                    	| [$f41c: clr    $df]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	f41e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$f41e: clr    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f41e: clr    nb_players_minus_one_60]
 	clr.b	(a0)                         	| [...]
 	LOG_REGS	f420   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x22                    	| [$f420: tst    $22]
@@ -31362,7 +31409,7 @@ l_f497:
 	LOG_REGS	f49b   | added by add_reg_log.py
 	lsr.b	#1,d0                            	| [$f49b: lsra]
 	LOG_REGS	f49c   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f49c: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f49c: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f49e   | added by add_reg_log.py
 	GET_DP_ADDRESS	dsw2_copy_2d            	| [$f49e: lda    dsw2_copy_2d]
@@ -31373,7 +31420,7 @@ l_f497:
 	LOG_REGS	f4a2   | added by add_reg_log.py
 	lsr.b	#2,d0                            	| [$f4a2: lsra]
 	LOG_REGS	f4a3   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f4a3: anda   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f4a3: anda   nb_players_48]
 	and.b	(a0),d0                          	| [...]
 	LOG_REGS	f4a5   | added by add_reg_log.py
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$f4a5: sta    copy_of_screen_flipped_21]
@@ -31386,7 +31433,7 @@ l_f497:
 	LOG_REGS	f4b1   | added by add_reg_log.py
 	move.b	#0x06,d0                        	| [$f4b1: lda    #$06]
 	LOG_REGS	f4b3   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f4b3: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f4b3: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_f4b5:
 	LOG_REGS	f4b5   | added by add_reg_log.py
@@ -31428,7 +31475,7 @@ l_f4b5:
 	GET_REG_ADDRESS	0x087e,d3              	| [$f4d2: std    $087e,y]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	f4d6   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f4d6: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f4d6: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f4d8   | added by add_reg_log.py
 	jne	l_f4b5                             	| [$f4d8: bne    $f4b5]
@@ -31449,7 +31496,7 @@ l_f4b5:
 	LOG_REGS	f4e9   | added by add_reg_log.py
 	move.b	#0x06,d0                        	| [$f4e9: lda    #$06]
 	LOG_REGS	f4eb   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f4eb: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f4eb: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_f4ed:
 	LOG_REGS	f4ed   | added by add_reg_log.py
@@ -31486,7 +31533,7 @@ l_f4fa:
 	LOG_REGS	f504   | added by add_reg_log.py
 	add.w	#0x31,d3                         	| [$f504: leay   $31,y]
 	LOG_REGS	f507   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f507: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f507: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f509   | added by add_reg_log.py
 	jne	l_f4ed                             	| [$f509: bne    $f4ed]
@@ -31504,7 +31551,7 @@ l_f50e:
 	LOG_REGS	f515   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$f515: lda    #$04]
 	LOG_REGS	f517   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f517: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f517: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f519   | added by add_reg_log.py
 	move.w	#0x2b80,d4                      	| [$f519: ldu    #$2b80]
@@ -31539,7 +31586,7 @@ l_f52d:
 	LOG_REGS	f52d   | added by add_reg_log.py
 	addq.w	#0x4,d2                         	| [$f52d: leax   $4,x]
 	LOG_REGS	f52f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f52f: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f52f: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f531   | added by add_reg_log.py
 	jne	l_f51c                             	| [$f531: bne    $f51c]
@@ -32141,19 +32188,19 @@ l_f713:
 	LOG_REGS	f72a   | added by add_reg_log.py
 	move.w	#0xa4c8,d2                      	| [$f72a: ldx    #$a4c8]
 	LOG_REGS	f72d   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f72d: clr    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f72d: clr    nb_players_48]
 	clr.b	(a0)                         	| [...]
 l_f72f:
 	LOG_REGS	f72f   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$f72f: ldb    $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f72f: ldb    nb_players_minus_one_60]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	f731   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f731: cmpb   $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f731: cmpb   nb_players_48]
 	cmp.b	(a0),d1                          	| [...]
 	LOG_REGS	f733   | added by add_reg_log.py
 	jcs	l_f74b                             	| [$f733: bcs    $f74b]
 	LOG_REGS	f735   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f735: ldb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f735: ldb    nb_players_48]
 	move.b	(a0),d1                         	| [...]
 	and.l	#0xFF,d1                         	| [masking out]
 	LOG_REGS	f737   | added by add_reg_log.py
@@ -32164,7 +32211,7 @@ l_f72f:
 	LOG_REGS	f73b   | added by add_reg_log.py
 	jbsr	queue_event_84f5                  	| [$f73b: jsr    queue_event_84f5]
 	LOG_REGS	f73e   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f73e: ldb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f73e: ldb    nb_players_48]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	f740   | added by add_reg_log.py
 	add.b	#0x1d,d1                         	| [$f740: addb   #$1d]
@@ -32173,7 +32220,7 @@ l_f72f:
 	LOG_REGS	f744   | added by add_reg_log.py
 	jbsr	queue_event_84f5                  	| [$f744: jsr    queue_event_84f5]
 	LOG_REGS	f747   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f747: inc    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f747: inc    nb_players_48]
 	addq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f749   | added by add_reg_log.py
 	jra	l_f72f                             	| [$f749: bra    $f72f]
@@ -32266,7 +32313,7 @@ l_f78e:
 	move.w	#0x0403,d1                      	| [$f798: ldd    #$0403]
 	MAKE_D                                 	| [...]
 	LOG_REGS	f79b   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f79b: std    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f79b: std    nb_players_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 l_f79d:
 	LOG_REGS	f79d   | added by add_reg_log.py
@@ -32290,14 +32337,14 @@ l_f79d:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
 	LOG_REGS	f7a9   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f7a9: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f7a9: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	f7ab   | added by add_reg_log.py
 	jne	l_f79d                             	| [$f7ab: bne    $f79d]
 	LOG_REGS	f7ad   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$f7ad: lda    #$04]
 	LOG_REGS	f7af   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f7af: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f7af: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	f7b1   | added by add_reg_log.py
 	GET_REG_ADDRESS	0,d4                   	| [$f7b1: lda    ,u+]
@@ -32737,7 +32784,7 @@ l_f8fd:
 	add.b	#0x11,d1                         	| [$f911: addb   #$11]
 l_f913:
 	LOG_REGS	f913   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f913: stb    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f913: stb    nb_players_48]
 	move.b	d1,(a0)                         	| [...]
 	LOG_REGS	f915   | added by add_reg_log.py
 	move.w	#0x2990,d2                      	| [$f915: ldx    #$2990]
@@ -32754,7 +32801,7 @@ l_f913:
 	GET_ADDRESS	0x299e                     	| [$f91f: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	f922   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f922: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f922: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	and.l	#0xFF,d1                         	| [masking out]
 	LOG_REGS	f924   | added by add_reg_log.py
@@ -32775,7 +32822,7 @@ l_f913:
 	GET_ADDRESS	0x299e                     	| [$f930: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
 	LOG_REGS	f933   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f933: lda    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f933: lda    nb_players_48]
 	move.b	(a0),d0                         	| [...]
 	and.l	#0xFF,d1                         	| [masking out]
 	LOG_REGS	f935   | added by add_reg_log.py
@@ -32861,7 +32908,7 @@ l_f96d:
 	GET_DP_ADDRESS	0xdf                    	| [$f973: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	f975   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x60                    	| [$f975: cmpa   $60]
+	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f975: cmpa   nb_players_minus_one_60]
 	cmp.b	(a0),d0                          	| [...]
 	LOG_REGS	f977   | added by add_reg_log.py
 	jeq	l_f995                             	| [$f977: beq    $f995]
@@ -32965,7 +33012,7 @@ l_f9b1:
 	LOG_REGS	f9d0   | added by add_reg_log.py
 	move.b	#0x04,d0                        	| [$f9d0: lda    #$04]
 	LOG_REGS	f9d2   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$f9d2: sta    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$f9d2: sta    nb_players_48]
 	move.b	d0,(a0)                         	| [...]
 l_f9d4:
 	LOG_REGS	f9d4   | added by add_reg_log.py
@@ -33148,7 +33195,7 @@ l_f9d4:
 	LOG_REGS	fa11   | added by add_reg_log.py
 	addq.w	#0x3,d2                         	| [$fa11: leax   $3,x]
 	LOG_REGS	fa13   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x48                    	| [$fa13: dec    $48]
+	GET_DP_ADDRESS	nb_players_48           	| [$fa13: dec    nb_players_48]
 	subq.b	#1,(a0)                         	| [...]
 	LOG_REGS	fa15   | added by add_reg_log.py
 	jne	l_f9d4                             	| [$fa15: bne    $f9d4]
@@ -33711,7 +33758,7 @@ l_fbb6:
 	LOG_REGS	fbbc   | added by add_reg_log.py
 	jeq	l_fbc8                             	| [$fbbc: beq    $fbc8]
 	LOG_REGS	fbbe   | added by add_reg_log.py
-	GET_DP_ADDRESS	0x23                    	| [$fbbe: lda    $23]
+	GET_DP_ADDRESS	number_of_credits_23    	| [$fbbe: lda    number_of_credits_23]
 	move.b	(a0),d0                         	| [...]
 	LOG_REGS	fbc0   | added by add_reg_log.py
 	jeq	l_fbc8                             	| [$fbc0: beq    $fbc8]

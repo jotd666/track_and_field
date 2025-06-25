@@ -67,7 +67,7 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
 
 
     for offs in range(0X3E,-2,-2):
-        if spriteram[offs] and spriteram_2[offs + 1]:
+        if spriteram[offs] or spriteram_2[offs + 1]:
             attr = spriteram_2[offs]
             color = attr & 0x0f
             code = spriteram[offs + 1]
@@ -92,3 +92,4 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
 
 
 process(r"sprite_ram_1800")
+process(r"mame_sprites_1800")

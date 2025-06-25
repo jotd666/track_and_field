@@ -82,7 +82,7 @@ NB_TILE_PLANES = 4
 NB_BOB_PLANES = 4
 TOTAL_NB_COLORS = 1<<NB_TILE_PLANES
 FG_NB_BYTES_PER_ROW = 40
-BG_NB_BYTES_PER_ROW = 80
+BG_NB_BYTES_PER_ROW = FG_NB_BYTES_PER_ROW*3
 
 * add 16 so sprites can be drawn at the bottom
 * without corrupting the screen
@@ -774,14 +774,14 @@ demo_game:
 	
 	GET_MEMORY_START_AND_DP
 	* patch rom
-	add.l	#0xA855,a6
-	lea		jotd_message(pc),a1
-0:
-	move.b	(a1)+,d0
-	jeq	0f
-	move.b	d0,(a6)+
-	jra	0b
-0:	
+*	add.l	#0xA855,a6
+*	lea		jotd_message(pc),a1
+*0:
+*	move.b	(a1)+,d0
+*	jeq	0f
+*	move.b	d0,(a6)+
+*	jra	0b
+*0:	
 	GET_MEMORY_START_AND_DP
 	jbsr	cpu_init
 	jmp			reset_6000					| pass control to the cpu core
@@ -1055,16 +1055,17 @@ add_10000_points:
 really_update_scroll:
 	GET_MEMORY_START_AND_DP
 	lea	(0x1840,a6),a6
-	move.w	#NB_SCROLL_ROWS-1,d7
+	move.w	#NB_SCROLL_ROWS+1,d7
 	lea		scroll_table,a2
 	lea		scroll_row_copper_address_table,a1
 	move.l		background_ptr,a4
 0:
 	* get LSB+MSB scroll value
 	move.b	(0x400,a6),d5
-	moveq	#0,d5		| TEMP
+	and.b	#1,d5		| consider only bit 0 for MSB
 	rol.w	#8,d5
 	move.b	(a6)+,d5
+
 	move.l	(a1)+,a0	| get address of bpl1con value
 	move.w	(a2,d5.w*4),(a0)	| set bplcon value
 	move.l	a4,d0				| base address
@@ -1232,10 +1233,10 @@ update_one_bob:
 	moveq	#0,d0
 	moveq	#0,d1
 	move.b	(TARGET_SPRITE_Y,a0),d1  | sprite Y
-	jeq	2f			| Y set to 0: not shown
 	move.b	(TARGET_SPRITE_X,a0),d0
+
+	tst.b	d0
 	jeq	2f
-0:
 
 	.ifne	SPRITE_Y_CORRECTION
 	add.w	#SPRITE_Y_CORRECTION,d1
@@ -1246,7 +1247,7 @@ update_one_bob:
 	
 	neg.w	d1
 	add.w	#241,d1
-	
+	jmi		2f		| negative after correction => skip
 	moveq	#0,d2
 	moveq	#0,d3
 	move.b	(TARGET_SPRITE_ATTR,a0),d2
@@ -1371,8 +1372,9 @@ update_one_bob:
 	rts
 21:
 	move.l	(a7)+,a0
-2:
+
 	lea		(PREVIOUS_SPRITE_SIZEOF,a6),a6
+2:
 	rts
 
 22:
@@ -1983,8 +1985,8 @@ platform_init:
 	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
 	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
  	*         VVHH
-    move.w #0x2499-0X18+0x40,diwstrt(a5)
-    move.w #0x2479+0x48,diwstop(a5)
+    move.w #0x2099-0X18+0x40,diwstrt(a5)
+    move.w #0x2079+0x48,diwstop(a5)
 *	cmp.l	#NTSC_MONITOR_ID,monitor
 *	jne		0f
 *    move.w #0xFC81,diwstop(a5)
@@ -2140,6 +2142,10 @@ osd_video_byte_dirty:
 
 	* remove 0x8000 offset (ram starts at 0x8000)
 	sub.w	#0x3000,d7
+	* in this game (around 892B) the code is used with either
+	* a video address or a RAM address, so ignore if too low
+	jmi		osd_video_dirty_out
+	
 	.ifndef	RELEASE
 	jpl	1f
 
@@ -2255,7 +2261,11 @@ update_bg_tile:
 	.endif
 
 	bsr		compute_tile_xy
-	
+	cmp.w	#FG_NB_BYTES_PER_ROW,d0
+	* 0 <= X < FG_NB_BYTES_PER_ROW: we must double the tiles
+	* to simulate tile wrap
+	scs		d6
+
 	lea		character_table,a0
 	
 	* updating bitplanes
@@ -2269,9 +2279,6 @@ update_bg_tile:
 	move.w	(a2,d1.w),d1
 	add.w	d1,d0
 	add.w	d0,a1
-	add.w	d0,a3
-
-
 	
 	add.w	d2,d2
 	add.w	d2,d2	
@@ -2304,18 +2311,28 @@ update_bg_tile:
 	.endif
 12:
 	move.l	d0,a2					| pointer on bitplanes
+	lea		mirror_jump_table(pc),a4
 	ror.b	#6,d1			        | modifiers on first bits
 	and.w	#3,d1
-	jeq		standard_tile
-	
-
+	.ifdef	NO68020
 	add.w	d1,d1
-	add.w	d1,d1
-	lea		mirror_jump_table(pc),a4
+	add.w	d1,d1	
 	move.l	(a4,d1.w),a4
-0:
-	BTST	#6,(_custom+dmaconr)
-	BNE.S	0b
+	.else
+	move.l	(a4,d1.w*4),a4
+	.endif
+
+	* should we print the tile once or twice?
+	tst.b	d6
+	jeq		20f		| just once
+	* do it twice. Preserve useful registers
+	movem.l	a1/a2,-(a7)
+	jsr		(a4)
+	movem.l	(a7)+,a1/a2
+	* draw the same thing more to the right
+	add.w	#64,a1
+	move.w	#NB_TILE_PLANES-1,d4
+20:
 	jmp		(a4)
 	
 	.macro	COPY_TILE_PLANE_ROW
@@ -2330,19 +2347,19 @@ update_bg_tile:
 	.endr	
 	.endm
 	
-	.macro	COPY_TILE_PLANE_ROW_BACKBUFFER
-	COPY_TILE_PLANE_ROW
-	move.b	d0,(offset,a3)  | backbuffer
-	.endm
-	
-	.macro	CLEAR_TILE_PLANE_BACKBUFFER
-	.set	offset,0
-	.rept	8
-	clr.b	(offset,a1)
-	clr.b	(offset,a3)
-	.set	offset,offset+BG_NB_BYTES_PER_ROW
-	.endr	
-	.endm
+*	.macro	COPY_TILE_PLANE_ROW_BACKBUFFER
+*	COPY_TILE_PLANE_ROW
+*	move.b	d0,(offset,a3)  | backbuffer
+*	.endm
+*	
+*	.macro	CLEAR_TILE_PLANE_BACKBUFFER
+*	.set	offset,0
+*	.rept	8
+*	clr.b	(offset,a1)
+*	clr.b	(offset,a3)
+*	.set	offset,offset+BG_NB_BYTES_PER_ROW
+*	.endr	
+*	.endm
 	
 	.macro	TILE_NEXT_PLANE
 	add.w	d5,a1
@@ -3006,6 +3023,11 @@ scroll_row_copper_address_table:
 	.long	scroll_rows_second_half+6+offset
 	.set	offset,offset+40
 	.endr
+	.set	offset,0
+	.rept	2
+	.long	scroll_rows_bottom+6+offset
+	.set	offset,offset+40
+	.endr
 
 background_ptr:
 	.long	0
@@ -3128,8 +3150,8 @@ character_log_table:
     .endr
 	.endm
 
-	.macro  HALF_SCROLL_ROWS
-	.rept	NB_SCROLL_ROWS/2
+	.macro  HALF_SCROLL_ROWS	nb_rows
+	.rept	\nb_rows
 	.word	0x01+(y_start*256),0xFFFE
 	.word	bplcon1
 	.word	0
@@ -3183,15 +3205,15 @@ tiles_colors:
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 
-	.set	y_start,0x24
+	.set	y_start,0x20
 scroll_rows_first_half:
-	HALF_SCROLL_ROWS
+	HALF_SCROLL_ROWS	NB_SCROLL_ROWS/2
 	* not sure if it's really half screen but it doesn't matter
 intreq_block_game:
 	.word	 intreq,0x8014  | call copper interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
 
 scroll_rows_second_half:
-	HALF_SCROLL_ROWS
+	HALF_SCROLL_ROWS	NB_SCROLL_ROWS/2
 
 
 	* purple 
@@ -3199,6 +3221,10 @@ scroll_rows_second_half:
 
 	* pal limit
     .word  0xFFCF,0xFFFE       | PAL wait
+	.set	y_start,0
+scroll_rows_bottom:
+	HALF_SCROLL_ROWS	2
+	
 	.word	bplcon1
 	* set 0-scroll value value for both plane sets
 reset_bplcon1_2:
