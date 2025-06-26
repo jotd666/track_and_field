@@ -47,7 +47,7 @@ copy_of_inputs_30 = 0x30
 copy_of_inputs_31 = 0x31
 copy_of_inputs_32 = 0x32
 hammer_speed_38 = 0x38
-nb_players_48 = 0x48
+nb_objects_48 = 0x48
 nb_players_minus_one_60 = 0x60
 chrono_hundredth_second_7e = 0x7e
 chrono_second_7f = 0x7f
@@ -260,7 +260,7 @@ l_60db:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 l_60ee:
 	move.b	#0x64,d0                        	| [$60ee: lda    #$64]
-	GET_DP_ADDRESS	nb_players_48           	| [$60f0: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$60f0: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x00,d0                        	| [$60f2: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$60f2: ldd    #$0000]
@@ -273,7 +273,7 @@ l_60f8:
 	GET_REG_ADDRESS	0,d2                   	| [$60fa: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$60fc: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$60fc: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_60f8                             	| [$60fe: bne    $60f8]
 	jbsr	osd_read_dsw_2 |  [$6100: lda    dsw2_1200]
@@ -332,7 +332,7 @@ l_6120:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6114                             	| [$613f: bne    $6114]
 	move.b	#0x64,d0                        	| [$6141: lda    #$64]
-	GET_DP_ADDRESS	nb_players_48           	| [$6143: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6143: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_6145:
 	move.w	#0xa4c3,d3                      	| [$6145: ldy    #$a4c3]
@@ -353,7 +353,7 @@ l_6145:
 	GET_REG_ADDRESS	0,d2                   	| [$6153: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$6155: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6155: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6145                             	| [$6157: bne    $6145]
 l_6159:
@@ -1049,7 +1049,7 @@ l_64c3:
 	move.b	d1,(a0)                         	| [...]
 	rts                                    	| [$64d8: rts]
 
-l_64d9:
+update_speed_bar_64d9:
 	move.w	#0x3745,d4                      	| [$64d9: ldu    #$3745]
 	GET_DP_ADDRESS	0xb0                    	| [$64dc: lda    $b0]
 	move.b	(a0),d0                         	| [...]
@@ -1401,7 +1401,7 @@ l_666a:
 	and.b	(a0),d0                          	| [...]
 	and.b	#0x07,d0                         	| [$6677: anda   #$07]
 	jeq	l_66a4                             	| [$6679: beq    $66a4]
-	GET_DP_ADDRESS	nb_players_48           	| [$667b: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$667b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x22                    	| [$667d: lda    $22]
 	move.b	(a0),d0                         	| [...]
@@ -1419,7 +1419,7 @@ l_6686:
 	move.b	#0x02,d0                        	| [$6693: lda    #$02]
 	jbsr	l_8512                            	| [$6695: jsr    $8512]
 	jbsr	l_66af                            	| [$6698: bsr    $66af]
-	GET_DP_ADDRESS	nb_players_48           	| [$669a: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$669a: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	BIT	#0x01,d0                           	| [$669c: bita   #$01]
 	jne	l_66a5                             	| [$669e: bne    $66a5]
@@ -1441,7 +1441,7 @@ l_66aa:
 	rts                                    	| [$66ae: rts]
 
 l_66af:
-	GET_DP_ADDRESS	nb_players_48           	| [$66af: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$66af: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	BIT	#0x01,d0                           	| [$66b1: bita   #$01]
 	jne	l_66be                             	| [$66b3: bne    $66be]
@@ -1743,7 +1743,7 @@ l_6829:
 	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$682e: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$6830: inca]
-	GET_DP_ADDRESS	nb_players_48           	| [$6831: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6831: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_6833:
 	move.b	#0x01,d0                        	| [$6833: lda    #$01]
@@ -1758,7 +1758,7 @@ l_6833:
 	GET_REG_ADDRESS	0x1f,d2                	| [$683d: clr    $1f,x]
 	clr.b	(a0)                         	| [...]
 	add.w	#0x20,d2                         	| [$6840: leax   $20,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$6843: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6843: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6833                             	| [$6845: bne    $6833]
 * clear game variables (level, etc...)
@@ -1994,7 +1994,7 @@ l_6971:
 	jne	l_699d                             	| [$6983: bne    $699d]
 l_6985:
 	move.b	#0x04,d0                        	| [$6985: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$6987: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6987: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_6989:
 	move.w	#0xa89d,d3                      	| [$6989: ldy    #$a89d]
@@ -2011,7 +2011,7 @@ l_6991:
 	GET_DP_ADDRESS	0x49                    	| [$6995: dec    $49]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6991                             	| [$6997: bne    $6991]
-	GET_DP_ADDRESS	nb_players_48           	| [$6999: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6999: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6989                             	| [$699b: bne    $6989]
 l_699d:
@@ -2031,7 +2031,7 @@ l_69a0:
 	eor.b	d6,d1                          	| [...]
 l_69ab:
 	move.b	#0x0b,d0                        	| [$69ab: lda    #$0b]
-	GET_DP_ADDRESS	nb_players_48           	| [$69ad: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$69ad: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_69af:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$69af: stb    $0800,u] [video_address]
@@ -2044,7 +2044,7 @@ l_69af:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$69b7: leau   -$40,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$69ba: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$69ba: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_69af                             	| [$69bc: bne    $69af]
 	add.w	#0x02c1,d4                       	| [$69be: leau   $02c1,u]
@@ -2374,7 +2374,7 @@ l_6b60:
 	move.b	d1,(a0)                         	| [...]
 l_6b8b:
 	move.b	#0x0b,d0                        	| [$6b8b: lda    #$0b]
-	GET_DP_ADDRESS	nb_players_48           	| [$6b8d: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6b8d: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_6b8f:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$6b8f: stb    $0800,u] [video_address]
@@ -2387,7 +2387,7 @@ l_6b8f:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$6b97: leau   -$40,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$6b9a: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6b9a: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6b8f                             	| [$6b9c: bne    $6b8f]
 	add.w	#0x02c1,d4                       	| [$6b9e: leau   $02c1,u]
@@ -2427,7 +2427,7 @@ l_6bc1:
 	move.b	d1,(a0)                         	| [...]
 l_6bd3:
 	move.b	#0x05,d0                        	| [$6bd3: lda    #$05]
-	GET_DP_ADDRESS	nb_players_48           	| [$6bd5: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6bd5: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_6bd7:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$6bd7: stb    $0800,u] [video_address]
@@ -2440,7 +2440,7 @@ l_6bd7:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$6bdf: leau   -$40,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$6be2: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6be2: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6bd7                             	| [$6be4: bne    $6bd7]
 	add.w	#0x0141,d4                       	| [$6be6: leau   $0141,u]
@@ -2475,7 +2475,7 @@ l_6bfe:
 	move.b	d1,(a0)                         	| [...]
 l_6c10:
 	move.b	#0x05,d0                        	| [$6c10: lda    #$05]
-	GET_DP_ADDRESS	nb_players_48           	| [$6c12: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6c12: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_6c14:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$6c14: stb    $0800,u] [video_address]
@@ -2488,7 +2488,7 @@ l_6c14:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$6c1c: leau   -$40,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$6c1f: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$6c1f: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6c14                             	| [$6c21: bne    $6c14]
 	add.w	#0x0141,d4                       	| [$6c23: leau   $0141,u]
@@ -3282,12 +3282,12 @@ l_70d2:
 	GET_ADDRESS	0x2ab8                     	| [$70d2: lda    $2ab8]
 	move.b	(a0),d0                         	| [...]
 	subq.b	#1,d0                           	| [$70d5: deca]
-	GET_DP_ADDRESS	nb_players_48           	| [$70d6: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$70d6: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0xdf                    	| [$70d8: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x01,d0                         	| [$70da: anda   #$01]
-	GET_DP_ADDRESS	nb_players_48           	| [$70dc: cmpa   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$70dc: cmpa   nb_objects_48]
 	cmp.b	(a0),d0                          	| [...]
 	jeq	l_70ea                             	| [$70de: beq    $70ea]
 	move.b	#0xde,d0                        	| [$70e0: ldd    #$debd]
@@ -3453,7 +3453,7 @@ l_71b3:
 	jbsr	multiply_ab                       	| [$71c2: mul]
 	add.w	d1,d2                            	| [$71c3: leax   d,x]
 	move.b	#0x09,d0                        	| [$71c5: lda    #$09]
-	GET_DP_ADDRESS	nb_players_48           	| [$71c7: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$71c7: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x0a,d0                        	| [$71c9: lda    #$0a]
 	GET_DP_ADDRESS	0x3f                    	| [$71cb: ldb    $3f]
@@ -3465,7 +3465,7 @@ l_71d3:
 	GET_REG_ADDRESS	0,d2                   	| [$71d3: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$71d5: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$71d5: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_71d3                             	| [$71d7: bne    $71d3]
 	jbsr	l_d9d3                            	| [$71d9: jsr    $d9d3]
@@ -3511,7 +3511,7 @@ l_71fb:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x06,d0                        	| [$7205: lda    #$06]
-	GET_DP_ADDRESS	nb_players_48           	| [$7207: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7207: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x0a,d0                        	| [$7209: lda    #$0a]
 l_720b:
@@ -3519,7 +3519,7 @@ l_720b:
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$720d: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$720d: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_720b                             	| [$720f: bne    $720b]
 	add.w	#0x37,d2                         	| [$7211: leax   $37,x]
@@ -3669,7 +3669,7 @@ l_72b3:
 
 l_72bc:
 	move.b	#0x04,d0                        	| [$72bc: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$72be: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$72be: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_72c0:
 	move.w	#0x2b80,d2                      	| [$72c0: ldx    #$2b80]
@@ -3691,7 +3691,7 @@ l_72c0:
 	cmp.b	(a0),d0                          	| [...]
 	jcs	l_72e2                             	| [$72d8: bcs    $72e2]
 l_72da:
-	GET_DP_ADDRESS	nb_players_48           	| [$72da: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$72da: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_72c0                             	| [$72dc: bne    $72c0]
 	GET_DP_ADDRESS	boot_state_03           	| [$72de: inc    boot_state_03]
@@ -3744,12 +3744,12 @@ l_72fb:
 	jne	l_732b                             	| [$7317: bne    $732b]
 	GET_DP_ADDRESS	0x80                    	| [$7319: lda    $80]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$731b: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$731b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x80                    	| [$731d: clr    $80]
 	clr.b	(a0)                         	| [...]
 	jbsr	l_8a2a                            	| [$731f: jsr    $8a2a]
-	GET_DP_ADDRESS	nb_players_48           	| [$7322: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7322: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x80                    	| [$7324: sta    $80]
 	move.b	d0,(a0)                         	| [...]
@@ -3826,7 +3826,7 @@ l_7378:
 	jeq	l_73af                             	| [$7389: beq    $73af]
 l_738b:
 	move.b	#0x04,d0                        	| [$738b: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$738d: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$738d: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_738f:
 	GET_DP_ADDRESS	0xdf                    	| [$738f: lda    $df]
@@ -3849,7 +3849,7 @@ l_738f:
 	cmp.b	(a0),d0                          	| [...]
 	jcs	l_72e2                             	| [$73a7: lbcs   $72e2]
 l_73ab:
-	GET_DP_ADDRESS	nb_players_48           	| [$73ab: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$73ab: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_738f                             	| [$73ad: bne    $738f]
 l_73af:
@@ -3974,7 +3974,7 @@ l_742b:
 	move.b	#0x02,d0                        	| [$743d: lda    #$02]
 	GET_DP_ADDRESS	0xdf                    	| [$743f: sta    $df]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$7441: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7441: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_7443:
 	move.w	#0x2b80,d2                      	| [$7443: ldx    #$2b80]
@@ -3988,7 +3988,7 @@ l_7443:
 	jne	l_745e                             	| [$744f: lbne   $745e]
 	GET_DP_ADDRESS	0xdf                    	| [$7453: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$7455: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7455: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7443                             	| [$7457: bne    $7443]
 l_7459:
@@ -4084,7 +4084,7 @@ l_74a9:
 	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$74bb: lda    nb_players_minus_one_60]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$74bd: inca]
-	GET_DP_ADDRESS	nb_players_48           	| [$74be: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$74be: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_74c0:
 	GET_REG_ADDRESS	0x2,d2                 	| [$74c0: lda    $2,x]
@@ -4147,7 +4147,7 @@ l_7502:
 l_7506:
 	addq.w	#0x3,d2                         	| [$7506: leax   $3,x]
 	addq.w	#0x3,d4                         	| [$7508: leau   $3,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$750a: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$750a: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_74c0                             	| [$750c: bne    $74c0]
 	jbsr	l_8c4d                            	| [$750e: jsr    $8c4d]
@@ -4221,7 +4221,7 @@ l_755f:
 	jne	l_755f                             	| [$7564: bne    $755f]
 	move.w	#0x2b98,d2                      	| [$7566: ldx    #$2b98]
 	move.b	#0x04,d0                        	| [$7569: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$756b: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$756b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$756d: clra]
 	moveq	#0,d1                            	| [$756e: clrb]
@@ -4233,7 +4233,7 @@ l_756f:
 	GET_REG_ADDRESS	0x2,d2                 	| [$7571: std    $2,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	add.w	#0x20,d2                         	| [$7573: leax   $20,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$7576: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7576: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_756f                             	| [$7578: bne    $756f]
 	GET_DP_ADDRESS	0x06                    	| [$757a: inc    $06]
@@ -4266,7 +4266,7 @@ l_7582:
 	jeq	l_75c8                             	| [$759c: beq    $75c8]
 l_759e:
 	move.b	#0x04,d0                        	| [$759e: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$75a0: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$75a0: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_75a2:
 	move.w	#0x2b80,d2                      	| [$75a2: ldx    #$2b80]
@@ -4285,7 +4285,7 @@ l_75a2:
 	and.b	#0x03,d0                         	| [$75b4: anda   #$03]
                                          | [$75b6: sta    $df]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$75b8: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$75b8: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_75a2                             	| [$75ba: bne    $75a2]
 l_75bc:
@@ -4520,7 +4520,7 @@ l_76d2:
 	move.b	d0,(a0)                         	| [...]
 	jbsr	l_88c8                            	| [$76da: jsr    $88c8]
 	move.b	#0x02,d0                        	| [$76dd: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$76df: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$76df: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_76e1:
 	moveq	#0,d0                            	| [$76e1: clra]
@@ -4543,7 +4543,7 @@ l_76e1:
 	GET_DP_ADDRESS	0xdf                    	| [$76f3: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
 	add.w	#0x0160,d2                       	| [$76f5: leax   $0160,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$76f9: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$76f9: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_76e1                             	| [$76fb: bne    $76e1]
 	GET_DP_ADDRESS	0xfb                    	| [$76fd: lda    $fb]
@@ -4786,7 +4786,7 @@ l_7810:
 	jbsr	multiply_ab                       	| [$784a: mul]
 	add.w	d1,d4                            	| [$784b: leau   d,u]
 	move.b	#0x02,d0                        	| [$784d: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$784f: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$784f: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x10,d0                        	| [$7851: lda    #$10]
 l_7853:
@@ -4802,7 +4802,7 @@ l_7855:
 	subq.b	#1,d1                           	| [$785b: decb]
 	jne	l_7855                             	| [$785c: bne    $7855]
 	add.w	#0x3d,d4                         	| [$785e: leau   $3d,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$7861: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7861: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7853                             	| [$7863: bne    $7853]
 	jra	l_7876                             	| [$7865: bra    $7876]
@@ -5161,7 +5161,7 @@ l_7a41:
 	move.b	#0x02,d0                        	| [$7a4c: lda    #$02]
 	GET_DP_ADDRESS	0xdf                    	| [$7a4e: sta    $df]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$7a50: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7a50: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_7a52:
 	move.w	#0x2b80,d2                      	| [$7a52: ldx    #$2b80]
@@ -5175,7 +5175,7 @@ l_7a52:
 	jne	l_7a75                             	| [$7a5e: bne    $7a75]
 	GET_DP_ADDRESS	0xdf                    	| [$7a60: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$7a62: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7a62: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7a52                             	| [$7a64: bne    $7a52]
 	GET_DP_ADDRESS	0xdf                    	| [$7a66: dec    $df]
@@ -5858,7 +5858,7 @@ l_7e0b:
 l_7e17:
 	move.w	#0x1811,d4                      	| [$7e17: ldu    #$1811]
 	move.b	#0x08,d0                        	| [$7e1a: lda    #$08]
-	GET_DP_ADDRESS	nb_players_48           	| [$7e1c: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7e1c: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_7e1e:
 	GET_REG_ADDRESS	0x03ff,d4              	| [$7e1e: clr    $03ff,u]
@@ -5866,7 +5866,7 @@ l_7e1e:
 	GET_REG_ADDRESS	0,d4                   	| [$7e22: clr    ,u++]
 	addq.w	#2,d4                           	| [...]
 	clr.b	(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$7e24: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7e24: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7e1e                             	| [$7e26: bne    $7e1e]
 	GET_DP_ADDRESS	0x09                    	| [$7e28: inc    $09]
@@ -5997,11 +5997,11 @@ l_7ec1:
 	jne	l_7ee2                             	| [$7edf: bne    $7ee2]
 	addq.b	#1,d0                           	| [$7ee1: inca]
 l_7ee2:
-	GET_DP_ADDRESS	nb_players_48           	| [$7ee2: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7ee2: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_7ee4:
 	jbsr	l_867e                            	| [$7ee4: jsr    $867e]
-	GET_DP_ADDRESS	nb_players_48           	| [$7ee7: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$7ee7: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7ee4                             	| [$7ee9: bne    $7ee4]
 	rts                                    	| [$7eeb: rts]
@@ -6838,7 +6838,7 @@ l_8368:
 	move.w	#0x2ac0,d2                      	| [$8368: ldx    #$2ac0]
 	move.w	#0x1820,d4                      	| [$836b: ldu    #$1820]
 	move.b	#0x03,d0                        	| [$836e: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$8370: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8370: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_8372:
 	GET_REG_ADDRESS	0,d2                   	| [$8372: tst    ,x]
@@ -6848,7 +6848,7 @@ l_8372:
 l_8379:
 	add.w	#0x20,d2                         	| [$8379: leax   $20,x]
 	addq.w	#0x2,d4                         	| [$837c: leau   $2,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$837e: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$837e: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8372                             	| [$8380: bne    $8372]
 	rts                                    	| [$8382: rts]
@@ -7611,13 +7611,13 @@ l_8758:
 	move.w	#0x3258,d4                      	| [$8762: ldu    #$3258]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$8765: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8767: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8767: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_8775                             	| [$8769: beq    $8775]
 l_876b:
 	jbsr	l_8716                            	| [$876b: jsr    $8716]
 	add.w	#0x3b,d4                         	| [$876e: leau   $3b,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$8771: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8771: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_876b                             	| [$8773: bne    $876b]
 l_8775:
@@ -7743,7 +7743,7 @@ l_87fb:
 	GET_DP_ADDRESS	0xa0                    	| [$880e: clr    $a0]
 	clr.b	(a0)                         	| [...]
 	move.b	#0x04,d0                        	| [$8810: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$8812: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8812: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_8814:
 	GET_REG_ADDRESS	0,d4                   	| [$8814: ldd    ,u++]
@@ -7756,7 +7756,7 @@ l_8814:
 	GET_REG_ADDRESS	0,d2                   	| [$881b: clr    ,x]
 	clr.b	(a0)                         	| [...]
 	add.w	#0x20,d2                         	| [$881d: leax   $20,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$8820: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8820: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8814                             	| [$8822: bne    $8814]
 	rts                                    	| [$8824: rts]
@@ -7808,7 +7808,10 @@ l_8854:
 	MAKE_D
 	sub.w	#0x0040,d1                       	| [$885b: subd   #$0040]
 l_885e:
+	PUSH_SR
+	MAKE_D
 	move.w	d1,d3                           	| [$885e: tfr    d,y]
+	POP_SR
 	rts                                    	| [$8860: rts]
 
 l_8861:
@@ -7858,7 +7861,7 @@ l_888a:
 	and.l	#0xFF,d1                         	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$8892: ldb    b,y]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8894: stb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8894: stb    nb_objects_48]
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0xaf62,d3                      	| [$8896: ldy    #$af62]
 	GET_DP_ADDRESS	current_level_84        	| [$889a: lda    current_level_84]
@@ -7867,13 +7870,13 @@ l_888a:
 	jeq	l_88a4                             	| [$889e: beq    $88a4]
 	move.w	#0xaf62,d3                      	| [$88a0: ldy    #$af62]
 l_88a4:
-	GET_DP_ADDRESS	nb_players_48           	| [$88a4: ldb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$88a4: ldb    nb_objects_48]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	0x73                    	| [$88a6: eorb   $73]
 	move.b	(a0),d6	| [...]
 	eor.b	d6,d1                          	| [...]
 	move.b	#0x05,d0                        	| [$88a8: lda    #$05]
-	GET_DP_ADDRESS	nb_players_48           	| [$88aa: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$88aa: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_88ac:
 	move.b	#0x03,d0                        	| [$88ac: lda    #$03]
@@ -7894,7 +7897,7 @@ l_88b0:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_88b0                             	| [$88bd: bne    $88b0]
 	add.w	#0x00c1,d4                       	| [$88bf: leau   $00c1,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$88c3: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$88c3: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_88ac                             	| [$88c5: bne    $88ac]
 	rts                                    	| [$88c7: rts]
@@ -7915,7 +7918,7 @@ l_88cd:
 	move.w	#0x2a9c,d2                      	| [$88d7: ldx    #$2a9c]
 l_88da:
 	move.b	#0x04,d0                        	| [$88da: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$88dc: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$88dc: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_88de:
 	jbsr	compare_times_8968                	| [$88de: jsr    compare_times_8968]
@@ -7929,7 +7932,7 @@ l_88de:
 	cmp.b	(a0),d0                          	| [...]
 	jeq	l_88f4                             	| [$88eb: beq    $88f4]
 	addq.w	#0x5,d3                         	| [$88ed: leay   $5,y]
-	GET_DP_ADDRESS	nb_players_48           	| [$88ef: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$88ef: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_88de                             	| [$88f1: bne    $88de]
 	rts                                    	| [$88f3: rts]
@@ -7951,7 +7954,7 @@ l_8901:
 l_8902:
 	move.w	d3,d4                           	| [$8902: tfr    y,u]
 	subq.w	#0x1,d4                         	| [$8904: leau   -$1,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$8906: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8906: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$8908: sta    $49]
 	move.b	d0,(a0)                         	| [...]
@@ -7968,11 +7971,11 @@ l_890a:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_890a                             	| [$8917: bne    $890a]
 l_8919:
-	GET_DP_ADDRESS	nb_players_48           	| [$8919: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8919: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$891b: suba   $49]
 	sub.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$891d: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$891d: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_893b                             	| [$891f: beq    $893b]
 	subq.b	#1,d0                           	| [$8921: deca]
@@ -7998,7 +8001,7 @@ l_892b:
 	GET_REG_UNCHECKED_ADDRESS	0x8,d4                 	| [$8935: std    $8,u] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8937: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8937: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8929                             	| [$8939: bne    $8929]
 l_893b:
@@ -8149,11 +8152,11 @@ l_89b3:
 	asl.b	#4,d0                            	| [$89d2: asla]
 	GET_ADDRESS	0x2abc                     	| [$89d3: ora    $2abc]
 	or.b	(a0),d0                           	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$89d6: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$89d6: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x1,d3                 	| [$89d8: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$89da: adda   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$89da: adda   nb_objects_48]
 	CLR_XC_FLAGS
 	move.b	(a0),d6	| [...]
 	abcd	d6,d0	| [...]
@@ -8518,7 +8521,7 @@ l_8b71:
 	eor.b	d6,d1                          	| [...]
 l_8b7c:
 	move.b	#0x03,d0                        	| [$8b7c: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$8b7e: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8b7e: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_8b80:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$8b80: stb    $0800,u] [video_address]
@@ -8537,7 +8540,7 @@ l_8b8f:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$8b91: leau   -$40,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$8b94: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8b94: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8b80                             	| [$8b96: bne    $8b80]
 	add.w	#0x00c1,d4                       	| [$8b98: leau   $00c1,u]
@@ -8557,7 +8560,7 @@ l_8ba3:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0c,d0                        	| [$8baf: lda    #$0c]
-	GET_DP_ADDRESS	nb_players_48           	| [$8bb1: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8bb1: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x55,d0                        	| [$8bb3: ldd    #$5540]
 	move.w	#0x5540,d1                      	| [$8bb3: ldd    #$5540]
@@ -8569,7 +8572,7 @@ l_8bb6:
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8bbc: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8bbc: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8bb6                             	| [$8bbe: bne    $8bb6]
 	move.b	#0x54,d0                        	| [$8bc0: ldd    #$5450]
@@ -8596,7 +8599,7 @@ l_8bd0:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0c,d0                        	| [$8bd9: lda    #$0c]
-	GET_DP_ADDRESS	nb_players_48           	| [$8bdb: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8bdb: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x10,d0                        	| [$8bdd: lda    #$10]
 l_8bdf:
@@ -8607,7 +8610,7 @@ l_8bdf:
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8be5: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8be5: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8bdf                             	| [$8be7: bne    $8bdf]
 	move.b	#0x56,d0                        	| [$8be9: ldd    #$5650]
@@ -8633,7 +8636,7 @@ l_8bdf:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0c,d0                        	| [$8c02: lda    #$0c]
-	GET_DP_ADDRESS	nb_players_48           	| [$8c04: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8c04: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x55,d0                        	| [$8c06: ldd    #$5560]
 	move.w	#0x5560,d1                      	| [$8c06: ldd    #$5560]
@@ -8645,7 +8648,7 @@ l_8c09:
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8c0f: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8c0f: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8c09                             	| [$8c11: bne    $8c09]
 	move.b	#0x54,d0                        	| [$8c13: ldd    #$5470]
@@ -8725,7 +8728,7 @@ l_8c52:
 	GET_DP_ADDRESS	0xe6                    	| [$8c67: sta    $e6]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x01,d0                        	| [$8c69: lda    #$01]
-	GET_DP_ADDRESS	nb_players_48           	| [$8c6b: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8c6b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0x2a80,d2                      	| [$8c6d: ldx    #$2a80]
 	move.w	#0x2aa0,d3                      	| [$8c70: ldy    #$2aa0]
@@ -8745,7 +8748,7 @@ l_8c52:
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_8cce                             	| [$8c82: beq    $8cce]
 l_8c84:
-	GET_DP_ADDRESS	nb_players_48           	| [$8c84: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8c84: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$8c86: sta    $49]
 	move.b	d0,(a0)                         	| [...]
@@ -8787,7 +8790,7 @@ l_8cad:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8cad                             	| [$8cb9: bne    $8cad]
 l_8cbb:
-	GET_DP_ADDRESS	nb_players_48           	| [$8cbb: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8cbb: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$8cbd: inca]
 	GET_REG_ADDRESS	0,d4                   	| [$8cbe: sta    ,u]
@@ -8800,7 +8803,7 @@ l_8cbb:
 	LOAD_D                                 	| [$8cc4: ldd    $1,x]
 	GET_REG_ADDRESS	0x2,d4                 	| [$8cc6: std    $2,u]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8cc8: inc    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8cc8: inc    nb_objects_48]
 	addq.b	#1,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x4d                    	| [$8cca: dec    $4d]
 	subq.b	#1,(a0)                         	| [...]
@@ -9048,7 +9051,7 @@ l_8dd7:
 	VIDEO_BYTE_DIRTY | [...]
 	move.w	#0x3bca,d4                      	| [$8ddd: ldu    #$3bca]
 	move.b	#0x02,d0                        	| [$8de0: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$8de2: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8de2: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_8de4:
 	move.b	#0x0c,d0                        	| [$8de4: lda    #$0c]
@@ -9069,7 +9072,7 @@ l_8df2:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8df2                             	| [$8df6: bne    $8df2]
 	add.w	#0x34,d4                         	| [$8df8: leau   $34,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$8dfb: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8dfb: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8de4                             	| [$8dfd: bne    $8de4]
 	rts                                    	| [$8dff: rts]
@@ -9102,7 +9105,7 @@ l_8e1f:
 l_8e20:
 	move.w	#0x3252,d4                      	| [$8e20: ldu    #$3252]
 	move.b	#0x03,d0                        	| [$8e23: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$8e25: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8e25: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x10,d0                        	| [$8e27: lda    #$10]
 l_8e29:
@@ -9118,13 +9121,13 @@ l_8e2b:
 	subq.b	#1,d1                           	| [$8e31: decb]
 	jne	l_8e2b                             	| [$8e32: bne    $8e2b]
 	add.w	#0x3c,d4                         	| [$8e34: leau   $3c,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$8e37: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8e37: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8e29                             	| [$8e39: bne    $8e29]
 	move.w	#0xaf80,d2                      	| [$8e3b: ldx    #$af80]
 	move.w	#0x3256,d4                      	| [$8e3e: ldu    #$3256]
 	move.b	#0x04,d0                        	| [$8e41: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$8e43: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8e43: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x40,d1                        	| [$8e45: ldb    #$40]
 l_8e47:
@@ -9146,7 +9149,7 @@ l_8e4b:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8e4b                             	| [$8e55: bne    $8e4b]
 	add.w	#0x39,d4                         	| [$8e57: leau   $39,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$8e5a: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8e5a: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8e47                             	| [$8e5c: bne    $8e47]
 	rts                                    	| [$8e5e: rts]
@@ -9207,7 +9210,7 @@ l_8e77:
 	and.l	#0xFF,d0                         	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$8ea3: lda    a,u]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8ea5: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8ea5: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_ADDRESS	0x2abb                     	| [$8ea7: lda    $2abb]
 	move.b	(a0),d0                         	| [...]
@@ -9217,7 +9220,7 @@ l_8e77:
 	add.b	(a0),d1                          	| [...]
 	moveq	#0,d0                            	| [$8eb0: clra]
 l_8eb1:
-	GET_DP_ADDRESS	nb_players_48           	| [$8eb1: subb   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8eb1: subb   nb_objects_48]
 	sub.b	(a0),d1                          	| [...]
 	jcs	l_8eb8                             	| [$8eb3: bcs    $8eb8]
 	addq.b	#1,d0                           	| [$8eb5: inca]
@@ -9382,7 +9385,7 @@ l_8f52:
 	jbsr	multiply_ab                       	| [$8f75: mul]
 	add.w	d1,d3                            	| [$8f76: leay   d,y]
 	move.b	#0x03,d0                        	| [$8f78: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$8f7a: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8f7a: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.l	(sp)+,d1                        	| [$8f7c: puls   b]
 l_8f7e:
@@ -9396,7 +9399,7 @@ l_8f7e:
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$8f86: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8f86: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8f7e                             	| [$8f88: bne    $8f7e]
 	rts                                    	| [$8f8a: rts]
@@ -9500,7 +9503,7 @@ l_8feb:
 l_8ff6:
 	move.w	#0x3203,d4                      	| [$8ff6: ldu    #$3203]
 	move.b	#0x04,d0                        	| [$8ff9: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$8ffb: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$8ffb: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x10,d0                        	| [$8ffd: lda    #$10]
 l_8fff:
@@ -9516,7 +9519,7 @@ l_9001:
 	subq.b	#1,d1                           	| [$9007: decb]
 	jne	l_9001                             	| [$9008: bne    $9001]
 	add.w	#0x39,d4                         	| [$900a: leau   $39,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$900d: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$900d: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8fff                             	| [$900f: bne    $8fff]
 	rts                                    	| [$9011: rts]
@@ -9537,7 +9540,7 @@ l_901e:
 	move.b	#0x0b,d1                        	| [$9026: ldb    #$0b]
 l_9028:
 	move.b	#0x0e,d0                        	| [$9028: lda    #$0e]
-	GET_DP_ADDRESS	nb_players_48           	| [$902a: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$902a: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0xa9ce,d3                      	| [$902c: ldy    #$a9ce]
 	jra	l_9047                             	| [$9030: bra    $9047]
@@ -9551,7 +9554,7 @@ l_9032:
 	move.b	#0x0b,d1                        	| [$903d: ldb    #$0b]
 l_903f:
 	move.b	#0x05,d0                        	| [$903f: lda    #$05]
-	GET_DP_ADDRESS	nb_players_48           	| [$9041: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9041: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0xa9c9,d3                      	| [$9043: ldy    #$a9c9]
 l_9047:
@@ -9566,7 +9569,7 @@ l_9047:
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$9051: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9051: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9047                             	| [$9053: bne    $9047]
 	rts                                    	| [$9055: rts]
@@ -9623,7 +9626,7 @@ l_9087:
 	GET_ADDRESS	0x2a39                     	| [$9094: lda    $2a39]
 	move.b	(a0),d0                         	| [...]
 l_9097:
-	GET_DP_ADDRESS	nb_players_48           	| [$9097: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9097: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$9099: sta    $49]
 	move.b	d0,(a0)                         	| [...]
@@ -9643,7 +9646,7 @@ l_90a0:
 	jne	l_90a0                             	| [$90a8: bne    $90a0]
 l_90aa:
 	move.b	#0x03,d0                        	| [$90aa: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$90ac: suba   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$90ac: suba   nb_objects_48]
 	sub.b	(a0),d0                          	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$90ae: sta    $49]
 	move.b	d0,(a0)                         	| [...]
@@ -10230,11 +10233,11 @@ l_93ad:
 	jmp	l_cd87                             	| [$93ca: jmp    $cd87]
 l_93cd:
 	move.b	#0x02,d0                        	| [$93cd: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$93cf: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$93cf: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_93d1:
 	jbsr	l_944c                            	| [$93d1: jsr    $944c]
-	GET_DP_ADDRESS	nb_players_48           	| [$93d4: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$93d4: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_93d1                             	| [$93d6: bne    $93d1]
 	move.w	#0x2839,d3                      	| [$93d8: ldy    #$2839]
@@ -10379,7 +10382,7 @@ l_9488:
 	add.w	#0x10,d3                         	| [$9488: leay   $10,x]
 	move.w	#0x284c,d4                      	| [$948b: ldu    #$284c]
 	move.b	#0x03,d0                        	| [$948e: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$9490: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9490: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0,d3                   	| [$9492: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
@@ -10402,7 +10405,7 @@ l_949c:
 	GET_REG_ADDRESS	0,d3                   	| [$94a5: adda   ,y+]
 	addq.w	#1,d3                           	| [...]
 	add.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$94a7: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$94a7: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9494                             	| [$94a9: bne    $9494]
 	moveq	#0,d1                            	| [$94ab: clrb]
@@ -10565,7 +10568,7 @@ l_9542:
 	add.b	#0x0a,d0                         	| [$9566: adda   #$0a]
 	GET_REG_ADDRESS	0,d4                   	| [$9568: suba   ,u]
 	sub.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$956a: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$956a: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	-0x1,d3                	| [$956c: dec    -$1,y]
 	subq.b	#1,(a0)                         	| [...]
@@ -10587,7 +10590,7 @@ l_9542:
 	GET_REG_ADDRESS	-0x3,d3                	| [$9582: dec    -$3,y]
 	subq.b	#1,(a0)                         	| [...]
 l_9584:
-	GET_DP_ADDRESS	nb_players_48           	| [$9584: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9584: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 l_9586:
 	GET_REG_ADDRESS	0,d4                   	| [$9586: sta    ,u]
@@ -10602,7 +10605,7 @@ l_9586:
 	add.b	#0x0a,d0                         	| [$9590: adda   #$0a]
 	GET_REG_ADDRESS	-0x1,d4                	| [$9592: suba   -$1,u]
 	sub.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$9594: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9594: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	-0x2,d3                	| [$9596: dec    -$2,y]
 	subq.b	#1,(a0)                         	| [...]
@@ -10616,7 +10619,7 @@ l_9586:
 	GET_REG_ADDRESS	-0x3,d3                	| [$95a2: dec    -$3,y]
 	subq.b	#1,(a0)                         	| [...]
 l_95a4:
-	GET_DP_ADDRESS	nb_players_48           	| [$95a4: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$95a4: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 l_95a6:
 	GET_REG_ADDRESS	-0x1,d4                	| [$95a6: sta    -$1,u]
@@ -10631,11 +10634,11 @@ l_95a6:
 	add.b	#0x0a,d0                         	| [$95b0: adda   #$0a]
 	GET_REG_ADDRESS	-0x2,d4                	| [$95b2: suba   -$2,u]
 	sub.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$95b4: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$95b4: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	-0x3,d3                	| [$95b6: dec    -$3,y]
 	subq.b	#1,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$95b8: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$95b8: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 l_95ba:
 	GET_REG_ADDRESS	-0x2,d4                	| [$95ba: sta    -$2,u]
@@ -10925,7 +10928,7 @@ l_9744:
 	jne	l_978c                             	| [$9746: bne    $978c]
 	GET_ADDRESS	0x2afb                     	| [$9748: lda    $2afb]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$974b: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$974b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_9769                             	| [$974d: beq    $9769]
 l_974f:
@@ -10943,13 +10946,13 @@ l_975a:
 	GET_ADDRESS	0x2fe8                     	| [$975f: inc    $2fe8]
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	l_9b1d                            	| [$9762: jsr    $9b1d]
-	GET_DP_ADDRESS	nb_players_48           	| [$9765: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9765: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_974f                             	| [$9767: bne    $974f]
 l_9769:
 	GET_ADDRESS	0x2af5                     	| [$9769: lda    $2af5]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$976c: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$976c: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_978a                             	| [$976e: beq    $978a]
 l_9770:
@@ -10967,7 +10970,7 @@ l_977b:
 	GET_ADDRESS	0x2feb                     	| [$9780: inc    $2feb]
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	l_9b5c                            	| [$9783: jsr    $9b5c]
-	GET_DP_ADDRESS	nb_players_48           	| [$9786: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9786: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9770                             	| [$9788: bne    $9770]
 l_978a:
@@ -10975,7 +10978,7 @@ l_978a:
 l_978c:
 	GET_ADDRESS	0x2afb                     	| [$978c: lda    $2afb]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$978f: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$978f: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_97af                             	| [$9791: beq    $97af]
 l_9793:
@@ -10995,13 +10998,13 @@ l_979e:
 	GET_ADDRESS	0x2fe8                     	| [$97a5: inc    $2fe8]
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	l_9b1d                            	| [$97a8: jsr    $9b1d]
-	GET_DP_ADDRESS	nb_players_48           	| [$97ab: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$97ab: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9793                             	| [$97ad: bne    $9793]
 l_97af:
 	GET_ADDRESS	0x2af5                     	| [$97af: lda    $2af5]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$97b2: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$97b2: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	jeq	l_97d2                             	| [$97b4: beq    $97d2]
 l_97b6:
@@ -11021,7 +11024,7 @@ l_97c1:
 	GET_ADDRESS	0x2feb                     	| [$97c8: inc    $2feb]
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	l_9b5c                            	| [$97cb: jsr    $9b5c]
-	GET_DP_ADDRESS	nb_players_48           	| [$97ce: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$97ce: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_97b6                             	| [$97d0: bne    $97b6]
 l_97d2:
@@ -11908,7 +11911,10 @@ l_9c4d:
 	MAKE_D
 	sub.w	#0x0040,d1                       	| [$9c5c: subd   #$0040]
 l_9c5f:
+	PUSH_SR
+	MAKE_D
 	move.w	d1,d3                           	| [$9c5f: tfr    d,y]
+	POP_SR
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9c61: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xd2,d0                         	| [$9c63: cmpa   #$d2]
@@ -11948,7 +11954,10 @@ l_9c96:
 	GET_DP_ADDRESS	0x4e                    	| [$9c96: ldd    $4e]
 	LOAD_D                                 	| [$9c96: ldd    $4e]
 l_9c98:
+	PUSH_SR
+	MAKE_D
 	move.w	d1,d3                           	| [$9c98: tfr    d,y]
+	POP_SR
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9c9a: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xd2,d0                         	| [$9c9c: cmpa   #$d2]
@@ -11976,7 +11985,10 @@ l_9cbe:
 	GET_DP_ADDRESS	0x4e                    	| [$9cbe: ldd    $4e]
 	LOAD_D                                 	| [$9cbe: ldd    $4e]
 l_9cc0:
+	PUSH_SR
+	MAKE_D
 	move.w	d1,d3                           	| [$9cc0: tfr    d,y]
+	POP_SR
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9cc2: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xd2,d0                         	| [$9cc4: cmpa   #$d2]
@@ -12200,12 +12212,12 @@ l_9e10:
 	move.w	d2,d3                           	| [$9e10: tfr    x,y]
 	add.w	#0x10,d3                         	| [$9e12: leay   $10,y]
 	move.b	#0x02,d0                        	| [$9e15: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$9e17: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9e17: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_9e19:
 	move.b	#0x09,d1                        	| [$9e19: ldb    #$09]
 	jbsr	l_8d46                            	| [$9e1b: jsr    $8d46]
-	GET_DP_ADDRESS	nb_players_48           	| [$9e1e: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9e1e: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9e19                             	| [$9e20: bne    $9e19]
 	jbsr	l_8196                            	| [$9e22: jsr    $8196]
@@ -12311,7 +12323,10 @@ l_9e9b:
 	jne	l_9e9b                             	| [$9ea8: bne    $9e9b]
 	add.w	#0x0141,d4                       	| [$9eaa: leau   $0141,u]
 	move.l	d1,-(sp)                        	| [$9eae: pshs   b]
+	PUSH_SR
 	move.w	d4,d1                           	| [$9eb0: tfr    u,d]
+	move.b	d4,d0                           	| [...]
+	POP_SR
 	BIT	#0x3f,d1                           	| [$9eb2: bitb   #$3f]
 	jne	l_9eb9                             	| [$9eb4: bne    $9eb9]
 	sub.w	#0x40,d4                         	| [$9eb6: leau   -$40,u]
@@ -12484,7 +12499,7 @@ l_9f9e:
 	move.w	#0x35a4,d4                      	| [$9fa6: ldu    #$35a4]
 l_9fa9:
 	move.b	#0x03,d0                        	| [$9fa9: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$9fab: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9fab: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_9fad:
 	move.b	#0x05,d0                        	| [$9fad: lda    #$05]
@@ -12509,7 +12524,7 @@ l_9fb5:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9fb5                             	| [$9fc2: bne    $9fb5]
 	add.w	#0x0141,d4                       	| [$9fc4: leau   $0141,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$9fc8: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$9fc8: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9fad                             	| [$9fca: bne    $9fad]
 l_9fcc:
@@ -13262,11 +13277,11 @@ l_a3b5:
 	move.b	(a0),d0                         	| [...]
                                          | [$a3b7: lsra]
 	lsr.b	#2,d0                            	| [$a3b8: lsra]
-	GET_DP_ADDRESS	nb_players_48           	| [$a3b9: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$a3b9: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x5c,d0                        	| [$a3bb: ldd    #$5c14]
 	move.w	#0x5c14,d1                      	| [$a3bb: ldd    #$5c14]
-                                         | [$a3be: addb   nb_players_48]
+                                         | [$a3be: addb   nb_objects_48]
 	add.b	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x1e,d2                	| [$a3c0: std    $1e,x]
@@ -13328,7 +13343,7 @@ l_a3f8:
 	move.b	d1,(a0)                         	| [...]
 l_a401:
 	move.b	#0x10,d0                        	| [$a401: lda    #$10]
-	GET_DP_ADDRESS	nb_players_48           	| [$a403: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$a403: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_a405:
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$a405: stb    $0800,u] [video_address]
@@ -13341,7 +13356,7 @@ l_a405:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$a40d: leau   -$40,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$a410: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$a410: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_a405                             	| [$a412: bne    $a405]
 	add.w	#0x0401,d4                       	| [$a414: leau   $0401,u]
@@ -13359,7 +13374,7 @@ event_table_a41f:
 	.long	l_62d2                           	|  $a42b
 	.long	draw_chrono_63c6                 	|  $a42d
 	.long	l_641a                           	|  $a42f
-	.long	l_64d9                           	|  $a431
+	.long	update_speed_bar_64d9            	|  $a431
 	.long	l_654c                           	|  $a433
 	.long	l_654d                           	|  $a435
 	.long	l_65ba                           	|  $a437
@@ -13559,7 +13574,10 @@ l_cb04:
 	move.b	#0x04,d0                        	| [$cb07: lda    #$04]
 	jbsr	multiply_ab                       	| [$cb09: mul]
 	add.w	d1,d4                            	| [$cb0a: leau   d,u]
+	PUSH_SR
 	move.w	d4,d1                           	| [$cb0c: tfr    u,d]
+	move.b	d4,d0                           	| [...]
+	POP_SR
 	jmp	l_cd6b                             	| [$cb0e: jmp    $cd6b]
 l_cb11:
 	move.b	#0xdd,d0                        	| [$cb11: ldd    #$dd28]
@@ -13885,7 +13903,7 @@ l_ccbd:
 	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$cccd: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x1822,d4                      	| [$ccd0: ldu    #$1822]
-	jmp	l_d0b1                             	| [$ccd3: jmp    $d0b1]
+	jmp	update_sprite_buffer_d0b1          	| [$ccd3: jmp    update_sprite_buffer_d0b1]
 l_ccd6:
 	rts                                    	| [$ccd6: rts]
 
@@ -13998,7 +14016,10 @@ l_cd68:
 	move.b	#0xdd,d0                        	| [$cd68: ldd    #$dd77]
 	move.w	#0xdd77,d1                      	| [$cd68: ldd    #$dd77]
 l_cd6b:
+	PUSH_SR
+	MAKE_D
 	move.w	d1,d3                           	| [$cd6b: tfr    d,y]
+	POP_SR
 	jbsr	l_ce53                            	| [$cd6d: jsr    $ce53]
 	jmp	l_cec7                             	| [$cd70: jmp    $cec7]
 l_cd73:
@@ -14010,7 +14031,7 @@ l_cd73:
 	move.w	#0xdd85,d3                      	| [$cd7d: ldy    #$dd85]
 l_cd81:
 	move.w	#0x1822,d4                      	| [$cd81: ldu    #$1822]
-	jmp	l_d0b1                             	| [$cd84: jmp    $d0b1]
+	jmp	update_sprite_buffer_d0b1          	| [$cd84: jmp    update_sprite_buffer_d0b1]
 l_cd87:
 	GET_REG_ADDRESS	0x1d,d2                	| [$cd87: lda    $1d,x]
 	move.b	(a0),d0                         	| [...]
@@ -14103,7 +14124,8 @@ l_ce26:
 	jeq	l_ce39                             	| [$ce35: beq    $ce39]
 	addq.w	#0x4,d4                         	| [$ce37: leau   $4,u]
 l_ce39:
-	jmp	l_d0b1                             	| [$ce39: jmp    $d0b1]
+	jmp	update_sprite_buffer_d0b1          	| [$ce39: jmp    update_sprite_buffer_d0b1]
+
 	jbsr	l_ce53                            	| [$ce3c: jsr    $ce53]
 	jmp	l_d1d4                             	| [$ce3f: jmp    $d1d4]
 l_ce42:
@@ -14578,29 +14600,36 @@ l_d09c:
 	move.b	d1,(a0)                         	| [...]
 	rts                                    	| [$d0ad: rts]
 
+* write object to sprite buffer
+* < Y: object structure
+* < X: ???
+* < U: sprite pointer to write into
+
 l_d0ae:
 	GET_REG_ADDRESS	0xe,d2                 	| [$d0ae: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
-l_d0b1:
+update_sprite_buffer_d0b1:
 	GET_REG_ADDRESS	0,d3                   	| [$d0b1: lda    ,y]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xff,d0                         	| [$d0b3: cmpa   #$ff]
-	jne	l_d0bd                             	| [$d0b5: bne    $d0bd]
+	jne	l_d0bd                             	| [$d0b5: bne    $d0bd] valid slot: run update
 	GET_REG_ADDRESS	0x1,d3                 	| [$d0b7: ldd    $1,y]
 	LOAD_D                                 	| [$d0b7: ldd    $1,y]
 	GET_REG_ADDRESS	0xe,d2                 	| [$d0b9: std    $e,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jra	l_d0ae                             	| [$d0bb: bra    $d0ae]
+
 l_d0bd:
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d0bd: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d0f2                             	| [$d0bf: bne    $d0f2]
+* straight screen
 	GET_REG_ADDRESS	0x1,d3                 	| [$d0c1: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x40,d1                        	| [$d0c3: ldb    #$40]
-	GET_REG_ADDRESS	0x0403,d4              	| [$d0c5: sta    $0403,u]
+	GET_REG_ADDRESS	0x0403,d4              	| [$d0c5: sta    $0403,u] store sprite code
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x2,d4                 	| [$d0c9: stb    $2,u]
+	GET_REG_ADDRESS	0x2,d4                 	| [$d0c9: stb    $2,u] store sprite attribute
 	move.b	d1,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x8,d2                 	| [$d0cb: sta    $8,x]
 	move.b	d0,(a0)                         	| [...]
@@ -14608,17 +14637,17 @@ l_d0bd:
 	LOAD_D                                 	| [$d0cd: ldd    $1,x]
 	add.b	#0x10,d0                         	| [$d0cf: adda   #$10]
 	addq.b	#1,d0                           	| [$d0d1: inca]
-	GET_REG_ADDRESS	0x3,d4                 	| [$d0d2: sta    $3,u]
+	GET_REG_ADDRESS	0x3,d4                 	| [$d0d2: sta    $3,u] store sprite Y
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x0402,d4              	| [$d0d4: stb    $0402,u]
+	GET_REG_ADDRESS	0x0402,d4              	| [$d0d4: stb    $0402,u] store sprite X
 	move.b	d1,(a0)                         	| [...]
-l_d0d8:
+update_sprite_buffer_d0d8:
 	GET_REG_ADDRESS	0,d3                   	| [$d0d8: lda    ,y]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x4f,d1                        	| [$d0da: ldb    #$4f]
-	GET_REG_ADDRESS	0x0401,d4              	| [$d0dc: sta    $0401,u]
+	GET_REG_ADDRESS	0x0401,d4              	| [$d0dc: sta    $0401,u] store sprite code
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$d0e0: stb    ,u]
+	GET_REG_ADDRESS	0,d4                   	| [$d0e0: stb    ,u] store sprite attribute
 	move.b	d1,(a0)                         	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x6,d2                 	| [$d0e2: std    $6,x]
@@ -14627,9 +14656,9 @@ l_d0d8:
 	LOAD_D                                 	| [$d0e4: ldd    $1,x]
 	jeq	l_d283                             	| [$d0e6: lbeq   $d283]
 	addq.b	#1,d0                           	| [$d0ea: inca]
-	GET_REG_ADDRESS	0x1,d4                 	| [$d0eb: sta    $1,u]
+	GET_REG_ADDRESS	0x1,d4                 	| [$d0eb: sta    $1,u] store sprite Y part 2
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x0400,d4              	| [$d0ed: stb    $0400,u]
+	GET_REG_ADDRESS	0x0400,d4              	| [$d0ed: stb    $0400,u] store sprite X
 	move.b	d1,(a0)                         	| [...]
 	rts                                    	| [$d0f1: rts]
 
@@ -14679,11 +14708,13 @@ l_d10d:
 
 	GET_REG_ADDRESS	0xe,d2                 	| [$d12c: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
+
 l_d12f:
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d12f: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d10d                             	| [$d131: bne    $d10d]
-	jra	l_d0d8                             	| [$d133: lbra   $d0d8]
+	jra	update_sprite_buffer_d0d8          	| [$d133: lbra   update_sprite_buffer_d0d8]
+
 l_d136:
 	GET_REG_ADDRESS	0xe,d2                 	| [$d136: ldy    $e,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
@@ -16156,7 +16187,7 @@ l_d8c4:
 	add.w	d1,d3                            	| [$d8d0: leay   d,y]
 	move.w	#0x3116,d2                      	| [$d8d2: ldx    #$3116]
 	move.b	#0x03,d0                        	| [$d8d5: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$d8d7: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$d8d7: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_d8d9:
 	GET_REG_ADDRESS	0,d3                   	| [$d8d9: ldd    ,y++]
@@ -16206,7 +16237,7 @@ l_d8ee:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	add.w	#0x38,d2                         	| [$d8fe: leax   $38,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$d901: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$d901: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_d8d9                             	| [$d903: bne    $d8d9]
 	rts                                    	| [$d905: rts]
@@ -16317,7 +16348,7 @@ l_d993:
 	jbsr	reset_scrolling_8c2f              	| [$d993: jsr    reset_scrolling_8c2f]
 	move.w	#0x3340,d4                      	| [$d996: ldu    #$3340]
 	move.b	#0x11,d0                        	| [$d999: lda    #$11]
-	GET_DP_ADDRESS	nb_players_48           	| [$d99b: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$d99b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x10,d0                        	| [$d99d: lda    #$10]
 l_d99f:
@@ -16333,7 +16364,7 @@ l_d9a1:
 	subq.b	#1,d1                           	| [$d9a7: decb]
 	jne	l_d9a1                             	| [$d9a8: bne    $d9a1]
 	add.w	#0x20,d4                         	| [$d9aa: leau   $20,u]
-	GET_DP_ADDRESS	nb_players_48           	| [$d9ad: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$d9ad: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_d99f                             	| [$d9af: bne    $d99f]
 	rts                                    	| [$d9b1: rts]
@@ -16836,33 +16867,33 @@ l_df18:
 	GET_DP_ADDRESS	0x4c                    	| [$df54: addd   $4c]
 	add.w	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$df56: std    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$df56: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0x4b                    	| [$df58: lda    $4b]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x64,d1                        	| [$df5a: ldb    #$64]
 	jbsr	multiply_ab                       	| [$df5c: mul]
-	GET_DP_ADDRESS	nb_players_48           	| [$df5d: addd   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$df5d: addd   nb_objects_48]
 	add.w	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$df5f: std    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$df5f: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0x4a                    	| [$df61: ldb    $4a]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0xe8,d0                        	| [$df63: lda    #$e8]
 	jbsr	multiply_ab                       	| [$df65: mul]
-	GET_DP_ADDRESS	nb_players_48           	| [$df66: addd   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$df66: addd   nb_objects_48]
 	add.w	(a0),d1                          	| [...]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$df68: std    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$df68: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0x4a                    	| [$df6a: ldb    $4a]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0x03,d0                        	| [$df6c: lda    #$03]
 	jbsr	multiply_ab                       	| [$df6e: mul]
-	GET_DP_ADDRESS	nb_players_48           	| [$df6f: addb   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$df6f: addb   nb_objects_48]
 	add.b	(a0),d1                          	| [...]
-                                         | [$df71: stb    nb_players_48]
+                                         | [$df71: stb    nb_objects_48]
 	move.b	d1,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x38,d3                	| [$df73: lda    $38,y]
 	move.b	(a0),d0                         	| [...]
@@ -17045,7 +17076,7 @@ l_e026:
 	jbsr	multiply_ab                       	| [$e02f: mul]
 	GET_DP_ADDRESS	0x51                    	| [$e030: sta    $51]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$e032: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e032: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x4e                    	| [$e034: ldb    $4e]
 	move.b	(a0),d1                         	| [...]
@@ -17881,7 +17912,7 @@ l_e493:
 	move.w	#0x28a0,d2                      	| [$e496: ldx    #$28a0]
 	jbsr	l_deff                            	| [$e499: jsr    $deff]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$e49c: std    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e49c: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_ADDRESS	0x2ac9                     	| [$e49e: tst    $2ac9]
 	tst.b	(a0)                             	| [...]
@@ -17927,8 +17958,8 @@ l_e4c8:
 	jra	l_e4c8                             	| [$e4de: bra    $e4c8]
 l_e4e0:
 	move.w	#0x28a0,d2                      	| [$e4e0: ldx    #$28a0]
-	GET_DP_ADDRESS	nb_players_48           	| [$e4e3: ldd    nb_players_48]
-	LOAD_D                                 	| [$e4e3: ldd    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e4e3: ldd    nb_objects_48]
+	LOAD_D                                 	| [$e4e3: ldd    nb_objects_48]
 	GET_DP_ADDRESS	0xa2                    	| [$e4e5: adda   $a2]
 	add.b	(a0),d0                          	| [...]
 	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e4e7: addb   p1_attempts_left_a1]
@@ -18413,10 +18444,10 @@ l_e772:
 	LOAD_D                                 	| [$e784: ldd    p1_attempts_left_a1]
 	GET_ADDRESS	0x2b38                     	| [$e786: std    $2b38]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	jbsr	l_e9c4                            	| [$e789: jsr    $e9c4]
+	jbsr	update_carried_javelin_sprite_e9c4	| [$e789: jsr    update_carried_javelin_sprite_e9c4]
 	move.w	#0x28a0,d2                      	| [$e78c: ldx    #$28a0]
 	move.b	#0x09,d0                        	| [$e78f: lda    #$09]
-	jbsr	queue_event_84f5                  	| [$e791: jsr    queue_event_84f5]
+	jbsr	queue_event_84f5                  	| [$e791: jsr    queue_event_84f5] update_speed_bar_64d9
 	jbsr	l_8587                            	| [$e794: jsr    $8587]
 	move.b	#0x8a,d0                        	| [$e797: lda    #$8a]
 	move.b	#0xc3,d1                        	| [$e799: ldb    #$c3]
@@ -18657,7 +18688,7 @@ l_e8dd:
 	GET_DP_ADDRESS	0x49                    	| [$e901: sta    $49]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x02,d0                        	| [$e903: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$e905: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e905: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_e907:
 	GET_ADDRESS	0x2b31                     	| [$e907: lda    $2b31]
@@ -18676,7 +18707,7 @@ l_e907:
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$e91e: inc    $49]
 	addq.b	#1,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$e920: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e920: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_e907                             	| [$e922: bne    $e907]
 l_e924:
@@ -18802,7 +18833,7 @@ l_e9bd:
 	addq.b	#1,(a0)                         	| [...]
 	rts                                    	| [$e9c3: rts]
 
-l_e9c4:
+update_carried_javelin_sprite_e9c4:
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$e9c4: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$e9c6: coma]
@@ -18817,7 +18848,7 @@ l_e9c4:
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x05,d1                        	| [$e9d2: ldb    #$05]
 	jbsr	l_fb6a                            	| [$e9d4: jsr    $fb6a]
-	GET_DP_ADDRESS	nb_players_48           	| [$e9d7: stb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e9d7: stb    nb_objects_48]
 	move.b	d1,(a0)                         	| [...]
 	tst.b	d1                               	| [$e9d9: cmpb   #$00]
 	jpl	l_e9e4                             	| [$e9db: bpl    $e9e4]
@@ -18832,17 +18863,19 @@ l_e9e4:
 	GET_DP_ADDRESS	0x4e                    	| [$e9e6: stb    $4e]
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0xef53,d3                      	| [$e9e8: ldy    #$ef53]
-	GET_DP_ADDRESS	nb_players_48           	| [$e9ec: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e9ec: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x06,d1                        	| [$e9ee: ldb    #$06]
 	jbsr	multiply_ab                       	| [$e9f0: mul]
 	add.w	d1,d3                            	| [$e9f1: leay   b,y]
-l_e9f3:
+
+update_flying_javelin_sprite_e9f3:
 	move.w	#0x2b30,d2                      	| [$e9f3: ldx    #$2b30]
-	move.w	#0x17fe,d4                      	| [$e9f6: ldu    #$17fe]
+	move.w	#0x17fe,d4                      	| [$e9f6: ldu    #$17fe] sprite_ram_1800-2
 	move.b	#0x03,d0                        	| [$e9f9: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$e9fb: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$e9fb: sta    nb_objects_48] javelin is 3 objects
 	move.b	d0,(a0)                         	| [...]
+* loop to update objects
 l_e9fd:
 	GET_REG_ADDRESS	0x8,d2                 	| [$e9fd: ldd    $8,x]
 	LOAD_D                                 	| [$e9fd: ldd    $8,x]
@@ -18855,7 +18888,7 @@ l_e9fd:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x1,d2                 	| [$ea03: std    $1,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	addq.w	#0x2,d4                         	| [$ea05: leau   $2,u]
+	addq.w	#0x2,d4                         	| [$ea05: leau   $2,u] next sprite block
 	GET_DP_ADDRESS	0x4f                    	| [$ea07: inc    $4f]
 	addq.b	#1,(a0)                         	| [...]
 	move.l	d3,-(sp)                        	| [$ea09: pshs   y]
@@ -18866,7 +18899,7 @@ l_e9fd:
 	GET_REG_ADDRESS	0,d4                   	| [$ea14: sta    ,u]
 	move.b	d0,(a0)                         	| [...]
 	move.l	(sp)+,d3                        	| [$ea16: puls   y]
-	GET_DP_ADDRESS	nb_players_48           	| [$ea18: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$ea18: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_e9fd                             	| [$ea1a: bne    $e9fd]
 	rts                                    	| [$ea1c: rts]
@@ -18904,7 +18937,7 @@ l_ea1d:
 	GET_DP_ADDRESS	0x4f                    	| [$ea48: sta    $4f]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x02,d0                        	| [$ea4a: lda    #$02]
-	GET_DP_ADDRESS	nb_players_48           	| [$ea4c: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$ea4c: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_ea4e:
 	GET_REG_ADDRESS	0x2,d2                 	| [$ea4e: lda    $2,x]
@@ -18921,7 +18954,7 @@ l_ea4e:
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0,d4                   	| [$ea5f: sta    ,u]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$ea61: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$ea61: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_ea4e                             	| [$ea63: bne    $ea4e]
 l_ea65:
@@ -19032,7 +19065,7 @@ l_eae7:
 l_eae9:
 	GET_DP_ADDRESS	angle_d8                	| [$eae9: ldb    angle_d8]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$eaeb: stb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$eaeb: stb    nb_objects_48]
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0xed7b,d3                      	| [$eaed: ldy    #$ed7b]
 	and.l	#0xFF,d1                         	| [masking out]
@@ -19040,7 +19073,7 @@ l_eae9:
 	move.b	(a0),d0                         	| [...]
 	moveq	#0,d1                            	| [$eaf3: clrb]
 l_eaf4:
-	GET_DP_ADDRESS	nb_players_48           	| [$eaf4: suba   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$eaf4: suba   nb_objects_48]
 	sub.b	(a0),d0                          	| [...]
 	jcs	l_eafb                             	| [$eaf6: bcs    $eafb]
 	addq.b	#1,d1                           	| [$eaf8: incb]
@@ -19066,7 +19099,7 @@ l_eafb:
 	move.b	d1,(a0)                         	| [...]
 	GET_ADDRESS	0x2ad9                     	| [$eb12: stb    $2ad9]
 	move.b	d1,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$eb15: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$eb15: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x05,d1                        	| [$eb17: ldb    #$05]
 	jbsr	l_fb6a                            	| [$eb19: jsr    $fb6a]
@@ -19145,7 +19178,7 @@ l_eb81:
 	jbsr	multiply_ab                       	| [$eb8c: mul]
 	move.w	#0xef53,d3                      	| [$eb8d: ldy    #$ef53]
 	add.w	d1,d3                            	| [$eb91: leay   b,y]
-	jbsr	l_e9f3                            	| [$eb93: jsr    $e9f3]
+	jbsr	update_flying_javelin_sprite_e9f3 	| [$eb93: jsr    update_flying_javelin_sprite_e9f3]
 	jbsr	l_eba3                            	| [$eb96: jsr    $eba3]
 	jbsr	l_ebda                            	| [$eb99: jsr    $ebda]
 	rts                                    	| [$eb9c: rts]
@@ -19298,13 +19331,13 @@ l_ec73:
 	abcd	d6,d0	| [...]
 	BIT	#0x10,d0                           	| [$ec76: bita   #$10]
 	jeq	l_ec8b                             	| [$ec78: beq    $ec8b]
-	GET_DP_ADDRESS	nb_players_48           	| [$ec7a: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$ec7a: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	and.b	#0x0f,d0                         	| [$ec7c: anda   #$0f]
 	and.l	#0xFF,d1                         	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$ec7e: sta    b,y]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$ec80: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$ec80: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
                                          | [$ec82: asra]
                                          | [$ec83: asra]
@@ -19645,7 +19678,7 @@ l_f084:
 	MAKE_D                                 	| [...]
 	add.w	d1,d3                            	| [$f084: leay   d,y]
 	move.b	#0x0a,d0                        	| [$f086: lda    #$0a]
-	GET_DP_ADDRESS	nb_players_48           	| [$f088: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f088: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0x2a93,d2                      	| [$f08a: ldx    #$2a93]
 	move.b	#0x1d,d0                        	| [$f08d: lda    #$1d]
@@ -19710,7 +19743,7 @@ l_f0ce:
 	move.b	d0,(a0)                         	| [...]
 	subq.w	#0x3,d3                         	| [$f0d6: leay   -$3,y]
 l_f0d8:
-	GET_DP_ADDRESS	nb_players_48           	| [$f0d8: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f0d8: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f091                             	| [$f0da: bne    $f091]
 	GET_ADDRESS	0x2a92                     	| [$f0dc: lda    $2a92]
@@ -19718,7 +19751,7 @@ l_f0d8:
 	cmp.b	#0x01,d0                         	| [$f0df: cmpa   #$01]
 	jne	l_f0f8                             	| [$f0e1: bne    $f0f8]
 l_f0e3:
-	GET_DP_ADDRESS	nb_players_48           	| [$f0e3: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f0e3: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$f0e5: inca]
 	cmp.b	#0x0b,d0                         	| [$f0e6: cmpa   #$0b]
@@ -19960,7 +19993,7 @@ l_f20e:
 	move.w	#0xfdbd,d2                      	| [$f20e: ldx    #$fdbd]
 	move.w	#0x3346,d3                      	| [$f211: ldy    #$3346]
 	move.b	#0x09,d0                        	| [$f215: lda    #$09]
-	GET_DP_ADDRESS	nb_players_48           	| [$f217: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f217: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_f219:
 	GET_REG_ADDRESS	0,d2                   	| [$f219: ldd    ,x++]
@@ -19972,7 +20005,7 @@ l_f219:
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f220: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f220: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f219                             	| [$f222: bne    $f219]
 	move.b	#0x6d,d0                        	| [$f224: lda    #$6d]
@@ -20022,7 +20055,7 @@ l_f25e:
 l_f271:
 	add.w	#0xc,d2                          	| [$f271: leax   $c,x]
 	move.b	#0x03,d0                        	| [$f273: lda    #$03]
-	GET_DP_ADDRESS	nb_players_48           	| [$f275: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f275: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$f277: clr    $49]
 	clr.b	(a0)                         	| [...]
@@ -20075,7 +20108,7 @@ l_f2a0:
 	VIDEO_BYTE_DIRTY | [...]
 l_f2a8:
 	addq.w	#0x1,d2                         	| [$f2a8: leax   $1,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$f2aa: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f2aa: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f279                             	| [$f2ac: bne    $f279]
 	moveq	#0,d0                            	| [$f2ae: clra]
@@ -20170,7 +20203,7 @@ l_f312:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0b,d0                        	| [$f31b: lda    #$0b]
-	GET_DP_ADDRESS	nb_players_48           	| [$f31d: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f31d: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_ADDRESS	0x299c                     	| [$f31f: lda    $299c]
 	move.b	(a0),d0                         	| [...]
@@ -20186,7 +20219,7 @@ l_f32d:
 	addq.w	#2,d2                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f32f: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f32f: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f32d                             	| [$f331: bne    $f32d]
 	GET_ADDRESS	0x299c                     	| [$f333: inc    $299c]
@@ -20213,7 +20246,7 @@ l_f346:
 	subq.b	#1,(a0)                         	| [...]
 	jeq	l_f3c3                             	| [$f349: lbeq   $f3c3]
 	move.b	#0x20,d0                        	| [$f34d: lda    #$20]
-	GET_DP_ADDRESS	nb_players_48           	| [$f34f: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f34f: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0x39c0,d4                      	| [$f351: ldu    #$39c0]
 	GET_ADDRESS	0x2a91                     	| [$f354: lda    $2a91]
@@ -20243,7 +20276,7 @@ l_f36c:
 	addq.w	#2,d4                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f370: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f370: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f36c                             	| [$f372: bne    $f36c]
 	GET_DP_ADDRESS	0x22                    	| [$f374: tst    $22]
@@ -20345,7 +20378,7 @@ l_f3d7:
 	clr.b	(a0)                         	| [...]
 	jbsr	l_f178                            	| [$f3ee: jsr    $f178]
 	move.b	#0x18,d0                        	| [$f3f1: lda    #$18]
-	GET_DP_ADDRESS	nb_players_48           	| [$f3f3: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f3f3: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x00,d0                        	| [$f3f5: ldd    #$00f0]
 	move.w	#0x00f0,d1                      	| [$f3f5: ldd    #$00f0]
@@ -20360,7 +20393,7 @@ l_f3ff:
 	GET_REG_ADDRESS	0,d3                   	| [$f401: std    ,y++]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f403: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f403: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f3ff                             	| [$f405: bne    $f3ff]
 	move.b	#0x00,d0                        	| [$f407: ldd    #$0000]
@@ -20477,14 +20510,14 @@ l_f497:
 	move.b	(a0),d0                         	| [...]
 	subq.b	#1,d0                           	| [$f49a: deca]
 	lsr.b	#1,d0                            	| [$f49b: lsra]
-	GET_DP_ADDRESS	nb_players_48           	| [$f49c: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f49c: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	dsw2_copy_2d            	| [$f49e: lda    dsw2_copy_2d]
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$f4a0: coma]
                                          | [$f4a1: lsra]
 	lsr.b	#2,d0                            	| [$f4a2: lsra]
-	GET_DP_ADDRESS	nb_players_48           	| [$f4a3: anda   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f4a3: anda   nb_objects_48]
 	and.b	(a0),d0                          	| [...]
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$f4a5: sta    copy_of_screen_flipped_21]
 	move.b	d0,(a0)                         	| [...]
@@ -20492,7 +20525,7 @@ l_f497:
 	move.w	#0xfde5,d2                      	| [$f4aa: ldx    #$fde5]
 	move.w	#0x310b,d3                      	| [$f4ad: ldy    #$310b]
 	move.b	#0x06,d0                        	| [$f4b1: lda    #$06]
-	GET_DP_ADDRESS	nb_players_48           	| [$f4b3: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f4b3: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_f4b5:
 	move.b	#0x48,d0                        	| [$f4b5: ldd    #$4848]
@@ -20521,7 +20554,7 @@ l_f4b5:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x087e,d3              	| [$f4d2: std    $087e,y]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f4d6: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f4d6: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f4b5                             	| [$f4d8: bne    $f4b5]
 	move.b	#0x48,d0                        	| [$f4da: lda    #$48]
@@ -20534,7 +20567,7 @@ l_f4b5:
 	move.w	#0x35c9,d3                      	| [$f4e2: ldy    #$35c9]
 	move.w	#0xfdf1,d2                      	| [$f4e6: ldx    #$fdf1]
 	move.b	#0x06,d0                        	| [$f4e9: lda    #$06]
-	GET_DP_ADDRESS	nb_players_48           	| [$f4eb: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f4eb: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_f4ed:
 	move.b	#0x0f,d0                        	| [$f4ed: lda    #$0f]
@@ -20558,7 +20591,7 @@ l_f4fa:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f4f1                             	| [$f502: bne    $f4f1]
 	add.w	#0x31,d3                         	| [$f504: leay   $31,y]
-	GET_DP_ADDRESS	nb_players_48           	| [$f507: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f507: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f4ed                             	| [$f509: bne    $f4ed]
 	GET_DP_ADDRESS	0x09                    	| [$f50b: inc    $09]
@@ -20569,7 +20602,7 @@ l_f50e:
 	move.w	#0x2aa0,d2                      	| [$f50e: ldx    #$2aa0]
 	move.w	#0x2a48,d3                      	| [$f511: ldy    #$2a48]
 	move.b	#0x04,d0                        	| [$f515: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$f517: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f517: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0x2b80,d4                      	| [$f519: ldu    #$2b80]
 l_f51c:
@@ -20591,7 +20624,7 @@ l_f51c:
 	move.b	d0,(a0)                         	| [...]
 l_f52d:
 	addq.w	#0x4,d2                         	| [$f52d: leax   $4,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$f52f: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f52f: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f51c                             	| [$f531: bne    $f51c]
 	cmp.w	#0x2a4c,d3                       	| [$f533: cmpy   #$2a4c]
@@ -20963,27 +20996,27 @@ l_f713:
 	move.b	#0x14,d1                        	| [$f725: ldb    #$14]
 	jbsr	queue_event_84f5                  	| [$f727: jsr    queue_event_84f5]
 	move.w	#0xa4c8,d2                      	| [$f72a: ldx    #$a4c8]
-	GET_DP_ADDRESS	nb_players_48           	| [$f72d: clr    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f72d: clr    nb_objects_48]
 	clr.b	(a0)                         	| [...]
 l_f72f:
 	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f72f: ldb    nb_players_minus_one_60]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f731: cmpb   nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f731: cmpb   nb_objects_48]
 	cmp.b	(a0),d1                          	| [...]
 	jcs	l_f74b                             	| [$f733: bcs    $f74b]
-	GET_DP_ADDRESS	nb_players_48           	| [$f735: ldb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f735: ldb    nb_objects_48]
 	move.b	(a0),d1                         	| [...]
 	and.l	#0xFF,d1                         	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d1,d2         	| [$f737: ldb    b,x]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0x01,d0                        	| [$f739: lda    #$01]
 	jbsr	queue_event_84f5                  	| [$f73b: jsr    queue_event_84f5]
-	GET_DP_ADDRESS	nb_players_48           	| [$f73e: ldb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f73e: ldb    nb_objects_48]
 	move.b	(a0),d1                         	| [...]
 	add.b	#0x1d,d1                         	| [$f740: addb   #$1d]
 	move.b	#0x02,d0                        	| [$f742: lda    #$02]
 	jbsr	queue_event_84f5                  	| [$f744: jsr    queue_event_84f5]
-	GET_DP_ADDRESS	nb_players_48           	| [$f747: inc    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f747: inc    nb_objects_48]
 	addq.b	#1,(a0)                         	| [...]
 	jra	l_f72f                             	| [$f749: bra    $f72f]
 l_f74b:
@@ -21042,7 +21075,7 @@ l_f78e:
 	move.b	#0x04,d0                        	| [$f798: ldd    #$0403]
 	move.w	#0x0403,d1                      	| [$f798: ldd    #$0403]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f79b: std    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f79b: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 l_f79d:
 	GET_REG_ADDRESS	0,d4                   	| [$f79d: lda    ,u]
@@ -21059,11 +21092,11 @@ l_f79d:
 	addq.w	#2,d2                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	VIDEO_WORD_DIRTY | [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f7a9: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f7a9: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f79d                             	| [$f7ab: bne    $f79d]
 	move.b	#0x04,d0                        	| [$f7ad: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$f7af: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f7af: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0,d4                   	| [$f7b1: lda    ,u+]
 	addq.w	#1,d4                           	| [...]
@@ -21334,7 +21367,7 @@ l_f8fd:
 	jeq	l_f96a                             	| [$f90f: beq    $f96a]
 	add.b	#0x11,d1                         	| [$f911: addb   #$11]
 l_f913:
-	GET_DP_ADDRESS	nb_players_48           	| [$f913: stb    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f913: stb    nb_objects_48]
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0x2990,d2                      	| [$f915: ldx    #$2990]
 	GET_DP_ADDRESS	0xdf                    	| [$f918: ldb    $df]
@@ -21344,7 +21377,7 @@ l_f913:
 	add.w	d1,d2                            	| [$f91d: leax   b,x]
 	GET_ADDRESS	0x299e                     	| [$f91f: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f922: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f922: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	and.l	#0xFF,d1                         	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d1,d2         	| [$f924: sta    b,x]
@@ -21357,7 +21390,7 @@ l_f913:
 	add.w	d1,d2                            	| [$f92e: leax   d,x]
 	GET_ADDRESS	0x299e                     	| [$f930: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
-	GET_DP_ADDRESS	nb_players_48           	| [$f933: lda    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f933: lda    nb_objects_48]
 	move.b	(a0),d0                         	| [...]
 	and.l	#0xFF,d1                         	| [masking out]
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d2         	| [$f935: sta    b,x] [video_address]
@@ -21477,7 +21510,7 @@ l_f9b1:
 	move.w	#0x2a52,d3                      	| [$f9c9: ldy    #$2a52]
 	move.w	#0x2990,d2                      	| [$f9cd: ldx    #$2990]
 	move.b	#0x04,d0                        	| [$f9d0: lda    #$04]
-	GET_DP_ADDRESS	nb_players_48           	| [$f9d2: sta    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$f9d2: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_f9d4:
 	GET_REG_ADDRESS	0x2,d2                 	| [$f9d4: lda    $2,x]
@@ -21572,7 +21605,7 @@ l_f9d4:
 	POP_SR
 	addq.w	#0x2,d3                         	| [$fa0f: leay   $2,y]
 	addq.w	#0x3,d2                         	| [$fa11: leax   $3,x]
-	GET_DP_ADDRESS	nb_players_48           	| [$fa13: dec    nb_players_48]
+	GET_DP_ADDRESS	nb_objects_48           	| [$fa13: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f9d4                             	| [$fa15: bne    $f9d4]
 	move.b	#0x03,d0                        	| [$fa17: lda    #$03]

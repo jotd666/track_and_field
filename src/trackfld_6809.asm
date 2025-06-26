@@ -41,7 +41,7 @@ copy_of_inputs_30 = $30
 copy_of_inputs_31 = $31
 copy_of_inputs_32 = $32
 hammer_speed_38 = $38
-nb_players_48 = $48
+nb_objects_48 = $48
 nb_players_minus_one_60 = $60
 chrono_hundredth_second_7e = $7e
 chrono_second_7f = $7f
@@ -194,12 +194,12 @@ reset_6000:
 60E8: CC 74 EA       LDD    #$74EA
 60EB: FD 2F EE       STD    $2FEE
 60EE: 86 64          LDA    #$64
-60F0: 97 48          STA    nb_players_48
+60F0: 97 48          STA    nb_objects_48
 60F2: CC 00 00       LDD    #$0000
 60F5: 8E 2E B4       LDX    #$2EB4
 60F8: ED 81          STD    ,X++
 60FA: A7 80          STA    ,X+
-60FC: 0A 48          DEC    nb_players_48
+60FC: 0A 48          DEC    nb_objects_48
 60FE: 26 F8          BNE    $60F8
 6100: B6 12 00       LDA    dsw2_1200
 6103: 43             COMA
@@ -232,7 +232,7 @@ reset_6000:
 613D: 0A 40          DEC    $40
 613F: 26 D3          BNE    $6114
 6141: 86 64          LDA    #$64
-6143: 97 48          STA    nb_players_48
+6143: 97 48          STA    nb_objects_48
 6145: 10 8E A4 C3    LDY    #$A4C3
 6149: EC A1          LDD    ,Y++
 614B: ED 81          STD    ,X++
@@ -240,7 +240,7 @@ reset_6000:
 614F: ED 81          STD    ,X++
 6151: A6 A4          LDA    ,Y
 6153: A7 80          STA    ,X+
-6155: 0A 48          DEC    nb_players_48
+6155: 0A 48          DEC    nb_objects_48
 6157: 26 EC          BNE    $6145
 6159: 86 01          LDA    #$01
 615B: B7 10 87       STA    irq_mask_w_1087
@@ -671,6 +671,7 @@ draw_chrono_63c6:
 64D6: E7 C4          STB    ,U
 64D8: 39             RTS
 
+update_speed_bar_64d9:
 64D9: CE 37 45       LDU    #$3745
 64DC: 96 B0          LDA    $B0
 64DE: C6 0A          LDB    #$0A
@@ -871,7 +872,7 @@ read_inputs_6624:
 6675: A4 84          ANDA   ,X		; mask with copy_of_inputs_2830, see if changes in inputs
 6677: 84 07          ANDA   #$07
 6679: 27 29          BEQ    $66A4
-667B: 97 48          STA    nb_players_48
+667B: 97 48          STA    nb_objects_48
 667D: 96 22          LDA    $22
 667F: 27 03          BEQ    $6684
 6681: 4F             CLRA
@@ -885,7 +886,7 @@ read_inputs_6624:
 6693: 86 02          LDA    #$02
 6695: BD 85 12       JSR    $8512
 6698: 8D 15          BSR    $66AF
-669A: 96 48          LDA    nb_players_48
+669A: 96 48          LDA    nb_objects_48
 669C: 85 01          BITA   #$01
 669E: 26 05          BNE    $66A5
 66A0: 85 02          BITA   #$02
@@ -900,7 +901,7 @@ read_inputs_6624:
 66AC: 97 26          STA    $26
 66AE: 39             RTS
 
-66AF: 96 48          LDA    nb_players_48
+66AF: 96 48          LDA    nb_objects_48
 66B1: 85 01          BITA   #$01
 66B3: 26 09          BNE    $66BE
 66B5: 85 02          BITA   #$02
@@ -1116,7 +1117,7 @@ start_a_game_680a:
 682B: 8E 2B 80       LDX    #$2B80
 682E: 96 60          LDA    nb_players_minus_one_60
 6830: 4C             INCA
-6831: 97 48          STA    nb_players_48
+6831: 97 48          STA    nb_objects_48
 6833: 86 01          LDA    #$01
 6835: A7 84          STA    ,X
 6837: 96 49          LDA    $49
@@ -1124,7 +1125,7 @@ start_a_game_680a:
 683B: 6F 04          CLR    $4,X
 683D: 6F 88 1F       CLR    $1F,X
 6840: 30 88 20       LEAX   $20,X
-6843: 0A 48          DEC    nb_players_48
+6843: 0A 48          DEC    nb_objects_48
 6845: 26 EC          BNE    $6833
 ; clear game variables (level, etc...)
 6847: 4F             CLRA
@@ -1280,7 +1281,7 @@ setup_players_screen_6936:
 6981: 81 03          CMPA   #$03
 6983: 26 18          BNE    $699D
 6985: 86 04          LDA    #$04
-6987: 97 48          STA    nb_players_48
+6987: 97 48          STA    nb_objects_48
 6989: 10 8E A8 9D    LDY    #$A89D
 698D: 86 05          LDA    #$05
 698F: 97 49          STA    $49
@@ -1288,7 +1289,7 @@ setup_players_screen_6936:
 6993: A7 80          STA    ,X+
 6995: 0A 49          DEC    $49
 6997: 26 F8          BNE    $6991
-6999: 0A 48          DEC    nb_players_48
+6999: 0A 48          DEC    nb_objects_48
 699B: 26 EC          BNE    $6989
 699D: 0C 09          INC    $09
 699F: 39             RTS
@@ -1298,12 +1299,12 @@ setup_players_screen_6936:
 69A7: E6 A0          LDB    ,Y+
 69A9: D8 73          EORB   $73
 69AB: 86 0B          LDA    #$0B
-69AD: 97 48          STA    nb_players_48
+69AD: 97 48          STA    nb_objects_48
 69AF: E7 C9 08 00    STB    $0800,U		; [video_address]
 69B3: A6 A0          LDA    ,Y+
 69B5: A7 C4          STA    ,U			; [video_address]
 69B7: 33 C8 C0       LEAU   -$40,U
-69BA: 0A 48          DEC    nb_players_48
+69BA: 0A 48          DEC    nb_objects_48
 69BC: 26 F1          BNE    $69AF
 69BE: 33 C9 02 C1    LEAU   $02C1,U
 69C2: 11 83 33 20    CMPU   #$3320
@@ -1512,12 +1513,12 @@ init_game_playfield_6a85:
 6B87: D8 73          EORB   $73
 6B89: D7 89          STB    $89
 6B8B: 86 0B          LDA    #$0B
-6B8D: 97 48          STA    nb_players_48
+6B8D: 97 48          STA    nb_objects_48
 6B8F: E7 C9 08 00    STB    $0800,U		; [video_address]
 6B93: A6 A0          LDA    ,Y+
 6B95: A7 C4          STA    ,U			; [video_address]
 6B97: 33 C8 C0       LEAU   -$40,U
-6B9A: 0A 48          DEC    nb_players_48
+6B9A: 0A 48          DEC    nb_objects_48
 6B9C: 26 F1          BNE    $6B8F
 6B9E: 33 C9 02 C1    LEAU   $02C1,U
 6BA2: 11 83 37 40    CMPU   #$3740
@@ -1542,12 +1543,12 @@ init_game_playfield_6a85:
 6BCF: D8 73          EORB   $73
 6BD1: D7 89          STB    $89
 6BD3: 86 05          LDA    #$05
-6BD5: 97 48          STA    nb_players_48
+6BD5: 97 48          STA    nb_objects_48
 6BD7: E7 C9 08 00    STB    $0800,U			; [video_address]
 6BDB: A6 A0          LDA    ,Y+
 6BDD: A7 C4          STA    ,U				; [video_address]
 6BDF: 33 C8 C0       LEAU   -$40,U
-6BE2: 0A 48          DEC    nb_players_48
+6BE2: 0A 48          DEC    nb_objects_48
 6BE4: 26 F1          BNE    $6BD7
 6BE6: 33 C9 01 41    LEAU   $0141,U
 6BEA: 11 83 37 40    CMPU   #$3740
@@ -1568,12 +1569,12 @@ init_game_playfield_6a85:
 6C0C: D8 73          EORB   $73
 6C0E: D7 7B          STB    $7B
 6C10: 86 05          LDA    #$05
-6C12: 97 48          STA    nb_players_48
+6C12: 97 48          STA    nb_objects_48
 6C14: E7 C9 08 00    STB    $0800,U			; [video_address]
 6C18: A6 A0          LDA    ,Y+
 6C1A: A7 C4          STA    ,U			    ; [video_address]
 6C1C: 33 C8 C0       LEAU   -$40,U
-6C1F: 0A 48          DEC    nb_players_48
+6C1F: 0A 48          DEC    nb_objects_48
 6C21: 26 F1          BNE    $6C14
 6C23: 33 C9 01 41    LEAU   $0141,U
 6C27: 11 83 35 C0    CMPU   #$35C0
@@ -2111,10 +2112,10 @@ init_game_playfield_6a85:
 70CF: 8E 2A 00       LDX    #$2A00
 70D2: B6 2A B8       LDA    $2AB8
 70D5: 4A             DECA
-70D6: 97 48          STA    nb_players_48
+70D6: 97 48          STA    nb_objects_48
 70D8: 96 DF          LDA    $DF
 70DA: 84 01          ANDA   #$01
-70DC: 91 48          CMPA   nb_players_48
+70DC: 91 48          CMPA   nb_objects_48
 70DE: 27 0A          BEQ    $70EA
 70E0: CC DE BD       LDD    #$DEBD
 70E3: ED 0E          STD    $E,X
@@ -2221,14 +2222,14 @@ init_game_playfield_6a85:
 71C2: 3D             MUL
 71C3: 30 8B          LEAX   D,X
 71C5: 86 09          LDA    #$09
-71C7: 97 48          STA    nb_players_48
+71C7: 97 48          STA    nb_objects_48
 71C9: 86 0A          LDA    #$0A
 71CB: D6 3F          LDB    $3F
 71CD: C4 08          ANDB   #$08
 71CF: 27 02          BEQ    $71D3
 71D1: 86 00          LDA    #$00
 71D3: A7 80          STA    ,X+
-71D5: 0A 48          DEC    nb_players_48
+71D5: 0A 48          DEC    nb_objects_48
 71D7: 26 FA          BNE    $71D3
 71D9: BD D9 D3       JSR    $D9D3
 71DC: 0A 08          DEC    $08
@@ -2253,10 +2254,10 @@ init_game_playfield_6a85:
 7201: 86 09          LDA    #$09
 7203: A7 80          STA    ,X+		; [video_address]
 7205: 86 06          LDA    #$06
-7207: 97 48          STA    nb_players_48
+7207: 97 48          STA    nb_objects_48
 7209: 86 0A          LDA    #$0A
 720B: A7 80          STA    ,X+		; [video_address]
-720D: 0A 48          DEC    nb_players_48
+720D: 0A 48          DEC    nb_objects_48
 720F: 26 FA          BNE    $720B
 7211: 30 88 37       LEAX   $37,X
 7214: 0A 49          DEC    $49
@@ -2346,7 +2347,7 @@ init_game_playfield_6a85:
 72BB: 39             RTS
 
 72BC: 86 04          LDA    #$04
-72BE: 97 48          STA    nb_players_48
+72BE: 97 48          STA    nb_objects_48
 72C0: 8E 2B 80       LDX    #$2B80
 72C3: 96 DF          LDA    $DF
 72C5: 4C             INCA
@@ -2360,7 +2361,7 @@ init_game_playfield_6a85:
 72D3: A6 88 1F       LDA    $1F,X
 72D6: 91 E1          CMPA   $E1
 72D8: 25 08          BCS    $72E2
-72DA: 0A 48          DEC    nb_players_48
+72DA: 0A 48          DEC    nb_objects_48
 72DC: 26 E2          BNE    $72C0
 72DE: 0C 03          INC    boot_state_03
 72E0: 20 04          BRA    $72E6
@@ -2396,10 +2397,10 @@ init_game_playfield_6a85:
 7315: 0A 81          DEC    p1_attempts_left_81
 7317: 26 12          BNE    $732B
 7319: 96 80          LDA    $80
-731B: 97 48          STA    nb_players_48
+731B: 97 48          STA    nb_objects_48
 731D: 0F 80          CLR    $80
 731F: BD 8A 2A       JSR    $8A2A
-7322: 96 48          LDA    nb_players_48
+7322: 96 48          LDA    nb_objects_48
 7324: 97 80          STA    $80
 7326: 0F 9F          CLR    high_jump_fault_9f
 7328: 0C 09          INC    $09
@@ -2449,7 +2450,7 @@ init_game_playfield_6a85:
 7387: 91 60          CMPA   nb_players_minus_one_60
 7389: 27 24          BEQ    $73AF
 738B: 86 04          LDA    #$04
-738D: 97 48          STA    nb_players_48
+738D: 97 48          STA    nb_objects_48
 738F: 96 DF          LDA    $DF
 7391: 4C             INCA
 7392: 84 03          ANDA   #$03
@@ -2463,7 +2464,7 @@ init_game_playfield_6a85:
 73A2: A6 88 1F       LDA    $1F,X
 73A5: 91 E1          CMPA   $E1
 73A7: 10 25 FF 37    LBCS   $72E2
-73AB: 0A 48          DEC    nb_players_48
+73AB: 0A 48          DEC    nb_objects_48
 73AD: 26 E0          BNE    $738F
 73AF: 0C 06          INC    $06
 73B1: 0F 09          CLR    $09
@@ -2540,7 +2541,7 @@ init_game_playfield_6a85:
 743B: 26 1C          BNE    $7459
 743D: 86 02          LDA    #$02
 743F: 97 DF          STA    $DF
-7441: 97 48          STA    nb_players_48
+7441: 97 48          STA    nb_objects_48
 7443: 8E 2B 80       LDX    #$2B80
 7446: 96 DF          LDA    $DF
 7448: C6 20          LDB    #$20
@@ -2549,7 +2550,7 @@ init_game_playfield_6a85:
 744D: A6 84          LDA    ,X
 744F: 10 26 00 0B    LBNE   $745E
 7453: 0C DF          INC    $DF
-7455: 0A 48          DEC    nb_players_48
+7455: 0A 48          DEC    nb_objects_48
 7457: 26 EA          BNE    $7443
 7459: 0C 06          INC    $06
 745B: 0F 09          CLR    $09
@@ -2609,7 +2610,7 @@ init_game_playfield_6a85:
 74B9: 0F 49          CLR    $49
 74BB: 96 60          LDA    nb_players_minus_one_60
 74BD: 4C             INCA
-74BE: 97 48          STA    nb_players_48
+74BE: 97 48          STA    nb_objects_48
 74C0: A6 02          LDA    $2,X
 74C2: AB 42          ADDA   $2,U
 74C4: 19             DAA
@@ -2648,7 +2649,7 @@ init_game_playfield_6a85:
 7504: 0C 49          INC    $49
 7506: 30 03          LEAX   $3,X
 7508: 33 43          LEAU   $3,U
-750A: 0A 48          DEC    nb_players_48
+750A: 0A 48          DEC    nb_objects_48
 750C: 26 B2          BNE    $74C0
 750E: BD 8C 4D       JSR    $8C4D
 7511: 86 03          LDA    #$03
@@ -2696,13 +2697,13 @@ init_game_playfield_6a85:
 7564: 26 F9          BNE    $755F
 7566: 8E 2B 98       LDX    #$2B98
 7569: 86 04          LDA    #$04
-756B: 97 48          STA    nb_players_48
+756B: 97 48          STA    nb_objects_48
 756D: 4F             CLRA
 756E: 5F             CLRB
 756F: ED 84          STD    ,X
 7571: ED 02          STD    $2,X
 7573: 30 88 20       LEAX   $20,X
-7576: 0A 48          DEC    nb_players_48
+7576: 0A 48          DEC    nb_objects_48
 7578: 26 F5          BNE    $756F
 757A: 0C 06          INC    $06
 757C: 39             RTS
@@ -2723,7 +2724,7 @@ init_game_playfield_6a85:
 759A: 84 02          ANDA   #$02
 759C: 27 2A          BEQ    $75C8
 759E: 86 04          LDA    #$04
-75A0: 97 48          STA    nb_players_48
+75A0: 97 48          STA    nb_objects_48
 75A2: 8E 2B 80       LDX    #$2B80
 75A5: 96 DF          LDA    $DF
 75A7: C6 20          LDB    #$20
@@ -2735,7 +2736,7 @@ init_game_playfield_6a85:
 75B2: 96 DF          LDA    $DF
 75B4: 84 03          ANDA   #$03
 75B6: 97 DF          STA    $DF
-75B8: 0A 48          DEC    nb_players_48
+75B8: 0A 48          DEC    nb_objects_48
 75BA: 26 E6          BNE    $75A2
 75BC: 0C 06          INC    $06
 75BE: 0F 09          CLR    $09
@@ -2884,7 +2885,7 @@ init_game_playfield_6a85:
 76D8: 97 FB          STA    $FB
 76DA: BD 88 C8       JSR    $88C8
 76DD: 86 02          LDA    #$02
-76DF: 97 48          STA    nb_players_48
+76DF: 97 48          STA    nb_objects_48
 76E1: 4F             CLRA
 76E2: 5F             CLRB
 76E3: ED 0B          STD    $B,X
@@ -2895,7 +2896,7 @@ init_game_playfield_6a85:
 76F0: BD CB 17       JSR    $CB17
 76F3: 0C DF          INC    $DF
 76F5: 30 89 01 60    LEAX   $0160,X
-76F9: 0A 48          DEC    nb_players_48
+76F9: 0A 48          DEC    nb_objects_48
 76FB: 26 E4          BNE    $76E1
 76FD: 96 FB          LDA    $FB
 76FF: 97 DF          STA    $DF
@@ -3056,7 +3057,7 @@ init_game_playfield_6a85:
 784A: 3D             MUL
 784B: 33 CB          LEAU   D,U
 784D: 86 02          LDA    #$02
-784F: 97 48          STA    nb_players_48
+784F: 97 48          STA    nb_objects_48
 7851: 86 10          LDA    #$10
 7853: C6 03          LDB    #$03
 7855: 6F C9 08 00    CLR    $0800,U   			; [video_address]
@@ -3064,7 +3065,7 @@ init_game_playfield_6a85:
 785B: 5A             DECB
 785C: 26 F7          BNE    $7855
 785E: 33 C8 3D       LEAU   $3D,U
-7861: 0A 48          DEC    nb_players_48
+7861: 0A 48          DEC    nb_objects_48
 7863: 26 EE          BNE    $7853
 7865: 20 0F          BRA    $7876
 7867: 86 1A          LDA    #$1A
@@ -3299,7 +3300,7 @@ init_game_playfield_6a85:
 7A4A: 26 1C          BNE    $7A68
 7A4C: 86 02          LDA    #$02
 7A4E: 97 DF          STA    $DF
-7A50: 97 48          STA    nb_players_48
+7A50: 97 48          STA    nb_objects_48
 7A52: 8E 2B 80       LDX    #$2B80
 7A55: 96 DF          LDA    $DF
 7A57: C6 20          LDB    #$20
@@ -3308,7 +3309,7 @@ init_game_playfield_6a85:
 7A5C: A6 84          LDA    ,X
 7A5E: 26 15          BNE    $7A75
 7A60: 0C DF          INC    $DF
-7A62: 0A 48          DEC    nb_players_48
+7A62: 0A 48          DEC    nb_objects_48
 7A64: 26 EC          BNE    $7A52
 7A66: 0A DF          DEC    $DF
 7A68: 86 05          LDA    #$05
@@ -3751,10 +3752,10 @@ init_game_playfield_6a85:
 
 7E17: CE 18 11       LDU    #$1811
 7E1A: 86 08          LDA    #$08
-7E1C: 97 48          STA    nb_players_48
+7E1C: 97 48          STA    nb_objects_48
 7E1E: 6F C9 03 FF    CLR    $03FF,U
 7E22: 6F C1          CLR    ,U++
-7E24: 0A 48          DEC    nb_players_48
+7E24: 0A 48          DEC    nb_objects_48
 7E26: 26 F6          BNE    $7E1E
 7E28: 0C 09          INC    $09
 7E2A: 39             RTS
@@ -3845,9 +3846,9 @@ init_game_playfield_6a85:
 7EDD: C4 01          ANDB   #$01
 7EDF: 26 01          BNE    $7EE2
 7EE1: 4C             INCA
-7EE2: 97 48          STA    nb_players_48
+7EE2: 97 48          STA    nb_objects_48
 7EE4: BD 86 7E       JSR    $867E
-7EE7: 0A 48          DEC    nb_players_48
+7EE7: 0A 48          DEC    nb_objects_48
 7EE9: 26 F9          BNE    $7EE4
 7EEB: 39             RTS
 
@@ -4393,13 +4394,13 @@ init_game_playfield_6a85:
 8368: 8E 2A C0       LDX    #$2AC0
 836B: CE 18 20       LDU    #$1820
 836E: 86 03          LDA    #$03
-8370: 97 48          STA    nb_players_48
+8370: 97 48          STA    nb_objects_48
 8372: 6D 84          TST    ,X
 8374: 27 03          BEQ    $8379
 8376: BD CC 8B       JSR    $CC8B
 8379: 30 88 20       LEAX   $20,X
 837C: 33 42          LEAU   $2,U
-837E: 0A 48          DEC    nb_players_48
+837E: 0A 48          DEC    nb_objects_48
 8380: 26 F0          BNE    $8372
 8382: 39             RTS
 
@@ -4886,11 +4887,11 @@ queue_event_84f5:
 8760: 30 8B          LEAX   D,X
 8762: CE 32 58       LDU    #$3258
 8765: 96 9F          LDA    high_jump_fault_9f
-8767: 97 48          STA    nb_players_48
+8767: 97 48          STA    nb_objects_48
 8769: 27 0A          BEQ    $8775
 876B: BD 87 16       JSR    $8716
 876E: 33 C8 3B       LEAU   $3B,U
-8771: 0A 48          DEC    nb_players_48
+8771: 0A 48          DEC    nb_objects_48
 8773: 26 F6          BNE    $876B
 8775: C6 05          LDB    #$05
 8777: 7E 8A 15       JMP    $8A15
@@ -4973,13 +4974,13 @@ queue_event_84f5:
 880C: 97 B4          STA    $B4
 880E: 0F A0          CLR    $A0
 8810: 86 04          LDA    #$04
-8812: 97 48          STA    nb_players_48
+8812: 97 48          STA    nb_objects_48
 8814: EC C1          LDD    ,U++
 8816: ED 01          STD    $1,X
 8818: A7 88 14       STA    $14,X
 881B: 6F 84          CLR    ,X
 881D: 30 88 20       LEAX   $20,X
-8820: 0A 48          DEC    nb_players_48
+8820: 0A 48          DEC    nb_objects_48
 8822: 26 F0          BNE    $8814
 8824: 39             RTS
 
@@ -5043,16 +5044,16 @@ queue_event_84f5:
 888C: 10 8E A9 B7    LDY    #$A9B7
 8890: D6 84          LDB    current_level_84
 8892: E6 A5          LDB    B,Y
-8894: D7 48          STB    nb_players_48
+8894: D7 48          STB    nb_objects_48
 8896: 10 8E AF 62    LDY    #$AF62
 889A: 96 84          LDA    current_level_84
 889C: 81 01          CMPA   #$01
 889E: 27 04          BEQ    $88A4
 88A0: 10 8E AF 62    LDY    #$AF62
-88A4: D6 48          LDB    nb_players_48
+88A4: D6 48          LDB    nb_objects_48
 88A6: D8 73          EORB   $73
 88A8: 86 05          LDA    #$05
-88AA: 97 48          STA    nb_players_48
+88AA: 97 48          STA    nb_objects_48
 88AC: 86 03          LDA    #$03
 88AE: 97 49          STA    $49
 88B0: A6 A0          LDA    ,Y+
@@ -5062,7 +5063,7 @@ queue_event_84f5:
 88BB: 0A 49          DEC    $49
 88BD: 26 F1          BNE    $88B0
 88BF: 33 C9 00 C1    LEAU   $00C1,U
-88C3: 0A 48          DEC    nb_players_48
+88C3: 0A 48          DEC    nb_objects_48
 88C5: 26 E5          BNE    $88AC
 88C7: 39             RTS
 
@@ -5076,7 +5077,7 @@ queue_event_84f5:
 88D5: 26 03          BNE    $88DA
 88D7: 8E 2A 9C       LDX    #$2A9C
 88DA: 86 04          LDA    #$04
-88DC: 97 48          STA    nb_players_48
+88DC: 97 48          STA    nb_objects_48
 88DE: BD 89 68       JSR    compare_times_8968
 88E1: 5D             TSTB
 88E2: 26 1E          BNE    $8902
@@ -5086,7 +5087,7 @@ queue_event_84f5:
 88E9: 91 DF          CMPA   $DF
 88EB: 27 07          BEQ    $88F4
 88ED: 31 25          LEAY   $5,Y
-88EF: 0A 48          DEC    nb_players_48
+88EF: 0A 48          DEC    nb_objects_48
 88F1: 26 EB          BNE    $88DE
 88F3: 39             RTS
 
@@ -5101,7 +5102,7 @@ queue_event_84f5:
 
 8902: 1F 23          TFR    Y,U
 8904: 33 5F          LEAU   -$1,U
-8906: 96 48          LDA    nb_players_48
+8906: 96 48          LDA    nb_objects_48
 8908: 97 49          STA    $49
 890A: A6 3F          LDA    -$1,Y
 890C: 84 0F          ANDA   #$0F
@@ -5111,9 +5112,9 @@ queue_event_84f5:
 8913: 31 25          LEAY   $5,Y
 8915: 0A 49          DEC    $49
 8917: 26 F1          BNE    $890A
-8919: 96 48          LDA    nb_players_48
+8919: 96 48          LDA    nb_objects_48
 891B: 90 49          SUBA   $49
-891D: 97 48          STA    nb_players_48
+891D: 97 48          STA    nb_objects_48
 891F: 27 1A          BEQ    $893B
 8921: 4A             DECA
 8922: C6 05          LDB    #$05
@@ -5127,7 +5128,7 @@ queue_event_84f5:
 8931: ED 46          STD    $6,U		; [video_address_word]
 8933: EC 43          LDD    $3,U		; [video_address]
 8935: ED 48          STD    $8,U		; [video_address_word]
-8937: 0A 48          DEC    nb_players_48
+8937: 0A 48          DEC    nb_objects_48
 8939: 26 EE          BNE    $8929
 893B: 96 84          LDA    current_level_84
 893D: 81 00          CMPA   #$00
@@ -5220,9 +5221,9 @@ compare_times_8968:
 89D1: 48             ASLA
 89D2: 48             ASLA
 89D3: BA 2A BC       ORA    $2ABC
-89D6: 97 48          STA    nb_players_48
+89D6: 97 48          STA    nb_objects_48
 89D8: A6 21          LDA    $1,Y
-89DA: 9B 48          ADDA   nb_players_48
+89DA: 9B 48          ADDA   nb_objects_48
 89DC: 19             DAA
 89DD: A7 21          STA    $1,Y
 89DF: A6 A4          LDA    ,Y
@@ -5443,7 +5444,7 @@ compare_times_8968:
 8B78: E6 A0          LDB    ,Y+
 8B7A: D8 73          EORB   $73
 8B7C: 86 03          LDA    #$03
-8B7E: 97 48          STA    nb_players_48
+8B7E: 97 48          STA    nb_objects_48
 8B80: E7 C9 08 00    STB    $0800,U			; [video_address]
 8B84: A6 A0          LDA    ,Y+
 8B86: 81 FF          CMPA   #$FF
@@ -5452,7 +5453,7 @@ compare_times_8968:
 8B8D: 20 F1          BRA    $8B80
 8B8F: A7 C4          STA    ,U				; [video_address]
 8B91: 33 C8 C0       LEAU   -$40,U
-8B94: 0A 48          DEC    nb_players_48
+8B94: 0A 48          DEC    nb_objects_48
 8B96: 26 E8          BNE    $8B80
 8B98: 33 C9 00 C1    LEAU   $00C1,U
 8B9C: 11 83 34 00    CMPU   #$3400
@@ -5464,11 +5465,11 @@ compare_times_8968:
 8BA9: E7 C9 08 00    STB    $0800,U			; [video_address]
 8BAD: A7 C0          STA    ,U+			; [video_address]
 8BAF: 86 0C          LDA    #$0C
-8BB1: 97 48          STA    nb_players_48
+8BB1: 97 48          STA    nb_objects_48
 8BB3: CC 55 40       LDD    #$5540
 8BB6: E7 C9 08 00    STB    $0800,U			; [video_address]
 8BBA: A7 C0          STA    ,U+			; [video_address]
-8BBC: 0A 48          DEC    nb_players_48
+8BBC: 0A 48          DEC    nb_objects_48
 8BBE: 26 F6          BNE    $8BB6
 8BC0: CC 54 50       LDD    #$5450
 8BC3: E7 C9 08 00    STB    $0800,U			; [video_address]
@@ -5480,11 +5481,11 @@ compare_times_8968:
 8BD3: E7 C9 08 00    STB    $0800,U			; [video_address]
 8BD7: A7 C0          STA    ,U+			; [video_address]
 8BD9: 86 0C          LDA    #$0C
-8BDB: 97 48          STA    nb_players_48
+8BDB: 97 48          STA    nb_objects_48
 8BDD: 86 10          LDA    #$10
 8BDF: 6F C9 08 00    CLR    $0800,U			; [video_address]
 8BE3: A7 C0          STA    ,U+			; [video_address]
-8BE5: 0A 48          DEC    nb_players_48
+8BE5: 0A 48          DEC    nb_objects_48
 8BE7: 26 F6          BNE    $8BDF
 8BE9: CC 56 50       LDD    #$5650
 8BEC: E7 C9 08 00    STB    $0800,U			; [video_address]
@@ -5496,11 +5497,11 @@ compare_times_8968:
 8BFC: E7 C9 08 00    STB    $0800,U			; [video_address]
 8C00: A7 C0          STA    ,U+			; [video_address]
 8C02: 86 0C          LDA    #$0C
-8C04: 97 48          STA    nb_players_48
+8C04: 97 48          STA    nb_objects_48
 8C06: CC 55 60       LDD    #$5560
 8C09: E7 C9 08 00    STB    $0800,U			; [video_address]
 8C0D: A7 C0          STA    ,U+			; [video_address]
-8C0F: 0A 48          DEC    nb_players_48
+8C0F: 0A 48          DEC    nb_objects_48
 8C11: 26 F6          BNE    $8C09
 8C13: CC 54 70       LDD    #$5470
 8C16: E7 C9 08 00    STB    $0800,U			; [video_address]
@@ -5548,7 +5549,7 @@ partially_reset_scrolling_8c3e:
 8C65: 86 1D          LDA    #$1D
 8C67: 97 E6          STA    $E6
 8C69: 86 01          LDA    #$01
-8C6B: 97 48          STA    nb_players_48
+8C6B: 97 48          STA    nb_objects_48
 8C6D: 8E 2A 80       LDX    #$2A80
 8C70: 10 8E 2A A0    LDY    #$2AA0
 8C74: A7 A4          STA    ,Y
@@ -5559,7 +5560,7 @@ partially_reset_scrolling_8c3e:
 8C7E: 96 60          LDA    nb_players_minus_one_60
 8C80: 97 4D          STA    $4D
 8C82: 27 4A          BEQ    $8CCE
-8C84: 96 48          LDA    nb_players_48
+8C84: 96 48          LDA    nb_objects_48
 8C86: 97 49          STA    $49
 8C88: 0F 4A          CLR    $4A
 8C8A: 10 8E 2A A1    LDY    #$2AA1
@@ -5585,14 +5586,14 @@ partially_reset_scrolling_8c3e:
 8CB5: ED 46          STD    $6,U
 8CB7: 0A 4C          DEC    $4C
 8CB9: 26 F2          BNE    $8CAD
-8CBB: 96 48          LDA    nb_players_48
+8CBB: 96 48          LDA    nb_objects_48
 8CBD: 4C             INCA
 8CBE: A7 C4          STA    ,U
 8CC0: A6 84          LDA    ,X
 8CC2: A7 41          STA    $1,U
 8CC4: EC 01          LDD    $1,X
 8CC6: ED 42          STD    $2,U
-8CC8: 0C 48          INC    nb_players_48
+8CC8: 0C 48          INC    nb_objects_48
 8CCA: 0A 4D          DEC    $4D
 8CCC: 26 B6          BNE    $8C84
 8CCE: 96 F5          LDA    $F5
@@ -5738,7 +5739,7 @@ partially_reset_scrolling_8c3e:
 8DDB: A7 C0          STA    ,U+				; [video_address]
 8DDD: CE 3B CA       LDU    #$3BCA
 8DE0: 86 02          LDA    #$02
-8DE2: 97 48          STA    nb_players_48
+8DE2: 97 48          STA    nb_objects_48
 8DE4: 86 0C          LDA    #$0C
 8DE6: 97 49          STA    $49
 8DE8: 86 01          LDA    #$01
@@ -5750,7 +5751,7 @@ partially_reset_scrolling_8c3e:
 8DF4: 0A 49          DEC    $49
 8DF6: 26 FA          BNE    $8DF2
 8DF8: 33 C8 34       LEAU   $34,U
-8DFB: 0A 48          DEC    nb_players_48
+8DFB: 0A 48          DEC    nb_objects_48
 8DFD: 26 E5          BNE    $8DE4
 8DFF: 39             RTS
 
@@ -5771,7 +5772,7 @@ partially_reset_scrolling_8c3e:
 
 8E20: CE 32 52       LDU    #$3252
 8E23: 86 03          LDA    #$03
-8E25: 97 48          STA    nb_players_48
+8E25: 97 48          STA    nb_objects_48
 8E27: 86 10          LDA    #$10
 8E29: C6 04          LDB    #$04
 8E2B: 6F C9 08 00    CLR    $0800,U			; [video_address]
@@ -5779,12 +5780,12 @@ partially_reset_scrolling_8c3e:
 8E31: 5A             DECB
 8E32: 26 F7          BNE    $8E2B
 8E34: 33 C8 3C       LEAU   $3C,U
-8E37: 0A 48          DEC    nb_players_48
+8E37: 0A 48          DEC    nb_objects_48
 8E39: 26 EE          BNE    $8E29
 8E3B: 8E AF 80       LDX    #$AF80
 8E3E: CE 32 56       LDU    #$3256
 8E41: 86 04          LDA    #$04
-8E43: 97 48          STA    nb_players_48
+8E43: 97 48          STA    nb_objects_48
 8E45: C6 40          LDB    #$40
 8E47: 86 07          LDA    #$07
 8E49: 97 49          STA    $49
@@ -5794,7 +5795,7 @@ partially_reset_scrolling_8c3e:
 8E53: 0A 49          DEC    $49
 8E55: 26 F4          BNE    $8E4B
 8E57: 33 C8 39       LEAU   $39,U
-8E5A: 0A 48          DEC    nb_players_48
+8E5A: 0A 48          DEC    nb_objects_48
 8E5C: 26 E9          BNE    $8E47
 8E5E: 39             RTS
 
@@ -5832,13 +5833,13 @@ partially_reset_scrolling_8c3e:
 8E9E: CE A9 E2       LDU    #$A9E2
 8EA1: 96 84          LDA    current_level_84
 8EA3: A6 C6          LDA    A,U
-8EA5: 97 48          STA    nb_players_48
+8EA5: 97 48          STA    nb_objects_48
 8EA7: B6 2A BB       LDA    $2ABB
 8EAA: C6 0A          LDB    #$0A
 8EAC: 3D             MUL
 8EAD: FB 2A BC       ADDB   $2ABC
 8EB0: 4F             CLRA
-8EB1: D0 48          SUBB   nb_players_48
+8EB1: D0 48          SUBB   nb_objects_48
 8EB3: 25 03          BCS    $8EB8
 8EB5: 4C             INCA
 8EB6: 20 F9          BRA    $8EB1
@@ -5936,12 +5937,12 @@ partially_reset_scrolling_8c3e:
 8F75: 3D             MUL
 8F76: 31 AB          LEAY   D,Y
 8F78: 86 03          LDA    #$03
-8F7A: 97 48          STA    nb_players_48
+8F7A: 97 48          STA    nb_objects_48
 8F7C: 35 04          PULS   B
 8F7E: A6 A0          LDA    ,Y+
 8F80: E7 C9 08 00    STB    $0800,U   ; [video_address]
 8F84: A7 C0          STA    ,U+       ; [video_address]
-8F86: 0A 48          DEC    nb_players_48
+8F86: 0A 48          DEC    nb_objects_48
 8F88: 26 F4          BNE    $8F7E
 8F8A: 39             RTS
 
@@ -5997,7 +5998,7 @@ partially_reset_scrolling_8c3e:
 8FF3: 7E 8F 52       JMP    $8F52
 8FF6: CE 32 03       LDU    #$3203
 8FF9: 86 04          LDA    #$04
-8FFB: 97 48          STA    nb_players_48
+8FFB: 97 48          STA    nb_objects_48
 8FFD: 86 10          LDA    #$10
 8FFF: C6 07          LDB    #$07
 9001: 6F C9 08 00    CLR    $0800,U   ; [video_address]
@@ -6005,7 +6006,7 @@ partially_reset_scrolling_8c3e:
 9007: 5A             DECB
 9008: 26 F7          BNE    $9001
 900A: 33 C8 39       LEAU   $39,U
-900D: 0A 48          DEC    nb_players_48
+900D: 0A 48          DEC    nb_objects_48
 900F: 26 EE          BNE    $8FFF
 9011: 39             RTS
 
@@ -6020,7 +6021,7 @@ partially_reset_scrolling_8c3e:
 9024: 27 02          BEQ    $9028
 9026: C6 0B          LDB    #$0B
 9028: 86 0E          LDA    #$0E
-902A: 97 48          STA    nb_players_48
+902A: 97 48          STA    nb_objects_48
 902C: 10 8E A9 CE    LDY    #$A9CE
 9030: 20 15          BRA    $9047
 9032: CE 36 56       LDU    #$3656
@@ -6030,13 +6031,13 @@ partially_reset_scrolling_8c3e:
 903B: 27 02          BEQ    $903F
 903D: C6 0B          LDB    #$0B
 903F: 86 05          LDA    #$05
-9041: 97 48          STA    nb_players_48
+9041: 97 48          STA    nb_objects_48
 9043: 10 8E A9 C9    LDY    #$A9C9
 9047: A6 A0          LDA    ,Y+
 9049: E7 C9 08 00    STB    $0800,U   ; [video_address]
 904D: 80 30          SUBA   #$30      
 904F: A7 C0          STA    ,U+       ; [video_address]
-9051: 0A 48          DEC    nb_players_48
+9051: 0A 48          DEC    nb_objects_48
 9053: 26 F2          BNE    $9047
 9055: 39             RTS
 
@@ -6071,7 +6072,7 @@ partially_reset_scrolling_8c3e:
 9090: C4 01          ANDB   #$01
 9092: 27 03          BEQ    $9097
 9094: B6 2A 39       LDA    $2A39
-9097: 97 48          STA    nb_players_48
+9097: 97 48          STA    nb_objects_48
 9099: 97 49          STA    $49
 909B: 27 0D          BEQ    $90AA
 909D: CC 9D 03       LDD    #$9D03
@@ -6080,7 +6081,7 @@ partially_reset_scrolling_8c3e:
 90A6: 0A 49          DEC    $49
 90A8: 26 F6          BNE    $90A0
 90AA: 86 03          LDA    #$03
-90AC: 90 48          SUBA   nb_players_48
+90AC: 90 48          SUBA   nb_objects_48
 90AE: 97 49          STA    $49
 90B0: 27 0D          BEQ    $90BF
 90B2: CC 9D 00       LDD    #$9D00
@@ -6455,9 +6456,9 @@ partially_reset_scrolling_8c3e:
 93C8: A7 02          STA    $2,X
 93CA: 7E CD 87       JMP    $CD87
 93CD: 86 02          LDA    #$02
-93CF: 97 48          STA    nb_players_48
+93CF: 97 48          STA    nb_objects_48
 93D1: BD 94 4C       JSR    $944C
-93D4: 0A 48          DEC    nb_players_48
+93D4: 0A 48          DEC    nb_objects_48
 93D6: 26 F9          BNE    $93D1
 93D8: 10 8E 28 39    LDY    #$2839
 93DC: 96 DF          LDA    $DF
@@ -6550,7 +6551,7 @@ partially_reset_scrolling_8c3e:
 9488: 31 88 10       LEAY   $10,X
 948B: CE 28 4C       LDU    #$284C
 948E: 86 03          LDA    #$03
-9490: 97 48          STA    nb_players_48
+9490: 97 48          STA    nb_objects_48
 9492: A6 A0          LDA    ,Y+
 9494: 5F             CLRB
 9495: 80 06          SUBA   #$06
@@ -6563,7 +6564,7 @@ partially_reset_scrolling_8c3e:
 94A2: 3D             MUL
 94A3: 1F 98          TFR    B,A
 94A5: AB A0          ADDA   ,Y+
-94A7: 0A 48          DEC    nb_players_48
+94A7: 0A 48          DEC    nb_objects_48
 94A9: 26 E9          BNE    $9494
 94AB: 5F             CLRB
 94AC: 80 06          SUBA   #$06
@@ -6659,7 +6660,7 @@ partially_reset_scrolling_8c3e:
 9564: A6 A4          LDA    ,Y
 9566: 8B 0A          ADDA   #$0A
 9568: A0 C4          SUBA   ,U
-956A: 97 48          STA    nb_players_48
+956A: 97 48          STA    nb_objects_48
 956C: 6A 3F          DEC    -$1,Y
 956E: A6 3F          LDA    -$1,Y
 9570: 81 FF          CMPA   #$FF
@@ -6672,7 +6673,7 @@ partially_reset_scrolling_8c3e:
 957E: 26 04          BNE    $9584
 9580: E7 3E          STB    -$2,Y
 9582: 6A 3D          DEC    -$3,Y
-9584: 96 48          LDA    nb_players_48
+9584: 96 48          LDA    nb_objects_48
 9586: A7 C4          STA    ,U
 9588: A6 3F          LDA    -$1,Y
 958A: A0 5F          SUBA   -$1,U
@@ -6680,7 +6681,7 @@ partially_reset_scrolling_8c3e:
 958E: A6 3F          LDA    -$1,Y
 9590: 8B 0A          ADDA   #$0A
 9592: A0 5F          SUBA   -$1,U
-9594: 97 48          STA    nb_players_48
+9594: 97 48          STA    nb_objects_48
 9596: 6A 3E          DEC    -$2,Y
 9598: A6 3E          LDA    -$2,Y
 959A: 81 FF          CMPA   #$FF
@@ -6688,7 +6689,7 @@ partially_reset_scrolling_8c3e:
 959E: C6 09          LDB    #$09
 95A0: E7 3E          STB    -$2,Y
 95A2: 6A 3D          DEC    -$3,Y
-95A4: 96 48          LDA    nb_players_48
+95A4: 96 48          LDA    nb_objects_48
 95A6: A7 5F          STA    -$1,U
 95A8: A6 3E          LDA    -$2,Y
 95AA: A0 5E          SUBA   -$2,U
@@ -6696,9 +6697,9 @@ partially_reset_scrolling_8c3e:
 95AE: A6 3E          LDA    -$2,Y
 95B0: 8B 0A          ADDA   #$0A
 95B2: A0 5E          SUBA   -$2,U
-95B4: 97 48          STA    nb_players_48
+95B4: 97 48          STA    nb_objects_48
 95B6: 6A 3D          DEC    -$3,Y
-95B8: 96 48          LDA    nb_players_48
+95B8: 96 48          LDA    nb_objects_48
 95BA: A7 5E          STA    -$2,U
 95BC: A6 3D          LDA    -$3,Y
 95BE: A0 5D          SUBA   -$3,U
@@ -6887,7 +6888,7 @@ compare_contestants_tile_96d3:
 9744: 96 21          LDA    copy_of_screen_flipped_21
 9746: 26 44          BNE    $978C
 9748: B6 2A FB       LDA    $2AFB
-974B: 97 48          STA    nb_players_48
+974B: 97 48          STA    nb_objects_48
 974D: 27 1A          BEQ    $9769
 974F: 8E 18 58       LDX    #$1858
 9752: 6C 80          INC    ,X+
@@ -6897,10 +6898,10 @@ compare_contestants_tile_96d3:
 975D: 26 F3          BNE    $9752
 975F: 7C 2F E8       INC    $2FE8
 9762: BD 9B 1D       JSR    $9B1D
-9765: 0A 48          DEC    nb_players_48
+9765: 0A 48          DEC    nb_objects_48
 9767: 26 E6          BNE    $974F
 9769: B6 2A F5       LDA    $2AF5
-976C: 97 48          STA    nb_players_48
+976C: 97 48          STA    nb_objects_48
 976E: 27 1A          BEQ    $978A
 9770: 8E 18 52       LDX    #$1852
 9773: 6C 80          INC    ,X+
@@ -6910,11 +6911,11 @@ compare_contestants_tile_96d3:
 977E: 26 F3          BNE    $9773
 9780: 7C 2F EB       INC    $2FEB
 9783: BD 9B 5C       JSR    $9B5C
-9786: 0A 48          DEC    nb_players_48
+9786: 0A 48          DEC    nb_objects_48
 9788: 26 E6          BNE    $9770
 978A: 20 46          BRA    $97D2
 978C: B6 2A FB       LDA    $2AFB
-978F: 97 48          STA    nb_players_48
+978F: 97 48          STA    nb_objects_48
 9791: 27 1C          BEQ    $97AF
 9793: 8E 18 58       LDX    #$1858
 9796: 6D 84          TST    ,X
@@ -6925,10 +6926,10 @@ compare_contestants_tile_96d3:
 97A3: 26 F1          BNE    $9796
 97A5: 7C 2F E8       INC    $2FE8
 97A8: BD 9B 1D       JSR    $9B1D
-97AB: 0A 48          DEC    nb_players_48
+97AB: 0A 48          DEC    nb_objects_48
 97AD: 26 E4          BNE    $9793
 97AF: B6 2A F5       LDA    $2AF5
-97B2: 97 48          STA    nb_players_48
+97B2: 97 48          STA    nb_objects_48
 97B4: 27 1C          BEQ    $97D2
 97B6: 8E 18 52       LDX    #$1852
 97B9: 6D 84          TST    ,X
@@ -6939,7 +6940,7 @@ compare_contestants_tile_96d3:
 97C6: 26 F1          BNE    $97B9
 97C8: 7C 2F EB       INC    $2FEB
 97CB: BD 9B 5C       JSR    $9B5C
-97CE: 0A 48          DEC    nb_players_48
+97CE: 0A 48          DEC    nb_objects_48
 97D0: 26 E4          BNE    $97B6
 97D2: 8E 2A F0       LDX    #scroll_offsets_2af0
 97D5: 4F             CLRA
@@ -7682,10 +7683,10 @@ compare_contestants_tile_96d3:
 9E10: 1F 12          TFR    X,Y
 9E12: 31 A8 10       LEAY   $10,Y
 9E15: 86 02          LDA    #$02
-9E17: 97 48          STA    nb_players_48
+9E17: 97 48          STA    nb_objects_48
 9E19: C6 09          LDB    #$09
 9E1B: BD 8D 46       JSR    $8D46
-9E1E: 0A 48          DEC    nb_players_48
+9E1E: 0A 48          DEC    nb_objects_48
 9E20: 26 F7          BNE    $9E19
 9E22: BD 81 96       JSR    $8196
 9E25: 20 4A          BRA    $9E71
@@ -7869,7 +7870,7 @@ store_player_final_time_9f61:
 9FA4: 27 03          BEQ    $9FA9
 9FA6: CE 35 A4       LDU    #$35A4
 9FA9: 86 03          LDA    #$03
-9FAB: 97 48          STA    nb_players_48
+9FAB: 97 48          STA    nb_objects_48
 9FAD: 86 05          LDA    #$05
 9FAF: 97 49          STA    $49
 9FB1: C6 80          LDB    #$80
@@ -7881,7 +7882,7 @@ store_player_final_time_9f61:
 9FC0: 0A 49          DEC    $49
 9FC2: 26 F1          BNE    $9FB5
 9FC4: 33 C9 01 41    LEAU   $0141,U
-9FC8: 0A 48          DEC    nb_players_48
+9FC8: 0A 48          DEC    nb_objects_48
 9FCA: 26 E1          BNE    $9FAD
 9FCC: 39             RTS
 
@@ -8341,9 +8342,9 @@ A3B4: 39             RTS
 A3B5: 96 BD          LDA    $BD
 A3B7: 44             LSRA
 A3B8: 44             LSRA
-A3B9: 97 48          STA    nb_players_48
+A3B9: 97 48          STA    nb_objects_48
 A3BB: CC 5C 14       LDD    #$5C14
-A3BE: DB 48          ADDB   nb_players_48
+A3BE: DB 48          ADDB   nb_objects_48
 A3C0: ED 88 1E       STD    $1E,X
 A3C3: ED 0B          STD    $B,X
 A3C5: FD 2A 41       STD    $2A41
@@ -8373,12 +8374,12 @@ A3FB: E6 A0          LDB    ,Y+
 A3FD: D8 73          EORB   $73
 A3FF: D7 89          STB    $89
 A401: 86 10          LDA    #$10
-A403: 97 48          STA    nb_players_48
+A403: 97 48          STA    nb_objects_48
 A405: E7 C9 08 00    STB    $0800,U      ; [video_address]
 A409: A6 A0          LDA    ,Y+
 A40B: A7 C4          STA    ,U           ; [video_address]
 A40D: 33 C8 C0       LEAU   -$40,U
-A410: 0A 48          DEC    nb_players_48
+A410: 0A 48          DEC    nb_objects_48
 A412: 26 F1          BNE    $A405
 A414: 33 C9 04 01    LEAU   $0401,U
 A418: 11 83 37 20    CMPU   #$3720
@@ -8395,7 +8396,7 @@ event_table_a41f:
 	dc.w	$62d2	; $a42b
 	dc.w	draw_chrono_63c6	; $a42d
 	dc.w	$641a	; $a42f
-	dc.w	$64d9	; $a431
+	dc.w	update_speed_bar_64d9	; $a431
 	dc.w	$654c	; $a433
 	dc.w	$654d	; $a435
 	dc.w	$65ba	; $a437
@@ -8787,7 +8788,7 @@ CCCB: 4A             DECA
 CCCC: 48             ASLA
 CCCD: 10 AE A6       LDY    A,Y
 CCD0: CE 18 22       LDU    #$1822
-CCD3: 7E D0 B1       JMP    $D0B1
+CCD3: 7E D0 B1       JMP    update_sprite_buffer_d0b1
 CCD6: 39             RTS
 
 CCD7: A6 05          LDA    $5,X
@@ -8863,7 +8864,7 @@ CD79: 81 01          CMPA   #$01
 CD7B: 27 04          BEQ    $CD81
 CD7D: 10 8E DD 85    LDY    #$DD85
 CD81: CE 18 22       LDU    #$1822
-CD84: 7E D0 B1       JMP    $D0B1
+CD84: 7E D0 B1       JMP    update_sprite_buffer_d0b1
 CD87: A6 88 1D       LDA    $1D,X
 CD8A: 81 08          CMPA   #$08
 CD8C: 25 0A          BCS    $CD98
@@ -8931,7 +8932,8 @@ CE31: 96 DF          LDA    $DF
 CE33: 84 01          ANDA   #$01
 CE35: 27 02          BEQ    $CE39
 CE37: 33 44          LEAU   $4,U
-CE39: 7E D0 B1       JMP    $D0B1
+CE39: 7E D0 B1       JMP    update_sprite_buffer_d0b1
+
 CE3C: BD CE 53       JSR    $CE53
 CE3F: 7E D1 D4       JMP    $D1D4
 CE42: 10 8E DC 48    LDY    #$DC48
@@ -9217,35 +9219,44 @@ D0A7: A7 47          STA    $7,U
 D0A9: E7 C9 04 06    STB    $0406,U
 D0AD: 39             RTS
 
+; write object to sprite buffer
+; < Y: object structure
+; < X: ???
+; < U: sprite pointer to write into
+
 D0AE: 10 AE 0E       LDY    $E,X
+update_sprite_buffer_d0b1:
 D0B1: A6 A4          LDA    ,Y
 D0B3: 81 FF          CMPA   #$FF
-D0B5: 26 06          BNE    $D0BD
+D0B5: 26 06          BNE    $D0BD	; valid slot: run update
 D0B7: EC 21          LDD    $1,Y
 D0B9: ED 0E          STD    $E,X
 D0BB: 20 F1          BRA    $D0AE
+
 D0BD: 96 21          LDA    copy_of_screen_flipped_21
 D0BF: 26 31          BNE    $D0F2
+; straight screen
 D0C1: A6 21          LDA    $1,Y
 D0C3: C6 40          LDB    #$40
-D0C5: A7 C9 04 03    STA    $0403,U
-D0C9: E7 42          STB    $2,U
+D0C5: A7 C9 04 03    STA    $0403,U		; store sprite code
+D0C9: E7 42          STB    $2,U		; store sprite attribute
 D0CB: A7 08          STA    $8,X
 D0CD: EC 01          LDD    $1,X
 D0CF: 8B 10          ADDA   #$10
 D0D1: 4C             INCA
-D0D2: A7 43          STA    $3,U
-D0D4: E7 C9 04 02    STB    $0402,U
+D0D2: A7 43          STA    $3,U		; store sprite Y
+D0D4: E7 C9 04 02    STB    $0402,U		; store sprite X
+update_sprite_buffer_d0d8:
 D0D8: A6 A4          LDA    ,Y
 D0DA: C6 4F          LDB    #$4F
-D0DC: A7 C9 04 01    STA    $0401,U
-D0E0: E7 C4          STB    ,U
+D0DC: A7 C9 04 01    STA    $0401,U		; store sprite code
+D0E0: E7 C4          STB    ,U			; store sprite attribute
 D0E2: ED 06          STD    $6,X
 D0E4: EC 01          LDD    $1,X
 D0E6: 10 27 01 99    LBEQ   $D283
 D0EA: 4C             INCA
-D0EB: A7 41          STA    $1,U
-D0ED: E7 C9 04 00    STB    $0400,U
+D0EB: A7 41          STA    $1,U		; store sprite Y part 2
+D0ED: E7 C9 04 00    STB    $0400,U		; store sprite X
 D0F1: 39             RTS
 
 D0F2: A6 21          LDA    $1,Y
@@ -9276,9 +9287,11 @@ D127: E7 C9 04 00    STB    $0400,U
 D12B: 39             RTS
 
 D12C: 10 AE 0E       LDY    $E,X
+
 D12F: 96 21          LDA    copy_of_screen_flipped_21
 D131: 26 DA          BNE    $D10D
-D133: 16 FF A2       LBRA   $D0D8
+D133: 16 FF A2       LBRA   update_sprite_buffer_d0d8
+
 D136: 10 AE 0E       LDY    $E,X
 D139: 96 21          LDA    copy_of_screen_flipped_21
 D13B: 26 14          BNE    $D151
@@ -10225,7 +10238,7 @@ D8CF: 3D             MUL
 D8D0: 31 AB          LEAY   D,Y
 D8D2: 8E 31 16       LDX    #$3116
 D8D5: 86 03          LDA    #$03
-D8D7: 97 48          STA    nb_players_48
+D8D7: 97 48          STA    nb_objects_48
 D8D9: EC A1          LDD    ,Y++
 D8DB: 4D             TSTA
 D8DC: 26 02          BNE    $D8E0
@@ -10246,7 +10259,7 @@ D8F8: ED 81          STD    ,X++		; [video_address]
 D8FA: A6 A1          LDA    ,Y++
 D8FC: A7 84          STA    ,X		; [video_address]
 D8FE: 30 88 38       LEAX   $38,X
-D901: 0A 48          DEC    nb_players_48
+D901: 0A 48          DEC    nb_objects_48
 D903: 26 D4          BNE    $D8D9
 D905: 39             RTS
 
@@ -10311,7 +10324,7 @@ D992: 39             RTS
 D993: BD 8C 2F       JSR    reset_scrolling_8c2f
 D996: CE 33 40       LDU    #$3340
 D999: 86 11          LDA    #$11
-D99B: 97 48          STA    nb_players_48
+D99B: 97 48          STA    nb_objects_48
 D99D: 86 10          LDA    #$10
 D99F: C6 20          LDB    #$20
 D9A1: 6F C9 08 00    CLR    $0800,U       ; [video_address]
@@ -10319,7 +10332,7 @@ D9A5: A7 C0          STA    ,U+           ; [video_address]
 D9A7: 5A             DECB
 D9A8: 26 F7          BNE    $D9A1
 D9AA: 33 C8 20       LEAU   $20,U
-D9AD: 0A 48          DEC    nb_players_48
+D9AD: 0A 48          DEC    nb_objects_48
 D9AF: 26 EE          BNE    $D99F
 D9B1: 39             RTS
 
@@ -10669,22 +10682,22 @@ DF4F: C6 0A          LDB    #$0A
 DF51: 3D             MUL
 DF52: 0F 4C          CLR    $4C
 DF54: D3 4C          ADDD   $4C
-DF56: DD 48          STD    nb_players_48
+DF56: DD 48          STD    nb_objects_48
 DF58: 96 4B          LDA    $4B
 DF5A: C6 64          LDB    #$64
 DF5C: 3D             MUL
-DF5D: D3 48          ADDD   nb_players_48
-DF5F: DD 48          STD    nb_players_48
+DF5D: D3 48          ADDD   nb_objects_48
+DF5F: DD 48          STD    nb_objects_48
 DF61: D6 4A          LDB    $4A
 DF63: 86 E8          LDA    #$E8
 DF65: 3D             MUL
-DF66: D3 48          ADDD   nb_players_48
-DF68: DD 48          STD    nb_players_48
+DF66: D3 48          ADDD   nb_objects_48
+DF68: DD 48          STD    nb_objects_48
 DF6A: D6 4A          LDB    $4A
 DF6C: 86 03          LDA    #$03
 DF6E: 3D             MUL
-DF6F: DB 48          ADDB   nb_players_48
-DF71: D7 48          STB    nb_players_48
+DF6F: DB 48          ADDB   nb_objects_48
+DF71: D7 48          STB    nb_objects_48
 DF73: A6 A8 38       LDA    $38,Y
 DF76: 8E ED D5       LDX    #$EDD5
 DF79: 40             NEGA
@@ -10793,7 +10806,7 @@ E02B: 96 49          LDA    $49
 E02D: D6 4E          LDB    $4E
 E02F: 3D             MUL
 E030: 97 51          STA    $51
-E032: 96 48          LDA    nb_players_48
+E032: 96 48          LDA    nb_objects_48
 E034: D6 4E          LDB    $4E
 E036: 3D             MUL
 E037: D3 50          ADDD   $50
@@ -11296,7 +11309,7 @@ E491: 0C B3          INC    $B3
 E493: BD E6 01       JSR    $E601
 E496: 8E 28 A0       LDX    #$28A0
 E499: BD DE FF       JSR    $DEFF
-E49C: DD 48          STD    nb_players_48
+E49C: DD 48          STD    nb_objects_48
 E49E: 7D 2A C9       TST    $2AC9
 E4A1: 26 09          BNE    $E4AC
 E4A3: C1 00          CMPB   #$00
@@ -11325,7 +11338,7 @@ E4D9: 86 03          LDA    #$03
 E4DB: B7 2A D2       STA    $2AD2
 E4DE: 20 E8          BRA    $E4C8
 E4E0: 8E 28 A0       LDX    #$28A0
-E4E3: DC 48          LDD    nb_players_48
+E4E3: DC 48          LDD    nb_objects_48
 E4E5: 9B A2          ADDA   $A2
 E4E7: DB A1          ADDB   p1_attempts_left_a1
 E4E9: 97 A2          STA    $A2
@@ -11624,10 +11637,10 @@ E77E: BD 93 73       JSR    $9373
 E781: BD 91 35       JSR    $9135
 E784: DC A1          LDD    p1_attempts_left_a1
 E786: FD 2B 38       STD    $2B38
-E789: BD E9 C4       JSR    $E9C4
+E789: BD E9 C4       JSR    update_carried_javelin_sprite_e9c4
 E78C: 8E 28 A0       LDX    #$28A0
 E78F: 86 09          LDA    #$09
-E791: BD 84 F5       JSR    queue_event_84f5
+E791: BD 84 F5       JSR    queue_event_84f5	; update_speed_bar_64d9
 E794: BD 85 87       JSR    $8587
 E797: 86 8A          LDA    #$8A
 E799: C6 C3          LDB    #$C3
@@ -11788,7 +11801,7 @@ E8FD: A7 C4          STA    ,U
 E8FF: 86 C5          LDA    #$C5
 E901: 97 49          STA    $49
 E903: 86 02          LDA    #$02
-E905: 97 48          STA    nb_players_48
+E905: 97 48          STA    nb_objects_48
 E907: B6 2B 31       LDA    $2B31
 E90A: 8B 10          ADDA   #$10
 E90C: 81 28          CMPA   #$28
@@ -11800,7 +11813,7 @@ E917: BD D1 2F       JSR    $D12F
 E91A: 96 49          LDA    $49
 E91C: A7 C4          STA    ,U
 E91E: 0C 49          INC    $49
-E920: 0A 48          DEC    nb_players_48
+E920: 0A 48          DEC    nb_objects_48
 E922: 26 E3          BNE    $E907
 E924: B6 2B 38       LDA    $2B38
 E927: 81 38          CMPA   #$38
@@ -11882,6 +11895,7 @@ E9BF: 0F 09          CLR    $09
 E9C1: 0C 03          INC    boot_state_03
 E9C3: 39             RTS
 
+update_carried_javelin_sprite_e9c4:
 E9C4: 96 21          LDA    copy_of_screen_flipped_21
 E9C6: 43             COMA
 E9C7: 1C 00          ANDCC  #$00
@@ -11893,7 +11907,7 @@ E9CE: 97 4F          STA    $4F
 E9D0: 96 D8          LDA    angle_d8
 E9D2: C6 05          LDB    #$05
 E9D4: BD FB 6A       JSR    $FB6A
-E9D7: D7 48          STB    nb_players_48
+E9D7: D7 48          STB    nb_objects_48
 E9D9: C1 00          CMPB   #$00
 E9DB: 2A 07          BPL    $E9E4
 E9DD: 50             NEGB
@@ -11903,19 +11917,22 @@ E9E2: 97 4F          STA    $4F
 E9E4: CB E0          ADDB   #$E0
 E9E6: D7 4E          STB    $4E
 E9E8: 10 8E EF 53    LDY    #$EF53
-E9EC: 96 48          LDA    nb_players_48
+E9EC: 96 48          LDA    nb_objects_48
 E9EE: C6 06          LDB    #$06
 E9F0: 3D             MUL
 E9F1: 31 A5          LEAY   B,Y
+
+update_flying_javelin_sprite_e9f3:
 E9F3: 8E 2B 30       LDX    #$2B30
-E9F6: CE 17 FE       LDU    #$17FE
+E9F6: CE 17 FE       LDU    #$17FE	; sprite_ram_1800-2
 E9F9: 86 03          LDA    #$03
-E9FB: 97 48          STA    nb_players_48
+E9FB: 97 48          STA    nb_objects_48	; javelin is 3 objects
+; loop to update objects
 E9FD: EC 08          LDD    $8,X
 E9FF: AB A0          ADDA   ,Y+
 EA01: EB A0          ADDB   ,Y+
 EA03: ED 01          STD    $1,X
-EA05: 33 42          LEAU   $2,U
+EA05: 33 42          LEAU   $2,U	; next sprite block
 EA07: 0C 4F          INC    $4F
 EA09: 34 20          PSHS   Y
 EA0B: 10 8E 28 4E    LDY    #$284E
@@ -11923,7 +11940,7 @@ EA0F: BD D1 2F       JSR    $D12F
 EA12: 96 4F          LDA    $4F
 EA14: A7 C4          STA    ,U
 EA16: 35 20          PULS   Y
-EA18: 0A 48          DEC    nb_players_48
+EA18: 0A 48          DEC    nb_objects_48
 EA1A: 26 E1          BNE    $E9FD
 EA1C: 39             RTS
 
@@ -11948,7 +11965,7 @@ EA44: 84 44          ANDA   #$44
 EA46: A7 C4          STA    ,U
 EA48: 97 4F          STA    $4F
 EA4A: 86 02          LDA    #$02
-EA4C: 97 48          STA    nb_players_48
+EA4C: 97 48          STA    nb_objects_48
 EA4E: A6 02          LDA    $2,X
 EA50: 80 10          SUBA   #$10
 EA52: 2B 11          BMI    $EA65
@@ -11958,7 +11975,7 @@ EA58: 6C 21          INC    $1,Y
 EA5A: BD D1 2F       JSR    $D12F
 EA5D: 96 4F          LDA    $4F
 EA5F: A7 C4          STA    ,U
-EA61: 0A 48          DEC    nb_players_48
+EA61: 0A 48          DEC    nb_objects_48
 EA63: 26 E9          BNE    $EA4E
 EA65: 39             RTS
 
@@ -12029,11 +12046,11 @@ EAE3: 1F 98          TFR    B,A
 EAE5: 20 EF          BRA    $EAD6
 EAE7: A7 A4          STA    ,Y
 EAE9: D6 D8          LDB    angle_d8
-EAEB: D7 48          STB    nb_players_48
+EAEB: D7 48          STB    nb_objects_48
 EAED: 10 8E ED 7B    LDY    #$ED7B
 EAF1: A6 A5          LDA    B,Y
 EAF3: 5F             CLRB
-EAF4: 90 48          SUBA   nb_players_48
+EAF4: 90 48          SUBA   nb_objects_48
 EAF6: 25 03          BCS    $EAFB
 EAF8: 5C             INCB
 EAF9: 20 F9          BRA    $EAF4
@@ -12051,7 +12068,7 @@ EB0C: C6 03          LDB    #$03
 EB0E: 3D             MUL
 EB0F: F7 2A D8       STB    $2AD8
 EB12: F7 2A D9       STB    $2AD9
-EB15: 96 48          LDA    nb_players_48
+EB15: 96 48          LDA    nb_objects_48
 EB17: C6 05          LDB    #$05
 EB19: BD FB 6A       JSR    $FB6A
 EB1C: F7 2A DA       STB    $2ADA
@@ -12106,7 +12123,7 @@ EB8A: C6 06          LDB    #$06
 EB8C: 3D             MUL
 EB8D: 10 8E EF 53    LDY    #$EF53
 EB91: 31 A5          LEAY   B,Y
-EB93: BD E9 F3       JSR    $E9F3
+EB93: BD E9 F3       JSR    update_flying_javelin_sprite_e9f3
 EB96: BD EB A3       JSR    $EBA3
 EB99: BD EB DA       JSR    $EBDA
 EB9C: 39             RTS
@@ -12212,10 +12229,10 @@ EC73: AB A5          ADDA   B,Y
 EC75: 19             DAA
 EC76: 85 10          BITA   #$10
 EC78: 27 11          BEQ    $EC8B
-EC7A: 97 48          STA    nb_players_48
+EC7A: 97 48          STA    nb_objects_48
 EC7C: 84 0F          ANDA   #$0F
 EC7E: A7 A5          STA    B,Y
-EC80: 96 48          LDA    nb_players_48
+EC80: 96 48          LDA    nb_objects_48
 EC82: 47             ASRA
 EC83: 47             ASRA
 EC84: 47             ASRA
@@ -12438,7 +12455,7 @@ F080: 3D             MUL
 F081: C3 01 F1       ADDD   #$01F1
 F084: 31 AB          LEAY   D,Y
 F086: 86 0A          LDA    #$0A
-F088: 97 48          STA    nb_players_48
+F088: 97 48          STA    nb_objects_48
 F08A: 8E 2A 93       LDX    #$2A93
 F08D: 86 1D          LDA    #$1D
 F08F: 97 E6          STA    $E6
@@ -12475,12 +12492,12 @@ F0D0: ED A4          STD    ,Y
 F0D2: A6 02          LDA    $2,X
 F0D4: A7 22          STA    $2,Y
 F0D6: 31 3D          LEAY   -$3,Y
-F0D8: 0A 48          DEC    nb_players_48
+F0D8: 0A 48          DEC    nb_objects_48
 F0DA: 26 B5          BNE    $F091
 F0DC: B6 2A 92       LDA    $2A92
 F0DF: 81 01          CMPA   #$01
 F0E1: 26 15          BNE    $F0F8
-F0E3: 96 48          LDA    nb_players_48
+F0E3: 96 48          LDA    nb_objects_48
 F0E5: 4C             INCA
 F0E6: 81 0B          CMPA   #$0B
 F0E8: 26 05          BNE    $F0EF
@@ -12626,11 +12643,11 @@ F20D: 39             RTS
 F20E: 8E FD BD       LDX    #$FDBD
 F211: 10 8E 33 46    LDY    #$3346
 F215: 86 09          LDA    #$09
-F217: 97 48          STA    nb_players_48
+F217: 97 48          STA    nb_objects_48
 F219: EC 81          LDD    ,X++
 F21B: 83 30 30       SUBD   #$3030
 F21E: ED A1          STD    ,Y++			; [video_address_word]
-F220: 0A 48          DEC    nb_players_48
+F220: 0A 48          DEC    nb_objects_48
 F222: 26 F5          BNE    $F219
 F224: 86 6D          LDA    #$6D
 F226: B7 29 9C       STA    $299C
@@ -12669,7 +12686,7 @@ F26E: 3D             MUL
 F26F: 31 A5          LEAY   B,Y
 F271: 30 0C          LEAX   $C,X
 F273: 86 03          LDA    #$03
-F275: 97 48          STA    nb_players_48
+F275: 97 48          STA    nb_objects_48
 F277: 0F 49          CLR    $49
 F279: 5F             CLRB
 F27A: A6 A0          LDA    ,Y+
@@ -12701,7 +12718,7 @@ F2A0: 0C 49          INC    $49
 F2A2: E7 84          STB    ,X			; [video_address]
 F2A4: 6F 89 08 00    CLR    $0800,X		; [video_address]
 F2A8: 30 01          LEAX   $1,X
-F2AA: 0A 48          DEC    nb_players_48
+F2AA: 0A 48          DEC    nb_objects_48
 F2AC: 26 CB          BNE    $F279
 F2AE: 4F             CLRA
 F2AF: A7 84          STA    ,X				; [video_address]
@@ -12759,14 +12776,14 @@ F315: ED 1F          STD    -$1,X	; [video_address]
 F317: 86 2B          LDA    #$2B
 F319: A7 01          STA    $1,X			; [video_address_word]
 F31B: 86 0B          LDA    #$0B
-F31D: 97 48          STA    nb_players_48
+F31D: 97 48          STA    nb_objects_48
 F31F: B6 29 9C       LDA    $299C
 F322: CE FD CF       LDU    #$FDCF
 F325: A6 C6          LDA    A,U
 F327: 1F 89          TFR    A,B
 F329: 30 89 07 FF    LEAX   $07FF,X
 F32D: ED 81          STD    ,X++			; [video_address_word]
-F32F: 0A 48          DEC    nb_players_48
+F32F: 0A 48          DEC    nb_objects_48
 F331: 26 FA          BNE    $F32D
 F333: 7C 29 9C       INC    $299C
 F336: 39             RTS
@@ -12784,7 +12801,7 @@ F345: 39             RTS
 F346: 7A 29 9C       DEC    $299C
 F349: 10 27 00 76    LBEQ   $F3C3
 F34D: 86 20          LDA    #$20
-F34F: 97 48          STA    nb_players_48
+F34F: 97 48          STA    nb_objects_48
 F351: CE 39 C0       LDU    #$39C0
 F354: B6 2A 91       LDA    $2A91
 F357: 5F             CLRB
@@ -12799,7 +12816,7 @@ F367: 1F 89          TFR    A,B
 F369: 8E 39 80       LDX    #$3980
 F36C: ED 81          STD    ,X++		; [video_address_word]
 F36E: ED C1          STD    ,U++		; [video_address_word]
-F370: 0A 48          DEC    nb_players_48
+F370: 0A 48          DEC    nb_objects_48
 F372: 26 F8          BNE    $F36C
 F374: 0D 22          TST    $22
 F376: 26 02          BNE    $F37A
@@ -12861,13 +12878,13 @@ F3EA: A6 A4          LDA    ,Y
 F3EC: 0F 84          CLR    current_level_84
 F3EE: BD F1 78       JSR    $F178
 F3F1: 86 18          LDA    #$18
-F3F3: 97 48          STA    nb_players_48
+F3F3: 97 48          STA    nb_objects_48
 F3F5: CC 00 F0       LDD    #$00F0
 F3F8: 8E 18 00       LDX    #sprite_ram_1800
 F3FB: 10 8E 1C 00    LDY    #$1C00
 F3FF: ED 81          STD    ,X++
 F401: ED A1          STD    ,Y++
-F403: 0A 48          DEC    nb_players_48
+F403: 0A 48          DEC    nb_objects_48
 F405: 26 F8          BNE    $F3FF
 F407: CC 00 00       LDD    #$0000
 F40A: BD 84 F5       JSR    queue_event_84f5
@@ -12938,18 +12955,18 @@ F496: 39             RTS
 F497: B6 2A A0       LDA    $2AA0
 F49A: 4A             DECA
 F49B: 44             LSRA
-F49C: 97 48          STA    nb_players_48
+F49C: 97 48          STA    nb_objects_48
 F49E: 96 2D          LDA    dsw2_copy_2d
 F4A0: 43             COMA
 F4A1: 44             LSRA
 F4A2: 44             LSRA
-F4A3: 94 48          ANDA   nb_players_48
+F4A3: 94 48          ANDA   nb_objects_48
 F4A5: 97 21          STA    copy_of_screen_flipped_21
 F4A7: B7 10 80       STA    flip_screen_set_1080
 F4AA: 8E FD E5       LDX    #$FDE5
 F4AD: 10 8E 31 0B    LDY    #$310B
 F4B1: 86 06          LDA    #$06
-F4B3: 97 48          STA    nb_players_48
+F4B3: 97 48          STA    nb_objects_48
 F4B5: CC 48 48       LDD    #$4848
 F4B8: EE 81          LDU    ,X++
 F4BA: 33 C9 CF D0    LEAU   -$3030,U
@@ -12960,7 +12977,7 @@ F4C7: CC 01 01       LDD    #$0101
 F4CA: ED A9 07 FE    STD    $07FE,Y
 F4CE: ED A9 08 3E    STD    $083E,Y
 F4D2: ED A9 08 7E    STD    $087E,Y
-F4D6: 0A 48          DEC    nb_players_48
+F4D6: 0A 48          DEC    nb_objects_48
 F4D8: 26 DB          BNE    $F4B5
 F4DA: 86 48          LDA    #$48
 F4DC: B7 31 4A       STA    $314A
@@ -12968,7 +12985,7 @@ F4DF: B7 31 57       STA    $3157
 F4E2: 10 8E 35 C9    LDY    #$35C9
 F4E6: 8E FD F1       LDX    #$FDF1
 F4E9: 86 06          LDA    #$06
-F4EB: 97 48          STA    nb_players_48
+F4EB: 97 48          STA    nb_objects_48
 F4ED: 86 0F          LDA    #$0F
 F4EF: 97 49          STA    $49
 F4F1: C6 80          LDB    #$80
@@ -12980,7 +12997,7 @@ F4FE: A7 A0          STA    ,Y+
 F500: 0A 49          DEC    $49
 F502: 26 ED          BNE    $F4F1
 F504: 31 A8 31       LEAY   $31,Y
-F507: 0A 48          DEC    nb_players_48
+F507: 0A 48          DEC    nb_objects_48
 F509: 26 E2          BNE    $F4ED
 F50B: 0C 09          INC    $09
 F50D: 39             RTS
@@ -12988,7 +13005,7 @@ F50D: 39             RTS
 F50E: 8E 2A A0       LDX    #$2AA0
 F511: 10 8E 2A 48    LDY    #$2A48
 F515: 86 04          LDA    #$04
-F517: 97 48          STA    nb_players_48
+F517: 97 48          STA    nb_objects_48
 F519: CE 2B 80       LDU    #$2B80
 F51C: A6 84          LDA    ,X
 F51E: 27 0D          BEQ    $F52D
@@ -13001,7 +13018,7 @@ F528: A6 84          LDA    ,X
 F52A: 4A             DECA
 F52B: A7 A0          STA    ,Y+
 F52D: 30 04          LEAX   $4,X
-F52F: 0A 48          DEC    nb_players_48
+F52F: 0A 48          DEC    nb_objects_48
 F531: 26 E9          BNE    $F51C
 F533: 10 8C 2A 4C    CMPY   #$2A4C
 F537: 26 02          BNE    $F53B
@@ -13235,19 +13252,19 @@ F722: BD 84 F5       JSR    queue_event_84f5
 F725: C6 14          LDB    #$14
 F727: BD 84 F5       JSR    queue_event_84f5
 F72A: 8E A4 C8       LDX    #$A4C8
-F72D: 0F 48          CLR    nb_players_48
+F72D: 0F 48          CLR    nb_objects_48
 F72F: D6 60          LDB    nb_players_minus_one_60
-F731: D1 48          CMPB   nb_players_48
+F731: D1 48          CMPB   nb_objects_48
 F733: 25 16          BCS    $F74B
-F735: D6 48          LDB    nb_players_48
+F735: D6 48          LDB    nb_objects_48
 F737: E6 85          LDB    B,X
 F739: 86 01          LDA    #$01
 F73B: BD 84 F5       JSR    queue_event_84f5
-F73E: D6 48          LDB    nb_players_48
+F73E: D6 48          LDB    nb_objects_48
 F740: CB 1D          ADDB   #$1D
 F742: 86 02          LDA    #$02
 F744: BD 84 F5       JSR    queue_event_84f5
-F747: 0C 48          INC    nb_players_48
+F747: 0C 48          INC    nb_objects_48
 F749: 20 E4          BRA    $F72F
 F74B: 10 8E 29 90    LDY    #$2990
 F74F: CC FF FF       LDD    #$FFFF
@@ -13280,16 +13297,16 @@ F78E: 8E 35 87       LDX    #$3587
 F791: 10 8E FE 99    LDY    #$FE99
 F795: CE FE B1       LDU    #$FEB1
 F798: CC 04 03       LDD    #$0403
-F79B: DD 48          STD    nb_players_48
+F79B: DD 48          STD    nb_objects_48
 F79D: A6 C4          LDA    ,U
 F79F: 1F 89          TFR    A,B
 F7A1: ED 89 08 00    STD    $0800,X		; [video_address_word]
 F7A5: EC A1          LDD    ,Y++
 F7A7: ED 81          STD    ,X++		; [video_address_word]
-F7A9: 0A 48          DEC    nb_players_48
+F7A9: 0A 48          DEC    nb_objects_48
 F7AB: 26 F0          BNE    $F79D
 F7AD: 86 04          LDA    #$04
-F7AF: 97 48          STA    nb_players_48
+F7AF: 97 48          STA    nb_objects_48
 F7B1: A6 C0          LDA    ,U+
 F7B3: 30 88 38       LEAX   $38,X
 F7B6: 0A 49          DEC    $49
@@ -13459,14 +13476,14 @@ F90B: 27 36          BEQ    $F943
 F90D: C1 1D          CMPB   #$1D
 F90F: 27 59          BEQ    $F96A
 F911: CB 11          ADDB   #$11
-F913: D7 48          STB    nb_players_48
+F913: D7 48          STB    nb_objects_48
 F915: 8E 29 90       LDX    #$2990
 F918: D6 DF          LDB    $DF
 F91A: 86 03          LDA    #$03
 F91C: 3D             MUL
 F91D: 30 85          LEAX   B,X
 F91F: F6 29 9E       LDB    $299E
-F922: 96 48          LDA    nb_players_48
+F922: 96 48          LDA    nb_objects_48
 F924: A7 85          STA    B,X
 F926: 8E 35 16       LDX    #$3516
 F929: D6 DF          LDB    $DF
@@ -13474,7 +13491,7 @@ F92B: 86 80          LDA    #$80
 F92D: 3D             MUL
 F92E: 30 8B          LEAX   D,X
 F930: F6 29 9E       LDB    $299E
-F933: 96 48          LDA    nb_players_48
+F933: 96 48          LDA    nb_objects_48
 F935: A7 85          STA    B,X		; [video_address]
 F937: C1 02          CMPB   #$02
 F939: 27 2F          BEQ    $F96A
@@ -13550,7 +13567,7 @@ F9C6: BD 85 0E       JSR    $850E
 F9C9: 10 8E 2A 52    LDY    #$2A52
 F9CD: 8E 29 90       LDX    #$2990
 F9D0: 86 04          LDA    #$04
-F9D2: 97 48          STA    nb_players_48
+F9D2: 97 48          STA    nb_objects_48
 F9D4: A6 02          LDA    $2,X
 F9D6: 80 10          SUBA   #$10
 F9D8: 46             RORA
@@ -13590,7 +13607,7 @@ FA0B: 66 A4          ROR    ,Y
 FA0D: 66 A4          ROR    ,Y
 FA0F: 31 22          LEAY   $2,Y
 FA11: 30 03          LEAX   $3,X
-FA13: 0A 48          DEC    nb_players_48
+FA13: 0A 48          DEC    nb_objects_48
 FA15: 26 BD          BNE    $F9D4
 FA17: 86 03          LDA    #$03
 FA19: 97 00          STA    global_state_00

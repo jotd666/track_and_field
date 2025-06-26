@@ -5,6 +5,10 @@
 - high jump/long jump/javelin: character/javelin rises and rises...
 **** CPU conversion issue!! *****
 
+ebe4: masking out kills D, use tmp d6, remove masking out
+eca3: leax b,x: should mask out and use tmp d6 too
+
+- erase: error if blitter busy?
 - player frame wrong symmetry in tiles
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!

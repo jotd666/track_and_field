@@ -383,8 +383,8 @@ multiply_ab:
 	and.w	#0xFF,d1
 	mulu	d0,d1
 	ror.w	#8,d1
-	move.b	d1,d0
-	ror.w	#8,d1
+	move.b	d1,d0	| A
+	ror.w	#8,d1	| D
 	rts
 
 	.ifndef	RELEASE
