@@ -50,7 +50,8 @@ p1_attempts_left_a1 = $A1
 current_level_84 = $84
 high_jump_fault_9f = $9F
 jump_foul_c9 = $c9
-false_start_d9 = $D9
+angle_d8 = $d8
+false_start_d9 = $d9
 display_chrono_ea = $ea
 
 * memory offsets
@@ -77,6 +78,10 @@ failed_rom_check_29d4 = $29d4
 display_state_2b40 = $2b40
 video_ram_3000 = $3000
 color_ram_3800 = $3800
+player_1_final_time_2960 = $2960		; dash/hurdles
+player_2_final_time_296c = $296C		; dash/hurdles
+qualifying_time_2866 = $2866
+chrono_hundredth_second_287e = $287e
 
 ; the [xxx] tags are there to help the specific game post-processing to automatically
 ; change or remove the code. For instance [rom_check_code] lines can be removed without
@@ -585,13 +590,13 @@ draw_chrono_63c6:
 641D: C0 10          SUBB   #$10
 641F: FD 29 F8       STD    $29F8
 6422: 8E ED 7B       LDX    #$ED7B
-6425: 96 D8          LDA    $D8
+6425: 96 D8          LDA    angle_d8
 6427: A6 86          LDA    A,X
 6429: 44             LSRA
 642A: 44             LSRA
 642B: 44             LSRA
 642C: 8E ED D5       LDX    #$EDD5
-642F: D6 D8          LDB    $D8
+642F: D6 D8          LDB    angle_d8
 6431: 50             NEGB
 6432: E6 85          LDB    B,X
 6434: 54             LSRB
@@ -628,7 +633,7 @@ draw_chrono_63c6:
 647F: BD 64 AB       JSR    $64AB
 6482: DE E4          LDU    $E4
 6484: 33 C8 C1       LEAU   -$3F,U
-6487: 96 D8          LDA    $D8
+6487: 96 D8          LDA    angle_d8
 6489: D6 84          LDB    current_level_84
 648B: C1 04          CMPB   #$04
 648D: 26 03          BNE    $6492
@@ -943,7 +948,7 @@ read_inputs_6624:
 66FE: 12             NOP
 66FF: 4C             INCA
 6700: B7 10 81       STA    sh_irqtrigger_w_1081
-6703: 8C 29 60       CMPX   #$2960
+6703: 8C 29 60       CMPX   #player_1_final_time_2960
 6706: 26 03          BNE    $670B
 6708: 8E 29 40       LDX    #$2940
 670B: 9F 1E          STX    $1E
@@ -1124,7 +1129,7 @@ start_a_game_680a:
 ; clear game variables (level, etc...)
 6847: 4F             CLRA
 6848: 5F             CLRB
-6849: 8E 28 66       LDX    #$2866
+6849: 8E 28 66       LDX    #qualifying_time_2866
 684C: ED 81          STD    ,X++
 684E: 8C 28 A0       CMPX   #$28A0
 6851: 26 F9          BNE    $684C
@@ -1141,7 +1146,7 @@ start_a_game_680a:
 686C: 84 C0          ANDA   #$C0
 686E: B7 2F FF       STA    $2FFF
 6871: 4F             CLRA
-6872: 8E 29 60       LDX    #$2960
+6872: 8E 29 60       LDX    #player_1_final_time_2960
 6875: ED 81          STD    ,X++
 6877: 8C 29 90       CMPX   #$2990
 687A: 26 F9          BNE    $6875
@@ -1411,7 +1416,7 @@ init_game_playfield_6a85:
 6AA6: ED 81          STD    ,X++
 6AA8: 8C 28 D8       CMPX   #$28D8
 6AAB: 26 F9          BNE    $6AA6
-6AAD: 0F D8          CLR    $D8
+6AAD: 0F D8          CLR    angle_d8
 6AAF: 8E 28 DA       LDX    #$28DA
 6AB2: ED 81          STD    ,X++
 6AB4: 8C 28 DE       CMPX   #$28DE
@@ -1855,7 +1860,7 @@ init_game_playfield_6a85:
 6EA6: 81 02          CMPA   #$02
 6EA8: 26 4E          BNE    $6EF8
 6EAA: BD 87 92       JSR    $8792
-6EAD: 8E 29 60       LDX    #$2960
+6EAD: 8E 29 60       LDX    #player_1_final_time_2960
 6EB0: 96 9F          LDA    high_jump_fault_9f
 6EB2: D6 84          LDB    current_level_84
 6EB4: C1 05          CMPB   #$05
@@ -1893,7 +1898,7 @@ init_game_playfield_6a85:
 6EF8: 0C 06          INC    $06
 6EFA: 39             RTS
 
-6EFB: CE 29 60       LDU    #$2960
+6EFB: CE 29 60       LDU    #player_1_final_time_2960
 6EFE: 96 DF          LDA    $DF
 6F00: 84 02          ANDA   #$02
 6F02: C6 0C          LDB    #$0C
@@ -2153,7 +2158,7 @@ init_game_playfield_6a85:
 7138: 16 FF 36       LBRA   $7071
 713B: 0F 7D          CLR    $7D
 713D: BD 87 92       JSR    $8792
-7140: 8E 29 60       LDX    #$2960
+7140: 8E 29 60       LDX    #player_1_final_time_2960
 7143: 96 DF          LDA    $DF
 7145: C6 0C          LDB    #$0C
 7147: 3D             MUL
@@ -2376,7 +2381,7 @@ init_game_playfield_6a85:
 72F9: 6E 96          JMP    [A,X]	; [jump_table]
 
 72FB: BD 87 92       JSR    $8792
-72FE: 8E 29 60       LDX    #$2960
+72FE: 8E 29 60       LDX    #player_1_final_time_2960
 7301: 96 DF          LDA    $DF
 7303: C6 0C          LDB    #$0C
 7305: 3D             MUL
@@ -2685,7 +2690,7 @@ init_game_playfield_6a85:
 7555: ED 81          STD    ,X++
 7557: 8C 2A E0       CMPX   #$2AE0
 755A: 26 F9          BNE    $7555
-755C: 8E 29 60       LDX    #$2960
+755C: 8E 29 60       LDX    #player_1_final_time_2960
 755F: ED 81          STD    ,X++
 7561: 8C 29 90       CMPX   #$2990
 7564: 26 F9          BNE    $755F
@@ -2784,7 +2789,7 @@ init_game_playfield_6a85:
 7616: 0F DF          CLR    $DF
 7618: 4F             CLRA
 7619: 5F             CLRB
-761A: FD 29 60       STD    $2960
+761A: FD 29 60       STD    player_1_final_time_2960
 761D: FD 29 62       STD    $2962
 7620: 7F 2A 9A       CLR    $2A9A
 7623: 0C 12          INC    $12
@@ -3475,13 +3480,13 @@ init_game_playfield_6a85:
 
 7BCF: 0A 0B          DEC    $0B
 7BD1: 26 09          BNE    $7BDC
-7BD3: BD 96 D3       JSR    $96D3
+7BD3: BD 96 D3       JSR    compare_contestants_tile_96d3
 7BD6: 0C 03          INC    boot_state_03
 7BD8: 0F 06          CLR    $06
 7BDA: 0F 09          CLR    $09
 7BDC: B6 2A 0A       LDA    $2A0A
 7BDF: 26 56          BNE    $7C37
-7BE1: FC 29 6C       LDD    $296C
+7BE1: FC 29 6C       LDD    player_2_final_time_296c
 7BE4: 10 83 01 00    CMPD   #$0100
 7BE8: 24 4D          BCC    $7C37
 7BEA: 8E A4 E7       LDX    #$A4E7
@@ -3688,7 +3693,7 @@ init_game_playfield_6a85:
 7DA2: CB 20          ADDB   #$20
 7DA4: FD 2A E1       STD    $2AE1
 7DA7: 86 14          LDA    #$14
-7DA9: 97 D8          STA    $D8
+7DA9: 97 D8          STA    angle_d8
 7DAB: 4F             CLRA
 7DAC: BD 85 08       JSR    $8508
 7DAF: 86 05          LDA    #$05
@@ -4592,7 +4597,7 @@ queue_event_84f5:
 8510: 27 12          BEQ    $8524
 8512: 10 9E 1C       LDY    $1C
 8515: A7 A0          STA    ,Y+
-8517: 10 8C 29 60    CMPY   #$2960
+8517: 10 8C 29 60    CMPY   #player_1_final_time_2960
 851B: 26 04          BNE    $8521
 851D: 10 8E 29 40    LDY    #$2940
 8521: 10 9F 1C       STY    $1C
@@ -4828,7 +4833,7 @@ queue_event_84f5:
 86F4: A7 03          STA    $3,X
 86F6: 39             RTS
 
-86F7: 8E 29 60       LDX    #$2960
+86F7: 8E 29 60       LDX    #player_1_final_time_2960
 86FA: 96 DF          LDA    $DF
 86FC: C6 0C          LDB    #$0C
 86FE: 3D             MUL
@@ -4874,7 +4879,7 @@ queue_event_84f5:
 8755: 30 04          LEAX   $4,X
 8757: 39             RTS
 
-8758: 8E 29 60       LDX    #$2960
+8758: 8E 29 60       LDX    #player_1_final_time_2960
 875B: 96 DF          LDA    $DF
 875D: C6 0C          LDB    #$0C
 875F: 3D             MUL
@@ -4894,15 +4899,17 @@ queue_event_84f5:
 877F: A6 84          LDA    ,X
 8781: 81 16          CMPA   #$16
 8783: 27 0C          BEQ    $8791
-8785: 10 8E 28 66    LDY    #$2866
-8789: BD 89 68       JSR    $8968
+; check if player is qualified
+8785: 10 8E 28 66    LDY    #qualifying_time_2866
+8789: BD 89 68       JSR    compare_times_8968
 878C: 5D             TSTB
 878D: 27 02          BEQ    $8791
+; player is qualified
 878F: 0C CD          INC    $CD
 8791: 39             RTS
 
 8792: 0F 7D          CLR    $7D
-8794: 8E 29 60       LDX    #$2960
+8794: 8E 29 60       LDX    #player_1_final_time_2960
 8797: 96 DF          LDA    $DF
 8799: C6 0C          LDB    #$0C
 879B: 3D             MUL
@@ -5070,7 +5077,7 @@ queue_event_84f5:
 88D7: 8E 2A 9C       LDX    #$2A9C
 88DA: 86 04          LDA    #$04
 88DC: 97 48          STA    nb_players_48
-88DE: BD 89 68       JSR    $8968
+88DE: BD 89 68       JSR    compare_times_8968
 88E1: 5D             TSTB
 88E2: 26 1E          BNE    $8902
 88E4: A6 3F          LDA    -$1,Y
@@ -5147,6 +5154,10 @@ queue_event_84f5:
 8965: ED C4          STD    ,U		; [video_address]
 8967: 39             RTS
 
+; < X: time
+; < Y: time to compare to
+; > B: 1 if time in X is < time in Y
+compare_times_8968:
 8968: 0F 62          CLR    $62
 896A: 5F             CLRB
 896B: A6 A4          LDA    ,Y
@@ -5553,7 +5564,7 @@ partially_reset_scrolling_8c3e:
 8C88: 0F 4A          CLR    $4A
 8C8A: 10 8E 2A A1    LDY    #$2AA1
 8C8E: 30 03          LEAX   $3,X
-8C90: BD 89 68       JSR    $8968
+8C90: BD 89 68       JSR    compare_times_8968
 8C93: 5D             TSTB
 8C94: 26 0E          BNE    $8CA4
 8C96: 0C 4A          INC    $4A
@@ -5802,7 +5813,7 @@ partially_reset_scrolling_8c3e:
 8E77: 7F 2A BA       CLR    $2ABA
 8E7A: 7F 2A BB       CLR    $2ABB
 8E7D: 7F 2A BC       CLR    $2ABC
-8E80: CE 29 60       LDU    #$2960
+8E80: CE 29 60       LDU    #player_1_final_time_2960
 8E83: 96 DF          LDA    $DF
 8E85: C6 0C          LDB    #$0C
 8E87: 3D             MUL
@@ -6365,7 +6376,7 @@ partially_reset_scrolling_8c3e:
 9322: 96 84          LDA    current_level_84
 9324: 48             ASLA
 9325: 30 86          LEAX   A,X
-9327: 10 8E 28 66    LDY    #$2866
+9327: 10 8E 28 66    LDY    #qualifying_time_2866
 932B: CE 32 18       LDU    #$3218
 932E: C6 01          LDB    #$01
 9330: A6 84          LDA    ,X
@@ -6817,7 +6828,8 @@ partially_reset_scrolling_8c3e:
 96D0: 35 10          PULS   X
 96D2: 39             RTS
 
-96D3: 8E 29 60       LDX    #$2960
+compare_contestants_tile_96d3:
+96D3: 8E 29 60       LDX    #player_1_final_time_2960
 96D6: 96 DF          LDA    $DF
 96D8: 84 02          ANDA   #$02
 96DA: 27 03          BEQ    $96DF
@@ -6828,17 +6840,17 @@ partially_reset_scrolling_8c3e:
 96E5: 25 16          BCS    $96FD
 96E7: 39             RTS
 
-96E8: 8E 29 60       LDX    #$2960
+96E8: 8E 29 60       LDX    #player_1_final_time_2960
 96EB: 96 DF          LDA    $DF
 96ED: C6 0C          LDB    #$0C
 96EF: 3D             MUL
 96F0: 30 8B          LEAX   D,X
 96F2: 31 04          LEAY   $4,X
-96F4: BD 89 68       JSR    $8968
+96F4: BD 89 68       JSR    compare_times_8968
 96F7: 96 62          LDA    $62
 96F9: 27 1F          BEQ    $971A
 96FB: 31 24          LEAY   $4,Y
-96FD: BD 89 68       JSR    $8968
+96FD: BD 89 68       JSR    compare_times_8968
 9700: 96 62          LDA    $62
 9702: 27 16          BEQ    $971A
 9704: A6 84          LDA    ,X
@@ -6959,11 +6971,11 @@ partially_reset_scrolling_8c3e:
 980C: A6 C4          LDA    ,U
 980E: 84 02          ANDA   #$02
 9810: 27 0B          BEQ    $981D
-9812: 96 D8          LDA    $D8
+9812: 96 D8          LDA    angle_d8
 9814: 4C             INCA
 9815: 81 51          CMPA   #$51
 9817: 27 0C          BEQ    $9825
-9819: 97 D8          STA    $D8
+9819: 97 D8          STA    angle_d8
 981B: 20 08          BRA    $9825
 981D: 0C D7          INC    $D7
 981F: BD E4 52       JSR    $E452
@@ -7785,13 +7797,13 @@ partially_reset_scrolling_8c3e:
 9F12: B7 2A B8       STA    $2AB8
 9F15: A6 0A          LDA    $A,X
 9F17: 26 02          BNE    $9F1B
-9F19: 0F EA          CLR    display_chrono_ea
-9F1B: CE 29 60       LDU    #$2960
+9F19: 0F EA          CLR    display_chrono_ea		; stop chronometer
+9F1B: CE 29 60       LDU    #player_1_final_time_2960
 9F1E: 96 DF          LDA    $DF
 9F20: C6 0C          LDB    #$0C
 9F22: 3D             MUL
 9F23: 33 CB          LEAU   D,U
-9F25: BD 9F 61       JSR    $9F61
+9F25: BD 9F 61       JSR    store_player_final_time_9f61
 9F28: 34 10          PSHS   X
 9F2A: 1F 31          TFR    U,X
 9F2C: BD 88 CD       JSR    $88CD
@@ -7818,7 +7830,9 @@ partially_reset_scrolling_8c3e:
 9F5D: BD 8E F0       JSR    $8EF0
 9F60: 39             RTS
 
-9F61: 10 8E 28 7E    LDY    #$287E
+; for 1P U=2960, 2P CPU U=296C
+store_player_final_time_9f61:
+9F61: 10 8E 28 7E    LDY    #chrono_hundredth_second_287e
 9F65: A6 21          LDA    $1,Y
 9F67: 44             LSRA
 9F68: 44             LSRA
@@ -9824,7 +9838,7 @@ D5A3: 6E 96          JMP    [A,X]		; [jump_table]
 
 D5A5: 96 60          LDA    nb_players_minus_one_60
 D5A7: 27 1C          BEQ    $D5C5
-D5A9: 0F D8          CLR    $D8
+D5A9: 0F D8          CLR    angle_d8
 D5AB: 8E 2B 60       LDX    #$2B60
 D5AE: 96 84          LDA    current_level_84
 D5B0: 81 00          CMPA   #$00
@@ -9847,7 +9861,7 @@ D5CC: 27 F7          BEQ    $D5C5
 D5CE: BD 87 7D       JSR    $877D
 D5D1: 96 CD          LDA    $CD
 D5D3: 27 F0          BEQ    $D5C5
-D5D5: 0C D8          INC    $D8
+D5D5: 0C D8          INC    angle_d8
 D5D7: 30 04          LEAX   $4,X
 D5D9: 8C 2B 74       CMPX   #$2B74
 D5DC: 27 E7          BEQ    $D5C5
@@ -9857,11 +9871,11 @@ D5E2: 26 08          BNE    $D5EC
 D5E4: A6 84          LDA    ,X
 D5E6: 84 0F          ANDA   #$0F
 D5E8: 27 02          BEQ    $D5EC
-D5EA: 0C D8          INC    $D8
+D5EA: 0C D8          INC    angle_d8
 D5EC: 30 05          LEAX   $5,X
 D5EE: 8C 2B 74       CMPX   #$2B74
 D5F1: 26 EB          BNE    $D5DE
-D5F3: 96 D8          LDA    $D8
+D5F3: 96 D8          LDA    angle_d8
 D5F5: 81 02          CMPA   #$02
 D5F7: 25 CC          BCS    $D5C5
 D5F9: 0C 09          INC    $09
@@ -9871,12 +9885,12 @@ D5FC: 30 01          LEAX   $1,X
 D5FE: BD 87 7D       JSR    $877D
 D601: 96 CD          LDA    $CD
 D603: 27 C0          BEQ    $D5C5
-D605: 0C D8          INC    $D8
+D605: 0C D8          INC    angle_d8
 D607: C6 03          LDB    #$03
 D609: 30 04          LEAX   $4,X
 D60B: A6 84          LDA    ,X
 D60D: 27 07          BEQ    $D616
-D60F: 0C D8          INC    $D8
+D60F: 0C D8          INC    angle_d8
 D611: 30 05          LEAX   $5,X
 D613: 5A             DECB
 D614: 26 F5          BNE    $D60B
@@ -10156,7 +10170,7 @@ D862: 3D             MUL
 D863: 33 C5          LEAU   B,U
 D865: 86 03          LDA    #$03
 D867: 97 50          STA    $50
-D869: BD 89 68       JSR    $8968
+D869: BD 89 68       JSR    compare_times_8968
 D86C: 5D             TSTB
 D86D: 27 2A          BEQ    $D899
 D86F: EC A4          LDD    ,Y
@@ -11067,7 +11081,7 @@ E2C5: BD FB 8F       JSR    $FB8F
 E2C8: 84 02          ANDA   #$02
 E2CA: 27 18          BEQ    $E2E4
 E2CC: 86 5A          LDA    #$5A
-E2CE: 97 D8          STA    $D8
+E2CE: 97 D8          STA    angle_d8
 E2D0: DC A1          LDD    p1_attempts_left_a1
 E2D2: FD 2A E1       STD    $2AE1
 E2D5: BD 88 8A       JSR    $888A
@@ -11096,7 +11110,7 @@ E2FC: 8E 29 A0       LDX    #$29A0
 E2FF: 86 03          LDA    #$03
 E301: A7 84          STA    ,X
 E303: BD CC BD       JSR    $CCBD
-E306: 8E 29 60       LDX    #$2960
+E306: 8E 29 60       LDX    #player_1_final_time_2960
 E309: 96 DF          LDA    $DF
 E30B: C6 0C          LDB    #$0C
 E30D: 3D             MUL
@@ -11119,7 +11133,7 @@ E331: 96 DF          LDA    $DF
 E333: C6 0C          LDB    #$0C
 E335: 3D             MUL
 E336: 30 85          LEAX   B,X
-E338: BD 89 68       JSR    $8968
+E338: BD 89 68       JSR    compare_times_8968
 E33B: 0D 62          TST    $62
 E33D: 27 06          BEQ    $E345
 E33F: 7C 29 D3       INC    $29D3
@@ -11252,7 +11266,7 @@ E456: 3D             MUL
 E457: DB B1          ADDB   $B1
 E459: 86 09          LDA    #$09
 E45B: 3D             MUL
-E45C: 96 D8          LDA    $D8
+E45C: 96 D8          LDA    angle_d8
 E45E: 10 8E ED 7B    LDY    #$ED7B
 E462: A6 A6          LDA    A,Y
 E464: 3D             MUL
@@ -11268,9 +11282,9 @@ E471: BD FB A7       JSR    $FBA7
 E474: 84 02          ANDA   #$02
 E476: 27 10          BEQ    $E488
 E478: C6 14          LDB    #$14
-E47A: D1 D8          CMPB   $D8
+E47A: D1 D8          CMPB   angle_d8
 E47C: 27 0A          BEQ    $E488
-E47E: 0A D8          DEC    $D8
+E47E: 0A D8          DEC    angle_d8
 E480: 86 08          LDA    #$08
 E482: BD 84 F5       JSR    queue_event_84f5
 E485: BD 8A 03       JSR    $8A03
@@ -11506,7 +11520,7 @@ E682: FD 29 9C       STD    $299C
 E685: FD 29 9E       STD    $299E
 E688: FD 2A 98       STD    $2A98
 E68B: 86 14          LDA    #$14
-E68D: 97 D8          STA    $D8
+E68D: 97 D8          STA    angle_d8
 E68F: 86 03          LDA    #$03
 E691: 97 B7          STA    $B7
 E693: CC 01 09       LDD    #$0109
@@ -11681,7 +11695,7 @@ E824: DD 6E          STD    $6E
 E826: DD 70          STD    $70
 E828: 86 08          LDA    #$08
 E82A: B7 2B 3C       STA    $2B3C
-E82D: DC D8          LDD    $D8
+E82D: DC D8          LDD    angle_d8
 E82F: FD 2B 3E       STD    $2B3E
 E832: 7F 2B 1D       CLR    $2B1D
 E835: 7F 2B 17       CLR    $2B17
@@ -11698,7 +11712,7 @@ E849: 26 3F          BNE    $E88A
 E84B: BD FB A7       JSR    $FBA7
 E84E: 84 02          ANDA   #$02
 E850: 27 02          BEQ    $E854
-E852: 0C D8          INC    $D8
+E852: 0C D8          INC    angle_d8
 E854: B6 2B 3B       LDA    $2B3B
 E857: 81 02          CMPA   #$02
 E859: 27 30          BEQ    $E88B
@@ -11744,7 +11758,7 @@ E8AF: 26 05          BNE    $E8B6
 E8B1: 7C 2B 17       INC    $2B17
 E8B4: 20 0C          BRA    $E8C2
 E8B6: BD EA 66       JSR    $EA66
-E8B9: 96 D8          LDA    $D8
+E8B9: 96 D8          LDA    angle_d8
 E8BB: 81 50          CMPA   #$50
 E8BD: 26 03          BNE    $E8C2
 E8BF: 7C 2B 17       INC    $2B17
@@ -11815,7 +11829,7 @@ E956: 86 03          LDA    #$03
 E958: A7 84          STA    ,X
 E95A: BD CC BD       JSR    $CCBD
 E95D: 10 8E 2B 18    LDY    #$2B18
-E961: 8E 29 60       LDX    #$2960
+E961: 8E 29 60       LDX    #player_1_final_time_2960
 E964: 96 DF          LDA    $DF
 E966: C6 0C          LDB    #$0C
 E968: 3D             MUL
@@ -11841,7 +11855,7 @@ E98B: 27 07          BEQ    $E994
 E98D: 86 02          LDA    #$02
 E98F: A7 84          STA    ,X
 E991: BD CC BD       JSR    $CCBD
-E994: 8E 29 60       LDX    #$2960
+E994: 8E 29 60       LDX    #player_1_final_time_2960
 E997: 96 DF          LDA    $DF
 E999: C6 0C          LDB    #$0C
 E99B: 3D             MUL
@@ -11876,7 +11890,7 @@ E9CA: 46             RORA
 E9CB: 46             RORA
 E9CC: 84 43          ANDA   #$43
 E9CE: 97 4F          STA    $4F
-E9D0: 96 D8          LDA    $D8
+E9D0: 96 D8          LDA    angle_d8
 E9D2: C6 05          LDB    #$05
 E9D4: BD FB 6A       JSR    $FB6A
 E9D7: D7 48          STB    nb_players_48
@@ -11948,11 +11962,11 @@ EA61: 0A 48          DEC    nb_players_48
 EA63: 26 E9          BNE    $EA4E
 EA65: 39             RTS
 
-EA66: D6 D8          LDB    $D8
+EA66: D6 D8          LDB    angle_d8
 EA68: C1 50          CMPB   #$50
 EA6A: 27 0C          BEQ    $EA78
-EA6C: 0C D8          INC    $D8
-EA6E: 96 D8          LDA    $D8
+EA6C: 0C D8          INC    angle_d8
+EA6E: 96 D8          LDA    angle_d8
 EA70: C6 05          LDB    #$05
 EA72: BD FB 6A       JSR    $FB6A
 EA75: F7 2A DA       STB    $2ADA
@@ -11987,7 +12001,7 @@ EAAC: 97 B2          STA    $B2
 EAAE: 0D 9F          TST    high_jump_fault_9f
 EAB0: 27 37          BEQ    $EAE9
 EAB2: D6 DF          LDB    $DF
-EAB4: 10 8E 29 60    LDY    #$2960
+EAB4: 10 8E 29 60    LDY    #player_1_final_time_2960
 EAB8: 86 0C          LDA    #$0C
 EABA: 3D             MUL
 EABB: 31 A5          LEAY   B,Y
@@ -12014,7 +12028,7 @@ EAE1: A7 A4          STA    ,Y
 EAE3: 1F 98          TFR    B,A
 EAE5: 20 EF          BRA    $EAD6
 EAE7: A7 A4          STA    ,Y
-EAE9: D6 D8          LDB    $D8
+EAE9: D6 D8          LDB    angle_d8
 EAEB: D7 48          STB    nb_players_48
 EAED: 10 8E ED 7B    LDY    #$ED7B
 EAF1: A6 A5          LDA    B,Y
@@ -12217,7 +12231,7 @@ EC91: 27 23          BEQ    $ECB6
 EC93: 0D C9          TST    jump_foul_C9
 EC95: 26 1F          BNE    $ECB6
 EC97: 10 8E 2B 18    LDY    #$2B18
-EC9B: 8E 29 60       LDX    #$2960
+EC9B: 8E 29 60       LDX    #player_1_final_time_2960
 EC9E: 96 DF          LDA    $DF
 ECA0: C6 0C          LDB    #$0C
 ECA2: 3D             MUL
@@ -12428,7 +12442,7 @@ F088: 97 48          STA    nb_players_48
 F08A: 8E 2A 93       LDX    #$2A93
 F08D: 86 1D          LDA    #$1D
 F08F: 97 E6          STA    $E6
-F091: BD 89 68       JSR    $8968
+F091: BD 89 68       JSR    compare_times_8968
 F094: 5D             TSTB
 F095: 27 4C          BEQ    $F0E3
 F097: B6 2A 92       LDA    $2A92

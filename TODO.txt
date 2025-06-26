@@ -2,6 +2,7 @@
 - 100m dash: cpu player "jumps" in x position
 - long jump: 2 girl sprites in the background don't move with scrolling
 - 100m dash: even when qualifying with lower time, race lost unless CPU wins!
+ => because 2960 value gets overwritten after finish line DEBUG THIS <====
 - 110m hurdles demo seems to never end...
 - high jump: character rises and rises...
 - long jump demo/game doesn't work properly: foul each time
