@@ -7078,7 +7078,7 @@ compare_contestants_tile_96d3:
 98F3: 9B 50          ADDA   $50
 98F5: 84 07          ANDA   #$07
 98F7: 97 AD          STA    $AD
-98F9: A6 98 1E       LDA    [$1E,X]
+98F9: A6 98 1E       LDA    [$1E,X]		; [video_address]
 98FC: 81 5D          CMPA   #$5D
 98FE: 26 09          BNE    $9909
 9900: BD CD 20       JSR    $CD20
