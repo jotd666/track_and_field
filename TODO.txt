@@ -7,6 +7,8 @@
 
 ebe4: masking out kills D, use tmp d6, remove masking out
 eca3: leax b,x: should mask out and use tmp d6 too
+64F7: A6 85          LDA    A,U		; SIGN EXTEND!!!
+64F7: A6 85          LDA    B,U		; SIGN EXTEND!!!
 
 - erase: error if blitter busy?
 - player frame wrong symmetry in tiles

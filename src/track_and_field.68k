@@ -927,6 +927,7 @@ l_641a:
 	neg.b	d1                               	| [$6431: negb]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$6432: ldb    b,x]
 	move.b	(a0),d1                         	| [...]
                                          | [$6434: lsrb]
@@ -1068,6 +1069,7 @@ l_64f4:
 	move.w	#0xa4d3,d2                      	| [$64f4: ldx    #$a4d3]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$64f7: lda    b,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x43                    	| [$64f9: sta    $43]
@@ -3047,6 +3049,7 @@ l_6f85:
 	sub.b	#0x0e,d1                         	| [$6f89: subb   #$0e]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$6f8b: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	jbsr	l_850e                            	| [$6f8d: jsr    $850e]
@@ -6872,6 +6875,7 @@ l_83b2:
 	move.w	#0xa9b0,d2                      	| [$83b2: ldx    #$a9b0]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$83b5: lda    b,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x53                    	| [$83b7: sta    $53]
@@ -7070,6 +7074,7 @@ l_84b3:
 	move.w	#0xa9a9,d2                      	| [$84b3: ldx    #$a9a9]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$84b6: lda    b,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x52                    	| [$84b8: adda   $52]
@@ -7844,6 +7849,7 @@ l_888a:
 	move.b	(a0),d1                         	| [...]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$8892: ldb    b,y]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$8894: stb    nb_objects_48]
@@ -10002,6 +10008,7 @@ l_929d:
 	neg.b	d1                               	| [$92a5: negb]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d4                            	| [$92a6: leau   b,u]
 	GET_REG_ADDRESS	0x3,d2                 	| [$92a8: ldy    $3,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
@@ -10253,6 +10260,7 @@ l_93fe:
 	addq.b	#1,d1                           	| [$9408: incb]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$9409: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x13,d2                	| [$940b: adda   $13,x]
@@ -10279,6 +10287,7 @@ l_93fe:
 	subq.b	#1,d1                           	| [$9422: decb]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$9423: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$9425: adda   $49]
@@ -13870,6 +13879,7 @@ l_ccbd:
 	move.w	#0xdc30,d3                      	| [$ccc0: ldy    #$dc30]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ccc4: ldy    b,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$ccc7: lda    ,x]
@@ -16066,6 +16076,7 @@ l_d84a:
 	jbsr	multiply_ab                       	| [$d862: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d4                            	| [$d863: leau   b,u]
 	move.b	#0x03,d0                        	| [$d865: lda    #$03]
 	GET_DP_ADDRESS	0x50                    	| [$d867: sta    $50]
@@ -17635,6 +17646,7 @@ l_e2fc:
 	jbsr	multiply_ab                       	| [$e335: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d2                            	| [$e336: leax   b,x]
 	jbsr	compare_times_8968                	| [$e338: jsr    compare_times_8968]
 	GET_DP_ADDRESS	0x62                    	| [$e33b: tst    $62]
@@ -18837,6 +18849,7 @@ l_e9e4:
 	jbsr	multiply_ab                       	| [$e9f0: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d3                            	| [$e9f1: leay   b,y]
 
 update_flying_javelin_sprite_e9f3:
@@ -19001,6 +19014,7 @@ l_eaac:
 	jbsr	multiply_ab                       	| [$eaba: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d3                            	| [$eabb: leay   b,y]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$eabd: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
@@ -19042,6 +19056,7 @@ l_eae9:
 	move.w	#0xed7b,d3                      	| [$eaed: ldy    #$ed7b]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$eaf1: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	moveq	#0,d1                            	| [$eaf3: clrb]
@@ -19152,6 +19167,7 @@ l_eb81:
 	move.w	#0xef53,d3                      	| [$eb8d: ldy    #$ef53]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d3                            	| [$eb91: leay   b,y]
 	jbsr	update_flying_javelin_sprite_e9f3 	| [$eb93: jsr    update_flying_javelin_sprite_e9f3]
 	jbsr	l_eba3                            	| [$eb96: jsr    $eba3]
@@ -19208,6 +19224,7 @@ l_ebda:
 	move.w	#0xefea,d3                      	| [$ebe0: ldy    #$efea]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ebe4: adda   b,y]
 	add.b	(a0),d0                          	| [...]
 	move.w	#0xef53,d3                      	| [$ebe6: ldy    #$ef53]
@@ -19217,6 +19234,7 @@ l_ebda:
 	move.l	(sp)+,d0                        	| [$ebef: puls   a]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ebf1: adda   b,y]
 	add.b	(a0),d0                          	| [...]
 	cmp.b	#0xfc,d0                         	| [$ebf3: cmpa   #$fc]
@@ -19303,6 +19321,7 @@ l_ec60:
 l_ec73:
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ec73: adda   b,y]
 	CLR_XC_FLAGS
 	move.b	(a0),d6	| [...]
@@ -19346,6 +19365,7 @@ l_ec8e:
 	jbsr	multiply_ab                       	| [$eca2: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d2                            	| [$eca3: leax   b,x]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$eca5: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
@@ -19803,6 +19823,7 @@ l_f129:
 	jbsr	multiply_ab                       	| [$f13f: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d4                            	| [$f140: leau   b,u]
 	GET_REG_ADDRESS	0,d3                   	| [$f142: ldd    ,y]
 	LOAD_D                                 	| [$f142: ldd    ,y]
@@ -19926,6 +19947,7 @@ l_f1c5:
 	jbsr	multiply_ab                       	| [$f1de: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d3                            	| [$f1df: leay   b,y]
 	GET_REG_ADDRESS	0,d3                   	| [$f1e1: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
@@ -20022,6 +20044,7 @@ l_f232:
 	jbsr	multiply_ab                       	| [$f259: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d3                            	| [$f25a: leay   b,y]
 	jra	l_f271                             	| [$f25c: bra    $f271]
 l_f25e:
@@ -20036,6 +20059,7 @@ l_f25e:
 	jbsr	multiply_ab                       	| [$f26e: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d3                            	| [$f26f: leay   b,y]
 l_f271:
 	add.w	#0xc,d2                          	| [$f271: leax   $c,x]
@@ -20678,6 +20702,7 @@ l_f59b:
 	move.w	#0xfe81,d4                      	| [$f59b: ldu    #$fe81]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f59e: ldb    b,u]
 	move.b	(a0),d1                         	| [...]
 	jra	l_f5ba                             	| [$f5a0: bra    $f5ba]
@@ -20693,6 +20718,7 @@ l_f5af:
 	move.w	#0xfe85,d4                      	| [$f5af: ldu    #$fe85]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f5b2: ldb    b,u]
 	move.b	(a0),d1                         	| [...]
 	jra	l_f5ba                             	| [$f5b4: bra    $f5ba]
@@ -20987,6 +21013,7 @@ l_f72f:
 	move.b	(a0),d1                         	| [...]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$f737: ldb    b,x]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0x01,d0                        	| [$f739: lda    #$01]
@@ -21151,6 +21178,7 @@ l_f802:
 	jbsr	multiply_ab                       	| [$f80b: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d2                            	| [$f80c: leax   b,x]
 	GET_REG_ADDRESS	0,d2                   	| [$f80e: lda    ,x]
 	move.b	(a0),d0                         	| [...]
@@ -21295,6 +21323,7 @@ l_f8b6:
 	asl.b	#1,d1                            	| [$f8c9: aslb]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$f8ca: ldx    b,x]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	move.b	#0x0a,d1                        	| [$f8cc: ldb    #$0a]
@@ -21356,6 +21385,7 @@ l_f913:
 	jbsr	multiply_ab                       	| [$f91c: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d2                            	| [$f91d: leax   b,x]
 	GET_ADDRESS	0x299e                     	| [$f91f: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
@@ -21727,6 +21757,7 @@ l_fac3:
 	jbsr	multiply_ab                       	| [$faca: mul]
 	moveq	#0,d6                            	| [...]
 	move.b	d1,d6
+	ext	d6
 	add.w	d6,d2                            	| [$facb: leax   b,x]
 	GET_REG_ADDRESS	0,d2                   	| [$facd: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
