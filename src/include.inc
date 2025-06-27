@@ -110,6 +110,12 @@ get_address:
 	rol.w	#8,d1
 	.endm
 
+	.macro	MAKE_A
+	rol.w	#8,d1
+	move.b	d1,d0
+	rol.w	#8,d1
+	.endm
+
 	.macro	BIT	reg,arg
 	move.b	\reg,d6
 	and.b	\arg,d6
@@ -186,6 +192,10 @@ get_address:
 
 * 68020 compliant & optimized
 
+	.macro DO_EXTB	reg
+	extb.l	\reg
+	.endm
+
 	.macro PUSH_SR
 	move.w	ccr,-(sp)
 	.endm
@@ -214,6 +224,11 @@ get_address:
 	.else
 
 * 68000 compliant
+
+	.macro DO_EXTB	reg
+	ext	\reg
+	ext.l	\reg
+	.endm
 
 	.macro PUSH_SR
 	move.w	sr,-(sp)
@@ -305,11 +320,11 @@ get_address:
 	GET_ADDRESS_FUNC
 	.endm
 
-	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
-	GET_REG_ADDRESS		\offset,\reg
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
+*	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
+*	GET_REG_ADDRESS		\offset,\reg
+*	READ_BE_WORD	a0
+*	GET_ADDRESS_FUNC
+*	.endm
 
 	.macro GET_REG_ADDRESS_FROM_REG	reg,reg2
 	move.l	\reg,a0

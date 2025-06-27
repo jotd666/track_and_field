@@ -318,7 +318,9 @@ write_copyright_text_61c3:
 61EB: 39             RTS
 
 61EC: 80 30          SUBA   #$30
+
 61EE: C6 00          LDB    #$00
+write_char_and_move_cursor_61f0:
 61F0: D8 73          EORB   $73
 61F2: E7 C9 08 00    STB    $0800,U		; [video_address]
 61F6: A7 C0          STA    ,U+         ; [video_address]
@@ -335,9 +337,9 @@ write_copyright_text_61c3:
 620C: 4A             DECA
 620D: E6 A6          LDB    A,Y
 620F: 4C             INCA
-6210: 8D DE          BSR    $61F0
+6210: 8D DE          BSR    write_char_and_move_cursor_61f0
 6212: 86 20          LDA    #$20
-6214: 8D DA          BSR    $61F0
+6214: 8D DA          BSR    write_char_and_move_cursor_61f0
 6216: 33 41          LEAU   $1,U
 6218: 34 04          PSHS   B
 621A: 10 8E 29 90    LDY    #$2990
@@ -359,7 +361,7 @@ write_copyright_text_61c3:
 623A: 34 04          PSHS   B
 623C: C6 40          LDB    #$40
 623E: 86 6B          LDA    #$6B
-6240: BD 61 F0       JSR    $61F0
+6240: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6243: 10 8E 2B 81    LDY    #$2B81
 6247: A6 1C          LDA    -$4,X
 6249: 4A             DECA
@@ -372,7 +374,7 @@ write_copyright_text_61c3:
 6255: 86 0A          LDA    #$0A
 6257: 4A             DECA
 6258: 35 04          PULS   B
-625A: BD 61 F0       JSR    $61F0
+625A: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 625D: 33 C8 2F       LEAU   $2F,U
 6260: 0A 40          DEC    $40
 6262: 10 26 FF 9E    LBNE   $6204
@@ -381,11 +383,11 @@ write_copyright_text_61c3:
 
 6267: 0F 41          CLR    $41
 6269: A6 A0          LDA    ,Y+
-626B: 8D 83          BSR    $61F0
+626B: 8D 83          BSR    write_char_and_move_cursor_61f0
 626D: A6 A0          LDA    ,Y+
-626F: BD 61 F0       JSR    $61F0
+626F: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6272: A6 A0          LDA    ,Y+
-6274: BD 61 F0       JSR    $61F0
+6274: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6277: 33 41          LEAU   $1,U
 6279: 86 03          LDA    #$03
 627B: 97 42          STA    $42
@@ -398,7 +400,7 @@ write_copyright_text_61c3:
 6285: 0D 41          TST    $41
 6287: 27 07          BEQ    $6290
 6289: 0C 41          INC    $41
-628B: BD 61 F0       JSR    $61F0
+628B: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 628E: 20 02          BRA    $6292
 6290: 33 41          LEAU   $1,U
 6292: A6 80          LDA    ,X+
@@ -407,13 +409,13 @@ write_copyright_text_61c3:
 6298: 0D 41          TST    $41
 629A: 27 07          BEQ    $62A3
 629C: 0C 41          INC    $41
-629E: BD 61 F0       JSR    $61F0
+629E: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 62A1: 20 02          BRA    $62A5
 62A3: 33 41          LEAU   $1,U
 62A5: 0A 42          DEC    $42
 62A7: 26 D4          BNE    $627D
 62A9: 4F             CLRA
-62AA: 7E 61 F0       JMP    $61F0
+62AA: 7E 61 F0       JMP    write_char_and_move_cursor_61f0
 
 62AD: 8E 29 90       LDX    #$2990
 62B0: 96 DF          LDA    $DF
@@ -452,9 +454,9 @@ write_copyright_text_61c3:
 62F6: E6 A6          LDB    A,Y
 62F8: A6 84          LDA    ,X
 62FA: 84 0F          ANDA   #$0F
-62FC: BD 61 F0       JSR    $61F0
+62FC: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 62FF: 86 20          LDA    #$20
-6301: BD 61 F0       JSR    $61F0
+6301: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6304: 33 41          LEAU   $1,U
 6306: 34 04          PSHS   B
 6308: 10 8E 29 90    LDY    #$2990
@@ -470,26 +472,26 @@ write_copyright_text_61c3:
 631E: 31 AB          LEAY   D,Y
 6320: 35 04          PULS   B
 6322: A6 A0          LDA    ,Y+
-6324: BD 61 F0       JSR    $61F0
+6324: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6327: A6 A0          LDA    ,Y+
-6329: BD 61 F0       JSR    $61F0
+6329: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 632C: A6 A0          LDA    ,Y+
-632E: BD 61 F0       JSR    $61F0
+632E: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6331: 33 41          LEAU   $1,U
 6333: 5F             CLRB
 6334: A6 84          LDA    ,X
-6336: BD 61 F0       JSR    $61F0
+6336: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6339: A6 01          LDA    $1,X
-633B: BD 61 F0       JSR    $61F0
+633B: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 633E: 34 04          PSHS   B
 6340: BD 8A 1D       JSR    $8A1D
 6343: C6 09          LDB    #$09
-6345: BD 61 F0       JSR    $61F0
+6345: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6348: 35 04          PULS   B
 634A: A6 02          LDA    $2,X
-634C: BD 61 F0       JSR    $61F0
+634C: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 634F: A6 03          LDA    $3,X
-6351: BD 61 F0       JSR    $61F0
+6351: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6354: 96 84          LDA    current_level_84
 6356: 81 05          CMPA   #$05
 6358: 26 20          BNE    $637A
@@ -644,11 +646,12 @@ draw_chrono_63c6:
 6498: 97 46          STA    $46
 649A: 1F 98          TFR    B,A
 649C: 35 04          PULS   B
-649E: BD 61 F0       JSR    $61F0
+649E: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 64A1: 96 46          LDA    $46
-64A3: BD 61 F0       JSR    $61F0
-64A6: 86 37          LDA    #$37
-64A8: 7E 61 F0       JMP    $61F0
+64A3: BD 61 F0       JSR    write_char_and_move_cursor_61f0
+64A6: 86 37          LDA    #$37			; degree sign
+64A8: 7E 61 F0       JMP    write_char_and_move_cursor_61f0
+
 64AB: 34 06          PSHS   D
 64AD: 96 21          LDA    copy_of_screen_flipped_21
 64AF: 26 12          BNE    $64C3
@@ -1334,26 +1337,26 @@ setup_players_screen_6936:
 69F4: C6 0A          LDB    #$0A
 69F6: A6 80          LDA    ,X+
 69F8: 27 05          BEQ    $69FF
-69FA: BD 61 F0       JSR    $61F0
+69FA: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 69FD: 20 02          BRA    $6A01
 69FF: 33 41          LEAU   $1,U
 6A01: A6 80          LDA    ,X+
-6A03: BD 61 F0       JSR    $61F0
+6A03: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A06: BD 8A 1D       JSR    $8A1D
 6A09: C6 09          LDB    #$09
-6A0B: BD 61 F0       JSR    $61F0
+6A0B: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A0E: C6 0A          LDB    #$0A
 6A10: A6 80          LDA    ,X+
-6A12: BD 61 F0       JSR    $61F0
+6A12: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A15: A6 80          LDA    ,X+
-6A17: BD 61 F0       JSR    $61F0
+6A17: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A1A: 33 41          LEAU   $1,U
 6A1C: A6 80          LDA    ,X+
-6A1E: BD 61 F0       JSR    $61F0
+6A1E: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A21: A6 80          LDA    ,X+
-6A23: BD 61 F0       JSR    $61F0
+6A23: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A26: A6 81          LDA    ,X++
-6A28: BD 61 F0       JSR    $61F0
+6A28: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 6A2B: 33 C8 37       LEAU   $37,U
 6A2E: 0A 55          DEC    $55
 6A30: 26 C4          BNE    $69F6
@@ -2228,7 +2231,7 @@ init_game_playfield_6a85:
 71CD: C4 08          ANDB   #$08
 71CF: 27 02          BEQ    $71D3
 71D1: 86 00          LDA    #$00
-71D3: A7 80          STA    ,X+
+71D3: A7 80          STA    ,X+		; [video_address]
 71D5: 0A 48          DEC    nb_objects_48
 71D7: 26 FA          BNE    $71D3
 71D9: BD D9 D3       JSR    $D9D3
@@ -3832,7 +3835,7 @@ init_game_playfield_6a85:
 
 7EC1: BD 85 87       JSR    $8587
 7EC4: 10 AE 03       LDY    $3,X
-7EC7: A6 A4          LDA    ,Y
+7EC7: A6 A4          LDA    ,Y		; [video_address]
 7EC9: 81 4E          CMPA   #$4E
 7ECB: 27 1F          BEQ    $7EEC
 7ECD: 81 55          CMPA   #$55
@@ -3859,7 +3862,7 @@ init_game_playfield_6a85:
 7EF4: 86 42          LDA    #$42
 7EF6: 20 02          BRA    $7EFA
 7EF8: 86 43          LDA    #$43
-7EFA: A7 A4          STA    ,Y
+7EFA: A7 A4          STA    ,Y		; [video_address]
 7EFC: 39             RTS
 
 7EFD: BD 96 E8       JSR    $96E8
@@ -4796,7 +4799,7 @@ queue_event_84f5:
 86AB: BD 61 EE       JSR    $61EE
 86AE: BD 8A 1D       JSR    $8A1D
 86B1: C6 09          LDB    #$09
-86B3: BD 61 F0       JSR    $61F0
+86B3: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 86B6: A6 02          LDA    $2,X
 86B8: BD 61 EE       JSR    $61EE
 86BB: A6 03          LDA    $3,X
@@ -4862,7 +4865,7 @@ queue_event_84f5:
 8727: BD 61 EE       JSR    $61EE
 872A: BD 8A 1D       JSR    $8A1D
 872D: C6 09          LDB    #$09
-872F: BD 61 F0       JSR    $61F0
+872F: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 8732: A6 80          LDA    ,X+
 8734: BD 61 EE       JSR    $61EE
 8737: A6 80          LDA    ,X+
@@ -6388,14 +6391,14 @@ partially_reset_scrolling_8c3e:
 9336: A7 A4          STA    ,Y
 9338: 26 02          BNE    $933C
 933A: 86 10          LDA    #$10
-933C: BD 61 F0       JSR    $61F0
+933C: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 933F: A6 80          LDA    ,X+
 9341: 84 0F          ANDA   #$0F
 9343: A7 21          STA    $1,Y
-9345: BD 61 F0       JSR    $61F0
+9345: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 9348: BD 8A 1D       JSR    $8A1D
 934B: C6 09          LDB    #$09
-934D: BD 61 F0       JSR    $61F0
+934D: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 9350: C6 01          LDB    #$01
 9352: A6 84          LDA    ,X
 9354: 44             LSRA
@@ -6403,11 +6406,11 @@ partially_reset_scrolling_8c3e:
 9356: 44             LSRA
 9357: 44             LSRA
 9358: A7 22          STA    $2,Y
-935A: BD 61 F0       JSR    $61F0
+935A: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 935D: A6 80          LDA    ,X+
 935F: 84 0F          ANDA   #$0F
 9361: A7 23          STA    $3,Y
-9363: 7E 61 F0       JMP    $61F0
+9363: 7E 61 F0       JMP    write_char_and_move_cursor_61f0
 9366: 96 82          LDA    $82
 9368: 5F             CLRB
 9369: 80 06          SUBA   #$06
@@ -6960,7 +6963,7 @@ compare_contestants_tile_96d3:
 97F1: D6 CE          LDB    $CE
 97F3: 10 26 00 87    LBNE   $987E
 97F7: AB 02          ADDA   $2,X
-97F9: A7 02          STA    $2,X
+97F9: A7 02          STA    $2,X		; update parabol X (player in air, javelin)
 97FB: 97 4A          STA    $4A
 97FD: 0D D7          TST    $D7
 97FF: 26 24          BNE    $9825
@@ -9974,34 +9977,34 @@ D6A9: CB 36          ADDB   #$36
 D6AB: BD 84 F5       JSR    queue_event_84f5
 D6AE: D6 49          LDB    $49
 D6B0: A6 84          LDA    ,X
-D6B2: BD 61 F0       JSR    $61F0
+D6B2: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6B5: 86 20          LDA    #$20
-D6B7: BD 61 F0       JSR    $61F0
+D6B7: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6BA: 33 41          LEAU   $1,U
 D6BC: BD D7 DF       JSR    $D7DF
 D6BF: D6 49          LDB    $49
 D6C1: A6 A0          LDA    ,Y+
-D6C3: BD 61 F0       JSR    $61F0
+D6C3: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6C6: A6 A0          LDA    ,Y+
-D6C8: BD 61 F0       JSR    $61F0
+D6C8: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6CB: A6 A0          LDA    ,Y+
-D6CD: BD 61 F0       JSR    $61F0
+D6CD: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6D0: 33 42          LEAU   $2,U
 D6D2: A6 80          LDA    ,X+
 D6D4: 27 05          BEQ    $D6DB
-D6D6: BD 61 F0       JSR    $61F0
+D6D6: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6D9: 20 02          BRA    $D6DD
 D6DB: 33 41          LEAU   $1,U
 D6DD: A6 80          LDA    ,X+
-D6DF: BD 61 F0       JSR    $61F0
+D6DF: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6E2: BD 8A 1D       JSR    $8A1D
 D6E5: C6 01          LDB    #$01
-D6E7: BD 61 F0       JSR    $61F0
+D6E7: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6EA: D6 49          LDB    $49
 D6EC: A6 80          LDA    ,X+
-D6EE: BD 61 F0       JSR    $61F0
+D6EE: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6F1: A6 80          LDA    ,X+
-D6F3: BD 61 F0       JSR    $61F0
+D6F3: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D6F6: 0C 07          INC    $07
 D6F8: 33 C8 73       LEAU   $73,U
 D6FB: 8C 2B 74       CMPX   #$2B74
@@ -10072,35 +10075,35 @@ D78F: CE 32 C9       LDU    #$32C9
 D792: A6 84          LDA    ,X
 D794: 97 DF          STA    $DF
 D796: 0A DF          DEC    $DF
-D798: BD 61 F0       JSR    $61F0
+D798: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D79B: 86 20          LDA    #$20
-D79D: BD 61 F0       JSR    $61F0
+D79D: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7A0: 33 42          LEAU   $2,U
 D7A2: 34 04          PSHS   B
 D7A4: BD D7 DF       JSR    $D7DF
 D7A7: 35 04          PULS   B
 D7A9: A6 A0          LDA    ,Y+
-D7AB: BD 61 F0       JSR    $61F0
+D7AB: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7AE: A6 A0          LDA    ,Y+
-D7B0: BD 61 F0       JSR    $61F0
+D7B0: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7B3: A6 A0          LDA    ,Y+
-D7B5: BD 61 F0       JSR    $61F0
+D7B5: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7B8: 33 42          LEAU   $2,U
 D7BA: A6 80          LDA    ,X+
 D7BC: 27 05          BEQ    $D7C3
-D7BE: BD 61 F0       JSR    $61F0
+D7BE: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7C1: 20 02          BRA    $D7C5
 D7C3: 33 41          LEAU   $1,U
 D7C5: A6 80          LDA    ,X+
-D7C7: BD 61 F0       JSR    $61F0
+D7C7: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7CA: 34 04          PSHS   B
 D7CC: BD 8A 1D       JSR    $8A1D
 D7CF: 35 04          PULS   B
-D7D1: BD 61 F0       JSR    $61F0
+D7D1: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7D4: A6 80          LDA    ,X+
-D7D6: BD 61 F0       JSR    $61F0
+D7D6: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7D9: A6 80          LDA    ,X+
-D7DB: BD 61 F0       JSR    $61F0
+D7DB: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 D7DE: 39             RTS
 
 D7DF: 10 8E 29 90    LDY    #$2990
@@ -10112,13 +10115,13 @@ D7E9: 31 AB          LEAY   D,Y
 D7EB: 39             RTS
 
 D7EC: 86 48          LDA    #$48
-D7EE: A7 C0          STA    ,U+
+D7EE: A7 C0          STA    ,U+		; [video_address]
 D7F0: 5A             DECB
 D7F1: 26 FB          BNE    $D7EE
 D7F3: 39             RTS
 
 D7F4: 86 48          LDA    #$48
-D7F6: A7 C4          STA    ,U
+D7F6: A7 C4          STA    ,U		; [video_address]
 D7F8: 33 C8 40       LEAU   $40,U
 D7FB: 5A             DECB
 D7FC: 26 F8          BNE    $D7F6
@@ -10413,56 +10416,56 @@ DA74: 31 A6          LEAY   A,Y
 DA76: 39             RTS
 
 DA77: A6 A4          LDA    ,Y
-DA79: A7 C0          STA    ,U+
+DA79: A7 C0          STA    ,U+		; [video_address]
 DA7B: A6 21          LDA    $1,Y
-DA7D: A7 C0          STA    ,U+
+DA7D: A7 C0          STA    ,U+		; [video_address]
 DA7F: A6 22          LDA    $2,Y
-DA81: A7 C0          STA    ,U+
+DA81: A7 C0          STA    ,U+		; [video_address]
 DA83: A6 23          LDA    $3,Y
-DA85: A7 C0          STA    ,U+
+DA85: A7 C0          STA    ,U+		; [video_address]
 DA87: 5A             DECB
 DA88: 26 ED          BNE    $DA77
 DA8A: 39             RTS
 
 DA8B: A6 A4          LDA    ,Y
-DA8D: A7 C4          STA    ,U
+DA8D: A7 C4          STA    ,U		; [video_address]
 DA8F: 33 C8 40       LEAU   $40,U
 DA92: A6 21          LDA    $1,Y
-DA94: A7 C4          STA    ,U
+DA94: A7 C4          STA    ,U		; [video_address]
 DA96: 33 C8 40       LEAU   $40,U
 DA99: A6 22          LDA    $2,Y
-DA9B: A7 C4          STA    ,U
+DA9B: A7 C4          STA    ,U		; [video_address]
 DA9D: 33 C8 40       LEAU   $40,U
 DAA0: A6 23          LDA    $3,Y
-DAA2: A7 C4          STA    ,U
+DAA2: A7 C4          STA    ,U		; [video_address]
 DAA4: 33 C8 40       LEAU   $40,U
 DAA7: 5A             DECB
 DAA8: 26 E1          BNE    $DA8B
 DAAA: 39             RTS
 
 DAAB: A6 A4          LDA    ,Y
-DAAD: A7 C2          STA    ,-U
+DAAD: A7 C2          STA    ,-U		; [video_address]
 DAAF: A6 21          LDA    $1,Y
-DAB1: A7 C2          STA    ,-U
+DAB1: A7 C2          STA    ,-U		; [video_address]
 DAB3: A6 22          LDA    $2,Y
-DAB5: A7 C2          STA    ,-U
+DAB5: A7 C2          STA    ,-U		; [video_address]
 DAB7: A6 23          LDA    $3,Y
-DAB9: A7 C2          STA    ,-U
+DAB9: A7 C2          STA    ,-U		; [video_address]
 DABB: 5A             DECB
 DABC: 26 ED          BNE    $DAAB
 DABE: 39             RTS
 
 DABF: A6 A4          LDA    ,Y
-DAC1: A7 C4          STA    ,U
+DAC1: A7 C4          STA    ,U		; [video_address]
 DAC3: 33 C8 C0       LEAU   -$40,U
 DAC6: A6 21          LDA    $1,Y
-DAC8: A7 C4          STA    ,U
+DAC8: A7 C4          STA    ,U		; [video_address]
 DACA: 33 C8 C0       LEAU   -$40,U
 DACD: A6 22          LDA    $2,Y
-DACF: A7 C4          STA    ,U
+DACF: A7 C4          STA    ,U		; [video_address]
 DAD1: 33 C8 C0       LEAU   -$40,U
 DAD4: A6 23          LDA    $3,Y
-DAD6: A7 C4          STA    ,U
+DAD6: A7 C4          STA    ,U		; [video_address]
 DAD8: 33 C8 C0       LEAU   -$40,U
 DADB: 5A             DECB
 DADC: 26 E1          BNE    $DABF
@@ -10536,9 +10539,9 @@ DB6B: CB 36          ADDB   #$36
 DB6D: BD 84 F5       JSR    queue_event_84f5
 DB70: D6 49          LDB    $49
 DB72: A6 84          LDA    ,X
-DB74: BD 61 F0       JSR    $61F0
+DB74: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 DB77: 86 20          LDA    #$20
-DB79: BD 61 F0       JSR    $61F0
+DB79: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 DB7C: 33 41          LEAU   $1,U
 DB7E: BD D7 DF       JSR    $D7DF
 DB81: D6 49          LDB    $49
@@ -10608,9 +10611,9 @@ DC13: CE 32 C9       LDU    #$32C9
 DC16: A6 84          LDA    ,X
 DC18: 97 DF          STA    $DF
 DC1A: 0A DF          DEC    $DF
-DC1C: BD 61 F0       JSR    $61F0
+DC1C: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 DC1F: 86 20          LDA    #$20
-DC21: BD 61 F0       JSR    $61F0
+DC21: BD 61 F0       JSR    write_char_and_move_cursor_61f0
 DC24: 33 41          LEAU   $1,U
 DC26: 34 04          PSHS   B
 DC28: BD D7 DF       JSR    $D7DF
@@ -11388,7 +11391,7 @@ E546: 27 1E          BEQ    $E566
 E548: 8E 28 A0       LDX    #$28A0
 E54B: BD 85 87       JSR    $8587
 E54E: 9E A3          LDX    $A3
-E550: A6 88 C0       LDA    -$40,X
+E550: A6 88 C0       LDA    -$40,X		; [video_address]
 E553: 5F             CLRB
 E554: 81 AD          CMPA   #$AD
 E556: 27 0F          BEQ    $E567

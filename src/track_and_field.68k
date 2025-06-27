@@ -199,7 +199,10 @@ l_6067:
 	and.b	#0x0f,d0                         	| [$6099: anda   #$0f]
 	asl.b	#1,d0                            	| [$609b: asla]
 	move.w	#0xa43b,d2                      	| [$609c: ldx    #$a43b]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$609f: ldd    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$609f: ldd    a,x]
 	LOAD_D                                 	| [$609f: ldd    a,x]
 	GET_DP_ADDRESS	0x28                    	| [$60a1: std    $28]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -210,7 +213,10 @@ l_6067:
                                          | [$60a8: lsra]
 	lsr.b	#3,d0                            	| [$60a9: lsra]
 	move.w	#0xa45b,d2                      	| [$60aa: ldx    #$a45b]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$60ad: ldd    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$60ad: ldd    a,x]
 	LOAD_D                                 	| [$60ad: ldd    a,x]
 	GET_DP_ADDRESS	0x2a                    	| [$60af: std    $2a]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -487,9 +493,10 @@ l_61e0:
 	rts                                    	| [$61eb: rts]
 
 	sub.b	#0x30,d0                         	| [$61ec: suba   #$30]
+
 l_61ee:
 	move.b	#0x00,d1                        	| [$61ee: ldb    #$00]
-l_61f0:
+write_char_and_move_cursor_61f0:
 	GET_DP_ADDRESS	0x73                    	| [$61f0: eorb   $73]
 	move.b	(a0),d6	| [...]
 	eor.b	d6,d1                          	| [...]
@@ -517,12 +524,15 @@ l_6204:
 	move.b	(a0),d0                         	| [...]
 	jeq	l_61f8                             	| [$620a: beq    $61f8]
 	subq.b	#1,d0                           	| [$620c: deca]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$620d: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$620d: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	addq.b	#1,d0                           	| [$620f: inca]
-	jbsr	l_61f0                            	| [$6210: bsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6210: bsr    write_char_and_move_cursor_61f0]
 	move.b	#0x20,d0                        	| [$6212: lda    #$20]
-	jbsr	l_61f0                            	| [$6214: bsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6214: bsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$6216: leau   $1,u]
 	move.l	d1,-(sp)                        	| [$6218: pshs   b]
 	move.w	#0x2990,d3                      	| [$621a: ldy    #$2990]
@@ -533,7 +543,7 @@ l_6204:
 	move.b	#0x03,d1                        	| [$6221: ldb    #$03]
 	jbsr	multiply_ab                       	| [$6223: mul]
 	add.w	d1,d3                            	| [$6224: leay   d,y]
-	move.l	(sp)+,d1                        	| [$6226: puls   b]
+	movem.l	(sp)+,d1                       	| [$6226: puls   b]
 	jbsr	l_6267                            	| [$6228: bsr    $6267]
 	addq.w	#0x1,d4                         	| [$622a: leau   $1,u]
 	GET_DP_ADDRESS	dsw2_copy_2d            	| [$622c: lda    dsw2_copy_2d]
@@ -548,7 +558,7 @@ l_623a:
 	move.l	d1,-(sp)                        	| [$623a: pshs   b]
 	move.b	#0x40,d1                        	| [$623c: ldb    #$40]
 	move.b	#0x6b,d0                        	| [$623e: lda    #$6b]
-	jbsr	l_61f0                            	| [$6240: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6240: jsr    write_char_and_move_cursor_61f0]
 	move.w	#0x2b81,d3                      	| [$6243: ldy    #$2b81]
 	GET_REG_ADDRESS	-0x4,d2                	| [$6247: lda    -$4,x]
 	move.b	(a0),d0                         	| [...]
@@ -564,8 +574,8 @@ l_623a:
 l_6257:
 	subq.b	#1,d0                           	| [$6257: deca]
 l_6258:
-	move.l	(sp)+,d1                        	| [$6258: puls   b]
-	jbsr	l_61f0                            	| [$625a: jsr    $61f0]
+	movem.l	(sp)+,d1                       	| [$6258: puls   b]
+	jbsr	write_char_and_move_cursor_61f0   	| [$625a: jsr    write_char_and_move_cursor_61f0]
 l_625d:
 	add.w	#0x2f,d4                         	| [$625d: leau   $2f,u]
 	GET_DP_ADDRESS	0x40                    	| [$6260: dec    $40]
@@ -580,15 +590,15 @@ l_6267:
 	GET_REG_ADDRESS	0,d3                   	| [$6269: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$626b: bsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$626b: bsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$626d: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$626f: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$626f: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$6272: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6274: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6274: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$6277: leau   $1,u]
 	move.b	#0x03,d0                        	| [$6279: lda    #$03]
 	GET_DP_ADDRESS	0x42                    	| [$627b: sta    $42]
@@ -607,7 +617,7 @@ l_627d:
 l_6289:
 	GET_DP_ADDRESS	0x41                    	| [$6289: inc    $41]
 	addq.b	#1,(a0)                         	| [...]
-	jbsr	l_61f0                            	| [$628b: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$628b: jsr    write_char_and_move_cursor_61f0]
 	jra	l_6292                             	| [$628e: bra    $6292]
 l_6290:
 	addq.w	#0x1,d4                         	| [$6290: leau   $1,u]
@@ -623,7 +633,7 @@ l_6292:
 l_629c:
 	GET_DP_ADDRESS	0x41                    	| [$629c: inc    $41]
 	addq.b	#1,(a0)                         	| [...]
-	jbsr	l_61f0                            	| [$629e: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$629e: jsr    write_char_and_move_cursor_61f0]
 	jra	l_62a5                             	| [$62a1: bra    $62a5]
 l_62a3:
 	addq.w	#0x1,d4                         	| [$62a3: leau   $1,u]
@@ -632,7 +642,7 @@ l_62a5:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_627d                             	| [$62a7: bne    $627d]
 	moveq	#0,d0                            	| [$62a9: clra]
-	jmp	l_61f0                             	| [$62aa: jmp    $61f0]
+	jmp	write_char_and_move_cursor_61f0    	| [$62aa: jmp    write_char_and_move_cursor_61f0]
 
 l_62ad:
 	move.w	#0x2990,d2                      	| [$62ad: ldx    #$2990]
@@ -644,7 +654,10 @@ l_62ad:
 	move.w	#0xa4c8,d4                      	| [$62b7: ldu    #$a4c8]
 	GET_DP_ADDRESS	0xdf                    	| [$62ba: lda    $df]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$62bc: ldb    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$62bc: ldb    a,u]
 	move.b	(a0),d1                         	| [...]
 	move.w	#0x3393,d4                      	| [$62be: ldu    #$3393]
 	move.b	#0x03,d0                        	| [$62c1: lda    #$03]
@@ -688,15 +701,18 @@ l_62ef:
 	GET_REG_ADDRESS	0,d2                   	| [$62f3: lda    ,x]
 	move.b	(a0),d0                         	| [...]
 	subq.b	#1,d0                           	| [$62f5: deca]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$62f6: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$62f6: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 l_62f8:
 	GET_REG_ADDRESS	0,d2                   	| [$62f8: lda    ,x]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x0f,d0                         	| [$62fa: anda   #$0f]
-	jbsr	l_61f0                            	| [$62fc: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$62fc: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x20,d0                        	| [$62ff: lda    #$20]
-	jbsr	l_61f0                            	| [$6301: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6301: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$6304: leau   $1,u]
 	move.l	d1,-(sp)                        	| [$6306: pshs   b]
 	move.w	#0x2990,d3                      	| [$6308: ldy    #$2990]
@@ -715,38 +731,38 @@ l_6318:
 	jbsr	multiply_ab                       	| [$631d: mul]
 	add.w	d1,d3                            	| [$631e: leay   d,y]
 l_6320:
-	move.l	(sp)+,d1                        	| [$6320: puls   b]
+	movem.l	(sp)+,d1                       	| [$6320: puls   b]
 	GET_REG_ADDRESS	0,d3                   	| [$6322: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6324: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6324: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$6327: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6329: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6329: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$632c: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$632e: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$632e: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$6331: leau   $1,u]
 	moveq	#0,d1                            	| [$6333: clrb]
 	GET_REG_ADDRESS	0,d2                   	| [$6334: lda    ,x]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6336: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6336: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0x1,d2                 	| [$6339: lda    $1,x]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$633b: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$633b: jsr    write_char_and_move_cursor_61f0]
 	move.l	d1,-(sp)                        	| [$633e: pshs   b]
 	jbsr	l_8a1d                            	| [$6340: jsr    $8a1d]
 	move.b	#0x09,d1                        	| [$6343: ldb    #$09]
-	jbsr	l_61f0                            	| [$6345: jsr    $61f0]
-	move.l	(sp)+,d1                        	| [$6348: puls   b]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6345: jsr    write_char_and_move_cursor_61f0]
+	movem.l	(sp)+,d1                       	| [$6348: puls   b]
 	GET_REG_ADDRESS	0x2,d2                 	| [$634a: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$634c: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$634c: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0x3,d2                 	| [$634f: lda    $3,x]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6351: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6351: jsr    write_char_and_move_cursor_61f0]
 	GET_DP_ADDRESS	current_level_84        	| [$6354: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x05,d0                         	| [$6356: cmpa   #$05]
@@ -916,7 +932,10 @@ l_641a:
 	move.w	#0xed7b,d2                      	| [$6422: ldx    #$ed7b]
 	GET_DP_ADDRESS	angle_d8                	| [$6425: lda    angle_d8]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$6427: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$6427: lda    a,x]
 	move.b	(a0),d0                         	| [...]
                                          | [$6429: lsra]
                                          | [$642a: lsra]
@@ -926,8 +945,8 @@ l_641a:
 	move.b	(a0),d1                         	| [...]
 	neg.b	d1                               	| [$6431: negb]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$6432: ldb    b,x]
 	move.b	(a0),d1                         	| [...]
                                          | [$6434: lsrb]
@@ -1000,13 +1019,14 @@ l_6492:
 	GET_DP_ADDRESS	0x46                    	| [$6498: sta    $46]
 	move.b	d0,(a0)                         	| [...]
 	move.b	d1,d0                           	| [$649a: tfr    b,a]
-	move.l	(sp)+,d1                        	| [$649c: puls   b]
-	jbsr	l_61f0                            	| [$649e: jsr    $61f0]
+	movem.l	(sp)+,d1                       	| [$649c: puls   b]
+	jbsr	write_char_and_move_cursor_61f0   	| [$649e: jsr    write_char_and_move_cursor_61f0]
 	GET_DP_ADDRESS	0x46                    	| [$64a1: lda    $46]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$64a3: jsr    $61f0]
-	move.b	#0x37,d0                        	| [$64a6: lda    #$37]
-	jmp	l_61f0                             	| [$64a8: jmp    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$64a3: jsr    write_char_and_move_cursor_61f0]
+	move.b	#0x37,d0                        	| [$64a6: lda    #$37] degree sign
+	jmp	write_char_and_move_cursor_61f0    	| [$64a8: jmp    write_char_and_move_cursor_61f0]
+
 l_64ab:
 	movem.l	d0/d1,-(sp)                    	| [$64ab: pshs   d]
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$64ad: lda    copy_of_screen_flipped_21]
@@ -1068,8 +1088,8 @@ l_64ed:
 l_64f4:
 	move.w	#0xa4d3,d2                      	| [$64f4: ldx    #$a4d3]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$64f7: lda    b,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x43                    	| [$64f9: sta    $43]
@@ -1194,7 +1214,10 @@ l_6577:
 	move.b	(a0),d0                         	| [...]
 	jeq	l_658c                             	| [$6579: beq    $658c]
 	move.w	#0xa4d7,d2                      	| [$657b: ldx    #$a4d7]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$657e: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$657e: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x00,d1                        	| [$6580: ldb    #$00]
 	GET_DP_ADDRESS	0x73                    	| [$6582: eorb   $73]
@@ -1283,7 +1306,10 @@ l_65dc:
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x01,d0                         	| [$65eb: anda   #$01]
 	asl.b	#1,d0                            	| [$65ed: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$65ee: ldu    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$65ee: ldu    a,u]
 	MOVE_W_TO_REG	a0,d4                         	| [...]
 	move.b	#0x03,d1                        	| [$65f0: ldb    #$03]
 l_65f2:
@@ -2081,7 +2107,7 @@ l_69f6:
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_69ff                             	| [$69f8: beq    $69ff]
-	jbsr	l_61f0                            	| [$69fa: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$69fa: jsr    write_char_and_move_cursor_61f0]
 	jra	l_6a01                             	| [$69fd: bra    $6a01]
 l_69ff:
 	addq.w	#0x1,d4                         	| [$69ff: leau   $1,u]
@@ -2089,32 +2115,32 @@ l_6a01:
 	GET_REG_ADDRESS	0,d2                   	| [$6a01: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6a03: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a03: jsr    write_char_and_move_cursor_61f0]
 	jbsr	l_8a1d                            	| [$6a06: jsr    $8a1d]
 	move.b	#0x09,d1                        	| [$6a09: ldb    #$09]
-	jbsr	l_61f0                            	| [$6a0b: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a0b: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x0a,d1                        	| [$6a0e: ldb    #$0a]
 	GET_REG_ADDRESS	0,d2                   	| [$6a10: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6a12: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a12: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$6a15: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6a17: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a17: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$6a1a: leau   $1,u]
 	GET_REG_ADDRESS	0,d2                   	| [$6a1c: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6a1e: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a1e: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$6a21: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6a23: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a23: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$6a26: lda    ,x++]
 	addq.w	#2,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$6a28: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$6a28: jsr    write_char_and_move_cursor_61f0]
 	add.w	#0x37,d4                         	| [$6a2b: leau   $37,u]
 	GET_DP_ADDRESS	0x55                    	| [$6a2e: dec    $55]
 	subq.b	#1,(a0)                         	| [...]
@@ -2349,7 +2375,10 @@ l_6b60:
 	jeq	l_6c5b                             	| [$6b71: lbeq   $6c5b]
 	move.w	#0xa8b4,d3                      	| [$6b75: ldy    #$a8b4]
 	asl.b	#1,d0                            	| [$6b79: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$6b7a: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$6b7a: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x3700,d4                      	| [$6b7d: ldu    #$3700]
 	GET_DP_ADDRESS	0x85                    	| [$6b80: stu    $85]
@@ -2401,7 +2430,10 @@ l_6bae:
 	addq.b	#1,d0                           	| [$6bc0: inca]
 l_6bc1:
 	asl.b	#1,d0                            	| [$6bc1: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$6bc2: ldy    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$6bc2: ldy    a,u]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x3700,d4                      	| [$6bc5: ldu    #$3700]
 	GET_DP_ADDRESS	0x85                    	| [$6bc8: stu    $85]
@@ -2448,7 +2480,10 @@ l_6bd7:
 	addq.b	#1,d0                           	| [$6bfd: inca]
 l_6bfe:
 	asl.b	#1,d0                            	| [$6bfe: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$6bff: ldy    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$6bff: ldy    a,u]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x3580,d4                      	| [$6c02: ldu    #$3580]
 	GET_DP_ADDRESS	0x77                    	| [$6c05: stu    $77]
@@ -2721,7 +2756,10 @@ l_6d66:
 	move.w	#0x28ec,d2                      	| [$6d82: ldx    #$28ec]
 	GET_DP_ADDRESS	0xdf                    	| [$6d85: lda    $df]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$6d87: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$6d87: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_6db8                             	| [$6d89: bne    $6db8]
 	move.b	#0x01,d0                        	| [$6d8b: ldd    #$0100]
@@ -2916,7 +2954,10 @@ l_6ead:
 l_6eba:
                                          | [$6eba: asla]
 	asl.b	#2,d0                            	| [$6ebb: asla]
-	add.w	d0,d2                            	| [$6ebc: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$6ebc: leax   a,x]
 	GET_DP_ADDRESS	0xdf                    	| [$6ebe: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x0c,d1                        	| [$6ec0: ldb    #$0c]
@@ -3030,7 +3071,10 @@ l_6f55:
 	GET_REG_ADDRESS	0,d2                   	| [$6f68: lda    ,x]
 	move.b	(a0),d0                         	| [...]
 	sub.b	#0x02,d0                         	| [$6f6a: suba   #$02]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$6f6c: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$6f6c: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	jbsr	l_850e                            	| [$6f6e: jsr    $850e]
 	GET_REG_ADDRESS	0x1,d2                 	| [$6f71: lda    $1,x]
@@ -3048,8 +3092,8 @@ l_6f85:
 	move.w	#0xdef1,d3                      	| [$6f85: ldy    #$def1]
 	sub.b	#0x0e,d1                         	| [$6f89: subb   #$0e]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$6f8b: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	jbsr	l_850e                            	| [$6f8d: jsr    $850e]
@@ -3166,7 +3210,10 @@ l_7037:
 	jne	l_7049                             	| [$703e: bne    $7049]
 	move.w	#0xab3b,d4                      	| [$7040: ldu    #$ab3b]
 	move.b	#0x32,d0                        	| [$7043: lda    #$32]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$7045: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$7045: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x1,d2                 	| [$7047: sta    $1,x]
 	move.b	d0,(a0)                         	| [...]
@@ -3360,7 +3407,10 @@ l_713b:
 	move.b	(a0),d0                         	| [...]
                                          | [$714c: asla]
 	asl.b	#2,d0                            	| [$714d: asla]
-	add.w	d0,d2                            	| [$714e: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$714e: leax   a,x]
 	rts                                    	| [$7150: rts]
 
 l_7151:
@@ -3451,9 +3501,10 @@ l_71b3:
 	jeq	l_71d3                             	| [$71cf: beq    $71d3]
 	move.b	#0x00,d0                        	| [$71d1: lda    #$00]
 l_71d3:
-	GET_REG_ADDRESS	0,d2                   	| [$71d3: sta    ,x+]
+	GET_REG_UNCHECKED_ADDRESS	0,d2                   	| [$71d3: sta    ,x+] [video_address]
 	addq.w	#1,d2                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$71d5: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_71d3                             	| [$71d7: bne    $71d3]
@@ -3723,7 +3774,10 @@ l_72fb:
 	move.b	(a0),d0                         	| [...]
                                          | [$730a: asla]
 	asl.b	#2,d0                            	| [$730b: asla]
-	add.w	d0,d2                            	| [$730c: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$730c: leax   a,x]
 	jbsr	l_877d                            	| [$730e: jsr    $877d]
 	GET_DP_ADDRESS	0xcd                    	| [$7311: lda    $cd]
 	move.b	(a0),d0                         	| [...]
@@ -4119,7 +4173,7 @@ l_74c0:
 	and.l	#0xFFFF,d1                       	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d1,d4         	| [$74ef: inc    d,u]
 	addq.b	#1,(a0)                         	| [...]
-	move.l	(sp)+,d4                        	| [$74f1: puls   u]
+	movem.l	(sp)+,d4                       	| [$74f1: puls   u]
 	GET_DP_ADDRESS	0x13                    	| [$74f3: lda    $13]
 	move.b	(a0),d0                         	| [...]
 	jne	l_7502                             	| [$74f5: bne    $7502]
@@ -4128,7 +4182,7 @@ l_74c0:
 	move.l	d3,-(sp)                        	| [$74f9: pshs   y]
 	move.b	#0x31,d0                        	| [$74fb: lda    #$31]
 	jbsr	l_850e                            	| [$74fd: jsr    $850e]
-	move.l	(sp)+,d3                        	| [$7500: puls   y]
+	movem.l	(sp)+,d3                       	| [$7500: puls   y]
 l_7502:
 	addq.w	#0x1,d3                         	| [$7502: leay   $1,y]
 	GET_DP_ADDRESS	0x49                    	| [$7504: inc    $49]
@@ -5134,7 +5188,10 @@ l_7a2a:
 	move.w	#0x28ec,d2                      	| [$7a38: ldx    #$28ec]
 	GET_DP_ADDRESS	0xdf                    	| [$7a3b: lda    $df]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$7a3d: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$7a3d: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_7a75                             	| [$7a3f: beq    $7a75]
 l_7a41:
@@ -5231,7 +5288,7 @@ l_7ab6:
 	GET_DP_ADDRESS	0xdf                    	| [$7ab6: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
 	add.w	#0x0160,d2                       	| [$7ab8: leax   $0160,x]
-	move.l	(sp)+,d1                        	| [$7abc: puls   b]
+	movem.l	(sp)+,d1                       	| [$7abc: puls   b]
 	subq.b	#1,d1                           	| [$7abe: decb]
 	jne	l_7a9e                             	| [$7abf: bne    $7a9e]
 	GET_DP_ADDRESS	0xfb                    	| [$7ac1: lda    $fb]
@@ -5455,7 +5512,10 @@ l_7bdc:
 	jcc	l_7c37                             	| [$7be8: bcc    $7c37]
 	move.w	#0xa4e7,d2                      	| [$7bea: ldx    #$a4e7]
 	move.b	#0x38,d0                        	| [$7bed: lda    #$38]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$7bef: ldx    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$7bef: ldx    a,x]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	addq.w	#0x2,d2                         	| [$7bf1: leax   $2,x]
 	moveq	#0,d0                            	| [$7bf3: clra]
@@ -5952,7 +6012,7 @@ l_7e7f:
 	jbsr	l_8508                            	| [$7eae: jsr    $8508]
 	move.b	#0x25,d0                        	| [$7eb1: lda    #$25]
 	jbsr	l_850e                            	| [$7eb3: jsr    $850e]
-	move.l	(sp)+,d2                        	| [$7eb6: puls   x]
+	movem.l	(sp)+,d2                       	| [$7eb6: puls   x]
 l_7eb8:
 	GET_DP_ADDRESS	0xa0                    	| [$7eb8: lda    $a0]
 	move.b	(a0),d0                         	| [...]
@@ -5967,7 +6027,7 @@ l_7ec1:
 	jbsr	l_8587                            	| [$7ec1: jsr    $8587]
 	GET_REG_ADDRESS	0x3,d2                 	| [$7ec4: ldy    $3,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
-	GET_REG_ADDRESS	0,d3                   	| [$7ec7: lda    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$7ec7: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x4e,d0                         	| [$7ec9: cmpa   #$4e]
 	jeq	l_7eec                             	| [$7ecb: beq    $7eec]
@@ -6005,8 +6065,9 @@ l_7ef4:
 l_7ef8:
 	move.b	#0x43,d0                        	| [$7ef8: lda    #$43]
 l_7efa:
-	GET_REG_ADDRESS	0,d3                   	| [$7efa: sta    ,y]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$7efa: sta    ,y] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	rts                                    	| [$7efc: rts]
 
 l_7efd:
@@ -6232,7 +6293,7 @@ l_802b:
 	GET_DP_ADDRESS	0xdf                    	| [$802b: inc    $df]
 	addq.b	#1,(a0)                         	| [...]
 	add.w	#0x0160,d2                       	| [$802d: leax   $0160,x]
-	move.l	(sp)+,d1                        	| [$8031: puls   b]
+	movem.l	(sp)+,d1                       	| [$8031: puls   b]
 	subq.b	#1,d1                           	| [$8033: decb]
 	jne	l_8013                             	| [$8034: bne    $8013]
 	GET_DP_ADDRESS	0xfb                    	| [$8036: lda    $fb]
@@ -6669,7 +6730,10 @@ l_8283:
 	move.w	#0xa98a,d4                      	| [$828e: ldu    #$a98a]
 	GET_DP_ADDRESS	0xd3                    	| [$8291: lda    $d3]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$8293: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$8293: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_82aa                             	| [$8295: beq    $82aa]
 	GET_DP_ADDRESS	0x49                    	| [$8297: sta    $49]
@@ -6874,8 +6938,8 @@ l_83a4:
 l_83b2:
 	move.w	#0xa9b0,d2                      	| [$83b2: ldx    #$a9b0]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$83b5: lda    b,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x53                    	| [$83b7: sta    $53]
@@ -6965,7 +7029,10 @@ l_8408:
 	jne	l_842c                             	| [$8429: bne    $842c]
 	lsr.b	#1,d0                            	| [$842b: lsra]
 l_842c:
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$842c: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$842c: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x52                    	| [$842e: ldb    $52]
 	move.b	(a0),d1                         	| [...]
@@ -7073,8 +7140,8 @@ l_84a5:
 l_84b3:
 	move.w	#0xa9a9,d2                      	| [$84b3: ldx    #$a9a9]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$84b6: lda    b,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x52                    	| [$84b8: adda   $52]
@@ -7299,10 +7366,16 @@ l_85ab:
 	GET_DP_ADDRESS	0x4c                    	| [$85cb: ldd    $4c]
 	LOAD_D                                 	| [$85cb: ldd    $4c]
 	add.w	#0x0001,d1                       	| [$85cd: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	BIT	#0x3f,d1                           	| [$85d0: bitb   #$3f]
 	jne	l_85d7                             	| [$85d2: bne    $85d7]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	sub.w	#0x0040,d1                       	| [$85d4: subd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_85d7:
 	jra	l_85db                             	| [$85d7: bra    $85db]
 l_85d9:
@@ -7363,10 +7436,16 @@ l_8600:
 	GET_DP_ADDRESS	0x4c                    	| [$861e: ldd    $4c]
 	LOAD_D                                 	| [$861e: ldd    $4c]
 	add.w	#0x0001,d1                       	| [$8620: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	BIT	#0x3f,d1                           	| [$8623: bitb   #$3f]
 	jne	l_862a                             	| [$8625: bne    $862a]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	sub.w	#0x0040,d1                       	| [$8627: subd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_862a:
 	jra	l_862e                             	| [$862a: bra    $862e]
 l_862c:
@@ -7421,10 +7500,16 @@ l_8652:
 	GET_DP_ADDRESS	0x4c                    	| [$866a: ldd    $4c]
 	LOAD_D                                 	| [$866a: ldd    $4c]
 	add.w	#0x0001,d1                       	| [$866c: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	BIT	#0x3f,d1                           	| [$866f: bitb   #$3f]
 	jne	l_8676                             	| [$8671: bne    $8676]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	sub.w	#0x0040,d1                       	| [$8673: subd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_8676:
 	jra	l_867a                             	| [$8676: bra    $867a]
 l_8678:
@@ -7473,7 +7558,7 @@ l_86a1:
 	jbsr	l_61ee                            	| [$86ab: jsr    $61ee]
 	jbsr	l_8a1d                            	| [$86ae: jsr    $8a1d]
 	move.b	#0x09,d1                        	| [$86b1: ldb    #$09]
-	jbsr	l_61f0                            	| [$86b3: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$86b3: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0x2,d2                 	| [$86b6: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
 	jbsr	l_61ee                            	| [$86b8: jsr    $61ee]
@@ -7567,7 +7652,7 @@ l_8722:
 	jbsr	l_61ee                            	| [$8727: jsr    $61ee]
 	jbsr	l_8a1d                            	| [$872a: jsr    $8a1d]
 	move.b	#0x09,d1                        	| [$872d: ldb    #$09]
-	jbsr	l_61f0                            	| [$872f: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$872f: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$8732: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
@@ -7790,15 +7875,20 @@ l_8852:
 	GET_REG_ADDRESS	0x3,d2                 	| [$8852: ldd    $3,x]
 	LOAD_D                                 	| [$8852: ldd    $3,x]
 l_8854:
-	MAKE_D
 	add.w	#0x0001,d1                       	| [$8854: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	BIT	#0x3f,d1                           	| [$8857: bitb   #$3f]
 	jne	l_885e                             	| [$8859: bne    $885e]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	sub.w	#0x0040,d1                       	| [$885b: subd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_885e:
 	PUSH_SR
-	MAKE_D
+	MAKE_D                                 	| [...]
 	move.w	d1,d3                           	| [$885e: tfr    d,y]
 	POP_SR
 	rts                                    	| [$8860: rts]
@@ -7848,8 +7938,8 @@ l_888a:
 	GET_DP_ADDRESS	current_level_84        	| [$8890: ldb    current_level_84]
 	move.b	(a0),d1                         	| [...]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$8892: ldb    b,y]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$8894: stb    nb_objects_48]
@@ -8194,7 +8284,7 @@ l_8a03:
 	move.w	#0x1818,d4                      	| [$8a08: ldu    #$1818]
 	move.w	#0xdd6f,d3                      	| [$8a0b: ldy    #$dd6f]
 	jbsr	l_ced3                            	| [$8a0f: jsr    $ced3]
-	move.l	(sp)+,d2                        	| [$8a12: puls   x]
+	movem.l	(sp)+,d2                       	| [$8a12: puls   x]
 	rts                                    	| [$8a14: rts]
 
 l_8a15:
@@ -8286,7 +8376,10 @@ l_8a74:
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$8a76: inca]
 	move.w	#0x28ec,d4                      	| [$8a77: ldu    #$28ec]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$8a7a: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$8a7a: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8a83                             	| [$8a7c: beq    $8a83]
 	move.b	#0x01,d0                        	| [$8a7e: lda    #$01]
@@ -8324,7 +8417,10 @@ l_8a9b:
 	GET_DP_ADDRESS	0x3f                    	| [$8aa3: lda    $3f]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x1f,d0                         	| [$8aa5: anda   #$1f]
-	add.w	d0,d3                            	| [$8aa7: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$8aa7: leay   a,y]
 	move.w	#0x2831,d2                      	| [$8aa9: ldx    #$2831]
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$8aac: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
@@ -8418,7 +8514,10 @@ l_8b05:
 	GET_DP_ADDRESS	0x3f                    	| [$8b09: lda    $3f]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x1f,d0                         	| [$8b0b: anda   #$1f]
-	add.w	d0,d3                            	| [$8b0d: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$8b0d: leay   a,y]
 	GET_REG_ADDRESS	0x11,d3                	| [$8b0f: lda    $11,y]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x3e                    	| [$8b12: sta    $3e]
@@ -8438,7 +8537,10 @@ l_8b05:
 	GET_DP_ADDRESS	0x3f                    	| [$8b27: lda    $3f]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x1f,d0                         	| [$8b29: anda   #$1f]
-	add.w	d0,d3                            	| [$8b2b: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$8b2b: leay   a,y]
 l_8b2d:
 	GET_REG_ADDRESS	0,d3                   	| [$8b2d: lda    ,y]
 	move.b	(a0),d0                         	| [...]
@@ -8459,7 +8561,10 @@ l_8b3a:
 	GET_DP_ADDRESS	current_level_84        	| [$8b3e: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$8b40: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$8b41: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$8b41: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x3440,d4                      	| [$8b44: ldu    #$3440]
 	GET_REG_ADDRESS	0,d3                   	| [$8b47: ldb    ,y+]
@@ -9017,7 +9122,10 @@ l_8dc1:
 	move.w	#0xa4c8,d3                      	| [$8dc7: ldy    #$a4c8]
 	GET_DP_ADDRESS	0xdf                    	| [$8dcb: lda    $df]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$8dcd: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$8dcd: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x3f                    	| [$8dcf: ldb    $3f]
 	move.b	(a0),d1                         	| [...]
@@ -9072,7 +9180,10 @@ l_8e00:
 	move.w	#0xa9dc,d4                      	| [$8e04: ldu    #$a9dc]
 	GET_DP_ADDRESS	current_level_84        	| [$8e07: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$8e09: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$8e09: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	GET_ADDRESS	0x2a98                     	| [$8e0b: cmpa   $2a98]
 	cmp.b	(a0),d0                          	| [...]
@@ -9182,7 +9293,10 @@ l_8e77:
 	subq.b	#1,d0                           	| [$8e8e: deca]
                                          | [$8e8f: asla]
 	asl.b	#2,d0                            	| [$8e90: asla]
-	add.w	d0,d4                            	| [$8e91: leau   a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d4                            	| [$8e91: leau   a,u]
 	GET_REG_ADDRESS	0,d4                   	| [$8e93: lda    ,u]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x16,d0                         	| [$8e95: cmpa   #$16]
@@ -9194,7 +9308,10 @@ l_8e77:
 	move.w	#0xa9e2,d4                      	| [$8e9e: ldu    #$a9e2]
 	GET_DP_ADDRESS	current_level_84        	| [$8ea1: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$8ea3: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$8ea3: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$8ea5: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
@@ -9344,7 +9461,10 @@ l_8f52:
 	GET_DP_ADDRESS	0xdf                    	| [$8f54: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xa4c8,d3                      	| [$8f56: ldy    #$a4c8]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$8f5a: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$8f5a: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	addq.b	#1,d0                           	| [$8f5c: inca]
 	GET_REG_UNCHECKED_ADDRESS	0x0800,d4              	| [$8f5d: stb    $0800,u] [video_address]
@@ -9372,7 +9492,7 @@ l_8f52:
 	move.b	#0x03,d0                        	| [$8f78: lda    #$03]
 	GET_DP_ADDRESS	nb_objects_48           	| [$8f7a: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
-	move.l	(sp)+,d1                        	| [$8f7c: puls   b]
+	movem.l	(sp)+,d1                       	| [$8f7c: puls   b]
 l_8f7e:
 	GET_REG_ADDRESS	0,d3                   	| [$8f7e: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
@@ -9895,6 +10015,7 @@ l_9204:
 	jne	l_91c0                             	| [$9206: bne    $91c0]
 l_9208:
 	movem.l	(sp)+,d0/d2/d3/d4              	| [$9208: puls   a,x,y,u]
+	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$920a: sta    $49]
 	move.b	d0,(a0)                         	| [...]
 	rts                                    	| [$920c: rts]
@@ -9942,7 +10063,7 @@ l_9226:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	move.l	d3,-(sp)                        	| [$923f: pshs   y]
 	jbsr	l_929d                            	| [$9241: jsr    $929d]
-	move.l	(sp)+,d3                        	| [$9244: puls   y]
+	movem.l	(sp)+,d3                       	| [$9244: puls   y]
 	GET_REG_ADDRESS	0,d2                   	| [$9246: lda    ,x]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0,d3                   	| [$9248: sta    ,y]
@@ -10007,8 +10128,8 @@ l_929d:
 	move.w	#0x182e,d4                      	| [$92a2: ldu    #$182e]
 	neg.b	d1                               	| [$92a5: negb]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d4                            	| [$92a6: leau   b,u]
 	GET_REG_ADDRESS	0x3,d2                 	| [$92a8: ldy    $3,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
@@ -10040,15 +10161,21 @@ l_92c3:
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x0f,d0                         	| [$92d0: anda   #$0f]
 	move.w	#0xaa86,d3                      	| [$92d2: ldy    #$aa86]
-	add.w	d0,d3                            	| [$92d6: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$92d6: leay   a,y]
 	move.l	d4,-(sp)                        	| [$92d8: pshs   u]
 	move.w	#0xaa8c,d4                      	| [$92da: ldu    #$aa8c]
-	add.w	d0,d4                            	| [$92dd: leau   a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d4                            	| [$92dd: leau   a,u]
 	GET_REG_ADDRESS	0,d4                   	| [$92df: ldd    ,u]
 	LOAD_D                                 	| [$92df: ldd    ,u]
 	GET_REG_ADDRESS	0x1,d2                 	| [$92e1: std    $1,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	move.l	(sp)+,d4                        	| [$92e3: puls   u]
+	movem.l	(sp)+,d4                       	| [$92e3: puls   u]
 	GET_REG_ADDRESS	0,d3                   	| [$92e5: ldd    ,y]
 	LOAD_D                                 	| [$92e5: ldd    ,y]
 	GET_REG_ADDRESS	0x3,d2                 	| [$92e7: std    $3,x]
@@ -10059,7 +10186,10 @@ l_92e9:
 	GET_REG_ADDRESS	0,d2                   	| [$92ec: lda    ,x]
 	move.b	(a0),d0                         	| [...]
 	subq.b	#1,d0                           	| [$92ee: deca]
-	add.w	d0,d3                            	| [$92ef: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$92ef: leay   a,y]
 	jbsr	l_d12f                            	| [$92f1: jsr    $d12f]
 	GET_REG_ADDRESS	0x2,d2                 	| [$92f4: dec    $2,x]
 	subq.b	#1,(a0)                         	| [...]
@@ -10100,7 +10230,10 @@ l_9322:
 	GET_DP_ADDRESS	current_level_84        	| [$9322: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$9324: asla]
-	add.w	d0,d2                            	| [$9325: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$9325: leax   a,x]
 	move.w	#qualifying_time_2866,d3        	| [$9327: ldy    #qualifying_time_2866]
 	move.w	#0x3218,d4                      	| [$932b: ldu    #$3218]
 	move.b	#0x01,d1                        	| [$932e: ldb    #$01]
@@ -10115,17 +10248,17 @@ l_9322:
 	jne	l_933c                             	| [$9338: bne    $933c]
 	move.b	#0x10,d0                        	| [$933a: lda    #$10]
 l_933c:
-	jbsr	l_61f0                            	| [$933c: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$933c: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$933f: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x0f,d0                         	| [$9341: anda   #$0f]
 	GET_REG_ADDRESS	0x1,d3                 	| [$9343: sta    $1,y]
 	move.b	d0,(a0)                         	| [...]
-	jbsr	l_61f0                            	| [$9345: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$9345: jsr    write_char_and_move_cursor_61f0]
 	jbsr	l_8a1d                            	| [$9348: jsr    $8a1d]
 	move.b	#0x09,d1                        	| [$934b: ldb    #$09]
-	jbsr	l_61f0                            	| [$934d: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$934d: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x01,d1                        	| [$9350: ldb    #$01]
 	GET_REG_ADDRESS	0,d2                   	| [$9352: lda    ,x]
 	move.b	(a0),d0                         	| [...]
@@ -10135,14 +10268,14 @@ l_933c:
 	lsr.b	#4,d0                            	| [$9357: lsra]
 	GET_REG_ADDRESS	0x2,d3                 	| [$9358: sta    $2,y]
 	move.b	d0,(a0)                         	| [...]
-	jbsr	l_61f0                            	| [$935a: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$935a: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$935d: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x0f,d0                         	| [$935f: anda   #$0f]
 	GET_REG_ADDRESS	0x3,d3                 	| [$9361: sta    $3,y]
 	move.b	d0,(a0)                         	| [...]
-	jmp	l_61f0                             	| [$9363: jmp    $61f0]
+	jmp	write_char_and_move_cursor_61f0    	| [$9363: jmp    write_char_and_move_cursor_61f0]
 l_9366:
 	GET_DP_ADDRESS	0x82                    	| [$9366: lda    $82]
 	move.b	(a0),d0                         	| [...]
@@ -10259,8 +10392,8 @@ l_93fe:
 	asl.b	#1,d1                            	| [$9407: aslb]
 	addq.b	#1,d1                           	| [$9408: incb]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$9409: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x13,d2                	| [$940b: adda   $13,x]
@@ -10286,8 +10419,8 @@ l_93fe:
 	move.b	d0,(a0)                         	| [...]
 	subq.b	#1,d1                           	| [$9422: decb]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$9423: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$9425: adda   $49]
@@ -10776,7 +10909,7 @@ l_964f:
 	move.w	#0x2ac0,d2                      	| [$966b: ldx    #$2ac0]
 	jbsr	l_8587                            	| [$966e: jsr    $8587]
 	jbsr	l_9ed8                            	| [$9671: jsr    $9ed8]
-	move.l	(sp)+,d2                        	| [$9674: puls   x]
+	movem.l	(sp)+,d2                       	| [$9674: puls   x]
 l_9676:
 	move.w	#0x2a00,d2                      	| [$9676: ldx    #$2a00]
 	GET_DP_ADDRESS	0xdf                    	| [$9679: inc    $df]
@@ -10791,7 +10924,7 @@ l_9676:
 	move.w	#0x2ae0,d2                      	| [$968b: ldx    #$2ae0]
 	jbsr	l_85de                            	| [$968e: jsr    $85de]
 	jbsr	l_9ed8                            	| [$9691: jsr    $9ed8]
-	move.l	(sp)+,d2                        	| [$9694: puls   x]
+	movem.l	(sp)+,d2                       	| [$9694: puls   x]
 l_9696:
 	rts                                    	| [$9696: rts]
 
@@ -10807,7 +10940,7 @@ l_9697:
 	move.w	#0x2ac0,d2                      	| [$96aa: ldx    #$2ac0]
 	jbsr	l_8587                            	| [$96ad: jsr    $8587]
 	jbsr	l_9ed8                            	| [$96b0: jsr    $9ed8]
-	move.l	(sp)+,d2                        	| [$96b3: puls   x]
+	movem.l	(sp)+,d2                       	| [$96b3: puls   x]
 l_96b5:
 	move.w	#0x2a00,d2                      	| [$96b5: ldx    #$2a00]
 	GET_DP_ADDRESS	0xdf                    	| [$96b8: inc    $df]
@@ -10821,7 +10954,7 @@ l_96b5:
 	move.w	#0x2ae0,d2                      	| [$96c7: ldx    #$2ae0]
 	jbsr	l_85de                            	| [$96ca: jsr    $85de]
 	jbsr	l_9ed8                            	| [$96cd: jsr    $9ed8]
-	move.l	(sp)+,d2                        	| [$96d0: puls   x]
+	movem.l	(sp)+,d2                       	| [$96d0: puls   x]
 l_96d2:
 	rts                                    	| [$96d2: rts]
 
@@ -10903,7 +11036,7 @@ l_9731:
 	jeq	l_973d                             	| [$9735: beq    $973d]
 l_9737:
 	jbsr	l_ccfa                            	| [$9737: jsr    $ccfa]
-	move.l	(sp)+,d2                        	| [$973a: puls   x]
+	movem.l	(sp)+,d2                       	| [$973a: puls   x]
 l_973c:
 	rts                                    	| [$973c: rts]
 
@@ -11049,7 +11182,7 @@ l_97df:
 	jne	l_987e                             	| [$97f3: lbne   $987e]
 	GET_REG_ADDRESS	0x2,d2                 	| [$97f7: adda   $2,x]
 	add.b	(a0),d0                          	| [...]
-	GET_REG_ADDRESS	0x2,d2                 	| [$97f9: sta    $2,x]
+	GET_REG_ADDRESS	0x2,d2                 	| [$97f9: sta    $2,x] update parabol X (player in air, javelin)
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x4a                    	| [$97fb: sta    $4a]
 	move.b	d0,(a0)                         	| [...]
@@ -11087,8 +11220,11 @@ l_9825:
 	moveq	#0,d0                            	| [$982d: clra]
 	GET_DP_ADDRESS	0x4a                    	| [$982e: ldb    $4a]
 	move.b	(a0),d1                         	| [...]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	sub.w	#0x00e0,d1                       	| [$9830: subd   #$00e0]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jcs	l_9842                             	| [$9833: bcs    $9842]
 	GET_DP_ADDRESS	0x4b                    	| [$9835: stb    $4b]
 	move.b	d1,(a0)                         	| [...]
@@ -11196,7 +11332,7 @@ l_98aa:
 	GET_REG_ADDRESS	0x2,d2                 	| [$98bb: sta    $2,x]
 	move.b	d0,(a0)                         	| [...]
 	jbsr	l_cd2b                            	| [$98bd: jsr    $cd2b]
-	move.l	(sp)+,d2                        	| [$98c0: puls   x]
+	movem.l	(sp)+,d2                       	| [$98c0: puls   x]
 l_98c2:
 	GET_DP_ADDRESS	0x4b                    	| [$98c2: lda    $4b]
 	move.b	(a0),d0                         	| [...]
@@ -11338,7 +11474,10 @@ l_9976:
 	cmp.b	#0x05,d0                         	| [$9978: cmpa   #$05]
 	jcc	l_9983                             	| [$997a: bcc    $9983]
 	move.w	#0xaad2,d4                      	| [$997c: ldu    #$aad2]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$997f: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$997f: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0xe9                    	| [$9981: sta    $e9]
 	move.b	d0,(a0)                         	| [...]
@@ -11406,7 +11545,10 @@ l_99ca:
 	move.w	#0xaad7,d3                      	| [$99ca: ldy    #$aad7]
 	GET_DP_ADDRESS	current_level_84        	| [$99ce: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$99d0: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$99d0: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	GET_REG_ADDRESS	0x3,d2                 	| [$99d2: ldu    $3,x]
 	MOVE_W_TO_REG	a0,d4                         	| [...]
@@ -11490,12 +11632,18 @@ l_9a2a:
 	GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1                          	| [...]
 	jcc	l_9a35                             	| [$9a30: bcc    $9a35]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	add.w	#0x0040,d1                       	| [$9a32: addd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_9a35:
-	MAKE_D
+	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x95                    	| [$9a35: subd   $95]
 	sub.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	move.b	#0x08,d0                        	| [$9a37: lda    #$08]
 	jbsr	multiply_ab                       	| [$9a39: mul]
 	GET_DP_ADDRESS	0xad                    	| [$9a3a: addb   $ad]
@@ -11555,7 +11703,7 @@ l_9a82:
 	subq.b	#1,(a0)                         	| [...]
 	jeq	l_9aa3                             	| [$9a90: beq    $9aa3]
 	jbsr	l_d23e                            	| [$9a92: jsr    $d23e]
-	move.l	(sp)+,d2                        	| [$9a95: puls   x]
+	movem.l	(sp)+,d2                       	| [$9a95: puls   x]
 	GET_ADDRESS	0x1c20                     	| [$9a97: lda    $1c20]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_9aa2                             	| [$9a9a: beq    $9aa2]
@@ -11564,7 +11712,7 @@ l_9a82:
 	rts                                    	| [$9a9f: rts]
 
 l_9aa0:
-	move.l	(sp)+,d2                        	| [$9aa0: puls   x]
+	movem.l	(sp)+,d2                       	| [$9aa0: puls   x]
 l_9aa2:
 	rts                                    	| [$9aa2: rts]
 
@@ -11599,7 +11747,7 @@ l_9aac:
 l_9acb:
 	jbsr	l_ce26                            	| [$9acb: jsr    $ce26]
 l_9ace:
-	move.l	(sp)+,d2                        	| [$9ace: puls   x]
+	movem.l	(sp)+,d2                       	| [$9ace: puls   x]
 	rts                                    	| [$9ad0: rts]
 
 l_9ad1:
@@ -11612,7 +11760,7 @@ l_9ad1:
 	subq.b	#1,(a0)                         	| [...]
 	jbsr	l_ce26                            	| [$9adc: jsr    $ce26]
 l_9adf:
-	move.l	(sp)+,d2                        	| [$9adf: puls   x]
+	movem.l	(sp)+,d2                       	| [$9adf: puls   x]
 	rts                                    	| [$9ae1: rts]
 
 l_9ae2:
@@ -11625,7 +11773,7 @@ l_9ae2:
 	subq.b	#1,(a0)                         	| [...]
 	jbsr	l_ce26                            	| [$9aed: jsr    $ce26]
 l_9af0:
-	move.l	(sp)+,d2                        	| [$9af0: puls   x]
+	movem.l	(sp)+,d2                       	| [$9af0: puls   x]
 	rts                                    	| [$9af2: rts]
 
 l_9af3:
@@ -11896,13 +12044,19 @@ l_9c4d:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9c53: ldd    $3,x]
 	LOAD_D                                 	| [$9c53: ldd    $3,x]
 	add.w	#0x0001,d1                       	| [$9c55: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	BIT	#0x3f,d1                           	| [$9c58: bitb   #$3f]
 	jne	l_9c5f                             	| [$9c5a: bne    $9c5f]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	sub.w	#0x0040,d1                       	| [$9c5c: subd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_9c5f:
 	PUSH_SR
-	MAKE_D
+	MAKE_D                                 	| [...]
 	move.w	d1,d3                           	| [$9c5f: tfr    d,y]
 	POP_SR
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9c61: lda    ,y] [video_address]
@@ -11930,6 +12084,9 @@ l_9c82:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9c82: ldd    $3,x]
 	LOAD_D                                 	| [$9c82: ldd    $3,x]
 	sub.w	#0x0001,d1                       	| [$9c84: subd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4e                    	| [$9c87: std    $4e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -11939,15 +12096,15 @@ l_9c82:
 	GET_DP_ADDRESS	0x4e                    	| [$9c8f: ldd    $4e]
 	LOAD_D                                 	| [$9c8f: ldd    $4e]
 	add.w	#0x0040,d1                       	| [$9c91: addd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_9c98                             	| [$9c94: bra    $9c98]
 l_9c96:
 	GET_DP_ADDRESS	0x4e                    	| [$9c96: ldd    $4e]
 	LOAD_D                                 	| [$9c96: ldd    $4e]
 l_9c98:
-	PUSH_SR
-	MAKE_D
 	move.w	d1,d3                           	| [$9c98: tfr    d,y]
-	POP_SR
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9c9a: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xd2,d0                         	| [$9c9c: cmpa   #$d2]
@@ -11961,6 +12118,9 @@ l_9caa:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9caa: ldd    $3,x]
 	LOAD_D                                 	| [$9caa: ldd    $3,x]
 	sub.w	#0x0002,d1                       	| [$9cac: subd   #$0002]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4e                    	| [$9caf: std    $4e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -11970,15 +12130,15 @@ l_9caa:
 	GET_DP_ADDRESS	0x4e                    	| [$9cb7: ldd    $4e]
 	LOAD_D                                 	| [$9cb7: ldd    $4e]
 	add.w	#0x0040,d1                       	| [$9cb9: addd   #$0040]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_9cc0                             	| [$9cbc: bra    $9cc0]
 l_9cbe:
 	GET_DP_ADDRESS	0x4e                    	| [$9cbe: ldd    $4e]
 	LOAD_D                                 	| [$9cbe: ldd    $4e]
 l_9cc0:
-	PUSH_SR
-	MAKE_D
 	move.w	d1,d3                           	| [$9cc0: tfr    d,y]
-	POP_SR
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$9cc2: lda    ,y] [video_address]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xd2,d0                         	| [$9cc4: cmpa   #$d2]
@@ -12176,11 +12336,17 @@ l_9de6:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9dee: ldd    $3,x]
 	LOAD_D                                 	| [$9dee: ldd    $3,x]
 	add.w	#0x003e,d1                       	| [$9df0: addd   #$003e]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_9e0b                             	| [$9df3: bra    $9e0b]
 l_9df5:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9df5: ldd    $3,x]
 	LOAD_D                                 	| [$9df5: ldd    $3,x]
 	add.w	#0x007e,d1                       	| [$9df7: addd   #$007e]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_9e0b                             	| [$9dfa: bra    $9e0b]
 l_9dfc:
 	GET_REG_ADDRESS	0x4,d2                 	| [$9dfc: lda    $4,x]
@@ -12193,6 +12359,9 @@ l_9e06:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9e06: ldd    $3,x]
 	LOAD_D                                 	| [$9e06: ldd    $3,x]
 	add.w	#0x00be,d1                       	| [$9e08: addd   #$00be]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_9e0b:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x20,d2                	| [$9e0b: std    $20,x]
@@ -12221,11 +12390,17 @@ l_9e27:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9e2f: ldd    $3,x]
 	LOAD_D                                 	| [$9e2f: ldd    $3,x]
 	add.w	#0x003e,d1                       	| [$9e31: addd   #$003e]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_9e4c                             	| [$9e34: bra    $9e4c]
 l_9e36:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9e36: ldd    $3,x]
 	LOAD_D                                 	| [$9e36: ldd    $3,x]
 	add.w	#0x007e,d1                       	| [$9e38: addd   #$007e]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_9e4c                             	| [$9e3b: bra    $9e4c]
 	GET_REG_ADDRESS	0x4,d2                 	| [$9e3d: lda    $4,x]
 	move.b	(a0),d0                         	| [...]
@@ -12237,6 +12412,9 @@ l_9e47:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9e47: ldd    $3,x]
 	LOAD_D                                 	| [$9e47: ldd    $3,x]
 	add.w	#0x00be,d1                       	| [$9e49: addd   #$00be]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_9e4c:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x20,d2                	| [$9e4c: std    $20,x]
@@ -12246,6 +12424,9 @@ l_9e51:
 	GET_REG_ADDRESS	0x3,d2                 	| [$9e51: ldd    $3,x]
 	LOAD_D                                 	| [$9e51: ldd    $3,x]
 	add.w	#0x007e,d1                       	| [$9e53: addd   #$007e]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x20,d2                	| [$9e56: std    $20,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -12315,13 +12496,15 @@ l_9e9b:
 	move.l	d1,-(sp)                        	| [$9eae: pshs   b]
 	PUSH_SR
 	move.w	d4,d1                           	| [$9eb0: tfr    u,d]
-	move.b	d4,d0                           	| [...]
+	ror.w	#8,d4                            	| [...]
+	move.b	d4,d0                           	| [...] set MSB
+	ror.w	#8,d4                            	| [...]
 	POP_SR
 	BIT	#0x3f,d1                           	| [$9eb2: bitb   #$3f]
 	jne	l_9eb9                             	| [$9eb4: bne    $9eb9]
 	sub.w	#0x40,d4                         	| [$9eb6: leau   -$40,u]
 l_9eb9:
-	move.l	(sp)+,d1                        	| [$9eb9: puls   b]
+	movem.l	(sp)+,d1                       	| [$9eb9: puls   b]
 	GET_DP_ADDRESS	0x50                    	| [$9ebb: dec    $50]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_9e97                             	| [$9ebd: bne    $9e97]
@@ -12405,7 +12588,7 @@ l_9f1b:
 	move.l	d2,-(sp)                        	| [$9f28: pshs   x]
 	move.w	d4,d2                           	| [$9f2a: tfr    u,x]
 	jbsr	l_88cd                            	| [$9f2c: jsr    $88cd]
-	move.l	(sp)+,d2                        	| [$9f2f: puls   x]
+	movem.l	(sp)+,d2                       	| [$9f2f: puls   x]
 	GET_DP_ADDRESS	0x22                    	| [$9f31: lda    $22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_9f60                             	| [$9f33: beq    $9f60]
@@ -12541,6 +12724,9 @@ l_9fcd:
 	LOAD_D                                 	| [$9fe1: ldd    $ab]
 	GET_ADDRESS	0x2a0b                     	| [$9fe3: subd   $2a0b]
 	sub.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jcc	l_9ff4                             	| [$9fe6: bcc    $9ff4]
 	GET_DP_ADDRESS	0xc3                    	| [$9fe8: inc    $c3]
 	addq.b	#1,(a0)                         	| [...]
@@ -12551,6 +12737,9 @@ l_9fcd:
 	LOAD_D                                 	| [$9fef: ldd    $2a0b]
 	GET_DP_ADDRESS	0xab                    	| [$9ff2: subd   $ab]
 	sub.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_9ff4:
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0xc4                    	| [$9ff4: std    $c4]
@@ -12618,6 +12807,9 @@ l_a04b:
 	GET_DP_ADDRESS	0xc4                    	| [$a04b: ldd    $c4]
 	LOAD_D                                 	| [$a04b: ldd    $c4]
 	sub.w	#0x0060,d1                       	| [$a04d: subd   #$0060]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jcc	l_a0bd                             	| [$a050: bcc    $a0bd]
 	GET_DP_ADDRESS	0xcc                    	| [$a052: tst    $cc]
 	tst.b	(a0)                             	| [...]
@@ -12651,6 +12843,9 @@ l_a075:
 	LOAD_D                                 	| [$a077: ldd    $c4]
 	GET_DP_ADDRESS	0xc7                    	| [$a079: subd   $c7]
 	sub.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jcc	l_a083                             	| [$a07b: bcc    $a083]
 	GET_DP_ADDRESS	0x4d                    	| [$a07d: inc    $4d]
 	addq.b	#1,(a0)                         	| [...]
@@ -12658,6 +12853,9 @@ l_a075:
 	LOAD_D                                 	| [$a07f: ldd    $c7]
 	GET_DP_ADDRESS	0xc4                    	| [$a081: subd   $c4]
 	sub.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_a083:
 	GET_DP_ADDRESS	0x4c                    	| [$a083: stb    $4c]
 	move.b	d1,(a0)                         	| [...]
@@ -12950,7 +13148,10 @@ l_a1fa:
 	addq.b	#1,d0                           	| [$a219: inca]
 l_a21a:
 	move.w	#0xaadd,d4                      	| [$a21a: ldu    #$aadd]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$a21d: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$a21d: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	GET_ADDRESS	0x2a18                     	| [$a21f: sta    $2a18]
 	move.b	d0,(a0)                         	| [...]
@@ -12977,7 +13178,10 @@ l_a236:
 	move.b	(a0),d0                         	| [...]
                                          | [$a23f: asla]
 	asl.b	#2,d0                            	| [$a240: asla]
-	add.w	d0,d2                            	| [$a241: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$a241: leax   a,x]
 	GET_REG_ADDRESS	0,d2                   	| [$a243: ldd    ,x]
 	LOAD_D                                 	| [$a243: ldd    ,x]
 	GET_ADDRESS	0x2a21                     	| [$a245: sta    $2a21]
@@ -12998,7 +13202,10 @@ l_a257:
 	move.w	#0xed7b,d3                      	| [$a257: ldy    #$ed7b]
 	GET_REG_ADDRESS	0x18,d2                	| [$a25b: lda    $18,x]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$a25e: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$a25e: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x1d,d2                	| [$a260: ldb    $1d,x]
 	move.b	(a0),d1                         	| [...]
@@ -13034,7 +13241,10 @@ l_a280:
 	GET_REG_ADDRESS	0x18,d2                	| [$a286: lda    $18,x]
 	move.b	(a0),d0                         	| [...]
 	neg.b	d0                               	| [$a289: nega]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$a28a: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$a28a: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0x1d,d2                	| [$a28c: ldb    $1d,x]
 	move.b	(a0),d1                         	| [...]
@@ -13563,7 +13773,9 @@ l_cb04:
 	add.w	d1,d4                            	| [$cb0a: leau   d,u]
 	PUSH_SR
 	move.w	d4,d1                           	| [$cb0c: tfr    u,d]
-	move.b	d4,d0                           	| [...]
+	ror.w	#8,d4                            	| [...]
+	move.b	d4,d0                           	| [...] set MSB
+	ror.w	#8,d4                            	| [...]
 	POP_SR
 	jmp	l_cd6b                             	| [$cb0e: jmp    $cd6b]
 l_cb11:
@@ -13784,7 +13996,10 @@ l_cc2d:
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x0f,d0                         	| [$cc37: anda   #$0f]
 	asl.b	#1,d0                            	| [$cc39: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$cc3a: ldd    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$cc3a: ldd    a,y]
 	LOAD_D                                 	| [$cc3a: ldd    a,y]
 	GET_DP_ADDRESS	0x4e                    	| [$cc3c: adda   $4e]
 	add.b	(a0),d0                          	| [...]
@@ -13801,7 +14016,10 @@ l_cc2d:
 	and.b	#0x0f,d0                         	| [$cc4c: anda   #$0f]
                                          | [$cc4e: asla]
 	asl.b	#2,d0                            	| [$cc4f: asla]
-	add.w	d0,d3                            	| [$cc50: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$cc50: leay   a,y]
 	GET_DP_ADDRESS	0xd0                    	| [$cc52: lda    $d0]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x0f,d0                         	| [$cc54: anda   #$0f]
@@ -13825,7 +14043,10 @@ l_cc6b:
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$cc6e: asla]
 	move.w	#0xde5d,d3                      	| [$cc6f: ldy    #$de5d]
-	add.w	d0,d3                            	| [$cc73: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$cc73: leay   a,y]
 	jra	l_cc62                             	| [$cc75: bra    $cc62]
 l_cc77:
 	move.w	#0xdd6c,d3                      	| [$cc77: ldy    #$dd6c]
@@ -13878,8 +14099,8 @@ l_ccbd:
 	asl.b	#1,d1                            	| [$ccbf: aslb]
 	move.w	#0xdc30,d3                      	| [$ccc0: ldy    #$dc30]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ccc4: ldy    b,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$ccc7: lda    ,x]
@@ -13887,7 +14108,10 @@ l_ccbd:
 	jeq	l_ccd6                             	| [$ccc9: beq    $ccd6]
 	subq.b	#1,d0                           	| [$cccb: deca]
 	asl.b	#1,d0                            	| [$cccc: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$cccd: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$cccd: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x1822,d4                      	| [$ccd0: ldu    #$1822]
 	jmp	update_sprite_buffer_d0b1          	| [$ccd3: jmp    update_sprite_buffer_d0b1]
@@ -13964,7 +14188,8 @@ l_cd34:
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$cd36: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_cd4d                             	| [$cd38: bne    $cd4d]
-	move.l	(sp)+,d0                        	| [$cd3a: puls   a]
+	movem.l	(sp)+,d0                       	| [$cd3a: puls   a]
+	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x1,d4                 	| [$cd3c: sta    $1,u]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x0400,d4              	| [$cd3e: stb    $0400,u]
@@ -13979,7 +14204,10 @@ l_cd34:
 	rts                                    	| [$cd4c: rts]
 
 l_cd4d:
-	move.l	(sp)+,d0                        	| [$cd4d: puls   a]
+	movem.l	(sp)+,d0                       	| [$cd4d: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	neg.b	d1                               	| [$cd4f: negb]
 	sub.b	#0x0e,d1                         	| [$cd50: subb   #$0e]
 	GET_REG_ADDRESS	0x1,d4                 	| [$cd52: sta    $1,u]
@@ -14004,7 +14232,7 @@ l_cd68:
 	move.w	#0xdd77,d1                      	| [$cd68: ldd    #$dd77]
 l_cd6b:
 	PUSH_SR
-	MAKE_D
+	MAKE_D                                 	| [...]
 	move.w	d1,d3                           	| [$cd6b: tfr    d,y]
 	POP_SR
 	jbsr	l_ce53                            	| [$cd6d: jsr    $ce53]
@@ -14120,7 +14348,10 @@ l_ce42:
 	GET_REG_ADDRESS	0x32,d2                	| [$ce46: lda    $32,x]
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$ce49: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$ce4a: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ce4a: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	jbsr	l_ce53                            	| [$ce4d: jsr    $ce53]
 	jmp	l_cec7                             	| [$ce50: jmp    $cec7]
@@ -14754,7 +14985,10 @@ l_d16a:
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d16e: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d186                             	| [$d170: bne    $d186]
-	move.l	(sp)+,d0                        	| [$d172: puls   a]
+	movem.l	(sp)+,d0                       	| [$d172: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	addq.b	#1,d0                           	| [$d174: inca]
 	GET_REG_ADDRESS	0x1,d4                 	| [$d175: sta    $1,u]
 	move.b	d0,(a0)                         	| [...]
@@ -14770,7 +15004,10 @@ l_d16a:
 	rts                                    	| [$d185: rts]
 
 l_d186:
-	move.l	(sp)+,d0                        	| [$d186: puls   a]
+	movem.l	(sp)+,d0                       	| [$d186: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	neg.b	d1                               	| [$d188: negb]
 	subq.b	#1,d0                           	| [$d189: deca]
 	sub.b	#0x0e,d1                         	| [$d18a: subb   #$0e]
@@ -14795,7 +15032,10 @@ l_d19f:
 	GET_DP_ADDRESS	copy_of_screen_flipped_21	| [$d1a3: lda    copy_of_screen_flipped_21]
 	move.b	(a0),d0                         	| [...]
 	jne	l_d1bb                             	| [$d1a5: bne    $d1bb]
-	move.l	(sp)+,d0                        	| [$d1a7: puls   a]
+	movem.l	(sp)+,d0                       	| [$d1a7: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	addq.b	#1,d0                           	| [$d1a9: inca]
 	GET_REG_ADDRESS	0x1,d4                 	| [$d1aa: sta    $1,u]
 	move.b	d0,(a0)                         	| [...]
@@ -14812,7 +15052,10 @@ l_d19f:
 	rts                                    	| [$d1ba: rts]
 
 l_d1bb:
-	move.l	(sp)+,d0                        	| [$d1bb: puls   a]
+	movem.l	(sp)+,d0                       	| [$d1bb: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	neg.b	d1                               	| [$d1bd: negb]
 	subq.b	#1,d0                           	| [$d1be: deca]
 	sub.b	#0x0e,d1                         	| [$d1bf: subb   #$0e]
@@ -15101,7 +15344,7 @@ l_d317:
 	move.w	d3,d2                           	| [$d330: tfr    y,x]
 	move.l	d3,-(sp)                        	| [$d332: pshs   y]
 	jbsr	l_877d                            	| [$d334: jsr    $877d]
-	move.l	(sp)+,d3                        	| [$d337: puls   y]
+	movem.l	(sp)+,d3                       	| [$d337: puls   y]
 	GET_DP_ADDRESS	0xcd                    	| [$d339: lda    $cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_d345                             	| [$d33b: beq    $d345]
@@ -15742,7 +15985,10 @@ l_d686:
 l_d697:
 	move.w	#0xa4c8,d3                      	| [$d697: ldy    #$a4c8]
 	subq.b	#1,d0                           	| [$d69b: deca]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$d69c: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$d69c: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$d69e: stb    $49]
 	move.b	d1,(a0)                         	| [...]
@@ -15757,9 +16003,9 @@ l_d697:
 	move.b	(a0),d1                         	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$d6b0: lda    ,x]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6b2: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6b2: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x20,d0                        	| [$d6b5: lda    #$20]
-	jbsr	l_61f0                            	| [$d6b7: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6b7: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$d6ba: leau   $1,u]
 	jbsr	l_d7df                            	| [$d6bc: jsr    $d7df]
 	GET_DP_ADDRESS	0x49                    	| [$d6bf: ldb    $49]
@@ -15767,21 +16013,21 @@ l_d697:
 	GET_REG_ADDRESS	0,d3                   	| [$d6c1: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6c3: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6c3: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$d6c6: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6c8: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6c8: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$d6cb: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6cd: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6cd: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x2,d4                         	| [$d6d0: leau   $2,u]
 	GET_REG_ADDRESS	0,d2                   	| [$d6d2: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_d6db                             	| [$d6d4: beq    $d6db]
-	jbsr	l_61f0                            	| [$d6d6: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6d6: jsr    write_char_and_move_cursor_61f0]
 	jra	l_d6dd                             	| [$d6d9: bra    $d6dd]
 l_d6db:
 	addq.w	#0x1,d4                         	| [$d6db: leau   $1,u]
@@ -15789,20 +16035,20 @@ l_d6dd:
 	GET_REG_ADDRESS	0,d2                   	| [$d6dd: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6df: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6df: jsr    write_char_and_move_cursor_61f0]
 	jbsr	l_8a1d                            	| [$d6e2: jsr    $8a1d]
 	move.b	#0x01,d1                        	| [$d6e5: ldb    #$01]
-	jbsr	l_61f0                            	| [$d6e7: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6e7: jsr    write_char_and_move_cursor_61f0]
 	GET_DP_ADDRESS	0x49                    	| [$d6ea: ldb    $49]
 	move.b	(a0),d1                         	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$d6ec: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6ee: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6ee: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$d6f1: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d6f3: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d6f3: jsr    write_char_and_move_cursor_61f0]
 	GET_DP_ADDRESS	0x07                    	| [$d6f6: inc    $07]
 	addq.b	#1,(a0)                         	| [...]
 	add.w	#0x73,d4                         	| [$d6f8: leau   $73,u]
@@ -15898,7 +16144,10 @@ l_d77e:
 l_d789:
 	move.w	#0xa4c8,d4                      	| [$d789: ldu    #$a4c8]
 	subq.b	#1,d0                           	| [$d78c: deca]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$d78d: ldb    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$d78d: ldb    a,u]
 	move.b	(a0),d1                         	| [...]
 l_d78f:
 	move.w	#0x32c9,d4                      	| [$d78f: ldu    #$32c9]
@@ -15908,31 +16157,31 @@ l_d78f:
 	move.b	d0,(a0)                         	| [...]
                                          | [$d796: dec    $df]
 	subq.b	#1,(a0)                         	| [...]
-	jbsr	l_61f0                            	| [$d798: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d798: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x20,d0                        	| [$d79b: lda    #$20]
-	jbsr	l_61f0                            	| [$d79d: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d79d: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x2,d4                         	| [$d7a0: leau   $2,u]
 	move.l	d1,-(sp)                        	| [$d7a2: pshs   b]
 	jbsr	l_d7df                            	| [$d7a4: jsr    $d7df]
-	move.l	(sp)+,d1                        	| [$d7a7: puls   b]
+	movem.l	(sp)+,d1                       	| [$d7a7: puls   b]
 	GET_REG_ADDRESS	0,d3                   	| [$d7a9: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d7ab: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7ab: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$d7ae: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d7b0: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7b0: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d3                   	| [$d7b3: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d7b5: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7b5: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x2,d4                         	| [$d7b8: leau   $2,u]
 	GET_REG_ADDRESS	0,d2                   	| [$d7ba: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_d7c3                             	| [$d7bc: beq    $d7c3]
-	jbsr	l_61f0                            	| [$d7be: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7be: jsr    write_char_and_move_cursor_61f0]
 	jra	l_d7c5                             	| [$d7c1: bra    $d7c5]
 l_d7c3:
 	addq.w	#0x1,d4                         	| [$d7c3: leau   $1,u]
@@ -15940,19 +16189,19 @@ l_d7c5:
 	GET_REG_ADDRESS	0,d2                   	| [$d7c5: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d7c7: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7c7: jsr    write_char_and_move_cursor_61f0]
 	move.l	d1,-(sp)                        	| [$d7ca: pshs   b]
 	jbsr	l_8a1d                            	| [$d7cc: jsr    $8a1d]
-	move.l	(sp)+,d1                        	| [$d7cf: puls   b]
-	jbsr	l_61f0                            	| [$d7d1: jsr    $61f0]
+	movem.l	(sp)+,d1                       	| [$d7cf: puls   b]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7d1: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$d7d4: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d7d6: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7d6: jsr    write_char_and_move_cursor_61f0]
 	GET_REG_ADDRESS	0,d2                   	| [$d7d9: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$d7db: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$d7db: jsr    write_char_and_move_cursor_61f0]
 	rts                                    	| [$d7de: rts]
 
 l_d7df:
@@ -15969,9 +16218,10 @@ l_d7df:
 l_d7ec:
 	move.b	#0x48,d0                        	| [$d7ec: lda    #$48]
 l_d7ee:
-	GET_REG_ADDRESS	0,d4                   	| [$d7ee: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$d7ee: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d1                           	| [$d7f0: decb]
 	jne	l_d7ee                             	| [$d7f1: bne    $d7ee]
 	rts                                    	| [$d7f3: rts]
@@ -15979,8 +16229,9 @@ l_d7ee:
 l_d7f4:
 	move.b	#0x48,d0                        	| [$d7f4: lda    #$48]
 l_d7f6:
-	GET_REG_ADDRESS	0,d4                   	| [$d7f6: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$d7f6: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	add.w	#0x40,d4                         	| [$d7f8: leau   $40,u]
 	subq.b	#1,d1                           	| [$d7fb: decb]
 	jne	l_d7f6                             	| [$d7fc: bne    $d7f6]
@@ -16075,8 +16326,8 @@ l_d84a:
 	move.b	#0x03,d1                        	| [$d860: ldb    #$03]
 	jbsr	multiply_ab                       	| [$d862: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d4                            	| [$d863: leau   b,u]
 	move.b	#0x03,d0                        	| [$d865: lda    #$03]
 	GET_DP_ADDRESS	0x50                    	| [$d867: sta    $50]
@@ -16454,30 +16705,37 @@ l_da6a:
                                          | [$da70: lda    $13]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x03,d0                         	| [$da72: anda   #$03]
-	add.w	d0,d3                            	| [$da74: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$da74: leay   a,y]
 	rts                                    	| [$da76: rts]
 
 l_da77:
 	GET_REG_ADDRESS	0,d3                   	| [$da77: lda    ,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da79: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da79: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_REG_ADDRESS	0x1,d3                 	| [$da7b: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da7d: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da7d: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_REG_ADDRESS	0x2,d3                 	| [$da7f: lda    $2,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da81: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da81: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_REG_ADDRESS	0x3,d3                 	| [$da83: lda    $3,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da85: sta    ,u+]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da85: sta    ,u+] [video_address]
 	addq.w	#1,d4                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d1                           	| [$da87: decb]
 	jne	l_da77                             	| [$da88: bne    $da77]
 	rts                                    	| [$da8a: rts]
@@ -16485,23 +16743,27 @@ l_da77:
 l_da8b:
 	GET_REG_ADDRESS	0,d3                   	| [$da8b: lda    ,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da8d: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da8d: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	add.w	#0x40,d4                         	| [$da8f: leau   $40,u]
 	GET_REG_ADDRESS	0x1,d3                 	| [$da92: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da94: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da94: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	add.w	#0x40,d4                         	| [$da96: leau   $40,u]
 	GET_REG_ADDRESS	0x2,d3                 	| [$da99: lda    $2,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$da9b: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da9b: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	add.w	#0x40,d4                         	| [$da9d: leau   $40,u]
 	GET_REG_ADDRESS	0x3,d3                 	| [$daa0: lda    $3,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$daa2: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$daa2: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	add.w	#0x40,d4                         	| [$daa4: leau   $40,u]
 	subq.b	#1,d1                           	| [$daa7: decb]
 	jne	l_da8b                             	| [$daa8: bne    $da8b]
@@ -16511,23 +16773,27 @@ l_daab:
 	GET_REG_ADDRESS	0,d3                   	| [$daab: lda    ,y]
 	move.b	(a0),d0                         	| [...]
 	subq.w	#1,d4                           	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$daad: sta    ,-u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$daad: sta    ,-u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_REG_ADDRESS	0x1,d3                 	| [$daaf: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
 	subq.w	#1,d4                           	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dab1: sta    ,-u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dab1: sta    ,-u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_REG_ADDRESS	0x2,d3                 	| [$dab3: lda    $2,y]
 	move.b	(a0),d0                         	| [...]
 	subq.w	#1,d4                           	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dab5: sta    ,-u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dab5: sta    ,-u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_REG_ADDRESS	0x3,d3                 	| [$dab7: lda    $3,y]
 	move.b	(a0),d0                         	| [...]
 	subq.w	#1,d4                           	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dab9: sta    ,-u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dab9: sta    ,-u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d1                           	| [$dabb: decb]
 	jne	l_daab                             	| [$dabc: bne    $daab]
 	rts                                    	| [$dabe: rts]
@@ -16535,23 +16801,27 @@ l_daab:
 l_dabf:
 	GET_REG_ADDRESS	0,d3                   	| [$dabf: lda    ,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dac1: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dac1: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$dac3: leau   -$40,u]
 	GET_REG_ADDRESS	0x1,d3                 	| [$dac6: lda    $1,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dac8: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dac8: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$daca: leau   -$40,u]
 	GET_REG_ADDRESS	0x2,d3                 	| [$dacd: lda    $2,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dacf: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dacf: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$dad1: leau   -$40,u]
 	GET_REG_ADDRESS	0x3,d3                 	| [$dad4: lda    $3,y]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS	0,d4                   	| [$dad6: sta    ,u]
+	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$dad6: sta    ,u] [video_address]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	sub.w	#0x40,d4                         	| [$dad8: leau   -$40,u]
 	subq.b	#1,d1                           	| [$dadb: decb]
 	jne	l_dabf                             	| [$dadc: bne    $dabf]
@@ -16640,7 +16910,10 @@ l_db57:
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xa4c8,d3                      	| [$db59: ldy    #$a4c8]
 	subq.b	#1,d0                           	| [$db5d: deca]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$db5e: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$db5e: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	GET_DP_ADDRESS	0x49                    	| [$db60: stb    $49]
 	move.b	d1,(a0)                         	| [...]
@@ -16655,9 +16928,9 @@ l_db57:
 	move.b	(a0),d1                         	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$db72: lda    ,x]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_61f0                            	| [$db74: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$db74: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x20,d0                        	| [$db77: lda    #$20]
-	jbsr	l_61f0                            	| [$db79: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$db79: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$db7c: leau   $1,u]
 	jbsr	l_d7df                            	| [$db7e: jsr    $d7df]
 	GET_DP_ADDRESS	0x49                    	| [$db81: ldb    $49]
@@ -16749,7 +17022,10 @@ l_dbff:
 l_dc0d:
 	move.w	#0xa4c8,d4                      	| [$dc0d: ldu    #$a4c8]
 	subq.b	#1,d0                           	| [$dc10: deca]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$dc11: ldb    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$dc11: ldb    a,u]
 	move.b	(a0),d1                         	| [...]
 l_dc13:
 	move.w	#0x32c9,d4                      	| [$dc13: ldu    #$32c9]
@@ -16759,13 +17035,13 @@ l_dc13:
 	move.b	d0,(a0)                         	| [...]
                                          | [$dc1a: dec    $df]
 	subq.b	#1,(a0)                         	| [...]
-	jbsr	l_61f0                            	| [$dc1c: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$dc1c: jsr    write_char_and_move_cursor_61f0]
 	move.b	#0x20,d0                        	| [$dc1f: lda    #$20]
-	jbsr	l_61f0                            	| [$dc21: jsr    $61f0]
+	jbsr	write_char_and_move_cursor_61f0   	| [$dc21: jsr    write_char_and_move_cursor_61f0]
 	addq.w	#0x1,d4                         	| [$dc24: leau   $1,u]
 	move.l	d1,-(sp)                        	| [$dc26: pshs   b]
 	jbsr	l_d7df                            	| [$dc28: jsr    $d7df]
-	move.l	(sp)+,d1                        	| [$dc2b: puls   b]
+	movem.l	(sp)+,d1                       	| [$dc2b: puls   b]
 	jmp	l_6267                             	| [$dc2d: jmp    $6267]
 
 table_dc7c:
@@ -16848,9 +17124,12 @@ l_df18:
 	jbsr	multiply_ab                       	| [$df51: mul]
 	GET_DP_ADDRESS	0x4c                    	| [$df52: clr    $4c]
 	clr.b	(a0)                         	| [...]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4c                    	| [$df54: addd   $4c]
 	add.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$df56: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -16860,6 +17139,9 @@ l_df18:
 	jbsr	multiply_ab                       	| [$df5c: mul]
 	GET_DP_ADDRESS	nb_objects_48           	| [$df5d: addd   nb_objects_48]
 	add.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$df5f: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -16869,6 +17151,9 @@ l_df18:
 	jbsr	multiply_ab                       	| [$df65: mul]
 	GET_DP_ADDRESS	nb_objects_48           	| [$df66: addd   nb_objects_48]
 	add.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$df68: std    nb_objects_48]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -16884,7 +17169,10 @@ l_df18:
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xedd5,d2                      	| [$df76: ldx    #$edd5]
 	neg.b	d0                               	| [$df79: nega]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$df7a: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$df7a: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x4e                    	| [$df7c: sta    $4e]
 	move.b	d0,(a0)                         	| [...]
@@ -16895,7 +17183,10 @@ l_df18:
 	move.w	#0xedd6,d2                      	| [$df83: ldx    #$edd6]
 	GET_DP_ADDRESS	current_level_84        	| [$df86: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$df88: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$df88: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	move.l	d0,-(sp)                        	| [$df8a: pshs   a]
 	GET_DP_ADDRESS	0x4b                    	| [$df8c: ldb    $4b]
@@ -16903,7 +17194,8 @@ l_df18:
 	jbsr	multiply_ab                       	| [$df8e: mul]
 	GET_DP_ADDRESS	0x50                    	| [$df8f: std    $50]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	move.l	(sp)+,d0                        	| [$df91: puls   a]
+	movem.l	(sp)+,d0                       	| [$df91: puls   a]
+	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4a                    	| [$df93: ldb    $4a]
 	move.b	(a0),d1                         	| [...]
 	jbsr	multiply_ab                       	| [$df95: mul]
@@ -16927,7 +17219,10 @@ l_df18:
 	GET_REG_ADDRESS	0x38,d3                	| [$dfa6: lda    $38,y]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xed7b,d2                      	| [$dfa9: ldx    #$ed7b]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$dfac: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$dfac: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0x4e                    	| [$dfae: sta    $4e]
 	move.b	d0,(a0)                         	| [...]
@@ -16938,7 +17233,10 @@ l_df18:
 	move.w	#0xeddc,d2                      	| [$dfb5: ldx    #$eddc]
 	GET_DP_ADDRESS	current_level_84        	| [$dfb8: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$dfba: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$dfba: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	move.l	d0,-(sp)                        	| [$dfbc: pshs   a]
 	GET_DP_ADDRESS	0x4d                    	| [$dfbe: ldb    $4d]
@@ -16946,7 +17244,8 @@ l_df18:
 	jbsr	multiply_ab                       	| [$dfc0: mul]
 	GET_DP_ADDRESS	0x50                    	| [$dfc1: std    $50]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	move.l	(sp)+,d0                        	| [$dfc3: puls   a]
+	movem.l	(sp)+,d0                       	| [$dfc3: puls   a]
+	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4c                    	| [$dfc5: ldb    $4c]
 	move.b	(a0),d1                         	| [...]
 	jbsr	multiply_ab                       	| [$dfc7: mul]
@@ -16978,9 +17277,12 @@ l_df18:
 	roxr.b	#1,d1                           	| [$dfe0: rorb]
 	asr.b	#1,d0                            	| [$dfe1: asra]
 	roxr.b	#1,d1                           	| [$dfe2: rorb]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x50                    	| [$dfe3: addd   $50]
 	add.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x50                    	| [$dfe5: std    $50]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -16988,6 +17290,9 @@ l_df18:
 	LOAD_D                                 	| [$dfe7: ldd    $4c]
 	GET_DP_ADDRESS	0x50                    	| [$dfe9: subd   $50]
 	sub.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0x4c                    	| [$dfeb: std    $4c]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -16998,6 +17303,9 @@ l_df18:
 	GET_ADDRESS	0x2a5e                     	| [$dff3: ldd    $2a5e]
 	LOAD_D                                 	| [$dff3: ldd    $2a5e]
 	add.w	#0x0001,d1                       	| [$dff6: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x2a5e                     	| [$dff9: std    $2a5e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -17010,9 +17318,10 @@ l_dffe:
 	roxl.b	#1,d0                           	| [$e001: rola]
 	asl.b	#1,d1                            	| [$e002: aslb]
 	roxl.b	#1,d0                           	| [$e003: rola]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x299e                     	| [$e004: addd   $299e]
 	add.w	(a0),d1                          	| [...]
+	MAKE_A                                 	| [...]
 	GET_DP_ADDRESS	0x51                    	| [$e007: sta    $51]
 	move.b	d0,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$e009: clra]
@@ -17025,9 +17334,10 @@ l_dffe:
 	roxl.b	#1,d0                           	| [$e010: rola]
 	asl.b	#1,d1                            	| [$e011: aslb]
 	roxl.b	#1,d0                           	| [$e012: rola]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x299c                     	| [$e013: addd   $299c]
 	add.w	(a0),d1                          	| [...]
+	MAKE_A                                 	| [...]
 	GET_DP_ADDRESS	0x50                    	| [$e016: sta    $50]
 	move.b	d0,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$e018: clra]
@@ -17064,6 +17374,9 @@ l_e026:
 	jbsr	multiply_ab                       	| [$e036: mul]
 	GET_DP_ADDRESS	0x50                    	| [$e037: addd   $50]
 	add.w	(a0),d1                          	| [...]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	rts                                    	| [$e039: rts]
 
 l_e03a:
@@ -17140,14 +17453,23 @@ l_e098:
                                          | [$e09f: asla]
 	asl.b	#2,d0                            	| [$e0a0: asla]
 	move.w	#0xedea,d3                      	| [$e0a1: ldy    #$edea]
-	add.w	d0,d3                            	| [$e0a5: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$e0a5: leay   a,y]
 	move.w	#0xedfa,d4                      	| [$e0a7: ldu    #$edfa]
-	add.w	d0,d4                            	| [$e0aa: leau   a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d4                            	| [$e0aa: leau   a,u]
 	jra	l_e0ea                             	| [$e0ac: bra    $e0ea]
 l_e0ae:
 	move.b	#0x0c,d0                        	| [$e0ae: lda    #$0c]
 	move.w	#0xedea,d3                      	| [$e0b0: ldy    #$edea]
-	add.w	d0,d3                            	| [$e0b4: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$e0b4: leay   a,y]
 	GET_REG_ADDRESS	0,d3                   	| [$e0b6: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$e0b6: ldd    ,y++]
@@ -17623,7 +17945,10 @@ l_e2fc:
 	move.b	(a0),d0                         	| [...]
                                          | [$e316: asla]
 	asl.b	#2,d0                            	| [$e317: asla]
-	add.w	d0,d2                            	| [$e318: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$e318: leax   a,x]
 	GET_REG_ADDRESS	0,d3                   	| [$e31a: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$e31a: ldd    ,y++]
@@ -17645,8 +17970,8 @@ l_e2fc:
 	move.b	#0x0c,d1                        	| [$e333: ldb    #$0c]
 	jbsr	multiply_ab                       	| [$e335: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$e336: leax   b,x]
 	jbsr	compare_times_8968                	| [$e338: jsr    compare_times_8968]
 	GET_DP_ADDRESS	0x62                    	| [$e33b: tst    $62]
@@ -17674,7 +17999,10 @@ l_e345:
 	move.w	#0x182e,d4                      	| [$e35e: ldu    #$182e]
 	move.w	#0x29d0,d2                      	| [$e361: ldx    #$29d0]
 	move.w	#0xded3,d3                      	| [$e364: ldy    #$ded3]
-	add.w	d0,d3                            	| [$e368: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$e368: leay   a,y]
 	move.b	#0x36,d0                        	| [$e36a: ldd    #$3630]
 	move.w	#0x3630,d1                      	| [$e36a: ldd    #$3630]
 	MAKE_D                                 	| [...]
@@ -17855,7 +18183,10 @@ l_e452:
 	GET_DP_ADDRESS	angle_d8                	| [$e45c: lda    angle_d8]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xed7b,d3                      	| [$e45e: ldy    #$ed7b]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$e462: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$e462: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	jbsr	multiply_ab                       	| [$e464: mul]
                                          | [$e465: deca]
@@ -17930,7 +18261,10 @@ l_e4c8:
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xee1c,d3                      	| [$e4cb: ldy    #$ee1c]
 	asl.b	#1,d0                            	| [$e4cf: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$e4d0: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$e4d0: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	cmp.w	#0xffff,d3                       	| [$e4d3: cmpy   #$ffff]
 	jne	l_e4e0                             	| [$e4d7: bne    $e4e0]
@@ -17973,13 +18307,19 @@ l_e4e0:
                                          | [$e50d: asla]
 	asl.b	#5,d0                            	| [$e50e: asla]
 	move.w	#0xee32,d2                      	| [$e50f: ldx    #$ee32]
-	add.w	d0,d2                            	| [$e512: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$e512: leax   a,x]
 	GET_DP_ADDRESS	0xa2                    	| [$e514: lda    $a2]
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x0f,d0                         	| [$e516: adda   #$0f]
 	GET_ADDRESS	0x2acb                     	| [$e518: suba   $2acb]
 	sub.b	(a0),d0                          	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$e51b: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$e51b: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x21,d0                         	| [$e51d: cmpa   #$21]
 	jeq	l_e53a                             	| [$e51f: beq    $e53a]
@@ -18014,7 +18354,7 @@ l_e543:
 	jbsr	l_8587                            	| [$e54b: jsr    $8587]
 	GET_DP_ADDRESS	0xa3                    	| [$e54e: ldx    $a3]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
-	GET_REG_ADDRESS	-0x40,d2               	| [$e550: lda    -$40,x]
+	GET_REG_UNCHECKED_ADDRESS	-0x40,d2               	| [$e550: lda    -$40,x] [video_address]
 	move.b	(a0),d0                         	| [...]
 	moveq	#0,d1                            	| [$e553: clrb]
 	cmp.b	#0xad,d0                         	| [$e554: cmpa   #$ad]
@@ -18566,7 +18906,10 @@ l_e854:
 	jeq	l_e88b                             	| [$e859: beq    $e88b]
 	asl.b	#1,d0                            	| [$e85b: asla]
 	move.w	#0xeeed,d3                      	| [$e85c: ldy    #$eeed]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$e860: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$e860: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	move.w	#0x1808,d4                      	| [$e863: ldu    #$1808]
 	move.w	#0x28a0,d2                      	| [$e866: ldx    #$28a0]
@@ -18740,7 +19083,10 @@ l_e953:
 	move.b	(a0),d0                         	| [...]
                                          | [$e96d: asla]
 	asl.b	#2,d0                            	| [$e96e: asla]
-	add.w	d0,d2                            	| [$e96f: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$e96f: leax   a,x]
 	GET_REG_ADDRESS	0,d3                   	| [$e971: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$e971: ldd    ,y++]
@@ -18781,7 +19127,10 @@ l_e994:
 	move.b	(a0),d0                         	| [...]
                                          | [$e9a0: asla]
 	asl.b	#2,d0                            	| [$e9a1: asla]
-	add.w	d0,d2                            	| [$e9a2: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$e9a2: leax   a,x]
 	move.b	#0x16,d0                        	| [$e9a4: lda    #$16]
 	GET_REG_ADDRESS	0,d2                   	| [$e9a6: sta    ,x+]
 	addq.w	#1,d2                           	| [...]
@@ -18848,8 +19197,8 @@ l_e9e4:
 	move.b	#0x06,d1                        	| [$e9ee: ldb    #$06]
 	jbsr	multiply_ab                       	| [$e9f0: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d3                            	| [$e9f1: leay   b,y]
 
 update_flying_javelin_sprite_e9f3:
@@ -18881,7 +19230,7 @@ l_e9fd:
 	move.b	(a0),d0                         	| [...]
 	GET_REG_ADDRESS	0,d4                   	| [$ea14: sta    ,u]
 	move.b	d0,(a0)                         	| [...]
-	move.l	(sp)+,d3                        	| [$ea16: puls   y]
+	movem.l	(sp)+,d3                       	| [$ea16: puls   y]
 	GET_DP_ADDRESS	nb_objects_48           	| [$ea18: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_e9fd                             	| [$ea1a: bne    $e9fd]
@@ -19013,15 +19362,18 @@ l_eaac:
 	move.b	#0x0c,d0                        	| [$eab8: lda    #$0c]
 	jbsr	multiply_ab                       	| [$eaba: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d3                            	| [$eabb: leay   b,y]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$eabd: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
 	subq.b	#1,d0                           	| [$eabf: deca]
                                          | [$eac0: asla]
 	asl.b	#2,d0                            	| [$eac1: asla]
-	add.w	d0,d3                            	| [$eac2: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$eac2: leay   a,y]
 	GET_REG_ADDRESS	0,d3                   	| [$eac4: lda    ,y]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x16,d0                         	| [$eac6: cmpa   #$16]
@@ -19055,8 +19407,8 @@ l_eae9:
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0xed7b,d3                      	| [$eaed: ldy    #$ed7b]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$eaf1: lda    b,y]
 	move.b	(a0),d0                         	| [...]
 	moveq	#0,d1                            	| [$eaf3: clrb]
@@ -19166,8 +19518,8 @@ l_eb81:
 	jbsr	multiply_ab                       	| [$eb8c: mul]
 	move.w	#0xef53,d3                      	| [$eb8d: ldy    #$ef53]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d3                            	| [$eb91: leay   b,y]
 	jbsr	update_flying_javelin_sprite_e9f3 	| [$eb93: jsr    update_flying_javelin_sprite_e9f3]
 	jbsr	l_eba3                            	| [$eb96: jsr    $eba3]
@@ -19223,18 +19575,21 @@ l_ebda:
 	move.b	(a0),d1                         	| [...]
 	move.w	#0xefea,d3                      	| [$ebe0: ldy    #$efea]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ebe4: adda   b,y]
 	add.b	(a0),d0                          	| [...]
 	move.w	#0xef53,d3                      	| [$ebe6: ldy    #$ef53]
 	move.l	d0,-(sp)                        	| [$ebea: pshs   a]
 	move.b	#0x06,d0                        	| [$ebec: lda    #$06]
 	jbsr	multiply_ab                       	| [$ebee: mul]
-	move.l	(sp)+,d0                        	| [$ebef: puls   a]
+	movem.l	(sp)+,d0                       	| [$ebef: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ebf1: adda   b,y]
 	add.b	(a0),d0                          	| [...]
 	cmp.b	#0xfc,d0                         	| [$ebf3: cmpa   #$fc]
@@ -19320,8 +19675,8 @@ l_ec60:
 
 l_ec73:
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$ec73: adda   b,y]
 	CLR_XC_FLAGS
 	move.b	(a0),d6	| [...]
@@ -19364,14 +19719,17 @@ l_ec8e:
 	move.b	#0x0c,d1                        	| [$eca0: ldb    #$0c]
 	jbsr	multiply_ab                       	| [$eca2: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$eca3: leax   b,x]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$eca5: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
                                          | [$eca7: asla]
 	asl.b	#2,d0                            	| [$eca8: asla]
-	add.w	d0,d2                            	| [$eca9: leax   a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d2                            	| [$eca9: leax   a,x]
 	GET_REG_ADDRESS	0,d3                   	| [$ecab: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$ecab: ldd    ,y++]
@@ -19668,12 +20026,18 @@ l_f05c:
 	move.b	#0x32,d1                        	| [$f074: ldb    #$32]
 	jbsr	multiply_ab                       	| [$f076: mul]
 	sub.w	#0x0005,d1                       	| [$f077: subd   #$0005]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	jra	l_f084                             	| [$f07a: bra    $f084]
 l_f07c:
 	sub.b	#0x0a,d0                         	| [$f07c: suba   #$0a]
 	move.b	#0x1e,d1                        	| [$f07e: ldb    #$1e]
 	jbsr	multiply_ab                       	| [$f080: mul]
 	add.w	#0x01f1,d1                       	| [$f081: addd   #$01f1]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 l_f084:
 	MAKE_D                                 	| [...]
 	add.w	d1,d3                            	| [$f084: leay   d,y]
@@ -19779,7 +20143,10 @@ l_f0fe:
 	GET_DP_ADDRESS	0xdf                    	| [$f102: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0x2a52,d3                      	| [$f104: ldy    #$2a52]
-	add.w	d0,d3                            	| [$f108: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$f108: leay   a,y]
 	GET_ADDRESS	0x2a90                     	| [$f10a: lda    $2a90]
 	move.b	(a0),d0                         	| [...]
 	subq.b	#1,d0                           	| [$f10d: deca]
@@ -19796,7 +20163,10 @@ l_f11c:
 	GET_DP_ADDRESS	0xdf                    	| [$f11c: cmpa   $df]
 	cmp.b	(a0),d0                          	| [...]
 	jeq	l_f129                             	| [$f11e: beq    $f129]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f120: cmpb   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f120: cmpb   a,y]
 	cmp.b	(a0),d1                          	| [...]
 	jhi	l_f126                             	| [$f122: bhi    $f126]
 	and.l	#0xFF,d0                         	| [masking out]
@@ -19816,14 +20186,17 @@ l_f129:
 	addq.b	#1,d0                           	| [$f131: inca]
 	move.w	#0x2a52,d3                      	| [$f132: ldy    #$2a52]
 	asl.b	#1,d0                            	| [$f136: asla]
-	add.w	d0,d3                            	| [$f137: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$f137: leay   a,y]
 	move.w	#0x2a80,d4                      	| [$f139: ldu    #$2a80]
 	asr.b	#1,d0                            	| [$f13c: asra]
 	move.b	#0x03,d1                        	| [$f13d: ldb    #$03]
 	jbsr	multiply_ab                       	| [$f13f: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d4                            	| [$f140: leau   b,u]
 	GET_REG_ADDRESS	0,d3                   	| [$f142: ldd    ,y]
 	LOAD_D                                 	| [$f142: ldd    ,y]
@@ -19895,7 +20268,10 @@ l_f196:
 	move.w	#0xfd94,d3                      	| [$f199: ldy    #$fd94]
 	move.b	#0x0b,d0                        	| [$f19d: lda    #$0b]
 l_f19f:
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f19f: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f19f: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	sub.b	#0x30,d1                         	| [$f1a1: subb   #$30]
 	and.l	#0xFF,d0                         	| [masking out]
@@ -19923,7 +20299,10 @@ l_f1af:
 l_f1c3:
 	move.b	#0x0e,d0                        	| [$f1c3: lda    #$0e]
 l_f1c5:
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f1c5: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f1c5: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	sub.b	#0x30,d1                         	| [$f1c7: subb   #$30]
 	and.l	#0xFF,d0                         	| [masking out]
@@ -19946,8 +20325,8 @@ l_f1c5:
 	move.b	#0x03,d1                        	| [$f1dc: ldb    #$03]
 	jbsr	multiply_ab                       	| [$f1de: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d3                            	| [$f1df: leay   b,y]
 	GET_REG_ADDRESS	0,d3                   	| [$f1e1: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
@@ -20003,6 +20382,9 @@ l_f219:
 	addq.w	#2,d2                           	| [...]
 	LOAD_D                                 	| [$f219: ldd    ,x++]
 	sub.w	#0x3030,d1                       	| [$f21b: subd   #$3030]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$f21e: std    ,y++] [video_address_word]
 	addq.w	#2,d3                           	| [...]
@@ -20043,8 +20425,8 @@ l_f232:
 	move.b	#0x05,d1                        	| [$f257: ldb    #$05]
 	jbsr	multiply_ab                       	| [$f259: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d3                            	| [$f25a: leay   b,y]
 	jra	l_f271                             	| [$f25c: bra    $f271]
 l_f25e:
@@ -20058,8 +20440,8 @@ l_f25e:
 	move.b	#0x03,d1                        	| [$f26c: ldb    #$03]
 	jbsr	multiply_ab                       	| [$f26e: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d3                            	| [$f26f: leay   b,y]
 l_f271:
 	add.w	#0xc,d2                          	| [$f271: leax   $c,x]
@@ -20217,7 +20599,10 @@ l_f312:
 	GET_ADDRESS	0x299c                     	| [$f31f: lda    $299c]
 	move.b	(a0),d0                         	| [...]
 	move.w	#0xfdcf,d4                      	| [$f322: ldu    #$fdcf]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$f325: lda    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f325: lda    a,u]
 	move.b	(a0),d0                         	| [...]
 	move.b	d0,d1                           	| [$f327: tfr    a,b]
 	add.w	#0x07ff,d2                       	| [$f329: leax   $07ff,x]
@@ -20268,7 +20653,10 @@ l_f346:
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x03,d0                         	| [$f35f: anda   #$03]
 	move.w	#0xfdd9,d3                      	| [$f361: ldy    #$fdd9]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f365: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f365: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	move.b	d0,d1                           	| [$f367: tfr    a,b]
 	move.w	#0x3980,d2                      	| [$f369: ldx    #$3980]
@@ -20345,6 +20733,9 @@ l_f3b8:
 	GET_REG_ADDRESS	0xe,d2                 	| [$f3bb: ldd    $e,x]
 	LOAD_D                                 	| [$f3bb: ldd    $e,x]
 	add.w	#0x0004,d1                       	| [$f3bd: addd   #$0004]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0xe,d2                 	| [$f3c0: std    $e,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -20378,7 +20769,10 @@ l_f3d7:
 	addq.b	#1,(a0)                         	| [...]
 	addq.b	#1,d0                           	| [$f3e3: inca]
 	move.w	#0x2a52,d3                      	| [$f3e4: ldy    #$2a52]
-	add.w	d0,d3                            	| [$f3e8: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$f3e8: leay   a,y]
 	GET_REG_ADDRESS	0,d3                   	| [$f3ea: lda    ,y]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	current_level_84        	| [$f3ec: clr    current_level_84]
@@ -20701,8 +21095,8 @@ l_f58e:
 l_f59b:
 	move.w	#0xfe81,d4                      	| [$f59b: ldu    #$fe81]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f59e: ldb    b,u]
 	move.b	(a0),d1                         	| [...]
 	jra	l_f5ba                             	| [$f5a0: bra    $f5ba]
@@ -20717,13 +21111,16 @@ l_f5a2:
 l_f5af:
 	move.w	#0xfe85,d4                      	| [$f5af: ldu    #$fe85]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f5b2: ldb    b,u]
 	move.b	(a0),d1                         	| [...]
 	jra	l_f5ba                             	| [$f5b4: bra    $f5ba]
 l_f5b6:
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f5b6: ldb    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f5b6: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	sub.b	#0x30,d1                         	| [$f5b8: subb   #$30]
 l_f5ba:
@@ -20734,8 +21131,11 @@ l_f5ba:
 	move.b	#0x80,d0                        	| [$f5c3: lda    #$80]
 	jbsr	multiply_ab                       	| [$f5c5: mul]
 	add.w	d1,d2                            	| [$f5c6: leax   d,x]
-	move.l	(sp)+,d0                        	| [$f5c8: puls   a]
-	move.l	(sp)+,d1                        	| [$f5ca: puls   b]
+	movem.l	(sp)+,d0                       	| [$f5c8: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
+	movem.l	(sp)+,d1                       	| [$f5ca: puls   b]
 	and.l	#0xFF,d0                         	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$f5cc: stb    a,x]
 	move.b	d1,(a0)                         	| [...]
@@ -20767,7 +21167,10 @@ l_f5eb:
 	move.w	#0x2a48,d2                      	| [$f5eb: ldx    #$2a48]
 	GET_ADDRESS	0x2a4d                     	| [$f5ee: lda    $2a4d]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$f5f1: lda    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$f5f1: lda    a,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xff,d0                         	| [$f5f3: cmpa   #$ff]
 	jeq	l_f62f                             	| [$f5f5: beq    $f62f]
@@ -20780,18 +21183,30 @@ l_f5eb:
 	move.w	#0x2a48,d3                      	| [$f604: ldy    #$2a48]
 	GET_ADDRESS	0x2a4d                     	| [$f608: lda    $2a4d]
 	move.b	(a0),d0                         	| [...]
-	add.w	d0,d3                            	| [$f60b: leay   a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d3                            	| [$f60b: leay   a,y]
 	asl.b	#1,d0                            	| [$f60d: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$f60e: ldu    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f60e: ldu    a,u]
 	MOVE_W_TO_REG	a0,d4                         	| [...]
 	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$f610: stu    p1_attempts_left_a1]
 	MOVE_W_FROM_REG	d4,a0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d2         	| [$f612: ldx    a,x]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$f612: ldx    a,x]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
                                          | [$f614: asla]
 	asl.b	#2,d0                            	| [$f615: asla]
 	move.w	#0x1808,d4                      	| [$f616: ldu    #$1808]
-	add.w	d0,d4                            	| [$f619: leau   a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	add.w	d6,d4                            	| [$f619: leau   a,u]
 	jbsr	l_f637                            	| [$f61b: jsr    $f637]
 l_f61e:
 	GET_ADDRESS	0x2a4c                     	| [$f61e: dec    $2a4c]
@@ -20874,7 +21289,10 @@ l_f637:
 	move.w	#0xa4c8,d3                      	| [$f672: ldy    #$a4c8]
 	GET_DP_ADDRESS	0xdf                    	| [$f676: lda    $df]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f678: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f678: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	move.b	d0,d1                           	| [$f67a: tfr    a,b]
 	MAKE_D                                 	| [...]
@@ -20886,6 +21304,9 @@ l_f637:
 	GET_REG_ADDRESS	0xe,d2                 	| [$f685: ldd    $e,x]
 	LOAD_D                                 	| [$f685: ldd    $e,x]
 	add.w	#0x0004,d1                       	| [$f687: addd   #$0004]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0xe,d2                 	| [$f68a: std    $e,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -20919,6 +21340,9 @@ l_f697:
 	GET_REG_ADDRESS	0xe,d2                 	| [$f6b3: ldd    $e,x]
 	LOAD_D                                 	| [$f6b3: ldd    $e,x]
 	add.w	#0x0004,d1                       	| [$f6b5: addd   #$0004]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0xe,d2                 	| [$f6b8: std    $e,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -21012,8 +21436,8 @@ l_f72f:
 	GET_DP_ADDRESS	nb_objects_48           	| [$f735: ldb    nb_objects_48]
 	move.b	(a0),d1                         	| [...]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$f737: ldb    b,x]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0x01,d0                        	| [$f739: lda    #$01]
@@ -21061,6 +21485,9 @@ l_f752:
 	GET_ADDRESS	0x2fe4                     	| [$f774: ldd    $2fe4]
 	LOAD_D                                 	| [$f774: ldd    $2fe4]
 	add.w	#0x0001,d1                       	| [$f777: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x2fe4                     	| [$f77a: std    $2fe4]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -21119,6 +21546,9 @@ l_f79d:
 	GET_ADDRESS	0x2fe0                     	| [$f7c2: ldd    $2fe0]
 	LOAD_D                                 	| [$f7c2: ldd    $2fe0]
 	add.w	#0x0001,d1                       	| [$f7c5: addd   #$0001]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x2fe0                     	| [$f7c8: std    $2fe0]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -21131,7 +21561,10 @@ l_f7cc:
 	jeq	l_f7fc                             	| [$f7d1: beq    $f7fc]
 	move.w	#0xfebe,d3                      	| [$f7d3: ldy    #$febe]
 	asl.b	#1,d0                            	| [$f7d7: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f7d8: ldy    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f7d8: ldy    a,y]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	asr.b	#1,d0                            	| [$f7db: asra]
 	cmp.b	#0x1b,d0                         	| [$f7dc: cmpa   #$1b]
@@ -21139,7 +21572,10 @@ l_f7cc:
 	sub.b	#0x1b,d0                         	| [$f7e0: suba   #$1b]
 	asl.b	#1,d0                            	| [$f7e2: asla]
 	move.w	#0xfeb8,d4                      	| [$f7e3: ldu    #$feb8]
-	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$f7e6: ldd    a,u]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f7e6: ldd    a,u]
 	LOAD_D                                 	| [$f7e6: ldd    a,u]
 	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$f7e8: std    ,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -21177,8 +21613,8 @@ l_f802:
 	move.b	#0x03,d1                        	| [$f809: ldb    #$03]
 	jbsr	multiply_ab                       	| [$f80b: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$f80c: leax   b,x]
 	GET_REG_ADDRESS	0,d2                   	| [$f80e: lda    ,x]
 	move.b	(a0),d0                         	| [...]
@@ -21261,7 +21697,10 @@ l_f86a:
 	GET_ADDRESS	0x299c                     	| [$f86e: lda    $299c]
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$f871: asla]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f872: ldd    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f872: ldd    a,y]
 	LOAD_D                                 	| [$f872: ldd    a,y]
 	GET_DP_ADDRESS	0x50                    	| [$f874: stb    $50]
 	move.b	d1,(a0)                         	| [...]
@@ -21322,8 +21761,8 @@ l_f8b6:
 	move.w	#0xfebe,d2                      	| [$f8c6: ldx    #$febe]
 	asl.b	#1,d1                            	| [$f8c9: aslb]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$f8ca: ldx    b,x]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	move.b	#0x0a,d1                        	| [$f8cc: ldb    #$0a]
@@ -21384,8 +21823,8 @@ l_f913:
 	move.b	#0x03,d0                        	| [$f91a: lda    #$03]
 	jbsr	multiply_ab                       	| [$f91c: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$f91d: leax   b,x]
 	GET_ADDRESS	0x299e                     	| [$f91f: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
@@ -21717,7 +22156,10 @@ l_fa92:
                                          | [$fa9b: asra]
 	asr.b	#2,d0                            	| [$fa9c: asra]
 	and.b	#0x03,d0                         	| [$fa9d: anda   #$03]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$fa9f: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$fa9f: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x0f,d1                        	| [$faa1: ldb    #$0f]
 l_faa3:
@@ -21737,7 +22179,10 @@ l_faa3:
 	move.b	#0x40,d0                        	| [$fab4: lda    #$40]
 	jbsr	multiply_ab                       	| [$fab6: mul]
 	add.w	d1,d2                            	| [$fab7: leax   d,x]
-	move.l	(sp)+,d0                        	| [$fab9: puls   a]
+	movem.l	(sp)+,d0                       	| [$fab9: puls   a]
+	PUSH_SR                                	| [...]
+	MAKE_D                                 	| [...]
+	POP_SR                                 	| [...]
 	move.b	#0x07,d1                        	| [$fabb: ldb    #$07]
 l_fabd:
 	and.l	#0xFF,d1                         	| [masking out]
@@ -21756,8 +22201,8 @@ l_fac3:
 	move.b	#0x03,d1                        	| [$fac8: ldb    #$03]
 	jbsr	multiply_ab                       	| [$faca: mul]
 	moveq	#0,d6                            	| [...]
-	move.b	d1,d6
-	ext	d6
+	move.b	d1,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$facb: leax   b,x]
 	GET_REG_ADDRESS	0,d2                   	| [$facd: lda    ,x+]
 	addq.w	#1,d2                           	| [...]
@@ -21817,7 +22262,10 @@ l_faee:
 	move.w	#0xa4c8,d3                      	| [$fb0b: ldy    #$a4c8]
 	GET_DP_ADDRESS	0xdf                    	| [$fb0f: lda    $df]
 	move.b	(a0),d0                         	| [...]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$fb11: lda    a,y]
+	moveq	#0,d6                            	| [...]
+	move.b	d0,d6                           	| [...] as byte
+	DO_EXTB	d6                             	| [...] with sign extension
+	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$fb11: lda    a,y]
 	move.b	(a0),d0                         	| [...]
 	move.b	d0,d1                           	| [$fb13: tfr    a,b]
 	MAKE_D                                 	| [...]
@@ -21951,7 +22399,7 @@ l_fb9d:
 	not.b	d0                               	| [$fba1: coma]
 	GET_REG_ADDRESS	0,d3                   	| [$fba2: anda   ,y]
 	and.b	(a0),d0                          	| [...]
-	move.l	(sp)+,d3                        	| [$fba4: puls   y]
+	movem.l	(sp)+,d3                       	| [$fba4: puls   y]
 	rts                                    	| [$fba6: rts]
 
 l_fba7:
@@ -22034,18 +22482,27 @@ l_fbda:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x1,d2                 	| [$fc11: std    $1,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	add.w	#0x0008,d1                       	| [$fc13: addd   #$0008]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x4,d2                 	| [$fc16: std    $4,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	add.w	#0x0008,d1                       	| [$fc18: addd   #$0008]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x7,d2                 	| [$fc1b: std    $7,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	MAKE_D
+	MAKE_D                                 	| [...]
 	add.w	#0x0008,d1                       	| [$fc1d: addd   #$0008]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0xa,d2                 	| [$fc20: std    $a,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -22299,8 +22756,11 @@ l_fd74:
 	rts                                    	| [$fd74: rts]
 
 l_fd75:
-	MAKE_D
+	MAKE_D                                 	| [...]
 	add.w	#0x0004,d1                       	| [$fd75: addd   #$0004]
+	PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
 	GET_DP_ADDRESS	0xae                    	| [$fd78: std    $ae]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]

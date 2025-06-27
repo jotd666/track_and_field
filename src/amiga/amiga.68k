@@ -773,15 +773,15 @@ demo_game:
 	
 	
 	GET_MEMORY_START_AND_DP
-	* patch rom
-*	add.l	#0xA855,a6
-*	lea		jotd_message(pc),a1
-*0:
-*	move.b	(a1)+,d0
-*	jeq	0f
-*	move.b	d0,(a6)+
-*	jra	0b
-*0:	
+	* patch rom, let's hope there aren't any forgotten checksums :)
+	add.l	#0xA855,a6
+	lea		jotd_message(pc),a1
+0:
+	move.b	(a1)+,d0
+	jeq	0f
+	move.b	d0,(a6)+
+	jra	0b
+0:	
 	GET_MEMORY_START_AND_DP
 	jbsr	cpu_init
 	jmp			reset_6000					| pass control to the cpu core
@@ -934,12 +934,14 @@ osd_log_cpu:
 	move.w	d2,(a6)+
 	move.w	d3,(a6)+
 	move.w	d4,(a6)+
-	cmp.w	#0xCAFE,(a6)  | hitting the protection buffer
-	jne		444f
-	BREAKPOINT	"cpu log buffer full!"
-444:
 	move.w	#0xDEAD,(a6)+
 	move.l	a6,log_ptr
+	cmp.w	#0xCAFE,(a6)  | hitting the protection buffer
+	jne		444f
+	BREAKPOINT	"cpu log buffer full, dumping and exiting!"
+	jbsr	osd_dump_logs
+	illegal
+444:
 	move.l	(a7)+,d1
 445:
 	move.l	(a7)+,a6
@@ -2312,7 +2314,7 @@ update_bg_tile:
 12:
 	move.l	d0,a2					| pointer on bitplanes
 	lea		mirror_jump_table(pc),a4
-	ror.b	#6,d1			        | modifiers on first bits
+	ror.b	#4,d1			        | modifiers on first bits
 	and.w	#3,d1
 	.ifdef	NO68020
 	add.w	d1,d1
@@ -2457,6 +2459,8 @@ mirror_flipped_tile:
 
 	.endr
 41:
+	TILE_NEXT_PLANE
+	dbf		d4,4b
 
 0:
 	rts
@@ -2478,8 +2482,8 @@ mirror_flipped_tile:
 
 mirror_jump_table:
 	.long	standard_tile
-	.long	flipped_tile
 	.long	mirror_tile
+	.long	flipped_tile
 	.long	mirror_flipped_tile
 	
 mirror_bits:
