@@ -2801,33 +2801,33 @@ init_game_playfield_6a85:
 7628: 84 C0          ANDA   #$C0
 762A: 81 40          CMPA   #$40
 762C: 26 3E          BNE    $766C
-762E: 10 8E FC 6B    LDY    #$FC6B
-7632: 8E 00 04       LDX    #$0004
-7635: 4F             CLRA
-7636: 5F             CLRB
-7637: EB A0          ADDB   ,Y+
-7639: 89 00          ADCA   #$00
-763B: 30 1F          LEAX   -$1,X
-763D: 26 F8          BNE    $7637
-763F: 31 22          LEAY   $2,Y
-7641: 8E 00 04       LDX    #$0004
-7644: EB A0          ADDB   ,Y+
-7646: 89 00          ADCA   #$00
-7648: 30 1F          LEAX   -$1,X
-764A: 26 F8          BNE    $7644
-764C: 31 22          LEAY   $2,Y
-764E: EB A4          ADDB   ,Y
-7650: 89 00          ADCA   #$00
-7652: 10 83 03 FD    CMPD   #$03FD
-7656: 26 11          BNE    $7669
-7658: FC A6 B8       LDD    $A6B8
-765B: 10 83 37 0A    CMPD   #$370A
-765F: 26 08          BNE    $7669
-7661: B6 A6 BF       LDA    $A6BF
-7664: 4C             INCA
-7665: 81 42          CMPA   #$42
-7667: 27 03          BEQ    $766C
-7669: 16 13 BC       LBRA   $8A28
+762E: 10 8E FC 6B    LDY    #$FC6B           ; [rom_check_code]
+7632: 8E 00 04       LDX    #$0004           ; [rom_check_code]
+7635: 4F             CLRA                    ; [rom_check_code]
+7636: 5F             CLRB                    ; [rom_check_code]
+7637: EB A0          ADDB   ,Y+              ; [rom_check_code]
+7639: 89 00          ADCA   #$00             ; [rom_check_code]
+763B: 30 1F          LEAX   -$1,X            ; [rom_check_code]
+763D: 26 F8          BNE    $7637            ; [rom_check_code]
+763F: 31 22          LEAY   $2,Y             ; [rom_check_code]
+7641: 8E 00 04       LDX    #$0004           ; [rom_check_code]
+7644: EB A0          ADDB   ,Y+              ; [rom_check_code]
+7646: 89 00          ADCA   #$00             ; [rom_check_code]
+7648: 30 1F          LEAX   -$1,X            ; [rom_check_code]
+764A: 26 F8          BNE    $7644            ; [rom_check_code]
+764C: 31 22          LEAY   $2,Y             ; [rom_check_code]
+764E: EB A4          ADDB   ,Y               ; [rom_check_code]
+7650: 89 00          ADCA   #$00         ; [rom_check_code]
+7652: 10 83 03 FD    CMPD   #$03FD       ; [rom_check_code]
+7656: 26 11          BNE    $7669        ; [rom_check_code]
+7658: FC A6 B8       LDD    $A6B8		; [rom_check_code] copyright message display address
+765B: 10 83 37 0A    CMPD   #$370A		; [rom_check_code] strangely the "centuri" part isn't checked :)
+765F: 26 08          BNE    $7669		; [rom_check_code]
+7661: B6 A6 BF       LDA    $A6BF		; [rom_check_code]
+7664: 4C             INCA				; [rom_check_code]
+7665: 81 42          CMPA   #$42		; [rom_check_code]
+7667: 27 03          BEQ    $766C		; [rom_check_code]
+7669: 16 13 BC       LBRA   $8A28		; [rom_check_code]
 766C: 39             RTS
 
 766D: 96 2C          LDA    dsw1_copy_2c
@@ -5274,7 +5274,8 @@ compare_times_8968:
 8A25: 86 6B          LDA    #$6B
 8A27: 39             RTS
 
-8A28: 20 FE          BRA    $8A28
+8A28: 20 FE          BRA    $8A28		; [rom_check_code]
+
 8A2A: 8D 61          BSR    $8A8D
 8A2C: EC C4          LDD    ,U
 8A2E: ED 84          STD    ,X

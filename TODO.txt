@@ -1,11 +1,19 @@
-- hammer: hammer sprite direction sometimes wrong (when launching): sprite symmetry flags
-- converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
-	cmp.w	(a0),d1   => macro!
-
-- sound and music!
 - X=0: sprite not displayed. If displayed, artefacts appear!
+- cycle exact: cpu erase completely broken!
+- hammer: hammer sprite direction sometimes wrong (when launching): sprite symmetry flags
+
+=> publish video
+
+- rip sounds
+- rip tunes
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
+- is game playing: not working (should be able to insert coin in the push start screen)
+- javelin displays strangely/seems shifted/ground when landing
+- save NV RAM each time a record is broken (find when) or game is over
+- sound and music!
+- converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
+	cmp.w	(a0),d1   => macro!
 
 optims:
 - scroll optim: only change copperlist if previous value is different
