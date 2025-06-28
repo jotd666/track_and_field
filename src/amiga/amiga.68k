@@ -22,7 +22,6 @@ AFB_68010 = 0
 AFB_68020 = 1
 AFB_68030 = 2
 
-NO68020 = 1
 
 NB_POSSIBLE_SPRITES = 256
 NB_POSSIBLE_TILES = 768
@@ -1361,9 +1360,9 @@ update_one_bob:
 	move.w	d1,(a6)+			| store current sprite attributes to previous ones
 	move.w	d4,(a6)+			| store height
 	move.w	d5,(a6)+			| store width in bytes
-	clr.b	(a6)+				| not a star
+	clr.b	(a6)+				| 
 	move.b	d6,(a6)+		    | active planes (helps for erase)
-	move.w	d5,d2			    | width in bytes, 4 for 16 pixels+shift
+	move.w	d5,d2			    | width in bytes
 	moveq	#0,d5			    | Y-offset
 
 
@@ -1380,10 +1379,10 @@ update_one_bob:
 	move.w	d2,(a6)+			| store width in bytes
 	clr.b	(a6)+				| not a star
 	move.b	d6,(a6)+		    | active planes (helps for erase)
-	bsr		blit_planes_any_internal_cookie_cut
+	jbsr		blit_planes_any_internal_cookie_cut
 	movem.l	(a7)+,d0-d6/a0/a1/a3
 102:
-	bsr		blit_planes_any_internal_cookie_cut
+	jbsr		blit_planes_any_internal_cookie_cut
 	move.l	(a7)+,a0
 	rts
 21:
@@ -1539,28 +1538,13 @@ cpu_log_name:
 	.align	2
 	.endif	
 	
-* what: blits 16x? data on one plane, cookie cut
-* args:
-* < A0: pointers on 16x? data
-* < A1: plane  (40 rows)
-* < A3: source mask for cookie cut (16x16)
-* < D0: X
-* < D1: Y
-* < D2: source y-offset
-* < D3: height of data
-* trashes: D0-D1
-blit_planes_cookie_cut_16x:
-    lea _custom,A5
-	move.w	d2,d5
-	move.w	d3,d4
-	moveq	#NB_BOB_PLANES,d3		| 4 planes
-    moveq  #4,d2       | 16 pixels + 2 shift bytes
+
 * < A5: custom
 * < D0.W,D1.W: x,y
 * < A0: source (pointer on array of planes)
 * < A1: destination fg plane, also background to mix with cookie cut fg plane
 * < A3: source mask for cookie cut
-* < D2: width in bytes (inc. 2 extra for shifting)
+* < D2: width in bytes
 * < D3: number of planes
 * < D4: height. If negative, source is copied with negative modulo (flip)
 * < D5: y offset for source planes
@@ -1621,16 +1605,16 @@ blit_planes_any_internal_cookie_cut:
     lsr.w   #1,d2
     add.w   d2,d4       | blit height
     * always the same settings (ATM)
-	moveq	#-2,d2
 	add.w	d5,a3			| apply y offset to mask too (y offset looks wrong)
 	
+	moveq	#-2,d2
     * now just wait for blitter ready to write all registers
 	WAIT_BLIT
    
     * blitter registers set
 
-	move.w d2,bltamod(a5)		|A modulo=bytes to skip between lines
-	move.w d2,bltbmod(a5)		|B modulo=bytes to skip between lines
+	move.w	d2,bltamod(a5)		|A modulo=bytes to skip between lines
+	move.w	d2,bltbmod(a5)		|B modulo=bytes to skip between lines
 	moveq	#0,d2
     move.w  d2,bltalwm(a5)
 	

@@ -69,7 +69,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
 
 
                 tileset_1.append(img)
-
+                # dump tiles
                 if not is_bob and dump:
                     img = ImageOps.scale(img,5,resample=Image.Resampling.NEAREST)
                     if name_dict:
@@ -299,23 +299,17 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
 
                         if is_bob:
                             actual_nb_planes += 1
-##                            if i in grouped_sprites:
-##                                # change wtile, fetch code +1
-##                                other_tile_index = i+1
-##                                other_tile = img_set[other_tile_index]
-##                                print(other_tile)
-##                                new_tile = Image.new("RGB",(wtile.size[0]*2,wtile.size[1]))
-##                                new_tile.paste(wtile)
-##                                new_tile.paste(other_tile,(0,wtile.size[1]))
-##                                wtile = new_tile
+
 
                             # only 4 planes + mask => 5 planes
                             y_start,wtile = bitplanelib.autocrop_y(wtile)
                             height = wtile.size[1]
-                            bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette,generate_mask=True,blit_pad=False)
+                            width = wtile.size[0]//8 + 2
+                            bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette,generate_mask=True)
                         else:
-                            # 5 planes, no mask
+                            # 4 planes, no mask
                             height = 8
+                            width = 1
                             y_start = 0
                             bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette)
 
@@ -335,7 +329,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                                     next_cache_id += 1
                                 else:
                                     bitplane_plane_ids.append(0)  # blank
-                        entry[plane_name] = {"height":height,"y_start":y_start,"bitplanes":bitplane_plane_ids}
+                        entry[plane_name] = {"width":width,"height":height,"y_start":y_start,"bitplanes":bitplane_plane_ids}
 
             tile_entry.append(entry)
 
@@ -450,10 +444,11 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
 
                     f.write(f"{name}:\n")
                     height = 0
-                    width = 4
+
                     offset = 0
                     for orientation,_ in plane_orientations:
                         if orientation in t:
+                            width = t[orientation]["width"]
                             height = t[orientation]["height"]
                             offset = t[orientation]["y_start"]
                             break
