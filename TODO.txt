@@ -1,5 +1,4 @@
-- X=0: sprite not displayed. If displayed, artefacts appear!
-- cycle exact: cpu erase completely broken!
+- cpu erase completely broken!
 - hammer: hammer sprite direction sometimes wrong (when launching): sprite symmetry flags
 
 => publish video

@@ -392,6 +392,10 @@ _user:
 	* set them even if reset by game afterwards
 	* avoiding ugly stripe bitplane effect at startup
 
+	lea	tiles_bitplanes+2,a0
+    move.l	background_ptr,d0
+	jbsr		set_static_bitplanes
+	
 	bsr		set_bob_bitplanes
 
 	move.w	#TOTAL_NB_COLORS*2,d0
@@ -1155,7 +1159,7 @@ update_bobs_and_hw_sprites:
 	move.w	(a4)+,d4		| height
 	move.w	(a4)+,d2		| width/clut index (if star)
 	move.b	(a4)+,d3		| ignored
-	move.b	(a4)+,d5
+	move.b	(a4)+,d5		| ignored
 
 	and.w	#0x1F0,d0		| align on 16 lower bound
 	move.w	#NB_TILE_PLANES,d3
@@ -1244,8 +1248,12 @@ update_one_bob:
 	move.b	(TARGET_SPRITE_Y,a0),d1  | sprite Y
 	move.b	(TARGET_SPRITE_X,a0),d0
 
+	* filter out if X=0 AND Y=0
+	tst.b	d1
+	jne		0f
 	tst.b	d0
 	jeq	2f
+0:
 
 	.ifne	SPRITE_Y_CORRECTION
 	add.w	#SPRITE_Y_CORRECTION,d1
@@ -1742,16 +1750,29 @@ clear_planes_any_blitter_internal:
     lsl.w   #6,d4
     lsr.w   #1,d2
     add.w   d2,d4       | blit height+width
-
+	moveq	#-1,d2
     * now just wait for blitter ready to write all registers
 	WAIT_BLIT
     
-	move.l	#-1,bltafwm(a5)
+	move.l	d2,bltafwm(a5)
 	move.l d1,bltcon0(a5)	
     move.w  d0,bltdmod(a5)	|D modulo
 	
 	subq	#1,d3
 	jeq		4f
+3:
+	WAIT_BLIT
+	move.l a1,bltdpt(a5)	|destination top left corner
+	move.w  d4,bltsize(a5)	|rectangle size, starts blit
+32:
+	lea		(FG_SCREEN_PLANE_SIZE,a1),a1
+	dbf		d3,3b
+4:
+	rts
+	
+	
+	
+	
 	subq	#1,d3
 *	jra		31f
 3:
@@ -1850,9 +1871,7 @@ switch_screen_buffers:
 	move.w	d0,reset_bplcon1_1
 	move.w	d0,reset_bplcon1_2
 
- 	lea	tiles_bitplanes+2,a0
-    move.l	background_ptr,d0
-	jbra		set_static_bitplanes
+	rts
 	.endif
 	
 	
