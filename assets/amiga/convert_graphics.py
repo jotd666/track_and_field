@@ -4,7 +4,7 @@ import os,sys,bitplanelib
 from shared import *
 
 
-sprite_names,grouped_sprites = get_sprite_names()
+sprite_names = get_sprite_names()
 
 
 
@@ -85,7 +85,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
         # rework tiles which are grouped
         for tile_number,wtile in enumerate(tileset_1):
 
-            if wtile and tile_number in grouped_sprites:
+            if wtile and tile_number in group_sprite_pairs:
                 # change wtile, fetch code +0x100
                 other_tile_index = tile_number+1
                 other_tile = tileset_1[other_tile_index]
@@ -142,13 +142,20 @@ try:
             if cluts:
                 add_tile(sprite_cluts,index,cluts=cluts)
 except OSError:
-    pass
+    print("Cannot find used_sprites")
+
+# 1UP, 2UP ...
+ac = list(range(0xA,0xE))
+add_tile(sprite_cluts,[0xB0,0xB1,0xB8,0xB9],ac)
+
+
 
 # for all player frames with all player "races" (sorry)
-##for index,name in sprite_names.items():
-##    if "player" in name:
-##        add_tile(sprite_cluts,index,cluts=[0,1,2,3])
-
+for index,name in sprite_names.items():
+    if "player" in name:
+        add_tile(sprite_cluts,index,cluts=[0,1,2,3])
+        if index in player_sprite_pairs:
+            add_tile(sprite_cluts,index+1,cluts=[0,1,2,3])
 
 if all_tile_cluts:
     tile_cluts = None
@@ -173,6 +180,8 @@ for atc in alphanum_tile_codes:
 # now set cluts for all alphanum tiles
 for atc in alphanum_tile_codes:
     tile_cluts[atc] = sorted(used_cluts)
+
+
 
 
 
@@ -235,33 +244,6 @@ for clut_index,tsd in sprite_sheet_dict.items():
 
 sprite_palette = sorted(sprite_palette)
 sprite_palette += (16-len(sprite_palette)) * [(0x10,0x20,0x30)]
-
-##for palette_index,sprite_set in enumerate(sprite_set_list):
-##    # rework tiles which are grouped
-##    for tile_number,wtile in enumerate(sprite_set):
-##
-##        if wtile and tile_number in grouped_sprites:
-##            # change wtile, fetch code +0x100
-##            other_tile_index = tile_number+1
-##            other_tile = sprite_set[other_tile_index]
-##            new_tile = Image.new("RGB",(wtile.size[0]*2,wtile.size[1]))
-##            new_tile.paste(wtile)
-##            new_tile.paste(other_tile,(wtile.size[0],0))
-##            sprite_set[tile_number] = new_tile
-##            sprite_set[tile_number+1] = None  # discatd
-##            wtile = new_tile
-##        if dump_it and wtile:
-##            img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
-##            if sprite_names:
-##                name = sprite_names.get(tile_number,"unknown")
-##            else:
-##                name = "unknown"
-##
-##            img.save(sprite_dump_dir / f"{name}_{tile_number:02x}_{palette_index:02x}.png")
-##            # remove other half sprite that was dumped
-##            other = sprite_dump_dir / f"{name}_{tile_number+1:02x}_{palette_index:02x}.png"
-##            other.unlink(missing_ok=True)
-
 
 
 # sprite_set_list is now a 16x512 matrix of sprite tiles

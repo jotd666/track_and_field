@@ -4,6 +4,9 @@
 - cycle exact: sprites blinking despite double buffering
 => publish video
 
+
+- https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
+  centuri game is too hard
 - add cheats to be able to pass all levels (and rip the podium part!)
 - propagate all player used frames for CLUTS 0,1,2,3
 - try to get the spider/bird in javelin: ok works but flashes

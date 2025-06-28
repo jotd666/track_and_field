@@ -47,13 +47,15 @@ def get_sprite_names():
     rval[0xFC] = "bonus_spaceship"
     rval[0x3D] = "cursor"
     rval[0x80] = "gunshot"
+
+    rval[0xB0] = rval[0xB8] = "up_arrow"
     rval |= {k:"bystanders" for k in {0xDE,0xF4,0xF5}}
     #rval |= {k:"" for k in {0xDE,0xF4,0xF5}}
     rval |= {k:"referee" for k in sr2(0x62,0x68) | {0x68,0x69,0x6A,0x6B,0x6C,0x6D,
     0x82,0x83,0x84,0x86}}
     rval |= {k:"javelin" for k in range(0xE0,0xF1)}
     rval |= {k:"hammer" for k in sr2(0x34,0x3E)}
-    return rval,group_sprite_pairs
+    return rval
 
 alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))
 
