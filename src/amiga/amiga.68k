@@ -1301,7 +1301,6 @@ update_one_bob:
 *	cmp.w	#0x100,d3
 *	jcc		2f	
 *101:
-*	add.w	d6,d6		| double the height to add
 *	* end grouped 16x16 sprite
 *10:
 
@@ -1337,7 +1336,7 @@ update_one_bob:
 	* flipped: offset is different: it's 8 or 16-height-offset
 	neg.w	d2
 	sub.w	d4,d2
-	add.w	d6,d2		| tile height is 8 or 16 pixels
+	add.w	#SPRITE_HEIGHT,d2		| tile height is 16 pixels
 101:
 	add.w	d2,d1
 
@@ -1369,7 +1368,7 @@ update_one_bob:
 
 
 
-	moveq	#NB_BOB_PLANES,d3		| 5 planes
+	moveq	#NB_BOB_PLANES,d3
 	cmp.w	#256+SPRITE_X_CORRECTION-SPRITE_WIDTH,d0
 	jcs		102f
 	* too far on the right: wrap around (means: blit twice)

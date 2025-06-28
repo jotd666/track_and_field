@@ -1,14 +1,16 @@
-- cpu erase completely broken!
 - hammer: hammer sprite direction sometimes wrong (when launching): sprite symmetry flags
-
+- javelin displays strangely/seems shifted/ground when landing
+- cycle exact: sprites blinking despite double buffering
 => publish video
 
+- add cheats to be able to pass all levels (and rip the podium part!)
+- propagate all player used frames for CLUTS 0,1,2,3
+- try to get the spider/bird in javelin
 - rip sounds
 - rip tunes
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - is game playing: not working (should be able to insert coin in the push start screen)
-- javelin displays strangely/seems shifted/ground when landing
 - save NV RAM each time a record is broken (find when) or game is over
 - sound and music!
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]

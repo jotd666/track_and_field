@@ -6,6 +6,8 @@ from shared import *
 
 sprite_names,grouped_sprites = get_sprite_names()
 
+
+
 NB_SPRITES = 0x100
 NB_TILES = 0x300
 
@@ -30,7 +32,7 @@ def ensure_empty(d):
         os.makedirs(d)
 
 def load_tileset(image_name,palette_index,width,height,tileset_name,dumpdir,
-dump=False,name_dict=None,cluts=None,tile_number=0):
+dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
 
 ##    if isinstance(image_name,str):
 ##        full_image_path = os.path.join(this_dir,os.path.pardir,"sheets",
@@ -68,7 +70,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0):
 
                 tileset_1.append(img)
 
-                if dump:
+                if not is_bob and dump:
                     img = ImageOps.scale(img,5,resample=Image.Resampling.NEAREST)
                     if name_dict:
                         name = name_dict.get(tile_number,"unknown")
@@ -76,8 +78,33 @@ dump=False,name_dict=None,cluts=None,tile_number=0):
                         name = "unknown"
 
                     img.save(os.path.join(dump_subdir,f"{name}_{tile_number:02x}_{palette_index:02x}.png"))
-
             tile_number += 1
+
+    if is_bob:
+        # rework & dump grouped / non grouped sprites
+        # rework tiles which are grouped
+        for tile_number,wtile in enumerate(tileset_1):
+
+            if wtile and tile_number in grouped_sprites:
+                # change wtile, fetch code +0x100
+                other_tile_index = tile_number+1
+                other_tile = tileset_1[other_tile_index]
+                new_tile = Image.new("RGB",(wtile.size[0]*2,wtile.size[1]))
+                new_tile.paste(wtile)
+                new_tile.paste(other_tile,(wtile.size[0],0))
+                tileset_1[tile_number] = new_tile
+                tileset_1[tile_number+1] = None  # discatd
+                wtile = new_tile
+            if dump_it and wtile:
+                img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
+                if sprite_names:
+                    name = sprite_names.get(tile_number,"unknown")
+                else:
+                    name = "unknown"
+
+                img.save(os.path.join(dump_subdir,f"{name}_{tile_number:02x}_{palette_index:02x}.png"))
+
+
 
     return sorted(set(palette)),tileset_1
 
@@ -192,7 +219,7 @@ for clut_index,tsd in sprite_sheet_dict.items():
     # BOBs
 
     sp,sprite_set = load_tileset(tsd,clut_index,16,16,"sprites",dump_dir,dump=dump_it,
-    name_dict=sprite_names,cluts=sprite_cluts)
+    name_dict=sprite_names,cluts=sprite_cluts,is_bob=True)
     sprite_set_list[clut_index] = sprite_set
     sprite_palette.update(sp)
 
@@ -201,17 +228,18 @@ sprite_palette = sorted(sprite_palette)
 sprite_palette += (16-len(sprite_palette)) * [(0x10,0x20,0x30)]
 
 ##for palette_index,sprite_set in enumerate(sprite_set_list):
-##    # rework tiles which are grouped now that 2x256 list is composed
+##    # rework tiles which are grouped
 ##    for tile_number,wtile in enumerate(sprite_set):
-##        if wtile and tile_number < 0x100 and tile_number in grouped_sprites:
+##
+##        if wtile and tile_number in grouped_sprites:
 ##            # change wtile, fetch code +0x100
-##            other_tile_index = (tile_number+0x100)
+##            other_tile_index = tile_number+1
 ##            other_tile = sprite_set[other_tile_index]
-##            new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
+##            new_tile = Image.new("RGB",(wtile.size[0]*2,wtile.size[1]))
 ##            new_tile.paste(wtile)
-##            new_tile.paste(other_tile,(0,wtile.size[1]))
+##            new_tile.paste(other_tile,(wtile.size[0],0))
 ##            sprite_set[tile_number] = new_tile
-##            sprite_set[tile_number+0x100] = None  # no need
+##            sprite_set[tile_number+1] = None  # discatd
 ##            wtile = new_tile
 ##        if dump_it and wtile:
 ##            img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
@@ -221,6 +249,9 @@ sprite_palette += (16-len(sprite_palette)) * [(0x10,0x20,0x30)]
 ##                name = "unknown"
 ##
 ##            img.save(sprite_dump_dir / f"{name}_{tile_number:02x}_{palette_index:02x}.png")
+##            # remove other half sprite that was dumped
+##            other = sprite_dump_dir / f"{name}_{tile_number+1:02x}_{palette_index:02x}.png"
+##            other.unlink(missing_ok=True)
 
 
 
@@ -269,14 +300,15 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                         if is_bob:
                             actual_nb_planes += 1
 ##                            if i in grouped_sprites:
-##                                # change wtile, fetch code +0x100
-##                                other_tile_index = (i+0x100)%0x200
+##                                # change wtile, fetch code +1
+##                                other_tile_index = i+1
 ##                                other_tile = img_set[other_tile_index]
-##                                new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
+##                                print(other_tile)
+##                                new_tile = Image.new("RGB",(wtile.size[0]*2,wtile.size[1]))
 ##                                new_tile.paste(wtile)
 ##                                new_tile.paste(other_tile,(0,wtile.size[1]))
 ##                                wtile = new_tile
-##                                print(hex(i))
+
                             # only 4 planes + mask => 5 planes
                             y_start,wtile = bitplanelib.autocrop_y(wtile)
                             height = wtile.size[1]
@@ -322,6 +354,7 @@ tile_plane_cache = {}
 tile_table = read_tileset(tile_set_list,full_palette[:16],[True,False,False,False],cache=tile_plane_cache, is_bob=False)
 
 bob_plane_cache = {}
+
 sprite_table = read_tileset(sprite_set_list,full_palette[16:],[True,False,True,False],cache=bob_plane_cache, is_bob=True)
 
 with open(os.path.join(src_dir,"palette.68k"),"w") as f:
@@ -388,7 +421,7 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
     f.write("bob_table:\n")
     for i,tile_entry in enumerate(sprite_table):
         f.write("\t.long\t")
-        if tile_entry:
+        if any(tile_entry):
             prefix = sprite_names.get(i,"bob")
             f.write(f"{prefix}_{i:02x}")
         else:
@@ -396,7 +429,7 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
         f.write("\n")
 
     for i,tile_entry in enumerate(sprite_table):
-        if tile_entry:
+        if any(tile_entry):
             prefix = sprite_names.get(i,"bob")
             f.write(f"{prefix}_{i:02x}:\n")
             for j,t in enumerate(tile_entry):

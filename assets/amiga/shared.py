@@ -31,26 +31,19 @@ def ensure_exists(d):
     else:
         os.makedirs(d)
 
+sr2 = lambda a,b : set(range(a,b,2))
+
+group_sprite_pairs = (sr2(0,0x34) | sr2(0x40,0x52) |
+sr2(0x54,0x60) | sr2(0x62,0x68) | sr2(0x88,0x90) |
+sr2(0x92,0xA2) | {0xA4,0xA8,0xB0,0xB8,0xBC} | sr2(0xC0,0xCE) |
+sr2(0xD2,0xDE)
+)
+
 def get_sprite_names():
     rval = {}
-    groups = set()
-    def add_range(a,b,name):
-        for i in range(a,b):
-            rval[i] = name
-    def add_dual_range(a,b,name,group=False):
-
-        for i in range(a,b):
-            rval[i] = name
-            rval[i+0x100] = name
-        if group:
-            groups.update(range(a,b))
-
-    def add(i,name):
-            rval[i] = name
 
 
-
-    return rval,groups
+    return rval,group_sprite_pairs
 
 alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))
 
