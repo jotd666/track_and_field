@@ -89,8 +89,12 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
                 # change wtile, fetch code +0x100
                 other_tile_index = tile_number+1
                 other_tile = tileset_1[other_tile_index]
+                if not other_tile:
+                    raise Exception(f"other tile index 0x{other_tile_index:02x} not found")
                 new_tile = Image.new("RGB",(wtile.size[0]*2,wtile.size[1]))
+
                 new_tile.paste(wtile)
+
                 new_tile.paste(other_tile,(wtile.size[0],0))
                 tileset_1[tile_number] = new_tile
                 tileset_1[tile_number+1] = None  # discatd
@@ -139,6 +143,11 @@ try:
                 add_tile(sprite_cluts,index,cluts=cluts)
 except OSError:
     pass
+
+# for all player frames with all player "races" (sorry)
+##for index,name in sprite_names.items():
+##    if "player" in name:
+##        add_tile(sprite_cluts,index,cluts=[0,1,2,3])
 
 
 if all_tile_cluts:

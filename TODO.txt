@@ -1,11 +1,12 @@
 - hammer: hammer sprite direction sometimes wrong (when launching): sprite symmetry flags
-- javelin displays strangely/seems shifted/ground when landing
+- javelin displays strangely/seems shifted/ground when landing: when reaching max height
+  it seems to shift to the bottom by a few pixels (possible transcode issue again...)
 - cycle exact: sprites blinking despite double buffering
 => publish video
 
 - add cheats to be able to pass all levels (and rip the podium part!)
 - propagate all player used frames for CLUTS 0,1,2,3
-- try to get the spider/bird in javelin
+- try to get the spider/bird in javelin: ok works but flashes
 - rip sounds
 - rip tunes
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
