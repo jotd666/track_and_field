@@ -2780,10 +2780,12 @@ init_game_playfield_6a85:
 7587: 8C 2C 1F       CMPX   #$2C1F
 758A: 26 F6          BNE    $7582
 758C: 0C 82          INC    $82
+; next level
 758E: 0C 84          INC    current_level_84
 7590: 96 84          LDA    current_level_84
 7592: 81 06          CMPA   #$06
 7594: 26 08          BNE    $759E
+; all levels have been completed
 7596: 0F 84          CLR    current_level_84
 7598: 96 2D          LDA    dsw2_copy_2d
 759A: 84 02          ANDA   #$02

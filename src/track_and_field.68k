@@ -34,6 +34,66 @@
 *	mainlatch.q_out_cb<7>().set(FUNC(trackfld_state::irq_mask_w));
 
 
+*	PORT_START("SYSTEM")
+*	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_COIN1 )
+*	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_COIN2 )
+*	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_SERVICE1 )
+*	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_START1 )
+*	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_START2 )
+*	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_UNKNOWN )
+*	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_UNKNOWN )
+*	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+*
+*	PORT_START("IN0")
+*	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_BUTTON3 ) PORT_PLAYER(1)
+*	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_BUTTON2 ) PORT_PLAYER(1)
+*	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_BUTTON1 ) PORT_PLAYER(1)
+*	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_START3 )
+*	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON3 ) PORT_PLAYER(2)
+*	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 ) PORT_PLAYER(2)
+*	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_BUTTON1 ) PORT_PLAYER(2)
+*	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+*
+*	PORT_START("IN1")
+*	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_BUTTON3  ) PORT_PLAYER(3) //PORT_COCKTAIL
+*	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_BUTTON2  ) PORT_PLAYER(3) //PORT_COCKTAIL
+*	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_BUTTON1  ) PORT_PLAYER(3) //PORT_COCKTAIL
+*	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_START4 )
+*	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON3  ) PORT_PLAYER(4) //PORT_COCKTAIL
+*	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2  ) PORT_PLAYER(4) //PORT_COCKTAIL
+*	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_BUTTON1  ) PORT_PLAYER(4) //PORT_COCKTAIL
+*	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_UNKNOWN )
+*
+*	PORT_START("DSW1")
+*	KONAMI_COINAGE_LOC(DEF_STR( Free_Play ), "No Coin B", SW1)
+*	/* "No Coin B" = coins produce sound, but no effect on coin counter */
+*
+*	PORT_START("DSW2")
+*	PORT_DIPNAME( 0x01, 0x01, DEF_STR( Lives ) )        PORT_DIPLOCATION("SW2:1")
+*	PORT_DIPSETTING(    0x01, "1" )
+*	PORT_DIPSETTING(    0x00, "2" )
+*	PORT_DIPNAME( 0x02, 0x00, "After Last Event" )      PORT_DIPLOCATION("SW2:2")
+*	PORT_DIPSETTING(    0x02, "Game Over" )
+*	PORT_DIPSETTING(    0x00, "Game Continues" )
+*	PORT_DIPNAME( 0x04, 0x00, DEF_STR( Cabinet ) )      PORT_DIPLOCATION("SW2:3")
+*	PORT_DIPSETTING(    0x00, DEF_STR( Upright ) )
+*	PORT_DIPSETTING(    0x04, DEF_STR( Cocktail ) )
+*	PORT_DIPNAME( 0x08, 0x08, DEF_STR( Bonus_Life ) )   PORT_DIPLOCATION("SW2:4")
+*	PORT_DIPSETTING(    0x08, DEF_STR( None ) )
+*	PORT_DIPSETTING(    0x00, "100000" )
+*	PORT_DIPNAME( 0x10, 0x10, "World Records" )         PORT_DIPLOCATION("SW2:5")
+*	PORT_DIPSETTING(    0x10, "Don't Erase" )
+*	PORT_DIPSETTING(    0x00, "Erase on Reset" )
+*	PORT_DIPNAME( 0x60, 0x40, DEF_STR( Difficulty ) )   PORT_DIPLOCATION("SW2:6,7")
+*	PORT_DIPSETTING(    0x60, DEF_STR( Easy ) )
+*	PORT_DIPSETTING(    0x40, DEF_STR( Normal ) )
+*	PORT_DIPSETTING(    0x20, DEF_STR( Hard ) )
+*	PORT_DIPSETTING(    0x00, DEF_STR( Difficult ) )
+*	PORT_DIPNAME( 0x80, 0x00, DEF_STR( Demo_Sounds ) )  PORT_DIPLOCATION("SW2:8")
+*	PORT_DIPSETTING(    0x80, DEF_STR( Off ) )
+*	PORT_DIPSETTING(    0x00, DEF_STR( On ) )
+
+
 * page $28xx
 global_state_00 = 0x00
 boot_state_03 = 0x03
@@ -52,7 +112,9 @@ nb_players_minus_one_60 = 0x60
 chrono_hundredth_second_7e = 0x7e
 chrono_second_7f = 0x7f
 p1_attempts_left_81 = 0x81
-p1_attempts_left_a1 = 0xA1
+p2_attempts_left_a1 = 0xA1
+p3_attempts_left_c1 = 0xC1
+p4_attempts_left_e1 = 0xE1
 current_level_84 = 0x84
 high_jump_fault_9f = 0x9F
 jump_foul_c9 = 0xc9
@@ -4300,12 +4362,14 @@ l_7582:
 	jne	l_7582                             	| [$758a: bne    $7582]
 	GET_DP_ADDRESS	0x82                    	| [$758c: inc    $82]
 	addq.b	#1,(a0)                         	| [...]
+* next level
 	GET_DP_ADDRESS	current_level_84        	| [$758e: inc    current_level_84]
 	addq.b	#1,(a0)                         	| [...]
                                          | [$7590: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x06,d0                         	| [$7592: cmpa   #$06]
 	jne	l_759e                             	| [$7594: bne    $759e]
+* all levels have been completed
 	GET_DP_ADDRESS	current_level_84        	| [$7596: clr    current_level_84]
 	clr.b	(a0)                         	| [...]
 	GET_DP_ADDRESS	dsw2_copy_2d            	| [$7598: lda    dsw2_copy_2d]
@@ -5808,8 +5872,8 @@ l_7d92:
 	and.b	#0x02,d0                         	| [$7d99: anda   #$02]
 	jeq	l_7ddc                             	| [$7d9b: beq    $7ddc]
 	jbsr	l_9b0e                            	| [$7d9d: jsr    $9b0e]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$7da0: ldd    p1_attempts_left_a1]
-	LOAD_D                                 	| [$7da0: ldd    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$7da0: ldd    p2_attempts_left_a1]
+	LOAD_D                                 	| [$7da0: ldd    p2_attempts_left_a1]
 	add.b	#0x20,d1                         	| [$7da2: addb   #$20]
 	MAKE_D                                 	| [...]
 	GET_ADDRESS	0x2ae1                     	| [$7da4: std    $2ae1]
@@ -7809,7 +7873,7 @@ l_87fb:
 	GET_REG_ADDRESS	0,d4                   	| [$8808: ldd    ,u++]
 	addq.w	#2,d4                           	| [...]
 	LOAD_D                                 	| [$8808: ldd    ,u++]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$880a: std    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$880a: std    p2_attempts_left_a1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0xb4                    	| [$880c: sta    $b4]
 	move.b	d0,(a0)                         	| [...]
@@ -13987,8 +14051,8 @@ l_cc27:
 	jbsr	l_ce53                            	| [$cc27: jsr    $ce53]
 	jmp	l_cfb3                             	| [$cc2a: jmp    $cfb3]
 l_cc2d:
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$cc2d: ldd    p1_attempts_left_a1]
-	LOAD_D                                 	| [$cc2d: ldd    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$cc2d: ldd    p2_attempts_left_a1]
+	LOAD_D                                 	| [$cc2d: ldd    p2_attempts_left_a1]
 	GET_DP_ADDRESS	0x4e                    	| [$cc2f: std    $4e]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	move.w	#0xabcd,d3                      	| [$cc31: ldy    #$abcd]
@@ -16059,7 +16123,7 @@ l_d702:
 	move.b	#0x28,d0                        	| [$d705: ldd    #$2880]
 	move.w	#0x2880,d1                      	| [$d705: ldd    #$2880]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$d708: std    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$d708: std    p2_attempts_left_a1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	move.b	#0xde,d0                        	| [$d70a: ldd    #$deb2]
 	move.w	#0xdeb2,d1                      	| [$d70a: ldd    #$deb2]
@@ -16946,7 +17010,7 @@ l_db57:
 	move.b	#0x28,d0                        	| [$db92: ldd    #$2880]
 	move.w	#0x2880,d1                      	| [$db92: ldd    #$2880]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$db95: std    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$db95: std    p2_attempts_left_a1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	move.b	#0xde,d0                        	| [$db97: ldd    #$deb2]
 	move.w	#0xdeb2,d1                      	| [$db97: ldd    #$deb2]
@@ -17891,8 +17955,8 @@ l_e2a1:
 	move.b	#0x5a,d0                        	| [$e2cc: lda    #$5a]
 	GET_DP_ADDRESS	angle_d8                	| [$e2ce: sta    angle_d8]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e2d0: ldd    p1_attempts_left_a1]
-	LOAD_D                                 	| [$e2d0: ldd    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e2d0: ldd    p2_attempts_left_a1]
+	LOAD_D                                 	| [$e2d0: ldd    p2_attempts_left_a1]
 	GET_ADDRESS	0x2ae1                     	| [$e2d2: std    $2ae1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jbsr	l_888a                            	| [$e2d5: jsr    $888a]
@@ -18133,8 +18197,8 @@ l_e412:
 	JMP_A_INDEXED	A2                   	| [$e418: jmp    [a,x]] [jump_table]
 
 l_e41a:
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e41a: ldd    p1_attempts_left_a1]
-	LOAD_D                                 	| [$e41a: ldd    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e41a: ldd    p2_attempts_left_a1]
+	LOAD_D                                 	| [$e41a: ldd    p2_attempts_left_a1]
 	GET_ADDRESS	0x2ae1                     	| [$e41c: std    $2ae1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	jump_foul_c9            	| [$e41f: clr    jump_foul_c9]
@@ -18251,10 +18315,10 @@ l_e4ac:
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$e4be: cmpa   #$02]
 	jne	l_e4c8                             	| [$e4c0: bne    $e4c8]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e4c2: lda    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e4c2: lda    p2_attempts_left_a1]
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x04,d0                         	| [$e4c4: adda   #$04]
-                                         | [$e4c6: sta    p1_attempts_left_a1]
+                                         | [$e4c6: sta    p2_attempts_left_a1]
 	move.b	d0,(a0)                         	| [...]
 l_e4c8:
 	GET_ADDRESS	0x2ad2                     	| [$e4c8: lda    $2ad2]
@@ -18278,11 +18342,11 @@ l_e4e0:
 	LOAD_D                                 	| [$e4e3: ldd    nb_objects_48]
 	GET_DP_ADDRESS	0xa2                    	| [$e4e5: adda   $a2]
 	add.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e4e7: addb   p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e4e7: addb   p2_attempts_left_a1]
 	add.b	(a0),d1                          	| [...]
 	GET_DP_ADDRESS	0xa2                    	| [$e4e9: sta    $a2]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e4eb: stb    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e4eb: stb    p2_attempts_left_a1]
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0x1808,d4                      	| [$e4ed: ldu    #$1808]
 	jbsr	l_ced3                            	| [$e4f0: jsr    $ced3]
@@ -18323,7 +18387,7 @@ l_e4e0:
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x21,d0                         	| [$e51d: cmpa   #$21]
 	jeq	l_e53a                             	| [$e51f: beq    $e53a]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e521: adda   p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e521: adda   p2_attempts_left_a1]
 	add.b	(a0),d0                          	| [...]
 	sub.b	#0x0f,d0                         	| [$e523: suba   #$0f]
 	GET_ADDRESS	0x2b21                     	| [$e525: cmpa   $2b21]
@@ -18340,7 +18404,7 @@ l_e4e0:
 	move.b	#0x13,d0                        	| [$e535: lda    #$13]
 	jbsr	l_850e                            	| [$e537: jsr    $850e]
 l_e53a:
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e53a: lda    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e53a: lda    p2_attempts_left_a1]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x37,d0                         	| [$e53c: cmpa   #$37]
 	jls	l_e543                             	| [$e53e: bls    $e543]
@@ -18393,10 +18457,10 @@ l_e584:
 	move.b	#0x2b,d0                        	| [$e584: lda    #$2b]
 	jbsr	l_850e                            	| [$e586: jsr    $850e]
 l_e589:
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e589: lda    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e589: lda    p2_attempts_left_a1]
 	move.b	(a0),d0                         	| [...]
 	sub.b	#0x04,d0                         	| [$e58b: suba   #$04]
-                                         | [$e58d: sta    p1_attempts_left_a1]
+                                         | [$e58d: sta    p2_attempts_left_a1]
 	move.b	d0,(a0)                         	| [...]
 	GET_ADDRESS	0x2aca                     	| [$e58f: stb    $2aca]
 	move.b	d1,(a0)                         	| [...]
@@ -18433,11 +18497,11 @@ l_e5b7:
 	jeq	l_e5dc                             	| [$e5bb: beq    $e5dc]
 	GET_DP_ADDRESS	0xa2                    	| [$e5bd: adda   $a2]
 	add.b	(a0),d0                          	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e5bf: addb   p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e5bf: addb   p2_attempts_left_a1]
 	add.b	(a0),d1                          	| [...]
 	GET_DP_ADDRESS	0xa2                    	| [$e5c1: sta    $a2]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e5c3: stb    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e5c3: stb    p2_attempts_left_a1]
 	move.b	d1,(a0)                         	| [...]
 	GET_REG_ADDRESS	0,d3                   	| [$e5c5: lda    ,y+]
 	addq.w	#1,d3                           	| [...]
@@ -18473,9 +18537,9 @@ l_e5e6:
 	jne	l_e5e6                             	| [$e5ed: bne    $e5e6]
 	GET_ADDRESS	0x2aca                     	| [$e5ef: lda    $2aca]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e5f2: adda   p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e5f2: adda   p2_attempts_left_a1]
 	add.b	(a0),d0                          	| [...]
-                                         | [$e5f4: sta    p1_attempts_left_a1]
+                                         | [$e5f4: sta    p2_attempts_left_a1]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x09                    	| [$e5f6: clr    $09]
 	clr.b	(a0)                         	| [...]
@@ -18761,8 +18825,8 @@ l_e772:
 	jbsr	l_94b8                            	| [$e77b: jsr    $94b8]
 	jbsr	l_9373                            	| [$e77e: jsr    $9373]
 	jbsr	l_9135                            	| [$e781: jsr    $9135]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$e784: ldd    p1_attempts_left_a1]
-	LOAD_D                                 	| [$e784: ldd    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$e784: ldd    p2_attempts_left_a1]
+	LOAD_D                                 	| [$e784: ldd    p2_attempts_left_a1]
 	GET_ADDRESS	0x2b38                     	| [$e786: std    $2b38]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jbsr	update_carried_javelin_sprite_e9c4	| [$e789: jsr    update_carried_javelin_sprite_e9c4]
@@ -20683,7 +20747,7 @@ l_f37a:
 	move.b	#0x30,d0                        	| [$f37a: ldd    #$30e8]
 	move.w	#0x30e8,d1                      	| [$f37a: ldd    #$30e8]
 	MAKE_D                                 	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$f37d: std    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$f37d: std    p2_attempts_left_a1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	move.w	#0x28a0,d2                      	| [$f37f: ldx    #$28a0]
 	move.w	#sprite_ram_1800,d4             	| [$f382: ldu    #sprite_ram_1800]
@@ -21193,7 +21257,7 @@ l_f5eb:
 	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d4         	| [$f60e: ldu    a,u]
 	MOVE_W_TO_REG	a0,d4                         	| [...]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$f610: stu    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$f610: stu    p2_attempts_left_a1]
 	MOVE_W_FROM_REG	d4,a0                         	| [...]
 	moveq	#0,d6                            	| [...]
 	move.b	d0,d6                           	| [...] as byte
@@ -21713,7 +21777,7 @@ l_f86a:
 	asl.b	#3,d0                            	| [$f87c: asla]
 	neg.b	d0                               	| [$f87d: nega]
 	sub.b	#0x0c,d0                         	| [$f87e: suba   #$0c]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$f880: sta    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$f880: sta    p2_attempts_left_a1]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x50                    	| [$f882: lda    $50]
 	move.b	(a0),d0                         	| [...]
@@ -22475,7 +22539,7 @@ l_fbda:
 	GET_REG_ADDRESS	0x9,d2                 	| [$fc08: sta    $9,x]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x38,d0                        	| [$fc0a: lda    #$38]
-	GET_DP_ADDRESS	p1_attempts_left_a1     	| [$fc0c: sta    p1_attempts_left_a1]
+	GET_DP_ADDRESS	p2_attempts_left_a1     	| [$fc0c: sta    p2_attempts_left_a1]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0xdc,d0                        	| [$fc0e: ldd    #$dcb6]
 	move.w	#0xdcb6,d1                      	| [$fc0e: ldd    #$dcb6]

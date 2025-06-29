@@ -1,3 +1,4 @@
+*	/* "No Coin B" = coins produce sound, but no effect on coin counter */
 global_state_00 = 0x00
 boot_state_03 = 0x03
 event_pointer_18 = 0x18
@@ -15,7 +16,9 @@ nb_players_minus_one_60 = 0x60
 chrono_hundredth_second_7e = 0x7e
 chrono_second_7f = 0x7f
 p1_attempts_left_81 = 0x81
-p1_attempts_left_a1 = 0xA1
+p2_attempts_left_a1 = 0xA1
+p3_attempts_left_c1 = 0xC1
+p4_attempts_left_e1 = 0xE1
 current_level_84 = 0x84
 high_jump_fault_9f = 0x9F
 jump_foul_c9 = 0xc9

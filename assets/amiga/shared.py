@@ -62,7 +62,8 @@ def get_mirror_sprites():
 as opposed to Gyruss, most of the sprites don't
 
 """
-    return {}
+    rval = {k for k,v in get_sprite_names().items() if "hammer" in v}
+    return rval
 
 alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))
 

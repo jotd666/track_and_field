@@ -1334,9 +1334,8 @@ update_one_bob:
 	* the screen is rotated
     * flip_x = ~D3 & 0x40
     * flip_y =  D3 & 0x80
-	btst	#7,d3
-	jeq		101f
-	move.b	#1,0x101
+	btst	#6,d3
+	jne		101f
 	* mirror (most sprites don't have that, it will just display
 	* the next frame if not generated, which can be off-putting!
 	add.w	#((NB_BOB_PLANES+1)*4+8),a0
@@ -1344,9 +1343,10 @@ update_one_bob:
 	move.w	(a0)+,d4		| height
 	move.w	(a0)+,d5		| width
 	move.w	(a0)+,d2		| Y-offset
-	btst	#6,d3
-	jne		101f
+	btst	#7,d3
+	jeq		101f
 	* flipped: correct Y start
+	move.b	#0,0x101
 	neg.w	d2
 	sub.w	d4,d2
 	add.w	#SPRITE_HEIGHT,d2
@@ -1364,11 +1364,6 @@ update_one_bob:
 	move.l	d2,a3
 	moveq	#0,d2	| no y-clip
 	* note down that this bob will have to be erased
-	btst	#7,d3
-	jeq		101f
-	* flip
-	neg.w	d4
-101:
 
 	move.w	d0,(a6)+			| store current sprite attributes to previous ones
 	move.w	d1,(a6)+			| store current sprite attributes to previous ones
@@ -1379,6 +1374,11 @@ update_one_bob:
 	move.w	d5,d2			    | width in bytes
 	moveq	#0,d5			    | Y-offset
 
+	btst	#7,d3
+	jeq		101f
+	* flip
+	neg.w	d4
+101:
 
 
 	moveq	#NB_BOB_PLANES,d3
@@ -2702,18 +2702,32 @@ osd_read_inputs_1:
 0:
 	tst.b	(0x63,a0)		| "ctrl" key
 	beq.b	0f
-	move.b	#0,0x100
 	bclr	#BIT_FIRE_1P,d0
+0:
+	tst.b	(45,a0)		| "4" num key
+	beq.b	0f
+	bclr	#BIT_LEFT_2P,d0
+0:
+	tst.b	(47,a0)		| "6" num key
+	beq.b	0f
+	bclr	#BIT_RIGHT_2P,d0
+0:
+	tst.b	(15,a0)		| "0" num key
+	beq.b	0f
+	bclr	#BIT_FIRE_2P,d0
 0:
 
 
 	* directions + fire
 	move.l	_joypad_1_state(pc),d1
 	jbsr	read_player_joypad_1P
-	
-	*move.l	_joypad_2_state(pc),d1
-	*jbsr	read_player_joypad_2P
 
+	* 2P active with joypad only if joypad connected
+	tst.b	controller_joypad_0
+	jeq		0f
+	move.l	_joypad_2_state(pc),d1
+	jbsr	read_player_joypad_2P
+0:
 
 	movem.l	(a7)+,a0/d1
 	rts
