@@ -132,10 +132,13 @@ with open(source_dir / "conv.s") as f:
             lines[i+1] = lines[i+1]+"\tPOP_SR\n"
             lines[i+3] = ""
 
+        elif "[$877a" in line:
+            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tqualified_878f\n"
         elif "[$605f" in line:
             # don't do the init clear loop
             line = remove_instruction(lines,i)
-
+        elif "[$878f" in line:
+            line = "qualified_878f:\n" + line
 
         elif "[$83cc" in line:
             line = change_instruction("subq.b\t#0x01,(a0)",lines,i)

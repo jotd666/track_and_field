@@ -103,6 +103,7 @@ copy_of_screen_flipped_21 = 0x21
 number_of_credits_23 = 0x23
 dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
+difficulty_2f = 0x2f
 copy_of_inputs_30 = 0x30
 copy_of_inputs_31 = 0x31
 copy_of_inputs_32 = 0x32
@@ -118,6 +119,7 @@ p4_attempts_left_e1 = 0xE1
 current_level_84 = 0x84
 high_jump_fault_9f = 0x9F
 jump_foul_c9 = 0xc9
+player_is_qualified_cd = 0xcd
 angle_d8 = 0xd8
 false_start_d9 = 0xd9
 display_chrono_ea = 0xea
@@ -148,8 +150,10 @@ video_ram_3000 = 0x3000
 color_ram_3800 = 0x3800
 player_1_final_time_2960 = 0x2960
 player_2_final_time_296c = 0x296C
-qualifying_time_2866 = 0x2866
+qualifying_value_2866 = 0x2866
 chrono_hundredth_second_287e = 0x287e
+
+qualifying_values_aaf3 = 0xaaf3
 
 * the [xxx] tags are there to help the specific game post-processing to automatically
 * change or remove the code. For instance [rom_check_code] lines can be removed without
@@ -254,7 +258,7 @@ l_6067:
                                          | [$6092: lsra]
                                          | [$6093: lsra]
 	lsr.b	#5,d0                            	| [$6094: lsra]
-	GET_DP_ADDRESS	0x2f                    	| [$6095: sta    $2f]
+	GET_DP_ADDRESS	difficulty_2f           	| [$6095: sta    difficulty_2f]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	dsw1_copy_2c            	| [$6097: lda    dsw1_copy_2c]
 	move.b	(a0),d0                         	| [...]
@@ -639,7 +643,7 @@ l_6258:
 	movem.l	(sp)+,d1                       	| [$6258: puls   b]
 	jbsr	write_char_and_move_cursor_61f0   	| [$625a: jsr    write_char_and_move_cursor_61f0]
 l_625d:
-	add.w	#0x2f,d4                         	| [$625d: leau   $2f,u]
+	add.w	#difficulty_2f,d4                	| [$625d: leau   difficulty_2f,u]
 	GET_DP_ADDRESS	0x40                    	| [$6260: dec    $40]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_6204                             	| [$6262: lbne   $6204]
@@ -839,7 +843,7 @@ l_6320:
 	move.b	(a0),d0                         	| [...]
 	jne	l_637a                             	| [$6366: bne    $637a]
 	jbsr	l_877d                            	| [$6368: jsr    $877d]
-	GET_DP_ADDRESS	0xcd                    	| [$636b: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$636b: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jne	l_6386                             	| [$636d: bne    $6386]
 	GET_REG_ADDRESS	-0x1,d2                	| [$636f: lda    -$1,x]
@@ -853,7 +857,7 @@ l_6320:
 	jeq	l_639b                             	| [$6378: beq    $639b]
 l_637a:
 	jbsr	l_877d                            	| [$637a: jsr    $877d]
-	GET_DP_ADDRESS	0xcd                    	| [$637d: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$637d: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jne	l_6386                             	| [$637f: bne    $6386]
 	move.b	#0x51,d0                        	| [$6381: ldd    #$5140]
@@ -1845,7 +1849,7 @@ l_6833:
 * clear game variables (level, etc...)
 	moveq	#0,d0                            	| [$6847: clra]
 	moveq	#0,d1                            	| [$6848: clrb]
-	move.w	#qualifying_time_2866,d2        	| [$6849: ldx    #qualifying_time_2866]
+	move.w	#qualifying_value_2866,d2       	| [$6849: ldx    #qualifying_value_2866]
 l_684c:
 	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$684c: std    ,x++]
@@ -2207,7 +2211,7 @@ l_6a01:
 	GET_DP_ADDRESS	0x55                    	| [$6a2e: dec    $55]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_69f6                             	| [$6a30: bne    $69f6]
-	jbsr	l_9309                            	| [$6a32: jsr    $9309]
+	jbsr	load_and_display_qualifying_value_9309	| [$6a32: jsr    load_and_display_qualifying_value_9309]
 	moveq	#0,d0                            	| [$6a35: clra]
 	moveq	#0,d1                            	| [$6a36: clrb]
 	MAKE_D                                 	| [...]
@@ -3236,8 +3240,8 @@ l_6ff9:
 	move.b	d0,(a0)                         	| [...]
 	jra	l_7014                             	| [$7009: bra    $7014]
 l_700b:
-	jbsr	l_877a                            	| [$700b: jsr    $877a]
-	GET_DP_ADDRESS	0xcd                    	| [$700e: lda    $cd]
+	jbsr	check_player_qualified_877a       	| [$700b: jsr    check_player_qualified_877a]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$700e: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_7037                             	| [$7010: beq    $7037]
 	GET_DP_ADDRESS	0x0a                    	| [$7012: inc    $0a]
@@ -3286,7 +3290,7 @@ l_7049:
 	jne	l_7059                             	| [$704d: bne    $7059]
 	jbsr	l_713b                            	| [$704f: jsr    $713b]
 	jbsr	l_877d                            	| [$7052: jsr    $877d]
-	GET_DP_ADDRESS	0xcd                    	| [$7055: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$7055: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_7066                             	| [$7057: beq    $7066]
 l_7059:
@@ -3363,8 +3367,8 @@ l_70af:
 l_70ba:
 	tst.b	d0                               	| [$70ba: tsta]
 	jne	l_70c6                             	| [$70bb: bne    $70c6]
-	jbsr	l_877a                            	| [$70bd: jsr    $877a]
-	GET_DP_ADDRESS	0xcd                    	| [$70c0: lda    $cd]
+	jbsr	check_player_qualified_877a       	| [$70bd: jsr    check_player_qualified_877a]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$70c0: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_7105                             	| [$70c2: beq    $7105]
 	GET_DP_ADDRESS	0x0a                    	| [$70c4: inc    $0a]
@@ -3844,7 +3848,7 @@ l_72fb:
 	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$730c: leax   a,x]
 	jbsr	l_877d                            	| [$730e: jsr    $877d]
-	GET_DP_ADDRESS	0xcd                    	| [$7311: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$7311: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jne	l_732b                             	| [$7313: bne    $732b]
 	tst.b	infinite_lives_flag
@@ -3987,10 +3991,10 @@ l_73b4:
 	jeq	l_73dd                             	| [$73c6: beq    $73dd]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$73c8: clr    high_jump_fault_9f]
 	clr.b	(a0)                         	| [...]
-	jbsr	l_877a                            	| [$73ca: jsr    $877a]
+	jbsr	check_player_qualified_877a       	| [$73ca: jsr    check_player_qualified_877a]
 	GET_REG_ADDRESS	0x1f,d4                	| [$73cd: clr    $1f,u]
 	clr.b	(a0)                         	| [...]
-	GET_DP_ADDRESS	0xcd                    	| [$73d0: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$73d0: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jne	l_73dd                             	| [$73d2: bne    $73dd]
 	GET_REG_ADDRESS	0x1,d4                 	| [$73d4: dec    $1,u]
@@ -4036,10 +4040,10 @@ l_73ee:
 	jeq	l_741a                             	| [$7403: beq    $741a]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$7405: clr    high_jump_fault_9f]
 	clr.b	(a0)                         	| [...]
-	jbsr	l_877a                            	| [$7407: jsr    $877a]
+	jbsr	check_player_qualified_877a       	| [$7407: jsr    check_player_qualified_877a]
 	GET_REG_ADDRESS	0x1f,d4                	| [$740a: clr    $1f,u]
 	clr.b	(a0)                         	| [...]
-	GET_DP_ADDRESS	0xcd                    	| [$740d: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$740d: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jne	l_741a                             	| [$740f: bne    $741a]
 	GET_REG_ADDRESS	0x1,d4                 	| [$7411: dec    $1,u]
@@ -7760,22 +7764,25 @@ l_876b:
 l_8775:
 	move.b	#0x05,d1                        	| [$8775: ldb    #$05]
 	jmp	l_8a15                             	| [$8777: jmp    $8a15]
-l_877a:
-	jbsr	l_86f7                            	| [$877a: jsr    $86f7]
+
+check_player_qualified_877a:
+	tst.b	infinite_lives_flag
+	jne	qualified_878f
 l_877d:
-	GET_DP_ADDRESS	0xcd                    	| [$877d: clr    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$877d: clr    player_is_qualified_cd]
 	clr.b	(a0)                         	| [...]
 	GET_REG_ADDRESS	0,d2                   	| [$877f: lda    ,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x16,d0                         	| [$8781: cmpa   #$16]
 	jeq	l_8791                             	| [$8783: beq    $8791]
 * check if player is qualified
-	move.w	#qualifying_time_2866,d3        	| [$8785: ldy    #qualifying_time_2866]
-	jbsr	compare_times_8968                	| [$8789: jsr    compare_times_8968]
+	move.w	#qualifying_value_2866,d3       	| [$8785: ldy    #qualifying_value_2866]
+	jbsr	compare_performances_8968         	| [$8789: jsr    compare_performances_8968]
 	tst.b	d1                               	| [$878c: tstb]
 	jeq	l_8791                             	| [$878d: beq    $8791]
 * player is qualified
-	GET_DP_ADDRESS	0xcd                    	| [$878f: inc    $cd]
+qualified_878f:
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$878f: inc    player_is_qualified_cd]
 	addq.b	#1,(a0)                         	| [...]
 l_8791:
 	rts                                    	| [$8791: rts]
@@ -8065,7 +8072,7 @@ l_88da:
 	GET_DP_ADDRESS	nb_objects_48           	| [$88dc: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_88de:
-	jbsr	compare_times_8968                	| [$88de: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$88de: jsr    compare_performances_8968]
 	tst.b	d1                               	| [$88e1: tstb]
 	jne	l_8902                             	| [$88e2: bne    $8902]
 	GET_REG_ADDRESS	-0x1,d3                	| [$88e4: lda    -$1,y]
@@ -8195,10 +8202,13 @@ l_895d:
 	VIDEO_WORD_DIRTY | [...]
 	rts                                    	| [$8967: rts]
 
-* < X: time
-* < Y: time to compare to
+* compare times/length/height
+* comparison is inverted for times of course
+* < X: time/length
+* < Y: time/length to compare to
 * > B: 1 if time in X is < time in Y
-compare_times_8968:
+* > B: 1 if length in X is > length in Y
+compare_performances_8968:
 	GET_DP_ADDRESS	0x62                    	| [$8968: clr    $62]
 	clr.b	(a0)                         	| [...]
 	moveq	#0,d1                            	| [$896a: clrb]
@@ -8915,7 +8925,7 @@ l_8c84:
 	move.w	#0x2aa1,d3                      	| [$8c8a: ldy    #$2aa1]
 	addq.w	#0x3,d2                         	| [$8c8e: leax   $3,x]
 l_8c90:
-	jbsr	compare_times_8968                	| [$8c90: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$8c90: jsr    compare_performances_8968]
 	tst.b	d1                               	| [$8c93: tstb]
 	jne	l_8ca4                             	| [$8c94: bne    $8ca4]
 	GET_DP_ADDRESS	0x4a                    	| [$8c96: inc    $4a]
@@ -10274,12 +10284,18 @@ l_9301:
 l_9308:
 	rts                                    	| [$9308: rts]
 
-l_9309:
-	move.w	#0xaaf3,d2                      	| [$9309: ldx    #$aaf3]
+* aaf3: 4 tables of $C bytes. Easy table:
+*   dash:    13 50    long jump  06 50
+*   javelin: 70 00    hurdles:   14 00
+*   hammer:  75 00    long jump: 02 30
+
+load_and_display_qualifying_value_9309:
+	move.w	#qualifying_values_aaf3,d2      	| [$9309: ldx    #qualifying_values_aaf3]
 	jbsr	l_9366                            	| [$930c: bsr    $9366]
 	tst.b	d1                               	| [$930e: tstb]
 	jne	l_931a                             	| [$930f: bne    $931a]
-	GET_DP_ADDRESS	0x2f                    	| [$9311: lda    $2f]
+* fetch the proper values according to level & difficulty
+	GET_DP_ADDRESS	difficulty_2f           	| [$9311: lda    difficulty_2f]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x0c,d1                        	| [$9313: ldb    #$0c]
 	jbsr	multiply_ab                       	| [$9315: mul]
@@ -10298,7 +10314,7 @@ l_9322:
 	move.b	d0,d6                           	| [...] as byte
 	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$9325: leax   a,x]
-	move.w	#qualifying_time_2866,d3        	| [$9327: ldy    #qualifying_time_2866]
+	move.w	#qualifying_value_2866,d3       	| [$9327: ldy    #qualifying_value_2866]
 	move.w	#0x3218,d4                      	| [$932b: ldu    #$3218]
 	move.b	#0x01,d1                        	| [$932e: ldb    #$01]
 	GET_REG_ADDRESS	0,d2                   	| [$9330: lda    ,x]
@@ -10340,6 +10356,7 @@ l_933c:
 	GET_REG_ADDRESS	0x3,d3                 	| [$9361: sta    $3,y]
 	move.b	d0,(a0)                         	| [...]
 	jmp	write_char_and_move_cursor_61f0    	| [$9363: jmp    write_char_and_move_cursor_61f0]
+
 l_9366:
 	GET_DP_ADDRESS	0x82                    	| [$9366: lda    $82]
 	move.b	(a0),d0                         	| [...]
@@ -11047,13 +11064,13 @@ l_96e8:
 	add.w	d1,d2                            	| [$96f0: leax   d,x]
 	move.w	d2,d3                           	| [$96f2: leay   $4,x]
 	addq.w	#0x4,d3                         	| [$96f2: leay   $4,x]
-	jbsr	compare_times_8968                	| [$96f4: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$96f4: jsr    compare_performances_8968]
 	GET_DP_ADDRESS	0x62                    	| [$96f7: lda    $62]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_971a                             	| [$96f9: beq    $971a]
 	addq.w	#0x4,d3                         	| [$96fb: leay   $4,y]
 l_96fd:
-	jbsr	compare_times_8968                	| [$96fd: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$96fd: jsr    compare_performances_8968]
 	GET_DP_ADDRESS	0x62                    	| [$9700: lda    $62]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_971a                             	| [$9702: beq    $971a]
@@ -12516,7 +12533,7 @@ l_9e71:
 	move.b	#0x01,d0                        	| [$9e71: lda    #$01]
 	GET_REG_ADDRESS	0x29,d2                	| [$9e73: sta    $29,x]
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x2f,d2                	| [$9e76: sta    $2f,x]
+	GET_REG_ADDRESS	difficulty_2f,d2       	| [$9e76: sta    difficulty_2f,x]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x30,d2                	| [$9e79: clr    $30,x]
 	clr.b	(a0)                         	| [...]
@@ -12579,7 +12596,7 @@ l_9eb9:
 	cmp.b	#0x03,d0                         	| [$9ec5: cmpa   #$03]
 	jeq	l_9ecf                             	| [$9ec7: beq    $9ecf]
 	move.b	#0x04,d0                        	| [$9ec9: lda    #$04]
-	GET_REG_ADDRESS	0x2f,d2                	| [$9ecb: sta    $2f,x]
+	GET_REG_ADDRESS	difficulty_2f,d2       	| [$9ecb: sta    difficulty_2f,x]
 	move.b	d0,(a0)                         	| [...]
 l_9ece:
 	rts                                    	| [$9ece: rts]
@@ -15409,7 +15426,7 @@ l_d317:
 	move.l	d3,-(sp)                        	| [$d332: pshs   y]
 	jbsr	l_877d                            	| [$d334: jsr    $877d]
 	movem.l	(sp)+,d3                       	| [$d337: puls   y]
-	GET_DP_ADDRESS	0xcd                    	| [$d339: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$d339: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_d345                             	| [$d33b: beq    $d345]
 l_d33d:
@@ -15922,7 +15939,7 @@ l_d5c8:
 	and.b	#0x0f,d0                         	| [$d5ca: anda   #$0f]
 	jeq	l_d5c5                             	| [$d5cc: beq    $d5c5]
 	jbsr	l_877d                            	| [$d5ce: jsr    $877d]
-	GET_DP_ADDRESS	0xcd                    	| [$d5d1: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$d5d1: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_d5c5                             	| [$d5d3: beq    $d5c5]
 	GET_DP_ADDRESS	angle_d8                	| [$d5d5: inc    angle_d8]
@@ -15957,7 +15974,7 @@ l_d5f3:
 l_d5fc:
 	addq.w	#0x1,d2                         	| [$d5fc: leax   $1,x]
 	jbsr	l_877d                            	| [$d5fe: jsr    $877d]
-	GET_DP_ADDRESS	0xcd                    	| [$d601: lda    $cd]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$d601: lda    player_is_qualified_cd]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_d5c5                             	| [$d603: beq    $d5c5]
 	GET_DP_ADDRESS	angle_d8                	| [$d605: inc    angle_d8]
@@ -16397,7 +16414,7 @@ l_d84a:
 	GET_DP_ADDRESS	0x50                    	| [$d867: sta    $50]
 	move.b	d0,(a0)                         	| [...]
 l_d869:
-	jbsr	compare_times_8968                	| [$d869: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$d869: jsr    compare_performances_8968]
 	tst.b	d1                               	| [$d86c: tstb]
 	jeq	l_d899                             	| [$d86d: beq    $d899]
 	GET_REG_ADDRESS	0,d3                   	| [$d86f: ldd    ,y]
@@ -18037,7 +18054,7 @@ l_e2fc:
 	move.b	d1,d6                           	| [...] as byte
 	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d2                            	| [$e336: leax   b,x]
-	jbsr	compare_times_8968                	| [$e338: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$e338: jsr    compare_performances_8968]
 	GET_DP_ADDRESS	0x62                    	| [$e33b: tst    $62]
 	tst.b	(a0)                             	| [...]
 	jeq	l_e345                             	| [$e33d: beq    $e345]
@@ -18046,8 +18063,8 @@ l_e2fc:
 	GET_ADDRESS	failed_rom_check_29d4      	| [$e342: clr    failed_rom_check_29d4]
 	clr.b	(a0)                         	| [...]
 l_e345:
-	jbsr	l_877a                            	| [$e345: jsr    $877a]
-	GET_DP_ADDRESS	0xcd                    	| [$e348: tst    $cd]
+	jbsr	check_player_qualified_877a       	| [$e345: jsr    check_player_qualified_877a]
+	GET_DP_ADDRESS	player_is_qualified_cd  	| [$e348: tst    player_is_qualified_cd]
 	tst.b	(a0)                             	| [...]
 	jeq	l_e3a2                             	| [$e34a: beq    $e3a2]
 	GET_ADDRESS	0x29d3                     	| [$e34c: tst    $29d3]
@@ -20113,7 +20130,7 @@ l_f084:
 	GET_DP_ADDRESS	0xe6                    	| [$f08f: sta    $e6]
 	move.b	d0,(a0)                         	| [...]
 l_f091:
-	jbsr	compare_times_8968                	| [$f091: jsr    compare_times_8968]
+	jbsr	compare_performances_8968         	| [$f091: jsr    compare_performances_8968]
 	tst.b	d1                               	| [$f094: tstb]
 	jeq	l_f0e3                             	| [$f095: beq    $f0e3]
 	GET_ADDRESS	0x2a92                     	| [$f097: lda    $2a92]

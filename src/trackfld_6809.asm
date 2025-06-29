@@ -97,6 +97,7 @@ copy_of_screen_flipped_21 = $21
 number_of_credits_23 = $23
 dsw1_copy_2c = $2c
 dsw2_copy_2d = $2d
+difficulty_2f = $2f
 copy_of_inputs_30 = $30
 copy_of_inputs_31 = $31
 copy_of_inputs_32 = $32
@@ -112,6 +113,7 @@ p4_attempts_left_e1 = $E1
 current_level_84 = $84
 high_jump_fault_9f = $9F
 jump_foul_c9 = $c9
+player_is_qualified_cd = $cd
 angle_d8 = $d8
 false_start_d9 = $d9
 display_chrono_ea = $ea
@@ -133,6 +135,8 @@ dsw1_1283 = $1283
 sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
 copy_of_inputs_2830 = $2830
+current_attempted_height_metre_286a = $286a
+current_attempted_height_centimetres_286c = $286c
 failed_rom_check_2a8e = $2a8e
 scroll_offsets_2af0 = $2af0
 event_buffer_2900 = $2900
@@ -142,8 +146,11 @@ video_ram_3000 = $3000
 color_ram_3800 = $3800
 player_1_final_time_2960 = $2960		; dash/hurdles
 player_2_final_time_296c = $296C		; dash/hurdles
-qualifying_time_2866 = $2866
+qualifying_value_2866 = $2866
 chrono_hundredth_second_287e = $287e
+
+qualifying_values_aaf3 = $aaf3
+high_jump_attempted_heights_edea = $edea
 
 ; the [xxx] tags are there to help the specific game post-processing to automatically
 ; change or remove the code. For instance [rom_check_code] lines can be removed without
@@ -214,7 +221,7 @@ reset_6000:
 6092: 44             LSRA
 6093: 44             LSRA
 6094: 44             LSRA
-6095: 97 2F          STA    $2F
+6095: 97 2F          STA    difficulty_2f
 6097: 96 2C          LDA    dsw1_copy_2c
 6099: 84 0F          ANDA   #$0F
 609B: 48             ASLA
@@ -437,7 +444,7 @@ write_char_and_move_cursor_61f0:
 6257: 4A             DECA
 6258: 35 04          PULS   B
 625A: BD 61 F0       JSR    write_char_and_move_cursor_61f0
-625D: 33 C8 2F       LEAU   $2F,U
+625D: 33 C8 2F       LEAU   difficulty_2f,U
 6260: 0A 40          DEC    $40
 6262: 10 26 FF 9E    LBNE   $6204
 6266: 39             RTS
@@ -565,7 +572,7 @@ write_char_and_move_cursor_61f0:
 6364: A6 AB          LDA    D,Y
 6366: 26 12          BNE    $637A
 6368: BD 87 7D       JSR    $877D
-636B: 96 CD          LDA    $CD
+636B: 96 CD          LDA    player_is_qualified_cd
 636D: 26 17          BNE    $6386
 636F: A6 1F          LDA    -$1,X
 6371: 4A             DECA
@@ -574,7 +581,7 @@ write_char_and_move_cursor_61f0:
 6376: 96 F4          LDA    $F4
 6378: 27 21          BEQ    $639B
 637A: BD 87 7D       JSR    $877D
-637D: 96 CD          LDA    $CD
+637D: 96 CD          LDA    player_is_qualified_cd
 637F: 26 05          BNE    $6386
 6381: CC 51 40       LDD    #$5140
 6384: 20 03          BRA    $6389
@@ -1195,7 +1202,7 @@ start_a_game_680a:
 ; clear game variables (level, etc...)
 6847: 4F             CLRA
 6848: 5F             CLRB
-6849: 8E 28 66       LDX    #qualifying_time_2866
+6849: 8E 28 66       LDX    #qualifying_value_2866
 684C: ED 81          STD    ,X++
 684E: 8C 28 A0       CMPX   #$28A0
 6851: 26 F9          BNE    $684C
@@ -1422,7 +1429,7 @@ setup_players_screen_6936:
 6A2B: 33 C8 37       LEAU   $37,U
 6A2E: 0A 55          DEC    $55
 6A30: 26 C4          BNE    $69F6
-6A32: BD 93 09       JSR    $9309
+6A32: BD 93 09       JSR    load_and_display_qualifying_value_9309
 6A35: 4F             CLRA
 6A36: 5F             CLRB
 6A37: DD EC          STD    $EC
@@ -2086,8 +2093,8 @@ init_game_playfield_6a85:
 7005: 86 01          LDA    #$01
 7007: 97 0A          STA    $0A
 7009: 20 09          BRA    $7014
-700B: BD 87 7A       JSR    $877A
-700E: 96 CD          LDA    $CD
+700B: BD 87 7A       JSR    check_player_qualified_877a
+700E: 96 CD          LDA    player_is_qualified_cd
 7010: 27 25          BEQ    $7037
 7012: 0C 0A          INC    $0A
 7014: 8E 28 A0       LDX    #$28A0
@@ -2118,7 +2125,7 @@ init_game_playfield_6a85:
 704D: 26 0A          BNE    $7059
 704F: BD 71 3B       JSR    $713B
 7052: BD 87 7D       JSR    $877D
-7055: 96 CD          LDA    $CD
+7055: 96 CD          LDA    player_is_qualified_cd
 7057: 27 0D          BEQ    $7066
 7059: 8E 28 A0       LDX    #$28A0
 705C: CC DE BD       LDD    #$DEBD
@@ -2166,8 +2173,8 @@ init_game_playfield_6a85:
 70B7: B6 2A 0A       LDA    $2A0A
 70BA: 4D             TSTA
 70BB: 26 09          BNE    $70C6
-70BD: BD 87 7A       JSR    $877A
-70C0: 96 CD          LDA    $CD
+70BD: BD 87 7A       JSR    check_player_qualified_877a
+70C0: 96 CD          LDA    player_is_qualified_cd
 70C2: 27 41          BEQ    $7105
 70C4: 0C 0A          INC    $0A
 70C6: 8E 28 A0       LDX    #$28A0
@@ -2457,7 +2464,7 @@ init_game_playfield_6a85:
 730B: 48             ASLA
 730C: 30 86          LEAX   A,X
 730E: BD 87 7D       JSR    $877D
-7311: 96 CD          LDA    $CD
+7311: 96 CD          LDA    player_is_qualified_cd
 7313: 26 16          BNE    $732B
 7315: 0A 81          DEC    p1_attempts_left_81
 7317: 26 12          BNE    $732B
@@ -2546,9 +2553,9 @@ init_game_playfield_6a85:
 73C4: A6 C4          LDA    ,U
 73C6: 27 15          BEQ    $73DD
 73C8: 0F 9F          CLR    high_jump_fault_9f
-73CA: BD 87 7A       JSR    $877A
+73CA: BD 87 7A       JSR    check_player_qualified_877a
 73CD: 6F C8 1F       CLR    $1F,U
-73D0: 96 CD          LDA    $CD
+73D0: 96 CD          LDA    player_is_qualified_cd
 73D2: 26 09          BNE    $73DD
 73D4: 6A 41          DEC    $1,U
 73D6: 26 05          BNE    $73DD
@@ -2577,9 +2584,9 @@ init_game_playfield_6a85:
 7401: A6 C4          LDA    ,U
 7403: 27 15          BEQ    $741A
 7405: 0F 9F          CLR    high_jump_fault_9f
-7407: BD 87 7A       JSR    $877A
+7407: BD 87 7A       JSR    check_player_qualified_877a
 740A: 6F C8 1F       CLR    $1F,U
-740D: 96 CD          LDA    $CD
+740D: 96 CD          LDA    player_is_qualified_cd
 740F: 26 09          BNE    $741A
 7411: 6A 41          DEC    $1,U
 7413: 26 05          BNE    $741A
@@ -4869,7 +4876,7 @@ queue_event_84f5:
 86BB: A6 03          LDA    $3,X
 86BD: 7E 61 EE       JMP    $61EE
 86C0: BD 86 F7       JSR    $86F7
-86C3: CE 28 6A       LDU    #$286A
+86C3: CE 28 6A       LDU    #current_attempted_height_metre_286a
 86C6: A6 C4          LDA    ,U
 86C8: 44             LSRA
 86C9: 44             LSRA
@@ -4962,18 +4969,20 @@ queue_event_84f5:
 8773: 26 F6          BNE    $876B
 8775: C6 05          LDB    #$05
 8777: 7E 8A 15       JMP    $8A15
+
+check_player_qualified_877a:
 877A: BD 86 F7       JSR    $86F7
-877D: 0F CD          CLR    $CD
+877D: 0F CD          CLR    player_is_qualified_cd
 877F: A6 84          LDA    ,X
 8781: 81 16          CMPA   #$16
 8783: 27 0C          BEQ    $8791
 ; check if player is qualified
-8785: 10 8E 28 66    LDY    #qualifying_time_2866
-8789: BD 89 68       JSR    compare_times_8968
+8785: 10 8E 28 66    LDY    #qualifying_value_2866
+8789: BD 89 68       JSR    compare_performances_8968
 878C: 5D             TSTB
 878D: 27 02          BEQ    $8791
 ; player is qualified
-878F: 0C CD          INC    $CD
+878F: 0C CD          INC    player_is_qualified_cd
 8791: 39             RTS
 
 8792: 0F 7D          CLR    $7D
@@ -5145,7 +5154,7 @@ queue_event_84f5:
 88D7: 8E 2A 9C       LDX    #$2A9C
 88DA: 86 04          LDA    #$04
 88DC: 97 48          STA    nb_objects_48
-88DE: BD 89 68       JSR    compare_times_8968
+88DE: BD 89 68       JSR    compare_performances_8968
 88E1: 5D             TSTB
 88E2: 26 1E          BNE    $8902
 88E4: A6 3F          LDA    -$1,Y
@@ -5222,10 +5231,13 @@ queue_event_84f5:
 8965: ED C4          STD    ,U		; [video_address]
 8967: 39             RTS
 
-; < X: time
-; < Y: time to compare to
+; compare times/length/height
+; comparison is inverted for times of course
+; < X: time/length
+; < Y: time/length to compare to
 ; > B: 1 if time in X is < time in Y
-compare_times_8968:
+; > B: 1 if length in X is > length in Y
+compare_performances_8968:
 8968: 0F 62          CLR    $62
 896A: 5F             CLRB
 896B: A6 A4          LDA    ,Y
@@ -5267,7 +5279,7 @@ compare_times_8968:
 89A9: 0F 6C          CLR    $6C
 89AB: 96 97          LDA    $97
 89AD: 27 37          BEQ    $89E6
-89AF: 10 8E 28 6A    LDY    #$286A
+89AF: 10 8E 28 6A    LDY    #current_attempted_height_metre_286a
 89B3: A6 42          LDA    $2,U
 89B5: AB 22          ADDA   $2,Y
 89B7: 19             DAA
@@ -5633,7 +5645,7 @@ partially_reset_scrolling_8c3e:
 8C88: 0F 4A          CLR    $4A
 8C8A: 10 8E 2A A1    LDY    #$2AA1
 8C8E: 30 03          LEAX   $3,X
-8C90: BD 89 68       JSR    compare_times_8968
+8C90: BD 89 68       JSR    compare_performances_8968
 8C93: 5D             TSTB
 8C94: 26 0E          BNE    $8CA4
 8C96: 0C 4A          INC    $4A
@@ -6429,11 +6441,18 @@ partially_reset_scrolling_8c3e:
 9305: 7C 29 E0       INC    $29E0
 9308: 39             RTS
 
-9309: 8E AA F3       LDX    #$AAF3
+; aaf3: 4 tables of $C bytes. Easy table:
+;   dash:    13 50    long jump  06 50
+;   javelin: 70 00    hurdles:   14 00
+;   hammer:  75 00    long jump: 02 30
+
+load_and_display_qualifying_value_9309:
+9309: 8E AA F3       LDX    #qualifying_values_aaf3
 930C: 8D 58          BSR    $9366
 930E: 5D             TSTB
 930F: 26 09          BNE    $931A
-9311: 96 2F          LDA    $2F
+; fetch the proper values according to level & difficulty
+9311: 96 2F          LDA    difficulty_2f
 9313: C6 0C          LDB    #$0C
 9315: 3D             MUL
 9316: 30 8B          LEAX   D,X
@@ -6445,7 +6464,7 @@ partially_reset_scrolling_8c3e:
 9322: 96 84          LDA    current_level_84
 9324: 48             ASLA
 9325: 30 86          LEAX   A,X
-9327: 10 8E 28 66    LDY    #qualifying_time_2866
+9327: 10 8E 28 66    LDY    #qualifying_value_2866
 932B: CE 32 18       LDU    #$3218
 932E: C6 01          LDB    #$01
 9330: A6 84          LDA    ,X
@@ -6476,6 +6495,7 @@ partially_reset_scrolling_8c3e:
 935F: 84 0F          ANDA   #$0F
 9361: A7 23          STA    $3,Y
 9363: 7E 61 F0       JMP    write_char_and_move_cursor_61f0
+
 9366: 96 82          LDA    $82
 9368: 5F             CLRB
 9369: 80 06          SUBA   #$06
@@ -6915,11 +6935,11 @@ compare_contestants_tile_96d3:
 96EF: 3D             MUL
 96F0: 30 8B          LEAX   D,X
 96F2: 31 04          LEAY   $4,X
-96F4: BD 89 68       JSR    compare_times_8968
+96F4: BD 89 68       JSR    compare_performances_8968
 96F7: 96 62          LDA    $62
 96F9: 27 1F          BEQ    $971A
 96FB: 31 24          LEAY   $4,Y
-96FD: BD 89 68       JSR    compare_times_8968
+96FD: BD 89 68       JSR    compare_performances_8968
 9700: 96 62          LDA    $62
 9702: 27 16          BEQ    $971A
 9704: A6 84          LDA    ,X
@@ -7791,7 +7811,7 @@ compare_contestants_tile_96d3:
 9E6E: A7 88 1C       STA    $1C,X
 9E71: 86 01          LDA    #$01
 9E73: A7 88 29       STA    $29,X
-9E76: A7 88 2F       STA    $2F,X
+9E76: A7 88 2F       STA    difficulty_2f,X
 9E79: 6F 88 30       CLR    $30,X
 9E7C: 39             RTS
 
@@ -7828,7 +7848,7 @@ compare_contestants_tile_96d3:
 9EC5: 81 03          CMPA   #$03
 9EC7: 27 06          BEQ    $9ECF
 9EC9: 86 04          LDA    #$04
-9ECB: A7 88 2F       STA    $2F,X
+9ECB: A7 88 2F       STA    difficulty_2f,X
 9ECE: 39             RTS
 
 9ECF: 6F 88 29       CLR    $29,X
@@ -9605,7 +9625,7 @@ D330: 1F 21          TFR    Y,X
 D332: 34 20          PSHS   Y
 D334: BD 87 7D       JSR    $877D
 D337: 35 20          PULS   Y
-D339: 96 CD          LDA    $CD
+D339: 96 CD          LDA    player_is_qualified_cd
 D33B: 27 08          BEQ    $D345
 D33D: 8E DC 7C       LDX    #table_dc7c
 D340: 96 84          LDA    current_level_84
@@ -9940,7 +9960,7 @@ D5C8: A6 80          LDA    ,X+
 D5CA: 84 0F          ANDA   #$0F
 D5CC: 27 F7          BEQ    $D5C5
 D5CE: BD 87 7D       JSR    $877D
-D5D1: 96 CD          LDA    $CD
+D5D1: 96 CD          LDA    player_is_qualified_cd
 D5D3: 27 F0          BEQ    $D5C5
 D5D5: 0C D8          INC    angle_d8
 D5D7: 30 04          LEAX   $4,X
@@ -9964,7 +9984,7 @@ D5FB: 39             RTS
 
 D5FC: 30 01          LEAX   $1,X
 D5FE: BD 87 7D       JSR    $877D
-D601: 96 CD          LDA    $CD
+D601: 96 CD          LDA    player_is_qualified_cd
 D603: 27 C0          BEQ    $D5C5
 D605: 0C D8          INC    angle_d8
 D607: C6 03          LDB    #$03
@@ -10251,7 +10271,7 @@ D862: 3D             MUL
 D863: 33 C5          LEAU   B,U
 D865: 86 03          LDA    #$03
 D867: 97 50          STA    $50
-D869: BD 89 68       JSR    compare_times_8968
+D869: BD 89 68       JSR    compare_performances_8968
 D86C: 5D             TSTB
 D86D: 27 2A          BEQ    $D899
 D86F: EC A4          LDD    ,Y
@@ -10926,18 +10946,19 @@ E09B: 81 04          CMPA   #$04
 E09D: 24 0F          BCC    $E0AE
 E09F: 48             ASLA
 E0A0: 48             ASLA
-E0A1: 10 8E ED EA    LDY    #$EDEA
+E0A1: 10 8E ED EA    LDY    #high_jump_attempted_heights_edea
 E0A5: 31 A6          LEAY   A,Y
 E0A7: CE ED FA       LDU    #$EDFA
 E0AA: 33 C6          LEAU   A,U
 E0AC: 20 3C          BRA    $E0EA
+
 E0AE: 86 0C          LDA    #$0C
-E0B0: 10 8E ED EA    LDY    #$EDEA
+E0B0: 10 8E ED EA    LDY    #high_jump_attempted_heights_edea
 E0B4: 31 A6          LEAY   A,Y
 E0B6: EC A1          LDD    ,Y++
-E0B8: FD 28 6A       STD    $286A
+E0B8: FD 28 6A       STD    current_attempted_height_metre_286a
 E0BB: EC A4          LDD    ,Y
-E0BD: FD 28 6C       STD    $286C
+E0BD: FD 28 6C       STD    current_attempted_height_centimetres_286c
 E0C0: CC 00 06       LDD    #$0006
 E0C3: FD 28 F0       STD    $28F0
 E0C6: CC 00 00       LDD    #$0000
@@ -10960,7 +10981,7 @@ E0ED: EC C1          LDD    ,U++
 E0EF: ED 81          STD    ,X++
 E0F1: EC C4          LDD    ,U
 E0F3: ED 84          STD    ,X
-E0F5: 8E 28 6A       LDX    #$286A
+E0F5: 8E 28 6A       LDX    #current_attempted_height_metre_286a
 E0F8: EC A1          LDD    ,Y++
 E0FA: ED 81          STD    ,X++
 E0FC: EC A4          LDD    ,Y
@@ -10985,7 +11006,7 @@ E12C: C6 9D          LDB    #$9D
 E12E: E7 80          STB    ,X+			; [video_address]
 E130: 8C 32 DB       CMPX   #$32DB
 E133: 26 EB          BNE    $E120
-E135: 8E 28 6A       LDX    #$286A
+E135: 8E 28 6A       LDX    #current_attempted_height_metre_286a
 E138: BD 6F 55       JSR    $6F55
 E13B: 86 FF          LDA    #$FF
 E13D: BD 85 0E       JSR    $850E
@@ -11001,7 +11022,7 @@ E14C: CA 03          ORB    #$03
 E14E: F8 28 73       EORB   $2873
 E151: F7 28 48       STB    $2848
 E154: 8E 32 98       LDX    #$3298
-E157: 10 8E 28 6A    LDY    #$286A
+E157: 10 8E 28 6A    LDY    #current_attempted_height_metre_286a
 E15B: EC A1          LDD    ,Y++
 E15D: 4D             TSTA
 E15E: 26 02          BNE    $E162
@@ -11072,7 +11093,7 @@ E1F4: A7 A9 08 00    STA    $0800,Y ; [video_address_word]
 E1F8: 39             RTS
 
 E1F9: 7F 2A D7       CLR    $2AD7
-E1FC: B6 28 6C       LDA    $286C
+E1FC: B6 28 6C       LDA    current_attempted_height_centimetres_286c
 E1FF: C6 0A          LDB    #$0A
 E201: 3D             MUL
 E202: FB 28 6D       ADDB   $286D
@@ -11196,7 +11217,7 @@ E309: 96 DF          LDA    $DF
 E30B: C6 0C          LDB    #$0C
 E30D: 3D             MUL
 E30E: 30 8B          LEAX   D,X
-E310: 10 8E 28 6A    LDY    #$286A
+E310: 10 8E 28 6A    LDY    #current_attempted_height_metre_286a
 E314: 96 9F          LDA    high_jump_fault_9f
 E316: 48             ASLA
 E317: 48             ASLA
@@ -11208,19 +11229,19 @@ E320: ED 84          STD    ,X
 E322: 96 9F          LDA    high_jump_fault_9f
 E324: 81 02          CMPA   #$02
 E326: 10 26 00 78    LBNE   $E3A2
-E32A: 10 8E ED EA    LDY    #$EDEA
+E32A: 10 8E ED EA    LDY    #high_jump_attempted_heights_edea
 E32E: 8E 29 68       LDX    #$2968
 E331: 96 DF          LDA    $DF
 E333: C6 0C          LDB    #$0C
 E335: 3D             MUL
 E336: 30 85          LEAX   B,X
-E338: BD 89 68       JSR    compare_times_8968
+E338: BD 89 68       JSR    compare_performances_8968
 E33B: 0D 62          TST    $62
 E33D: 27 06          BEQ    $E345
 E33F: 7C 29 D3       INC    $29D3
 E342: 7F 29 D4       CLR    failed_rom_check_29d4
-E345: BD 87 7A       JSR    $877A
-E348: 0D CD          TST    $CD
+E345: BD 87 7A       JSR    check_player_qualified_877a
+E348: 0D CD          TST    player_is_qualified_cd
 E34A: 27 56          BEQ    $E3A2
 E34C: 7D 29 D3       TST    $29D3
 E34F: 27 51          BEQ    $E3A2
@@ -12527,7 +12548,7 @@ F088: 97 48          STA    nb_objects_48
 F08A: 8E 2A 93       LDX    #$2A93
 F08D: 86 1D          LDA    #$1D
 F08F: 97 E6          STA    $E6
-F091: BD 89 68       JSR    compare_times_8968
+F091: BD 89 68       JSR    compare_performances_8968
 F094: 5D             TSTB
 F095: 27 4C          BEQ    $F0E3
 F097: B6 2A 92       LDA    $2A92
