@@ -4,7 +4,7 @@ import os,pathlib,struct
 from shared import *
 
 
-sprite_names,_ = get_sprite_names()
+sprite_names = get_sprite_names()
 
 
 
@@ -71,19 +71,20 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
             attr = spriteram_2[offs]
             color = attr & 0x0f
             code = spriteram[offs + 1]
-            flipx = ~attr & 0x40
-            flipy = attr & 0x80
+            flipx = bool(~attr & 0x40)
+            flipy = bool(attr & 0x80)
             sx = spriteram[offs] - 1
             sy = 240-spriteram_2[offs + 1] + 1
 
             im = tile_set[color][code]
 
-            if flipx:
-                im = ImageOps.flip(im)
             if flipy:
+                im = ImageOps.flip(im)
+            if flipx:
                 im = ImageOps.mirror(im)
 
-            print(f"offs:{offs:02x}, code:{code:02x}, color:{color:02x}, X:{sx}, Y:{sy}")
+            name = sprite_names.get(code,"unknown")
+            print(f"offs:{offs:02x}, name: {name}, code:{code:02x}, flipx: {flipx}, flipy: {flipy}, color:{color:02x}, X:{sx}, Y:{sy}")
             result.paste(im,(sx,sy))
             nb_active += 1
 
@@ -92,4 +93,4 @@ def process(the_dump,name_filter=None,hide_named_sprite=None):
 
 
 process(r"sprite_ram_1800")
-process(r"mame_sprites_1800")
+

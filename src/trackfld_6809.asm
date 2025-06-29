@@ -106,7 +106,9 @@ nb_players_minus_one_60 = $60
 chrono_hundredth_second_7e = $7e
 chrono_second_7f = $7f
 p1_attempts_left_81 = $81
-p1_attempts_left_a1 = $A1
+p2_attempts_left_a1 = $A1
+p3_attempts_left_c1 = $C1
+p4_attempts_left_e1 = $E1
 current_level_84 = $84
 high_jump_fault_9f = $9F
 jump_foul_c9 = $c9
@@ -3753,7 +3755,7 @@ init_game_playfield_6a85:
 7D99: 84 02          ANDA   #$02
 7D9B: 27 3F          BEQ    $7DDC
 7D9D: BD 9B 0E       JSR    $9B0E
-7DA0: DC A1          LDD    p1_attempts_left_a1
+7DA0: DC A1          LDD    p2_attempts_left_a1
 7DA2: CB 20          ADDB   #$20
 7DA4: FD 2A E1       STD    $2AE1
 7DA7: 86 14          LDA    #$14
@@ -5033,7 +5035,7 @@ queue_event_84f5:
 8805: 3D             MUL
 8806: 33 CB          LEAU   D,U
 8808: EC C1          LDD    ,U++
-880A: DD A1          STD    p1_attempts_left_a1
+880A: DD A1          STD    p2_attempts_left_a1
 880C: 97 B4          STA    $B4
 880E: 0F A0          CLR    $A0
 8810: 86 04          LDA    #$04
@@ -8780,7 +8782,7 @@ CC23: 0C A2          INC    $A2
 CC25: 0C BD          INC    $BD
 CC27: BD CE 53       JSR    $CE53
 CC2A: 7E CF B3       JMP    $CFB3
-CC2D: DC A1          LDD    p1_attempts_left_a1
+CC2D: DC A1          LDD    p2_attempts_left_a1
 CC2F: DD 4E          STD    $4E
 CC31: 10 8E AB CD    LDY    #$ABCD
 CC35: 96 D0          LDA    $D0
@@ -10072,7 +10074,7 @@ D6FB: 8C 2B 74       CMPX   #$2B74
 D6FE: 10 26 FF 84    LBNE   $D686
 D702: 8E 28 A0       LDX    #$28A0
 D705: CC 28 80       LDD    #$2880
-D708: DD A1          STD    p1_attempts_left_a1
+D708: DD A1          STD    p2_attempts_left_a1
 D70A: CC DE B2       LDD    #$DEB2
 D70D: DD AE          STD    $AE
 D70F: BD CB 23       JSR    $CB23
@@ -10613,7 +10615,7 @@ DB8B: 0A 50          DEC    $50
 DB8D: 26 C8          BNE    $DB57
 DB8F: 8E 28 A0       LDX    #$28A0
 DB92: CC 28 80       LDD    #$2880
-DB95: DD A1          STD    p1_attempts_left_a1
+DB95: DD A1          STD    p2_attempts_left_a1
 DB97: CC DE B2       LDD    #$DEB2
 DB9A: DD AE          STD    $AE
 DB9C: BD CB 23       JSR    $CB23
@@ -11159,7 +11161,7 @@ E2C8: 84 02          ANDA   #$02
 E2CA: 27 18          BEQ    $E2E4
 E2CC: 86 5A          LDA    #$5A
 E2CE: 97 D8          STA    angle_d8
-E2D0: DC A1          LDD    p1_attempts_left_a1
+E2D0: DC A1          LDD    p2_attempts_left_a1
 E2D2: FD 2A E1       STD    $2AE1
 E2D5: BD 88 8A       JSR    $888A
 E2D8: BD 8A 03       JSR    $8A03
@@ -11313,7 +11315,7 @@ E415: 96 09          LDA    $09
 E417: 48             ASLA
 E418: 6E 96          JMP    [A,X]		; [jump_table]
 
-E41A: DC A1          LDD    p1_attempts_left_a1
+E41A: DC A1          LDD    p2_attempts_left_a1
 E41C: FD 2A E1       STD    $2AE1
 E41F: 0F C9          CLR    jump_foul_C9
 E421: 0F F4          CLR    $F4
@@ -11389,9 +11391,9 @@ E4B8: 7C 2A D2       INC    $2AD2
 E4BB: B6 2A D2       LDA    $2AD2
 E4BE: 81 02          CMPA   #$02
 E4C0: 26 06          BNE    $E4C8
-E4C2: 96 A1          LDA    p1_attempts_left_a1
+E4C2: 96 A1          LDA    p2_attempts_left_a1
 E4C4: 8B 04          ADDA   #$04
-E4C6: 97 A1          STA    p1_attempts_left_a1
+E4C6: 97 A1          STA    p2_attempts_left_a1
 E4C8: B6 2A D2       LDA    $2AD2
 E4CB: 10 8E EE 1C    LDY    #$EE1C
 E4CF: 48             ASLA
@@ -11404,9 +11406,9 @@ E4DE: 20 E8          BRA    $E4C8
 E4E0: 8E 28 A0       LDX    #$28A0
 E4E3: DC 48          LDD    nb_objects_48
 E4E5: 9B A2          ADDA   $A2
-E4E7: DB A1          ADDB   p1_attempts_left_a1
+E4E7: DB A1          ADDB   p2_attempts_left_a1
 E4E9: 97 A2          STA    $A2
-E4EB: D7 A1          STB    p1_attempts_left_a1
+E4EB: D7 A1          STB    p2_attempts_left_a1
 E4ED: CE 18 08       LDU    #$1808
 E4F0: BD CE D3       JSR    $CED3
 E4F3: 0D C9          TST    jump_foul_C9
@@ -11432,7 +11434,7 @@ E518: B0 2A CB       SUBA   $2ACB
 E51B: A6 86          LDA    A,X
 E51D: 81 21          CMPA   #$21
 E51F: 27 19          BEQ    $E53A
-E521: 9B A1          ADDA   p1_attempts_left_a1
+E521: 9B A1          ADDA   p2_attempts_left_a1
 E523: 80 0F          SUBA   #$0F
 E525: B1 2B 21       CMPA   $2B21
 E528: 22 10          BHI    $E53A
@@ -11443,7 +11445,7 @@ E531: 4F             CLRA
 E532: BD 85 0E       JSR    $850E
 E535: 86 13          LDA    #$13
 E537: BD 85 0E       JSR    $850E
-E53A: 96 A1          LDA    p1_attempts_left_a1
+E53A: 96 A1          LDA    p2_attempts_left_a1
 E53C: 81 37          CMPA   #$37
 E53E: 23 03          BLS    $E543
 E540: B7 2A C5       STA    $2AC5
@@ -11480,9 +11482,9 @@ E57F: BD 85 0E       JSR    $850E
 E582: 20 05          BRA    $E589
 E584: 86 2B          LDA    #$2B
 E586: BD 85 0E       JSR    $850E
-E589: 96 A1          LDA    p1_attempts_left_a1
+E589: 96 A1          LDA    p2_attempts_left_a1
 E58B: 80 04          SUBA   #$04
-E58D: 97 A1          STA    p1_attempts_left_a1
+E58D: 97 A1          STA    p2_attempts_left_a1
 E58F: F7 2A CA       STB    $2ACA
 E592: 0C 09          INC    $09
 E594: 86 0A          LDA    #$0A
@@ -11504,9 +11506,9 @@ E5B7: EC A1          LDD    ,Y++
 E5B9: 81 FF          CMPA   #$FF
 E5BB: 27 1F          BEQ    $E5DC
 E5BD: 9B A2          ADDA   $A2
-E5BF: DB A1          ADDB   p1_attempts_left_a1
+E5BF: DB A1          ADDB   p2_attempts_left_a1
 E5C1: 97 A2          STA    $A2
-E5C3: D7 A1          STB    p1_attempts_left_a1
+E5C3: D7 A1          STB    p2_attempts_left_a1
 E5C5: A6 A0          LDA    ,Y+
 E5C7: B7 2A C8       STA    $2AC8
 E5CA: 30 22          LEAX   $2,Y
@@ -11525,8 +11527,8 @@ E5E8: ED A1          STD    ,Y++
 E5EA: 8C 18 20       CMPX   #$1820
 E5ED: 26 F7          BNE    $E5E6
 E5EF: B6 2A CA       LDA    $2ACA
-E5F2: 9B A1          ADDA   p1_attempts_left_a1
-E5F4: 97 A1          STA    p1_attempts_left_a1
+E5F2: 9B A1          ADDA   p2_attempts_left_a1
+E5F4: 97 A1          STA    p2_attempts_left_a1
 E5F6: 0F 09          CLR    $09
 E5F8: 0C 06          INC    $06
 E5FA: 96 06          LDA    $06
@@ -11699,7 +11701,7 @@ E778: BD 94 88       JSR    $9488
 E77B: BD 94 B8       JSR    $94B8
 E77E: BD 93 73       JSR    $9373
 E781: BD 91 35       JSR    $9135
-E784: DC A1          LDD    p1_attempts_left_a1
+E784: DC A1          LDD    p2_attempts_left_a1
 E786: FD 2B 38       STD    $2B38
 E789: BD E9 C4       JSR    update_carried_javelin_sprite_e9c4
 E78C: 8E 28 A0       LDX    #$28A0
@@ -12886,7 +12888,7 @@ F374: 0D 22          TST    $22
 F376: 26 02          BNE    $F37A
 F378: 0F DF          CLR    $DF
 F37A: CC 30 E8       LDD    #$30E8
-F37D: DD A1          STD    p1_attempts_left_a1
+F37D: DD A1          STD    p2_attempts_left_a1
 F37F: 8E 28 A0       LDX    #$28A0
 F382: CE 18 00       LDU    #sprite_ram_1800
 F385: BD CE C4       JSR    $CEC4
@@ -13184,7 +13186,7 @@ F608: B6 2A 4D       LDA    $2A4D
 F60B: 31 A6          LEAY   A,Y
 F60D: 48             ASLA
 F60E: EE C6          LDU    A,U
-F610: DF A1          STU    p1_attempts_left_a1
+F610: DF A1          STU    p2_attempts_left_a1
 F612: AE 86          LDX    A,X
 F614: 48             ASLA
 F615: 48             ASLA
@@ -13470,7 +13472,7 @@ F87B: 48             ASLA
 F87C: 48             ASLA
 F87D: 40             NEGA
 F87E: 80 0C          SUBA   #$0C
-F880: 97 A1          STA    p1_attempts_left_a1
+F880: 97 A1          STA    p2_attempts_left_a1
 F882: 96 50          LDA    $50
 F884: 48             ASLA
 F885: 48             ASLA
@@ -13908,7 +13910,7 @@ FC04: A7 06          STA    $6,X
 FC06: 8B 16          ADDA   #$16
 FC08: A7 09          STA    $9,X
 FC0A: 86 38          LDA    #$38
-FC0C: 97 A1          STA    p1_attempts_left_a1
+FC0C: 97 A1          STA    p2_attempts_left_a1
 FC0E: CC DC B6       LDD    #$DCB6
 FC11: ED 01          STD    $1,X
 FC13: C3 00 08       ADDD   #$0008

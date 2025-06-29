@@ -97,6 +97,7 @@ with open(source_dir / "conv.s") as f:
 ##                    else:
 ##                        lines[j] = next_line+"\tSCROLL_BYTE_DIRTY | [...]\n"
 ##                    break
+        line = re.sub(tablere,subt,line)
 
         if "dsw1_1283" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
@@ -117,7 +118,15 @@ with open(source_dir / "conv.s") as f:
         if "[$6853" in line:
             # insert level select cheat
             line = line + "\tGET_DP_ADDRESS\tcurrent_level_84\n\tmove.b\tstart_level,(a0)\n"
-        line = re.sub(tablere,subt,line)
+        if "[$727d" in line:
+            line = "\ttst.b\tinfinite_lives_flag\n\tjne\t0f\n" + line
+
+        if "[$727f" in line:
+            line = "0:\n"+line
+
+        if "[$7315" in line:
+            # insert nb attempts trainer
+            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tl_732b\n" + line
         if "[$83bd" in line or "[$9db1" in line or "[$d804" in line:
             line = "\tPUSH_SR\n"+line
             lines[i+1] = lines[i+1]+"\tPOP_SR\n"

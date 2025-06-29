@@ -6,7 +6,7 @@ from shared import *
 
 sprite_names = get_sprite_names()
 
-
+mirror_sprites = get_mirror_sprites()
 
 NB_SPRITES = 0x100
 NB_TILES = 0x300
@@ -286,6 +286,11 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                     if b:
 
                         actual_nb_planes = nb_planes
+
+                        # most sprites aren't mirrored. Save a lot of memory!
+                        if plane_func == ImageOps.mirror and i not in mirror_sprites:
+                            continue
+
                         wtile = plane_func(tile)
 
                         if is_bob:
@@ -345,6 +350,13 @@ sprite_table = read_tileset(sprite_set_list,full_palette[16:],[True,False,True,F
 with open(os.path.join(src_dir,"palette.68k"),"w") as f:
     bitplanelib.palette_dump(full_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
 
+gs_array = [0]*0x100
+for i in group_sprite_pairs:
+    gs_array[i+1] = 1
+with open(os.path.join(src_dir,"sprite_groups.68k"),"w") as f:
+    f.write("* 1: do not display unless mirrored\n")
+    bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True)
+
 
 with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
     f.write("\t.global\tcharacter_table\n")
@@ -380,7 +392,7 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
 
                     f.write(f"{name}:\n")
                     for orientation,_ in plane_orientations:
-                        f.write("* {}\n".format(orientation))
+                        f.write("* orientation={}\n".format(orientation))
                         if orientation in t:
                             data = t[orientation]
                             for bitplane_id in data["bitplanes"]:

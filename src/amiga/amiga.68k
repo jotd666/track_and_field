@@ -1186,7 +1186,7 @@ update_bobs_and_hw_sprites:
 
 
     lea _custom,A5
-*	lea		sprite_groups(pc),a2
+	lea		sprite_groups(pc),a2
 	GET_MEMORY_START_AND_DP
 	lea		(0x183E,a6),a0		| sprite start
 	lea		bob_table,a4
@@ -1260,6 +1260,12 @@ update_one_bob:
 	tst.b	d0
 	jeq	2f
 0:
+	* get code immediately. A lot of sprites won't be displayed
+	* as they are grouped with others
+	moveq	#0,d3
+	move.b	(TARGET_SPRITE_CODE,a0),d3
+	tst.b	(a2,d3.w)
+	jne		2f		| marked as "grouped with another one"
 
 	.ifne	SPRITE_Y_CORRECTION
 	add.w	#SPRITE_Y_CORRECTION,d1
@@ -1272,13 +1278,11 @@ update_one_bob:
 	add.w	#241,d1
 	jmi		2f		| negative after correction => skip
 	moveq	#0,d2
-	moveq	#0,d3
 	move.b	(TARGET_SPRITE_ATTR,a0),d2
-	move.b	(TARGET_SPRITE_CODE,a0),d3
 	and.b	#0xF,d2		| CLUT
 
 
-	* here D3 is code (with bank) and D2 is clut
+	* here D3 is code and D2 is clut
 	* log the usage
 	
 	.ifne	OPT_ENABLE_LOGGING
@@ -1326,12 +1330,15 @@ update_one_bob:
 	move.b	(TARGET_SPRITE_ATTR,a0),d3
 	move.l	a0,-(a7)
 	move.l	d4,a0
-	* flip bits are exactly like Pooyan/Gyruss
+	* flip bits are exactly like Pooyan/Gyruss except that
+	* the screen is rotated
     * flip_x = ~D3 & 0x40
     * flip_y =  D3 & 0x80
 	btst	#7,d3
 	jeq		101f
-	* mirror
+	move.b	#1,0x101
+	* mirror (most sprites don't have that, it will just display
+	* the next frame if not generated, which can be off-putting!
 	add.w	#((NB_BOB_PLANES+1)*4+8),a0
 101:
 	move.w	(a0)+,d4		| height
@@ -1339,10 +1346,10 @@ update_one_bob:
 	move.w	(a0)+,d2		| Y-offset
 	btst	#6,d3
 	jne		101f
-	* flipped: offset is different: it's 8 or 16-height-offset
+	* flipped: correct Y start
 	neg.w	d2
 	sub.w	d4,d2
-	add.w	#SPRITE_HEIGHT,d2		| tile height is 16 pixels
+	add.w	#SPRITE_HEIGHT,d2
 101:
 	add.w	d2,d1
 
@@ -1357,8 +1364,8 @@ update_one_bob:
 	move.l	d2,a3
 	moveq	#0,d2	| no y-clip
 	* note down that this bob will have to be erased
-	btst	#6,d3
-	jne		101f
+	btst	#7,d3
+	jeq		101f
 	* flip
 	neg.w	d4
 101:
@@ -1407,8 +1414,8 @@ update_one_bob:
 	.endif
 	jra		2b
 
-*sprite_groups:
-*	.include	"sprite_groups.68k"
+sprite_groups:
+	.include	"sprite_groups.68k"
 	
 	.ifdef	HW_SPRITES
 update_one_hw_sprite:
@@ -2685,8 +2692,6 @@ osd_read_inputs_1:
 	beq.b	0f
 	bclr	#BIT_START_3P,d0
 0:	
-
-
 	tst.b	(0x4F,a0)		| "<-" key
 	beq.b	0f
 	bclr	#BIT_LEFT_1P,d0
@@ -2697,6 +2702,7 @@ osd_read_inputs_1:
 0:
 	tst.b	(0x63,a0)		| "ctrl" key
 	beq.b	0f
+	move.b	#0,0x100
 	bclr	#BIT_FIRE_1P,d0
 0:
 
@@ -2705,8 +2711,8 @@ osd_read_inputs_1:
 	move.l	_joypad_1_state(pc),d1
 	jbsr	read_player_joypad_1P
 	
-	move.l	_joypad_2_state(pc),d1
-	jbsr	read_player_joypad_2P
+	*move.l	_joypad_2_state(pc),d1
+	*jbsr	read_player_joypad_2P
 
 
 	movem.l	(a7)+,a0/d1

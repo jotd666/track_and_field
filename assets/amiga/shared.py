@@ -57,6 +57,13 @@ def get_sprite_names():
     rval |= {k:"hammer" for k in sr2(0x34,0x3E)}
     return rval
 
+def get_mirror_sprites():
+    """ return the index of the sprites that need mirroring
+as opposed to Gyruss, most of the sprites don't
+
+"""
+    return {}
+
 alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))
 
 if __name__ == "__main__":

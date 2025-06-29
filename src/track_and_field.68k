@@ -3648,8 +3648,11 @@ l_726f:
 	tst.b	(a0)                             	| [...]
 	jeq	l_7289                             	| [$727b: beq    $7289]
 l_727d:
+	tst.b	infinite_lives_flag
+	jne	0f
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$727d: inc    high_jump_fault_9f]
 	addq.b	#1,(a0)                         	| [...]
+0:
 	GET_DP_ADDRESS	current_level_84        	| [$727f: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
 	tst.b	d0                               	| [$7281: cmpa   #$00]
@@ -3782,6 +3785,8 @@ l_72fb:
 	GET_DP_ADDRESS	0xcd                    	| [$7311: lda    $cd]
 	move.b	(a0),d0                         	| [...]
 	jne	l_732b                             	| [$7313: bne    $732b]
+	tst.b	infinite_lives_flag
+	jne	l_732b
 	GET_DP_ADDRESS	p1_attempts_left_81     	| [$7315: dec    p1_attempts_left_81]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_732b                             	| [$7317: bne    $732b]

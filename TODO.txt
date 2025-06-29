@@ -1,9 +1,9 @@
+- sometimes fire to enter the name doesn't work: joypad/mouse read issue
 - hammer: hammer sprite direction sometimes wrong (when launching): sprite symmetry flags
+  handle sprite groups / flipping / X shift
 - javelin displays strangely/seems shifted/ground when landing: when reaching max height
-  it seems to shift to the bottom by a few pixels (possible transcode issue again...)
+  => because Y flip doesn't work well
 - cycle exact: sprites blinking despite double buffering
-=> publish video
-
 
 - https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
   centuri game is too hard
@@ -11,7 +11,6 @@
 - propagate all player used frames for CLUTS 0,1,2,3
 - try to get the spider/bird in javelin: ok works but flashes
 - rip sounds
-- rip tunes
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - is game playing: not working (should be able to insert coin in the push start screen)
@@ -22,5 +21,4 @@
 
 optims:
 - scroll optim: only change copperlist if previous value is different
-- group sprites horizontally
 - optimize code manually in the end
