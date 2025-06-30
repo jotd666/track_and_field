@@ -28,7 +28,7 @@ _expmem
     IFD CHIP_ONLY
     dc.l    $0
     ELSE
-	dc.l	EXPMEM					; ws_expmem
+	dc.l	EXPMEM+$60000					; ws_expmem
     ENDC
 	dc.w	_name-_base				; ws_name
 	dc.w	_copy-_base				; ws_copy
@@ -39,18 +39,16 @@ _expmem
     dc.w    _config-_base
 ;---
 _config
-	dc.b	"C1:X:invincible:0;"
+;	dc.b	"C1:X:invincible:0;"
 	dc.b	"C1:X:infinite lives:1;"
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:25 Hz update:0;"
-	dc.b	"C2:X:no starfield:1;"
 	IFD		CHIP_ONLY
 	dc.b	"C2:X:break at startup:31;"
 	ENDC
 	dc.b	"C3:L:start level:100m dash,long jump,javelin throw,"
 	dc.b	"110m hurdles,hammer throw,high jump"
-	dc.b	";C4:L:start lives:3,4,5;"
-	dc.b	"C5:L:difficulty level:1 (easiest),2,3,4,5 (average),6,7,8 (hardest);"
+;	dc.b	"C5:L:difficulty level:1 (easiest),2,3,4,5 (average),6,7,8 (hardest);"
 	dc.b	0
 
 	IFD BARFLY

@@ -56,10 +56,11 @@ ROM_START = 0x6000
 	.ifdef	RELEASE
 OPT_ENABLE_PROFILING = 0         | DO NOT CHANGE THIS
 OPT_ENABLE_LOGGING = 0           | DO NOT CHANGE THIS
-
+OPT_VERY_EASY = 0
 	.else
 OPT_ENABLE_LOGGING = 1
 OPT_ENABLE_PROFILING = 0
+OPT_VERY_EASY = 1
 * set to higher values than 1 to speed game up
 
 
@@ -67,9 +68,8 @@ OPT_ENABLE_PROFILING = 0
 
 * to save bandwidth, do not clear cookie cut blit
 * if no bitplane data: there will be some color artefacts
-* but not noticeable unless 2 very different not very small
-* ships cross each other paths, which doesn't happen very often
-OPT_IGNORE_ZERO_BITPLANE = 1
+* but not noticeable unless 2 sprites cross each other paths
+OPT_IGNORE_ZERO_BITPLANE = 0
 
 	
 OPT_ENABLE_DOUBLE_BUFFERING = 1
@@ -792,6 +792,8 @@ demo_game:
 	move.b	d0,(a0)+
 	jra	0b
 0:	
+	.ifne	OPT_VERY_EASY
+	
 	* patch record times to be very easy
 	move.l	a6,a0
 	lea		easy_values(pc),a1
@@ -801,6 +803,14 @@ demo_game:
 	move.w	(a1)+,(a0)+
 	dbf	d0,0b
 	
+	move.l	a6,a0
+	add.l	#high_jump_attempted_heights_edea,a0
+	lea		easy_high_jump_values(pc),a1
+	move.w	#3,d0
+0:
+	move.l	(a1)+,(a0)+
+	dbf	d0,0b
+	.endif
 
 	
 	GET_MEMORY_START_AND_DP
@@ -813,8 +823,12 @@ easy_values:
 	.word	0x0500	| javelin
 	.word	0x2000	| hurdles
 	.word	0x5000	| hammer
-	.word	0x0200	| long jump
+	.word	0x0180	| long jump
 	
+easy_high_jump_values:
+* originally: 00 02 01 05 00 02 02 05 00 02 03 00 00 02 03 05   ................
+	.long	0x0010800,0x00010905,0x00020000,0x00020005
+
 jotd_message:	
 	.asciz	"AMIGA@PORT@BY@JOTD@"
 	.align  2
@@ -1284,8 +1298,6 @@ update_one_bob:
 	* as they are grouped with others
 	moveq	#0,d3
 	move.b	(TARGET_SPRITE_CODE,a0),d3
-	tst.b	(a2,d3.w)
-	jne		2f		| marked as "grouped with another one"
 
 	.ifne	SPRITE_Y_CORRECTION
 	add.w	#SPRITE_Y_CORRECTION,d1
@@ -1301,10 +1313,25 @@ update_one_bob:
 	move.b	(TARGET_SPRITE_ATTR,a0),d2
 	and.b	#0xF,d2		| CLUT
 
+	* check if it is a grouped sprite in the table with 0x100 pre-computed entries
+	tst.b	(a2,d3.w)
+	jeq		10f
+	jpl		50f
+	* right part: display only if mirrored
+	btst	#6,(TARGET_SPRITE_ATTR,a0)
+	jne		2f			| not mirrored
+	* mirrored, right part: display but correct X and code
+	subq.w	#1,d3
+	*sub.w	#0x10,d0	| correct display
+	jra		100f
+50:
+	btst	#6,(TARGET_SPRITE_ATTR,a0)
+	jeq		2f			| mirrored: don't display
 
+100:
+10:
 	* here D3 is code and D2 is clut
 	* log the usage
-	
 	.ifne	OPT_ENABLE_LOGGING
 	movem.l	a2/d2-d3,-(a7)
 	lea		sprite_log_table,a2
@@ -1315,24 +1342,7 @@ update_one_bob:
 	movem.l	(a7)+,a2/d2-d3
 	.endif
 
-	move.w	#SPRITE_HEIGHT,d6
-*	* check if it is a grouped sprite in the table with 0x100 pre-computed entries
-*	tst.b	(a2,d3.w)
-*	jeq		10f
-*	* grouped 32x16 sprite. They usually follow each other
-*	btst	#6,(TARGET_SPRITE_ATTR,a0)
-*	jne		100f
-*	* flipped: only display 0x1xx sprite
-*	sub.w	#0x100,d3
-*	jcs		2f
-*	jra		101f
-*100:
-*	* not flipped: only display 0x0xx sprite
-*	cmp.w	#0x100,d3
-*	jcc		2f	
-*101:
-*	* end grouped 16x16 sprite
-*10:
+
 
 	add.w	d3,d3
 	add.w	d3,d3
@@ -2802,6 +2812,15 @@ osd_read_dsw_3:
 	
 
 
+clear_all_faults:
+	move.l	a4,-(a7)
+	move.l	m6809_direct_page_pointer,a4
+	clr.b	(high_jump_fault_9f,a4)
+	clr.b	(jump_foul_c9,a4)
+	move.b	#5,(chrono_second_7f,a4)		| race: 5 seconds
+	move.l 	(a7)+,a4
+	rts
+
 	
 
 level2_interrupt:
@@ -2838,7 +2857,7 @@ handle_keyboard:
 	cmp.b	#0x50,d0	| F1 key: only 1 wolf
 	bne.b	0f
 	move.w	#0x0FF,_custom+color
-	*st.b 	level_skip_flag
+	jbsr	clear_all_faults
 	st.b	cheat_used
 	
 0:

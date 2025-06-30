@@ -115,14 +115,16 @@ chrono_second_7f = 0x7f
 p1_attempts_left_81 = 0x81
 p2_attempts_left_a1 = 0xA1
 p3_attempts_left_c1 = 0xC1
-p4_attempts_left_e1 = 0xE1
+p4_attempts_left_e1 = max_accepted_faults_e1
 current_level_84 = 0x84
 high_jump_fault_9f = 0x9F
 jump_foul_c9 = 0xc9
 player_is_qualified_cd = 0xcd
 angle_d8 = 0xd8
 false_start_d9 = 0xd9
+max_accepted_faults_e1 = 0xe1
 display_chrono_ea = 0xea
+current_level_backup_f5 = 0xf5
 
 * memory offsets
 watchdog_1000 = 0x1000
@@ -141,6 +143,9 @@ dsw1_1283 = 0x1283
 sprite_ram_1800 = 0x1800
 scroll_registers_1840 = 0x1840
 copy_of_inputs_2830 = 0x2830
+current_attempted_height_metre_286a = 0x286a
+current_attempt_height_286b = 0x286b
+current_attempted_height_centimetres_286c = 0x286c
 failed_rom_check_2a8e = 0x2a8e
 scroll_offsets_2af0 = 0x2af0
 event_buffer_2900 = 0x2900
@@ -154,6 +159,7 @@ qualifying_value_2866 = 0x2866
 chrono_hundredth_second_287e = 0x287e
 
 qualifying_values_aaf3 = 0xaaf3
+high_jump_attempted_heights_edea = 0xedea
 
 * the [xxx] tags are there to help the specific game post-processing to automatically
 * change or remove the code. For instance [rom_check_code] lines can be removed without
@@ -2057,7 +2063,7 @@ l_695f:
 	GET_DP_ADDRESS	0x22                    	| [$6966: lda    $22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_696c                             	| [$6968: bne    $696c]
-	GET_DP_ADDRESS	0xe1                    	| [$696a: clr    $e1]
+	GET_DP_ADDRESS	max_accepted_faults_e1  	| [$696a: clr    max_accepted_faults_e1]
 	clr.b	(a0)                         	| [...]
 l_696c:
 	moveq	#0,d0                            	| [$696c: clra]
@@ -2973,7 +2979,7 @@ l_6e6c:
 	lea	table_a8c4,a3                  	| [$6e6f: ldy    #table_a8c4]
 	JMP_A_INDEXED	A3                   	| [$6e73: jmp    [a,y]] [jump_table]
 
-l_6e75:
+player_turn_ends_6e75:
 	jbsr	l_8e5f                            	| [$6e75: jsr    $8e5f]
 	GET_DP_ADDRESS	0x22                    	| [$6e78: lda    $22]
 	move.b	(a0),d0                         	| [...]
@@ -3732,10 +3738,11 @@ l_728c:
 	addq.b	#1,(a0)                         	| [...]
 	rts                                    	| [$728e: rts]
 
+* high jump over
 l_728f:
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$728f: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	0xe1                    	| [$7291: cmpa   $e1]
+	GET_DP_ADDRESS	max_accepted_faults_e1  	| [$7291: cmpa   max_accepted_faults_e1]
 	cmp.b	(a0),d0                          	| [...]
 	jne	l_72bc                             	| [$7293: bne    $72bc]
 	GET_DP_ADDRESS	0x22                    	| [$7295: tst    $22]
@@ -3758,6 +3765,7 @@ l_72a2:
 	jeq	l_72b3                             	| [$72a6: beq    $72b3]
 	cmp.b	#0x03,d0                         	| [$72a8: cmpa   #$03]
 	jeq	l_72b3                             	| [$72aa: beq    $72b3]
+* end of level
 	GET_DP_ADDRESS	boot_state_03           	| [$72ac: inc    boot_state_03]
 	addq.b	#1,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x06                    	| [$72ae: clr    $06]
@@ -3796,7 +3804,7 @@ l_72c0:
 	jeq	l_72da                             	| [$72d1: beq    $72da]
 	GET_REG_ADDRESS	0x1f,d2                	| [$72d3: lda    $1f,x]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	0xe1                    	| [$72d6: cmpa   $e1]
+	GET_DP_ADDRESS	max_accepted_faults_e1  	| [$72d6: cmpa   max_accepted_faults_e1]
 	cmp.b	(a0),d0                          	| [...]
 	jcs	l_72e2                             	| [$72d8: bcs    $72e2]
 l_72da:
@@ -3959,7 +3967,7 @@ l_738f:
 	jeq	l_73ab                             	| [$73a0: beq    $73ab]
 	GET_REG_ADDRESS	0x1f,d2                	| [$73a2: lda    $1f,x]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	0xe1                    	| [$73a5: cmpa   $e1]
+	GET_DP_ADDRESS	max_accepted_faults_e1  	| [$73a5: cmpa   max_accepted_faults_e1]
 	cmp.b	(a0),d0                          	| [...]
 	jcs	l_72e2                             	| [$73a7: lbcs   $72e2]
 l_73ab:
@@ -7634,7 +7642,7 @@ l_86a1:
 	jmp	l_61ee                             	| [$86bd: jmp    $61ee]
 l_86c0:
 	jbsr	l_86f7                            	| [$86c0: jsr    $86f7]
-	move.w	#0x286a,d4                      	| [$86c3: ldu    #$286a]
+	move.w	#current_attempted_height_metre_286a,d4	| [$86c3: ldu    #current_attempted_height_metre_286a]
 	GET_REG_ADDRESS	0,d4                   	| [$86c6: lda    ,u]
 	move.b	(a0),d0                         	| [...]
                                          | [$86c8: lsra]
@@ -8271,7 +8279,7 @@ l_89a5:
 	GET_DP_ADDRESS	0x97                    	| [$89ab: lda    $97]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_89e6                             	| [$89ad: beq    $89e6]
-	move.w	#0x286a,d3                      	| [$89af: ldy    #$286a]
+	move.w	#current_attempted_height_metre_286a,d3	| [$89af: ldy    #current_attempted_height_metre_286a]
 l_89b3:
 	GET_REG_ADDRESS	0x2,d4                 	| [$89b3: lda    $2,u]
 	move.b	(a0),d0                         	| [...]
@@ -8883,7 +8891,7 @@ l_8c52:
 	jne	l_8c52                             	| [$8c57: bne    $8c52]
 	GET_DP_ADDRESS	current_level_84        	| [$8c59: lda    current_level_84]
 	move.b	(a0),d0                         	| [...]
-	GET_DP_ADDRESS	0xf5                    	| [$8c5b: sta    $f5]
+	GET_DP_ADDRESS	current_level_backup_f5 	| [$8c5b: sta    current_level_backup_f5]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0xff,d0                        	| [$8c5d: lda    #$ff]
 	GET_DP_ADDRESS	current_level_84        	| [$8c5f: sta    current_level_84]
@@ -8977,7 +8985,7 @@ l_8cbb:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8c84                             	| [$8ccc: bne    $8c84]
 l_8cce:
-	GET_DP_ADDRESS	0xf5                    	| [$8cce: lda    $f5]
+	GET_DP_ADDRESS	current_level_backup_f5 	| [$8cce: lda    current_level_backup_f5]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	current_level_84        	| [$8cd0: sta    current_level_84]
 	move.b	d0,(a0)                         	| [...]
@@ -13682,7 +13690,7 @@ table_a887:
 	.long	l_6924                           	|  $a887
 	.long	l_6a70                           	|  $a889
 	.long	l_6e4f                           	|  $a88b
-	.long	l_6e75                           	|  $a88d
+	.long	player_turn_ends_6e75            	|  $a88d
 	.long	l_7225                           	|  $a88f
 	.long	l_72eb                           	|  $a891
 table_a893:
@@ -13723,7 +13731,7 @@ table_a8da:
 	.long	l_72f3                           	|  $a8da
 	.long	l_7467                           	|  $a8dc
 	.long	l_d59d                           	|  $a8de
-	.long	l_f435                           	|  $a8e0
+	.long	display_champion_message_f435    	|  $a8e0
 	.long	l_7550                           	|  $a8e2
 	.long	l_757d                           	|  $a8e4
 	.long	l_dadf                           	|  $a8e6
@@ -13753,7 +13761,7 @@ table_a90c:
 	.long	l_6924                           	|  $a90c
 	.long	l_6a70                           	|  $a90e
 	.long	l_6e4f                           	|  $a910
-	.long	l_6e75                           	|  $a912
+	.long	player_turn_ends_6e75            	|  $a912
 	.long	l_7225                           	|  $a914
 table_a916:
 	.long	l_76c6                           	|  $a916
@@ -15865,6 +15873,7 @@ l_d56b:
 	movem.l	(sp)+,d2/d3/d4                 	| [$d573: puls   x,y,u]
 	move.b	#0x03,d0                        	| [$d575: lda    #$03]
 	jmp	queue_event_84f5                   	| [$d577: jmp    queue_event_84f5]
+
 l_d57a:
 	move.w	#0x2a80,d2                      	| [$d57a: ldx    #$2a80]
 	GET_DP_ADDRESS	0xdf                    	| [$d57d: lda    $df]
@@ -16163,7 +16172,7 @@ l_d719:
 	jbsr	l_da6a                            	| [$d71f: jsr    $da6a]
 	move.w	#0x3988,d4                      	| [$d722: ldu    #$3988]
 	move.b	#0x04,d1                        	| [$d725: ldb    #$04]
-	jbsr	l_da77                            	| [$d727: jsr    $da77]
+	jbsr	copy_4b_chars_da77                	| [$d727: jsr    copy_4b_chars_da77]
 	move.w	#0x3998,d4                      	| [$d72a: ldu    #$3998]
 	move.b	#0x02,d1                        	| [$d72d: ldb    #$02]
 	jbsr	l_da8b                            	| [$d72f: jsr    $da8b]
@@ -16711,7 +16720,7 @@ l_d9d3:
 	jbsr	l_da6a                            	| [$d9db: jsr    $da6a]
 	move.w	#0x3b82,d4                      	| [$d9de: ldu    #$3b82]
 	move.b	#0x07,d1                        	| [$d9e1: ldb    #$07]
-	jbsr	l_da77                            	| [$d9e3: jsr    $da77]
+	jbsr	copy_4b_chars_da77                	| [$d9e3: jsr    copy_4b_chars_da77]
 	move.w	#0x3bdd,d4                      	| [$d9e6: ldu    #$3bdd]
 	move.b	#0x03,d1                        	| [$d9e9: ldb    #$03]
 	jbsr	l_da8b                            	| [$d9eb: jsr    $da8b]
@@ -16792,7 +16801,7 @@ l_da6a:
 	add.w	d6,d3                            	| [$da74: leay   a,y]
 	rts                                    	| [$da76: rts]
 
-l_da77:
+copy_4b_chars_da77:
 	GET_REG_ADDRESS	0,d3                   	| [$da77: lda    ,y]
 	move.b	(a0),d0                         	| [...]
 	GET_REG_UNCHECKED_ADDRESS	0,d4                   	| [$da79: sta    ,u+] [video_address]
@@ -16818,7 +16827,7 @@ l_da77:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d1                           	| [$da87: decb]
-	jne	l_da77                             	| [$da88: bne    $da77]
+	jne	copy_4b_chars_da77                 	| [$da88: bne    copy_4b_chars_da77]
 	rts                                    	| [$da8a: rts]
 
 l_da8b:
@@ -17050,7 +17059,7 @@ l_dba6:
 	jbsr	l_da6a                            	| [$dbac: jsr    $da6a]
 	move.w	#0x3988,d4                      	| [$dbaf: ldu    #$3988]
 	move.b	#0x04,d1                        	| [$dbb2: ldb    #$04]
-	jbsr	l_da77                            	| [$dbb4: jsr    $da77]
+	jbsr	copy_4b_chars_da77                	| [$dbb4: jsr    copy_4b_chars_da77]
 	move.w	#0x3998,d4                      	| [$dbb7: ldu    #$3998]
 	move.b	#0x02,d1                        	| [$dbba: ldb    #$02]
 	jbsr	l_da8b                            	| [$dbbc: jsr    $da8b]
@@ -17533,7 +17542,7 @@ l_e098:
 	jcc	l_e0ae                             	| [$e09d: bcc    $e0ae]
                                          | [$e09f: asla]
 	asl.b	#2,d0                            	| [$e0a0: asla]
-	move.w	#0xedea,d3                      	| [$e0a1: ldy    #$edea]
+	move.w	#high_jump_attempted_heights_edea,d3	| [$e0a1: ldy    #high_jump_attempted_heights_edea]
 	moveq	#0,d6                            	| [...]
 	move.b	d0,d6                           	| [...] as byte
 	DO_EXTB	d6                             	| [...] with sign extension
@@ -17544,9 +17553,10 @@ l_e098:
 	DO_EXTB	d6                             	| [...] with sign extension
 	add.w	d6,d4                            	| [$e0aa: leau   a,u]
 	jra	l_e0ea                             	| [$e0ac: bra    $e0ea]
+
 l_e0ae:
 	move.b	#0x0c,d0                        	| [$e0ae: lda    #$0c]
-	move.w	#0xedea,d3                      	| [$e0b0: ldy    #$edea]
+	move.w	#high_jump_attempted_heights_edea,d3	| [$e0b0: ldy    #high_jump_attempted_heights_edea]
 	moveq	#0,d6                            	| [...]
 	move.b	d0,d6                           	| [...] as byte
 	DO_EXTB	d6                             	| [...] with sign extension
@@ -17554,11 +17564,11 @@ l_e0ae:
 	GET_REG_ADDRESS	0,d3                   	| [$e0b6: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$e0b6: ldd    ,y++]
-	GET_ADDRESS	0x286a                     	| [$e0b8: std    $286a]
+	GET_ADDRESS	current_attempted_height_metre_286a	| [$e0b8: std    current_attempted_height_metre_286a]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0,d3                   	| [$e0bb: ldd    ,y]
 	LOAD_D                                 	| [$e0bb: ldd    ,y]
-	GET_ADDRESS	0x286c                     	| [$e0bd: std    $286c]
+	GET_ADDRESS	current_attempted_height_centimetres_286c	| [$e0bd: std    current_attempted_height_centimetres_286c]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	move.b	#0x00,d0                        	| [$e0c0: ldd    #$0006]
 	move.w	#0x0006,d1                      	| [$e0c0: ldd    #$0006]
@@ -17590,6 +17600,7 @@ l_e0e6:
 	GET_REG_ADDRESS	0,d3                   	| [$e0e6: sta    ,y]
 	move.b	d0,(a0)                         	| [...]
 	jra	l_e100                             	| [$e0e8: bra    $e100]
+
 l_e0ea:
 	move.w	#0x28f0,d2                      	| [$e0ea: ldx    #$28f0]
 	GET_REG_ADDRESS	0,d4                   	| [$e0ed: ldd    ,u++]
@@ -17602,7 +17613,7 @@ l_e0ea:
 	LOAD_D                                 	| [$e0f1: ldd    ,u]
 	GET_REG_ADDRESS	0,d2                   	| [$e0f3: std    ,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	move.w	#0x286a,d2                      	| [$e0f5: ldx    #$286a]
+	move.w	#current_attempted_height_metre_286a,d2	| [$e0f5: ldx    #current_attempted_height_metre_286a]
 	GET_REG_ADDRESS	0,d3                   	| [$e0f8: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$e0f8: ldd    ,y++]
@@ -17652,7 +17663,7 @@ l_e128:
 	VIDEO_BYTE_DIRTY | [...]
 	cmp.w	#0x32db,d2                       	| [$e130: cmpx   #$32db]
 	jne	l_e120                             	| [$e133: bne    $e120]
-	move.w	#0x286a,d2                      	| [$e135: ldx    #$286a]
+	move.w	#current_attempted_height_metre_286a,d2	| [$e135: ldx    #current_attempted_height_metre_286a]
 	jbsr	l_6f55                            	| [$e138: jsr    $6f55]
 	move.b	#0xff,d0                        	| [$e13b: lda    #$ff]
 	jbsr	l_850e                            	| [$e13d: jsr    $850e]
@@ -17675,7 +17686,7 @@ l_e151:
 	GET_ADDRESS	0x2848                     	| [$e151: stb    $2848]
 	move.b	d1,(a0)                         	| [...]
 	move.w	#0x3298,d2                      	| [$e154: ldx    #$3298]
-	move.w	#0x286a,d3                      	| [$e157: ldy    #$286a]
+	move.w	#current_attempted_height_metre_286a,d3	| [$e157: ldy    #current_attempted_height_metre_286a]
 	GET_REG_ADDRESS	0,d3                   	| [$e15b: ldd    ,y++]
 	addq.w	#2,d3                           	| [...]
 	LOAD_D                                 	| [$e15b: ldd    ,y++]
@@ -17835,7 +17846,7 @@ l_e1dc:
 l_e1f9:
 	GET_ADDRESS	0x2ad7                     	| [$e1f9: clr    $2ad7]
 	clr.b	(a0)                         	| [...]
-	GET_ADDRESS	0x286c                     	| [$e1fc: lda    $286c]
+	GET_ADDRESS	current_attempted_height_centimetres_286c	| [$e1fc: lda    current_attempted_height_centimetres_286c]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x0a,d1                        	| [$e1ff: ldb    #$0a]
 	jbsr	multiply_ab                       	| [$e201: mul]
@@ -17843,7 +17854,7 @@ l_e1f9:
 	add.b	(a0),d1                          	| [...]
 	GET_ADDRESS	0x2849                     	| [$e205: stb    $2849]
 	move.b	d1,(a0)                         	| [...]
-	GET_ADDRESS	0x286b                     	| [$e208: lda    $286b]
+	GET_ADDRESS	current_attempt_height_286b	| [$e208: lda    current_attempt_height_286b]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x64,d1                        	| [$e20b: ldb    #$64]
 	jbsr	multiply_ab                       	| [$e20d: mul]
@@ -18021,7 +18032,7 @@ l_e2fc:
 	move.b	#0x0c,d1                        	| [$e30b: ldb    #$0c]
 	jbsr	multiply_ab                       	| [$e30d: mul]
 	add.w	d1,d2                            	| [$e30e: leax   d,x]
-	move.w	#0x286a,d3                      	| [$e310: ldy    #$286a]
+	move.w	#current_attempted_height_metre_286a,d3	| [$e310: ldy    #current_attempted_height_metre_286a]
 	GET_DP_ADDRESS	high_jump_fault_9f      	| [$e314: lda    high_jump_fault_9f]
 	move.b	(a0),d0                         	| [...]
                                          | [$e316: asla]
@@ -18044,7 +18055,7 @@ l_e2fc:
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$e324: cmpa   #$02]
 	jne	l_e3a2                             	| [$e326: lbne   $e3a2]
-	move.w	#0xedea,d3                      	| [$e32a: ldy    #$edea]
+	move.w	#high_jump_attempted_heights_edea,d3	| [$e32a: ldy    #high_jump_attempted_heights_edea]
 	move.w	#0x2968,d2                      	| [$e32e: ldx    #$2968]
 	GET_DP_ADDRESS	0xdf                    	| [$e331: lda    $df]
 	move.b	(a0),d0                         	| [...]
@@ -20915,7 +20926,7 @@ l_f42c:
 	clr.b	(a0)                         	| [...]
 	rts                                    	| [$f434: rts]
 
-l_f435:
+display_champion_message_f435:
 	GET_DP_ADDRESS	0x82                    	| [$f435: lda    $82]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$f437: inca]
@@ -21016,26 +21027,32 @@ l_f4b5:
 	addq.w	#2,d2                           	| [...]
 	MOVE_W_TO_REG	a0,d4                         	| [...]
 	sub.w	#0x3030,d4                       	| [$f4ba: leau   -$3030,u]
-	GET_REG_ADDRESS	0x40,d3                	| [$f4be: stu    $40,y]
+	GET_REG_UNCHECKED_ADDRESS	0x40,d3                	| [$f4be: stu    $40,y] [video_address_word]
 	MOVE_W_FROM_REG	d4,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x0080,d3              	| [$f4c1: std    $0080,y]
+	GET_REG_UNCHECKED_ADDRESS	0x0080,d3              	| [$f4c1: std    $0080,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0,d3                   	| [$f4c5: std    ,y++]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$f4c5: std    ,y++] [video_address_word]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	move.b	#0x01,d0                        	| [$f4c7: ldd    #$0101]
 	move.w	#0x0101,d1                      	| [$f4c7: ldd    #$0101]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x07fe,d3              	| [$f4ca: std    $07fe,y]
+	GET_REG_UNCHECKED_ADDRESS	0x07fe,d3              	| [$f4ca: std    $07fe,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x083e,d3              	| [$f4ce: std    $083e,y]
+	GET_REG_UNCHECKED_ADDRESS	0x083e,d3              	| [$f4ce: std    $083e,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x087e,d3              	| [$f4d2: std    $087e,y]
+	GET_REG_UNCHECKED_ADDRESS	0x087e,d3              	| [$f4d2: std    $087e,y] [video_address_word]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	VIDEO_WORD_DIRTY | [...]
 	GET_DP_ADDRESS	nb_objects_48           	| [$f4d6: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f4b5                             	| [$f4d8: bne    $f4b5]
@@ -21064,11 +21081,13 @@ l_f4f1:
 	move.b	#0x10,d0                        	| [$f4f7: ldd    #$1000]
 	move.w	#0x1000,d1                      	| [$f4f7: ldd    #$1000]
 l_f4fa:
-	GET_REG_ADDRESS	0x0800,d3              	| [$f4fa: stb    $0800,y]
+	GET_REG_UNCHECKED_ADDRESS	0x0800,d3              	| [$f4fa: stb    $0800,y] [video_address]
 	move.b	d1,(a0)                         	| [...]
-	GET_REG_ADDRESS	0,d3                   	| [$f4fe: sta    ,y+]
+	VIDEO_BYTE_DIRTY | [...]
+	GET_REG_UNCHECKED_ADDRESS	0,d3                   	| [$f4fe: sta    ,y+] [video_address]
 	addq.w	#1,d3                           	| [...]
 	move.b	d0,(a0)                         	| [...]
+	VIDEO_BYTE_DIRTY | [...]
 	GET_DP_ADDRESS	0x49                    	| [$f500: dec    $49]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f4f1                             	| [$f502: bne    $f4f1]
@@ -21456,7 +21475,7 @@ l_f6d1:
 	jbsr	l_da6a                            	| [$f6d7: jsr    $da6a]
 	move.w	#0x390b,d4                      	| [$f6da: ldu    #$390b]
 	move.b	#0x03,d1                        	| [$f6dd: ldb    #$03]
-	jbsr	l_da77                            	| [$f6df: jsr    $da77]
+	jbsr	copy_4b_chars_da77                	| [$f6df: jsr    copy_4b_chars_da77]
 	move.w	#0x3997,d4                      	| [$f6e2: ldu    #$3997]
 	move.b	#0x03,d1                        	| [$f6e5: ldb    #$03]
 	jbsr	l_daab                            	| [$f6e7: jsr    $daab]

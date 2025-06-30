@@ -352,7 +352,8 @@ with open(os.path.join(src_dir,"palette.68k"),"w") as f:
 
 gs_array = [0]*0x100
 for i in group_sprite_pairs:
-    gs_array[i+1] = 1
+    gs_array[i] = 1
+    gs_array[i+1] = 0xFF
 with open(os.path.join(src_dir,"sprite_groups.68k"),"w") as f:
     f.write("* 1: do not display unless mirrored\n")
     bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True)

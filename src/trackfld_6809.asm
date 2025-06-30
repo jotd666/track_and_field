@@ -109,14 +109,16 @@ chrono_second_7f = $7f
 p1_attempts_left_81 = $81
 p2_attempts_left_a1 = $A1
 p3_attempts_left_c1 = $C1
-p4_attempts_left_e1 = $E1
+p4_attempts_left_e1 = max_accepted_faults_e1
 current_level_84 = $84
 high_jump_fault_9f = $9F
 jump_foul_c9 = $c9
 player_is_qualified_cd = $cd
 angle_d8 = $d8
 false_start_d9 = $d9
+max_accepted_faults_e1 = $e1
 display_chrono_ea = $ea
+current_level_backup_f5 = $f5
 
 * memory offsets
 watchdog_1000 = $1000
@@ -136,6 +138,7 @@ sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
 copy_of_inputs_2830 = $2830
 current_attempted_height_metre_286a = $286a
+current_attempt_height_286b = $286b
 current_attempted_height_centimetres_286c = $286c
 failed_rom_check_2a8e = $2a8e
 scroll_offsets_2af0 = $2af0
@@ -1339,7 +1342,7 @@ setup_players_screen_6936:
 6963: BD 88 25       JSR    $8825
 6966: 96 22          LDA    $22
 6968: 26 02          BNE    $696C
-696A: 0F E1          CLR    $E1
+696A: 0F E1          CLR    max_accepted_faults_e1
 696C: 4F             CLRA
 696D: 5F             CLRB
 696E: 8E 2B 60       LDX    #$2B60
@@ -1909,6 +1912,7 @@ init_game_playfield_6a85:
 6E6F: 10 8E A8 C4    LDY    #table_a8c4
 6E73: 6E B6          JMP    [A,Y]	; [jump_table]
 
+player_turn_ends_6e75:
 6E75: BD 8E 5F       JSR    $8E5F
 6E78: 96 22          LDA    $22
 6E7A: 26 03          BNE    $6E7F
@@ -2391,8 +2395,9 @@ init_game_playfield_6a85:
 728C: 0C 06          INC    $06
 728E: 39             RTS
 
+; high jump over
 728F: 96 9F          LDA    high_jump_fault_9f
-7291: 91 E1          CMPA   $E1
+7291: 91 E1          CMPA   max_accepted_faults_e1
 7293: 26 27          BNE    $72BC
 7295: 0D 22          TST    $22
 7297: 26 09          BNE    $72A2
@@ -2407,6 +2412,7 @@ init_game_playfield_6a85:
 72A6: 27 0B          BEQ    $72B3
 72A8: 81 03          CMPA   #$03
 72AA: 27 07          BEQ    $72B3
+; end of level
 72AC: 0C 03          INC    boot_state_03
 72AE: 0F 06          CLR    $06
 72B0: 0F 09          CLR    $09
@@ -2431,7 +2437,7 @@ init_game_playfield_6a85:
 72CF: A6 84          LDA    ,X
 72D1: 27 07          BEQ    $72DA
 72D3: A6 88 1F       LDA    $1F,X
-72D6: 91 E1          CMPA   $E1
+72D6: 91 E1          CMPA   max_accepted_faults_e1
 72D8: 25 08          BCS    $72E2
 72DA: 0A 48          DEC    nb_objects_48
 72DC: 26 E2          BNE    $72C0
@@ -2534,7 +2540,7 @@ init_game_playfield_6a85:
 739E: A6 84          LDA    ,X
 73A0: 27 09          BEQ    $73AB
 73A2: A6 88 1F       LDA    $1F,X
-73A5: 91 E1          CMPA   $E1
+73A5: 91 E1          CMPA   max_accepted_faults_e1
 73A7: 10 25 FF 37    LBCS   $72E2
 73AB: 0A 48          DEC    nb_objects_48
 73AD: 26 E0          BNE    $738F
@@ -5621,7 +5627,7 @@ partially_reset_scrolling_8c3e:
 8C54: 8C 2A B0       CMPX   #$2AB0
 8C57: 26 F9          BNE    $8C52
 8C59: 96 84          LDA    current_level_84
-8C5B: 97 F5          STA    $F5
+8C5B: 97 F5          STA    current_level_backup_f5
 8C5D: 86 FF          LDA    #$FF
 8C5F: 97 84          STA    current_level_84
 8C61: 96 E6          LDA    $E6
@@ -5676,7 +5682,7 @@ partially_reset_scrolling_8c3e:
 8CC8: 0C 48          INC    nb_objects_48
 8CCA: 0A 4D          DEC    $4D
 8CCC: 26 B6          BNE    $8C84
-8CCE: 96 F5          LDA    $F5
+8CCE: 96 F5          LDA    current_level_backup_f5
 8CD0: 97 84          STA    current_level_84
 8CD2: 96 50          LDA    $50
 8CD4: 97 E6          STA    $E6
@@ -8514,7 +8520,7 @@ table_a887:
 	dc.w	$6924	; $a887
 	dc.w	$6a70	; $a889
 	dc.w	$6e4f	; $a88b
-	dc.w	$6e75	; $a88d
+	dc.w	player_turn_ends_6e75	; $a88d
 	dc.w	$7225	; $a88f
 	dc.w	$72eb	; $a891
 table_a893:
@@ -8555,7 +8561,7 @@ table_a8da:
 	dc.w	$72f3	; $a8da
 	dc.w	$7467	; $a8dc
 	dc.w	$d59d	; $a8de
-	dc.w	$f435	; $a8e0
+	dc.w	display_champion_message_f435	; $a8e0
 	dc.w	$7550	; $a8e2
 	dc.w	$757d	; $a8e4
 	dc.w	$dadf	; $a8e6
@@ -8585,7 +8591,7 @@ table_a90c:
 	dc.w	$6924	; $a90c
 	dc.w	$6a70	; $a90e
 	dc.w	$6e4f	; $a910
-	dc.w	$6e75	; $a912
+	dc.w	player_turn_ends_6e75	; $a912
 	dc.w	$7225	; $a914
 table_a916:
 	dc.w	$76c6	; $a916
@@ -9912,6 +9918,7 @@ D570: BD 8C 4D       JSR    $8C4D
 D573: 35 70          PULS   X,Y,U
 D575: 86 03          LDA    #$03
 D577: 7E 84 F5       JMP    queue_event_84f5
+
 D57A: 8E 2A 80       LDX    #$2A80
 D57D: 96 DF          LDA    $DF
 D57F: C6 03          LDB    #$03
@@ -10111,7 +10118,7 @@ D71D: 26 23          BNE    $D742
 D71F: BD DA 6A       JSR    $DA6A
 D722: CE 39 88       LDU    #$3988
 D725: C6 04          LDB    #$04
-D727: BD DA 77       JSR    $DA77
+D727: BD DA 77       JSR    copy_4b_chars_da77
 D72A: CE 39 98       LDU    #$3998
 D72D: C6 02          LDB    #$02
 D72F: BD DA 8B       JSR    $DA8B
@@ -10444,7 +10451,7 @@ D9D7: 10 26 00 23    LBNE   $D9FE
 D9DB: BD DA 6A       JSR    $DA6A
 D9DE: CE 3B 82       LDU    #$3B82
 D9E1: C6 07          LDB    #$07
-D9E3: BD DA 77       JSR    $DA77
+D9E3: BD DA 77       JSR    copy_4b_chars_da77
 D9E6: CE 3B DD       LDU    #$3BDD
 D9E9: C6 03          LDB    #$03
 D9EB: BD DA 8B       JSR    $DA8B
@@ -10500,6 +10507,7 @@ DA72: 84 03          ANDA   #$03
 DA74: 31 A6          LEAY   A,Y
 DA76: 39             RTS
 
+copy_4b_chars_da77:
 DA77: A6 A4          LDA    ,Y
 DA79: A7 C0          STA    ,U+		; [video_address]
 DA7B: A6 21          LDA    $1,Y
@@ -10509,7 +10517,7 @@ DA81: A7 C0          STA    ,U+		; [video_address]
 DA83: A6 23          LDA    $3,Y
 DA85: A7 C0          STA    ,U+		; [video_address]
 DA87: 5A             DECB
-DA88: 26 ED          BNE    $DA77
+DA88: 26 ED          BNE    copy_4b_chars_da77
 DA8A: 39             RTS
 
 DA8B: A6 A4          LDA    ,Y
@@ -10652,7 +10660,7 @@ DBAA: 26 23          BNE    $DBCF
 DBAC: BD DA 6A       JSR    $DA6A
 DBAF: CE 39 88       LDU    #$3988
 DBB2: C6 04          LDB    #$04
-DBB4: BD DA 77       JSR    $DA77
+DBB4: BD DA 77       JSR    copy_4b_chars_da77
 DBB7: CE 39 98       LDU    #$3998
 DBBA: C6 02          LDB    #$02
 DBBC: BD DA 8B       JSR    $DA8B
@@ -10976,6 +10984,7 @@ E0E2: 1F 98          TFR    B,A
 E0E4: 20 EF          BRA    $E0D5
 E0E6: A7 A4          STA    ,Y
 E0E8: 20 16          BRA    $E100
+
 E0EA: 8E 28 F0       LDX    #$28F0
 E0ED: EC C1          LDD    ,U++
 E0EF: ED 81          STD    ,X++
@@ -11098,7 +11107,7 @@ E1FF: C6 0A          LDB    #$0A
 E201: 3D             MUL
 E202: FB 28 6D       ADDB   $286D
 E205: F7 28 49       STB    $2849
-E208: B6 28 6B       LDA    $286B
+E208: B6 28 6B       LDA    current_attempt_height_286b
 E20B: C6 64          LDB    #$64
 E20D: 3D             MUL
 E20E: FB 28 49       ADDB   $2849
@@ -12998,6 +13007,7 @@ F42E: BD 85 12       JSR    $8512
 F431: 7F 2A 9B       CLR    $2A9B
 F434: 39             RTS
 
+display_champion_message_f435:
 F435: 96 82          LDA    $82
 F437: 4C             INCA
 F438: C6 06          LDB    #$06
@@ -13059,13 +13069,13 @@ F4B3: 97 48          STA    nb_objects_48
 F4B5: CC 48 48       LDD    #$4848
 F4B8: EE 81          LDU    ,X++
 F4BA: 33 C9 CF D0    LEAU   -$3030,U
-F4BE: EF A8 40       STU    $40,Y
-F4C1: ED A9 00 80    STD    $0080,Y
-F4C5: ED A1          STD    ,Y++
+F4BE: EF A8 40       STU    $40,Y		; [video_address_word]
+F4C1: ED A9 00 80    STD    $0080,Y		; [video_address_word]
+F4C5: ED A1          STD    ,Y++		; [video_address_word]
 F4C7: CC 01 01       LDD    #$0101
-F4CA: ED A9 07 FE    STD    $07FE,Y
-F4CE: ED A9 08 3E    STD    $083E,Y
-F4D2: ED A9 08 7E    STD    $087E,Y
+F4CA: ED A9 07 FE    STD    $07FE,Y     ; [video_address_word]
+F4CE: ED A9 08 3E    STD    $083E,Y     ; [video_address_word]
+F4D2: ED A9 08 7E    STD    $087E,Y     ; [video_address_word]
 F4D6: 0A 48          DEC    nb_objects_48
 F4D8: 26 DB          BNE    $F4B5
 F4DA: 86 48          LDA    #$48
@@ -13081,8 +13091,8 @@ F4F1: C6 80          LDB    #$80
 F4F3: A6 80          LDA    ,X+
 F4F5: 26 03          BNE    $F4FA
 F4F7: CC 10 00       LDD    #$1000
-F4FA: E7 A9 08 00    STB    $0800,Y
-F4FE: A7 A0          STA    ,Y+
+F4FA: E7 A9 08 00    STB    $0800,Y	; [video_address]
+F4FE: A7 A0          STA    ,Y+		; [video_address]
 F500: 0A 49          DEC    $49
 F502: 26 ED          BNE    $F4F1
 F504: 31 A8 31       LEAY   $31,Y
@@ -13307,7 +13317,7 @@ F6D5: 26 22          BNE    $F6F9
 F6D7: BD DA 6A       JSR    $DA6A
 F6DA: CE 39 0B       LDU    #$390B
 F6DD: C6 03          LDB    #$03
-F6DF: BD DA 77       JSR    $DA77
+F6DF: BD DA 77       JSR    copy_4b_chars_da77
 F6E2: CE 39 97       LDU    #$3997
 F6E5: C6 03          LDB    #$03
 F6E7: BD DA AB       JSR    $DAAB

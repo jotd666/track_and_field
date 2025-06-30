@@ -43,6 +43,9 @@
 	.macro	GET_ADDRESS_FUNC
 	lea		(a6,a0.l),a0
 	.endm
+	.macro	GET_UNCHECKED_ADDRESS_FUNC
+	GET_ADDRESS_FUNC
+	.endm
 	
 	.else
 	
