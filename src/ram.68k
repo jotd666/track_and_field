@@ -13,6 +13,7 @@
 	.global no_sync_flag
 	.ifdef	RELEASE
 	.global	ram_buffer
+	.global	rom_buffer
 	.else
 	.global ram_start_1800
 	.global	dev_ram_buffer
@@ -33,7 +34,7 @@
 
 ram_buffer:
 	.ifdef	RELEASE
-	.skip	0x4000-0x1800
+	.skip	0x6000-0x1800
 rom_buffer:
 	.skip	0x10000-0x6000
 	.else

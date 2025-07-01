@@ -771,7 +771,7 @@ demo_game:
 	* release mode
 
 	* copy the ROM data after RAM
-	lea		ram_buffer+ROM_START-0x1800,a1
+	lea		rom_buffer,a1
 	move.w	#(0x10000-ROM_START)/4-1,d0
 	lea		rom_base,a0
 0:
@@ -1343,17 +1343,24 @@ update_one_bob:
 	.endif
 
 
-
+	.ifdef	NO68020
 	add.w	d3,d3
 	add.w	d3,d3
 	move.l	(a4,d3.w),d4		| get pointer from bob table
+	.else
+	move.l	(a4,d3.w*4),d4		| get pointer from bob table
+	.endif
 	jeq		2f
 	* entry is valid, now what about clut?
 	
 	move.l	d4,a1
+	.ifdef	NO68020
 	add.w	d2,d2
 	add.w	d2,d2
 	move.l	(a1,d2.w),d4
+	.else
+	move.l	(a1,d2.w*4),d4
+	.endif
 	jeq		22f
 
 	* re-load properties (for X/Y flip)
@@ -2335,9 +2342,14 @@ update_bg_tile:
 	add.w	d1,d0
 	add.w	d0,a1
 	
+
+	.ifdef	NO68020
 	add.w	d2,d2
 	add.w	d2,d2	
 	move.l	(a0,d2.w),d0		| tile pointer
+	.else
+	move.l	(a0,d2.w*4),d0		| tile pointer
+	.endif
 	.ifdef	RELEASE
 	jeq		11f					| clear tile, no error (release)
 	.else
@@ -2351,9 +2363,14 @@ update_bg_tile:
 	move.l	d0,a2
 	move.b	d3,d1
 	and.w	#0xF,d3
+	.ifdef	N068020
+	add.w	d3,d3
 	add.w	d3,d3
 	add.w	d3,d3
 	move.l	(a2,d3.w),d0			| pointer on tile bitplanes for that CLUT
+	.else
+	move.l	(a2,d3.w*4),d0			| pointer on tile bitplanes for that CLUT	
+	.endif
 	.ifdef	RELEASE
 	jeq		11f						| not necessarily a problem
 	.else
