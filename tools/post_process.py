@@ -118,27 +118,27 @@ with open(source_dir / "conv.s") as f:
         if "[$6853" in line:
             # insert level select cheat
             line = line + "\tGET_DP_ADDRESS\tcurrent_level_84\n\tmove.b\tstart_level,(a0)\n"
-        if "[$727d" in line:
-            line = "\ttst.b\tinfinite_lives_flag\n\tjne\t0f\n" + line
+##        if "[$727d" in line:
+##            line = "\ttst.b\tinfinite_lives_flag\n\tjne\t0f\n" + line
 
         if "[$727f" in line:
             line = "0:\n"+line
 
-        if "[$7315" in line:
-            # insert nb attempts trainer
-            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tl_732b\n" + line
+##        if "[$7315" in line:
+##            # insert nb attempts trainer
+##            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tl_732b\n" + line
         if "[$83bd" in line or "[$9db1" in line or "[$d804" in line:
             line = "\tPUSH_SR\n"+line
             lines[i+1] = lines[i+1]+"\tPOP_SR\n"
             lines[i+3] = ""
 
-        elif "[$877a" in line:
-            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tqualified_878f\n"
+##        elif "[$877a" in line:
+##            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tqualified_878f\n"
         elif "[$605f" in line:
             # don't do the init clear loop
             line = remove_instruction(lines,i)
-        elif "[$878f" in line:
-            line = "qualified_878f:\n" + line
+##        elif "[$878f" in line:
+##            line = "qualified_878f:\n" + line
 
         elif "[$83cc" in line:
             line = change_instruction("subq.b\t#0x01,(a0)",lines,i)

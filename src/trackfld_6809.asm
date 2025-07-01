@@ -2383,6 +2383,7 @@ player_turn_ends_6e75:
 7273: 96 84          LDA    current_level_84
 7275: 81 05          CMPA   #$05
 7277: 26 04          BNE    $727D
+; high jump
 7279: 0D F4          TST    $F4
 727B: 27 0C          BEQ    $7289
 727D: 0C 9F          INC    high_jump_fault_9f
@@ -2527,6 +2528,7 @@ player_turn_ends_6e75:
 7385: 27 04          BEQ    $738B
 7387: 91 60          CMPA   nb_players_minus_one_60
 7389: 27 24          BEQ    $73AF
+; long jump
 738B: 86 04          LDA    #$04
 738D: 97 48          STA    nb_objects_48
 738F: 96 DF          LDA    $DF
@@ -13188,10 +13190,10 @@ F5C5: 3D             MUL
 F5C6: 30 8B          LEAX   D,X
 F5C8: 35 02          PULS   A
 F5CA: 35 04          PULS   B
-F5CC: E7 86          STB    A,X
+F5CC: E7 86          STB    A,X		; [video_address]
 F5CE: C6 0A          LDB    #$0A
 F5D0: 30 89 08 00    LEAX   $0800,X
-F5D4: E7 86          STB    A,X
+F5D4: E7 86          STB    A,X		; [video_address]
 F5D6: B6 2A 4C       LDA    $2A4C
 F5D9: 4C             INCA
 F5DA: 81 30          CMPA   #$30
@@ -13242,40 +13244,40 @@ F634: 0C 0C          INC    $0C
 F636: 39             RTS
 
 F637: CC 20 1C       LDD    #$201C
-F63A: ED 84          STD    ,X
+F63A: ED 84          STD    ,X		; [video_address_word]
 F63C: CC 11 29       LDD    #$1129
-F63F: ED 02          STD    $2,X
+F63F: ED 02          STD    $2,X		; [video_address_word]
 F641: CC 15 22       LDD    #$1522
-F644: ED 04          STD    $4,X
+F644: ED 04          STD    $4,X		; [video_address_word]
 F646: A6 A4          LDA    ,Y
 F648: 97 DF          STA    $DF
 F64A: 4C             INCA
-F64B: A7 07          STA    $7,X
+F64B: A7 07          STA    $7,X		; [video_address]
 F64D: 4A             DECA
 F64E: 10 8E 29 90    LDY    #$2990
 F652: C6 03          LDB    #$03
 F654: 3D             MUL
 F655: 31 AB          LEAY   D,Y
 F657: EC A1          LDD    ,Y++
-F659: ED 89 00 82    STD    $0082,X
+F659: ED 89 00 82    STD    $0082,X		; [video_address_word]
 F65D: A6 A4          LDA    ,Y
-F65F: A7 89 00 84    STA    $0084,X
-F663: 30 89 08 00    LEAX   $0800,X
+F65F: A7 89 00 84    STA    $0084,X		; [video_address]
+F663: 30 89 08 00    LEAX   $0800,X		; [video_address]
 F667: CC 00 00       LDD    #$0000
-F66A: ED 81          STD    ,X++
-F66C: ED 81          STD    ,X++
-F66E: ED 81          STD    ,X++
-F670: ED 84          STD    ,X
+F66A: ED 81          STD    ,X++		; [video_address_word]
+F66C: ED 81          STD    ,X++		; [video_address_word]
+F66E: ED 81          STD    ,X++		; [video_address_word]
+F670: ED 84          STD    ,X		    ; [video_address_word]
 F672: 10 8E A4 C8    LDY    #$A4C8
 F676: 96 DF          LDA    $DF
 F678: A6 A6          LDA    A,Y
 F67A: 1F 89          TFR    A,B
-F67C: ED 88 7C       STD    $7C,X
-F67F: A7 88 7E       STA    chrono_hundredth_second_7e,X
+F67C: ED 88 7C       STD    $7C,X		    ; [video_address_word]
+F67F: A7 88 7E       STA    $7e,X		    ; [video_address]
 F682: 8E 28 A0       LDX    #$28A0
-F685: EC 0E          LDD    $E,X
+F685: EC 0E          LDD    $E,X		    ; [video_address_word]
 F687: C3 00 04       ADDD   #$0004
-F68A: ED 0E          STD    $E,X
+F68A: ED 0E          STD    $E,X		    ; [video_address_word]
 F68C: BD CE C4       JSR    $CEC4
 F68F: 39             RTS
 

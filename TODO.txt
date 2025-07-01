@@ -1,14 +1,8 @@
-- release mode: crash check whdl_register
-
 - cycle exact: sprites blinking despite double buffering
-
-- complete the game (with cheats) check for more video writes
 
 - https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
   centuri game is too hard
-- records not registered for 100m dash (maybe normal), 110m hurdles (normal)
-  hammer (????)
-- rip sounds
+- rip run sounds: let one player play
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - is game playing: not working (should be able to insert coin in the push start screen)
@@ -18,5 +12,4 @@
 	cmp.w	(a0),d1   => macro!
 
 optims:
-- scroll optim: only change copperlist if previous value is different
 - optimize code manually in the end

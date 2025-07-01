@@ -40,14 +40,14 @@ _expmem
 ;---
 _config
 ;	dc.b	"C1:X:invincible:0;"
-	dc.b	"C1:X:infinite lives:1;"
+;	dc.b	"C1:X:infinite lives:1;"
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:25 Hz update:0;"
 	IFD		CHIP_ONLY
 	dc.b	"C2:X:break at startup:31;"
 	ENDC
 	dc.b	"C3:L:start level:100m dash,long jump,javelin throw,"
-	dc.b	"110m hurdles,hammer throw,high jump"
+	dc.b	"110m hurdles,hammer throw,high jump;"
 ;	dc.b	"C5:L:difficulty level:1 (easiest),2,3,4,5 (average),6,7,8 (hardest);"
 	dc.b	0
 

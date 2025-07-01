@@ -820,7 +820,7 @@ demo_game:
 easy_values:
 	.word	0x1600	| dash
 	.word	0x0500	| long jump
-	.word	0x0500	| javelin
+	.word	0x5000	| javelin
 	.word	0x2000	| hurdles
 	.word	0x5000	| hammer
 	.word	0x0180	| long jump
@@ -1104,7 +1104,8 @@ add_10000_points:
 	move.l	(a7)+,a6
 	rts
 
-* we're going to scan for scroll values
+* we're going to scan for scroll values with some optimization
+* to avoid to update copperlist if values don't change
 really_update_scroll:
 	GET_MEMORY_START_AND_DP
 	lea	(0x1840,a6),a6
@@ -1112,22 +1113,30 @@ really_update_scroll:
 	lea		scroll_table,a2
 	lea		scroll_row_copper_address_table,a1
 	move.l		background_ptr,a4
+	lea	current_scroll_values,a3
 0:
+
 	* get LSB+MSB scroll value
 	move.b	(0x400,a6),d5
 	and.b	#1,d5		| consider only bit 0 for MSB
 	rol.w	#8,d5
 	move.b	(a6)+,d5
-
-	move.l	(a1)+,a0	| get address of bpl1con value
-	move.w	(a2,d5.w*4),(a0)	| set bplcon value
+	move.w	(a3)+,d6
+	cmp.w	d5,d6
+	jeq		1f
+	move.w	d5,(-2,a3)	| update current value & update scroll
+	add.w	d5,d5
+	add.w	d5,d5
+	move.l	(a1),a0	| get address of bpl1con value
 	move.l	a4,d0				| base address
-	add.w	(2,a2,d5.w*4),d0	| bytes offset
+	move.w	(a2,d5.w),(a0)	| set bplcon value
+	add.w	(2,a2,d5.w),d0	| bytes offset
 	addq	#4,a0				| pointer on first bitplane
 	movem.l	a0-a1/d0-d2,-(a7)
 	jbsr	set_static_bitplanes
 	movem.l	(a7)+,a0-a1/d0-d2
-	
+1:
+	addq	#4,a1
 	add.w	#BG_NB_BYTES_PER_ROW*8,a4	| next row address
 	dbf		d7,0b
 	rts
@@ -2181,14 +2190,24 @@ osd_disable_interrupts:
 * should preserve all registers
 
 osd_video_word_dirty:
-	jbsr	osd_video_byte_dirty
-	addq	#1,a0
-	jbsr	osd_video_byte_dirty
-	subq	#1,a0
-	rts
+	movem.l	d0/d1/d7/a0/a1,-(a7)
+	jbsr	video_byte_dirty
+	tst.b	d7
+	jeq		0f				| out of range: ignore
+	move.b	d7,(1,a0)		| next byte too
+0:
+	movem.l	(a7)+,d0/d1/d7/a0/a1
+	rts	
+
+
 	
 osd_video_byte_dirty:
 	movem.l	d0/d1/d7/a0/a1,-(a7)
+	jbsr	video_byte_dirty
+	movem.l	(a7)+,d0/d1/d7/a0/a1
+	rts	
+
+video_byte_dirty:
 	move.l	a0,d7		| save address
 	sub.l	a6,d7
 
@@ -2239,11 +2258,11 @@ osd_video_byte_dirty:
 *	.endif
 	move.b	d7,(a0)
 	move.b	d7,(a1)
-
+	rts
 osd_video_dirty_out:
-	movem.l	(a7)+,d0/d1/d7/a0/a1
-	rts	
-
+	moveq	#0,d7
+	rts
+	
 
 * < D7: 0-0x800
 * > D0: 
@@ -3190,6 +3209,11 @@ log_buffer:
 cpu_log_enable:
 	.word	0
 	.endif
+
+current_scroll_values:
+	.rept	NB_SCROLL_ROWS+2
+	.word	-1
+	.endr
 
 scroll_table:
 	.include	"scroll_table_64.68k"
