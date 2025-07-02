@@ -1,9 +1,12 @@
 import subprocess,os,struct,glob,tempfile
 import shutil
 
+from shared import *
 
-gamename = "pooyan"
+gamename = "track_and_field"
 sox = "sox"
+
+sound_dir = this_dir / ".." / "sounds"
 
 def convert():
     if not shutil.which("sox"):
@@ -12,11 +15,8 @@ def convert():
 
     #wav_files = glob.glob("sounds/*.wav")
 
-    this_dir = os.path.dirname(__file__)
-    sound_dir = os.path.join(this_dir,"..","sounds")
 
-    this_dir = os.path.dirname(__file__)
-    src_dir = os.path.join(this_dir,"../../src/amiga")
+
     outfile = os.path.join(src_dir,"sounds.68k")
     sndfile = os.path.join(src_dir,"sound_entries.68k")
 
@@ -25,66 +25,48 @@ def convert():
     lq_sample_rate = hq_sample_rate//2 # if aga_mode else 8000
 
 
-    loop_channel = 3
+    loop_channel = 2
 
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
 
-    "MEAT_PICKED_SND"               :{"index":0xA,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "WOLF_FALLING_SND"               :{"index":0x2,"channel":1,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
-    "WOLF_CRASHES_SND"               :{"index":0x3,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
-    "WOLF_ATTACKS_SND"               :{"index":0x14,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "WOLF_ATTACKS_2_SND"               :{"index":0xC,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "EXTRA_SOUND_WOLF_HIT_SND"               :{"index":0x7,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
-    "CREDIT_SND"               :{"index":0xB,"channel":0,"sample_rate":hq_sample_rate,"priority":20},
-    "BALLOON_POPPED_SND"       :{"index":0x5,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "WOLF_SHOT_DESTROYED_SND"       :{"index":0x6,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "BALLOON_BURST_SND"       :{"index":0x8,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "PLAYER_FALLING_SND"       :{"index":0x26,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "PLAYER_CRASHING_SND"       :{"index":0x10,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "BONUS_STAGE_JINGLE_SND"       :{"index":0x13,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "PIGLETS_JUMP_SND"       :{"index":0x12,"channel":3,"sample_rate":hq_sample_rate,"priority":20},
-    "SHOT_BOUNCES_SND"             :{"index":0x11,"channel":1,"sample_rate":hq_sample_rate,"priority":5},
-    "SHOOTING_ARROW_SND"             :{"index":0x1,"channel":3,"sample_rate":hq_sample_rate,"priority":5},
-    "INFLATING_BALLOON_SND"             :{"index":0x4,"channel":3,"sample_rate":hq_sample_rate,"priority":10},
-    "INTRO_TUNE_SND"                :{"index":0x27,"pattern":1,"volume":32,'loops':False,"ticks":360},
-    "GAME_INTRO_TUNE_SND"                :{"index":0x1C,"pattern":2,"volume":32,'loops':False,"ticks":520},
-    "LEVEL_1_TUNE_SND"                :{"index":0x1A,"pattern":0xB,"volume":32,'loops':True},
-    "LEVEL_2_TUNE_SND"                :{"index":0x1B,"pattern":0xF,"volume":32,'loops':True},
-    "LEVEL_1_COMPLETED_TUNE_SND"                :{"index":0x1E,"pattern":0x14,"volume":32,"loops":False,"ticks":480},
-    "LEVEL_2_COMPLETED_TUNE_SND"                :{"index":0x22,"pattern":0x7,"volume":32,"loops":False,"ticks":520},
-    "LEVEL_2_COMPLETED_2_TUNE_SND"                :{"index":0x23,"pattern":0x1B,"volume":32,"loops":False,"ticks":500},  # suzannah
-    "HIGH_SCORE_ENTRY_TUNE_SND"                :{"index":0x29,"pattern":0x1F,"volume":32,"loops":True},
-    "GAME_OVER_TUNE_SND"                :{"index":0x1D,"pattern":0x13,"volume":32,'loops':False,"ticks":180},
-    "BONUS_STAGE_TUNE_SND"                :{"index":0x28,"pattern":0x15,"volume":32,'loops':True},
+    "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True,"priority":40},
+    #"LEVEL_1_COMPLETED_TUNE_SND"                :{"index":0x1E,"pattern":0x14,"volume":32,"loops":False,"ticks":480},
 
 
     }
 
-    valid_sounds = [None]*128
-    valid_sounds[0x15] = "music_start"
-    valid_sounds[0x16] = "music_start"
-    valid_sounds[0x17] = "music_start"
-    valid_sounds[0x4B] = "bogus"
-    valid_sounds[0x4D] = "bogus"
-    valid_sounds[0x5D] = "bogus"
-    for k,v in sound_dict.items():
-        valid_sounds[v["index"]] = k
-    with open(os.path.join(this_dir,"valid_sound_table.68k"),"w") as f:
-        for i,v in enumerate(valid_sounds):
-            if v:
-                f.write("\t.byte    1\t| {:02x}: {}\n".format(i,v))
-            else:
-                f.write("\t.byte    0\t| {:02x}\n".format(i))
+    dummy_sounds = [0,
+    1,  # run?
+    2,3,4,
+    0xC,0xB,
+    0x17,  # arrow sound name enter
+    0x18,  # name enter music
+    0x40,
+    0x80,  # stop sound?
+    0x2C,  # event start music
+    0x1B,  # letter entry name
+    0x33,  # broken record music
+    0x9,0x25,  # long jump land
+    5,0x14,0x15,  # long jump jump
+    0x31,  # ???? drawf crossing after dash
+    0xE,0xF, # jav throw, land
+    0xFF,
+    ]
 
     with open(os.path.join(src_dir,"..","sounds.inc"),"w") as f:
         for k,v in sorted(sound_dict.items(),key = lambda x:x[1]["index"]):
             f.write(f"\t.equ\t{k},  0x{v['index']:x}\n")
 
-    max_sound = 0x80  # max(x["index"] for x in sound_dict.values())+1
+    max_sound = 0x100  # max(x["index"] for x in sound_dict.values())+1
     sound_table = [""]*max_sound
     sound_table_set_1 = ["\t.long\t0,0"]*max_sound
 
+    for d in dummy_sounds:
+        sound_table_set_1[d] = "\t.word\t3,0,0,0   | valid but muted"
 
 
 
@@ -209,8 +191,8 @@ def convert():
 
 
         # make sure next section will be aligned
-        with open(os.path.join(sound_dir,f"{gamename}_conv.mod"),"rb") as f:
-            contents = f.read()
+##        with open(os.path.join(sound_dir,f"{gamename}_conv.mod"),"rb") as f:
+##            contents = f.read()
 
         fw.write("{}:".format(music_module_label))
         write_asm(contents,fw)

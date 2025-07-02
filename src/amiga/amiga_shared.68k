@@ -200,8 +200,9 @@ osd_sound_start:
 	lea		sound_table,a0
 
 	move.w	(a0,d0.w),d1	| sound type
-	beq.b	10f		| no sound
-
+	beq.b	11f		| no sound
+	cmp.w	#3,d1
+	jeq		10f		| skipped (normal)
 2:
 	cmp.w	#1,d1
 	bne.b	4f		| music module
@@ -221,7 +222,13 @@ osd_sound_start:
 10:
 	movem.l	(a7)+,d0/d1/a0/a6
 	rts
+11:
+	move.w	d0,d1
+	lsr.w	#3,d1
 
+	BREAKPOINT	"unknown sound (index in D1)"
+	jra		10b
+	
 	* music
 4:
 	* don't play if already playing

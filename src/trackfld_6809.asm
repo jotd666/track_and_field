@@ -94,6 +94,7 @@ boot_state_03 = $03
 event_pointer_18 = $18
 event_pointer_1a = $1a
 copy_of_screen_flipped_21 = $21
+game_playing_22 = $22
 number_of_credits_23 = $23
 dsw1_copy_2c = $2c
 dsw2_copy_2d = $2d
@@ -137,6 +138,7 @@ dsw1_1283 = $1283
 sprite_ram_1800 = $1800
 scroll_registers_1840 = $1840
 copy_of_inputs_2830 = $2830
+sound_queue_2940 = $2940
 current_attempted_height_metre_286a = $286a
 current_attempt_height_286b = $286b
 current_attempted_height_centimetres_286c = $286c
@@ -896,7 +898,7 @@ irq_6600:
 6613: 0C 3F          INC    $3F
 6615: BD 66 24       JSR    read_inputs_6624
 6618: BD 66 4A       JSR    $664A
-661B: BD 66 EB       JSR    $66EB
+661B: BD 66 EB       JSR    update_sounds_66eb
 661E: 86 01          LDA    #$01
 6620: B7 10 87       STA    irq_mask_w_1087
 6623: 3B             RTI
@@ -948,7 +950,7 @@ read_inputs_6624:
 6677: 84 07          ANDA   #$07
 6679: 27 29          BEQ    $66A4
 667B: 97 48          STA    nb_objects_48
-667D: 96 22          LDA    $22
+667D: 96 22          LDA    game_playing_22
 667F: 27 03          BEQ    $6684
 6681: 4F             CLRA
 6682: 20 02          BRA    $6686
@@ -1009,6 +1011,8 @@ read_inputs_6624:
 66E8: 97 23          STA    number_of_credits_23
 66EA: 39             RTS
 
+update_sounds_66eb:
+; consume queued sounds
 66EB: 9E 1E          LDX    $1E
 66ED: 9C 1C          CMPX   $1C
 66EF: 26 01          BNE    $66F2
@@ -1016,6 +1020,7 @@ read_inputs_6624:
 
 66F2: A6 80          LDA    ,X+
 66F4: B7 11 00       STA    audio_register_w_1100
+; peak the irq register
 66F7: 4F             CLRA
 66F8: B7 10 81       STA    sh_irqtrigger_w_1081
 66FB: 12             NOP
@@ -1026,7 +1031,8 @@ read_inputs_6624:
 6700: B7 10 81       STA    sh_irqtrigger_w_1081
 6703: 8C 29 60       CMPX   #player_1_final_time_2960
 6706: 26 03          BNE    $670B
-6708: 8E 29 40       LDX    #$2940
+; cycle the event pointer
+6708: 8E 29 40       LDX    #sound_queue_2940
 670B: 9F 1E          STX    $1E
 670D: 39             RTS
 
@@ -1055,7 +1061,7 @@ rolling_demo_6726:
 672E: BD 67 BF       JSR    $67BF
 6731: 5D             TSTB
 6732: 26 0A          BNE    $673E
-6734: 0F 22          CLR    $22
+6734: 0F 22          CLR    game_playing_22
 6736: 8E A8 77       LDX    #table_a877
 6739: 96 0F          LDA    $0F
 673B: 48             ASLA
@@ -1182,7 +1188,7 @@ start_a_game_680a:
 6818: 97 DF          STA    $DF
 681A: 97 10          STA    $10
 681C: 86 01          LDA    #$01
-681E: 97 22          STA    $22
+681E: 97 22          STA    game_playing_22
 6820: 86 01          LDA    #$01
 6822: D6 2D          LDB    dsw2_copy_2d
 6824: 57             ASRB
@@ -1340,7 +1346,7 @@ setup_players_screen_6936:
 695F: 0A 0B          DEC    $0B
 6961: 26 3C          BNE    $699F
 6963: BD 88 25       JSR    $8825
-6966: 96 22          LDA    $22
+6966: 96 22          LDA    game_playing_22
 6968: 26 02          BNE    $696C
 696A: 0F E1          CLR    max_accepted_faults_e1
 696C: 4F             CLRA
@@ -1388,7 +1394,7 @@ setup_players_screen_6936:
 69CA: 0F 09          CLR    $09
 69CC: 39             RTS
 
-69CD: 96 22          LDA    $22
+69CD: 96 22          LDA    game_playing_22
 69CF: 27 05          BEQ    $69D6
 69D1: 86 03          LDA    #$03
 69D3: BD 84 F5       JSR    queue_event_84f5
@@ -1446,7 +1452,7 @@ setup_players_screen_6936:
 6A4A: ED 81          STD    ,X++
 6A4C: 8C 2A 40       CMPX   #$2A40
 6A4F: 26 F9          BNE    $6A4A
-6A51: 96 22          LDA    $22
+6A51: 96 22          LDA    game_playing_22
 6A53: 26 14          BNE    $6A69
 6A55: 96 2C          LDA    dsw1_copy_2c
 6A57: 84 0F          ANDA   #$0F
@@ -1726,7 +1732,7 @@ init_game_playfield_6a85:
 6CD1: BD 8B 3A       JSR    $8B3A
 6CD4: BD 8B 71       JSR    $8B71
 6CD7: BD 8B A3       JSR    $8BA3
-6CDA: 0D 22          TST    $22
+6CDA: 0D 22          TST    game_playing_22
 6CDC: 26 05          BNE    $6CE3
 6CDE: 0C 06          INC    $06
 6CE0: 0F 09          CLR    $09
@@ -1874,7 +1880,7 @@ init_game_playfield_6a85:
 6E18: 27 04          BEQ    $6E1E
 6E1A: 81 03          CMPA   #$03
 6E1C: 26 10          BNE    $6E2E
-6E1E: 0D 22          TST    $22
+6E1E: 0D 22          TST    game_playing_22
 6E20: 27 0C          BEQ    $6E2E
 6E22: CE 3E C4       LDU    #$3EC4
 6E25: BD 8D 9D       JSR    $8D9D
@@ -1897,7 +1903,7 @@ init_game_playfield_6a85:
 
 6E4F: BD 8A 9B       JSR    $8A9B
 6E52: BD 8E 5F       JSR    $8E5F
-6E55: 96 22          LDA    $22
+6E55: 96 22          LDA    game_playing_22
 6E57: 26 03          BNE    $6E5C
 6E59: BD 90 C0       JSR    $90C0
 6E5C: 96 84          LDA    current_level_84
@@ -1914,7 +1920,7 @@ init_game_playfield_6a85:
 
 player_turn_ends_6e75:
 6E75: BD 8E 5F       JSR    $8E5F
-6E78: 96 22          LDA    $22
+6E78: 96 22          LDA    game_playing_22
 6E7A: 26 03          BNE    $6E7F
 6E7C: BD 90 C0       JSR    $90C0
 6E7F: 10 8E A8 D0    LDY    #table_a8d0
@@ -2075,7 +2081,7 @@ player_turn_ends_6e75:
 6FCE: 10 27 00 D1    LBEQ   $70A3
 6FD2: 81 03          CMPA   #$03
 6FD4: 10 27 00 CB    LBEQ   $70A3
-6FD8: 96 22          LDA    $22
+6FD8: 96 22          LDA    game_playing_22
 6FDA: 27 1D          BEQ    $6FF9
 6FDC: 96 84          LDA    current_level_84
 6FDE: 81 05          CMPA   #$05
@@ -2378,7 +2384,7 @@ player_turn_ends_6e75:
 7266: BD D2 8C       JSR    $D28C
 7269: CE 18 22       LDU    #$1822
 726C: BD D2 8C       JSR    $D28C
-726F: 96 22          LDA    $22
+726F: 96 22          LDA    game_playing_22
 7271: 27 19          BEQ    $728C
 7273: 96 84          LDA    current_level_84
 7275: 81 05          CMPA   #$05
@@ -2400,7 +2406,7 @@ player_turn_ends_6e75:
 728F: 96 9F          LDA    high_jump_fault_9f
 7291: 91 E1          CMPA   max_accepted_faults_e1
 7293: 26 27          BNE    $72BC
-7295: 0D 22          TST    $22
+7295: 0D 22          TST    game_playing_22
 7297: 26 09          BNE    $72A2
 7299: 0C 12          INC    $12
 729B: 0F 03          CLR    boot_state_03
@@ -2940,7 +2946,7 @@ player_turn_ends_6e75:
 76A4: 39             RTS
 
 76A5: CC 01 02       LDD    #$0102
-76A8: 97 22          STA    $22
+76A8: 97 22          STA    game_playing_22
 76AA: D7 00          STB    global_state_00
 76AC: 0F 03          CLR    boot_state_03
 76AE: 0F 06          CLR    $06
@@ -3006,9 +3012,9 @@ player_turn_ends_6e75:
 773B: CC 02 3B       LDD    #$023B
 773E: BD 84 F5       JSR    queue_event_84f5
 7741: 86 80          LDA    #$80
-7743: BD 85 08       JSR    $8508
+7743: BD 85 08       JSR    queue_sound_event_8508
 7746: 86 FF          LDA    #$FF
-7748: BD 85 08       JSR    $8508
+7748: BD 85 08       JSR    queue_sound_event_8508
 774B: 86 30          LDA    #$30
 774D: 97 0A          STA    $0A
 774F: 86 50          LDA    #$50
@@ -3080,9 +3086,9 @@ player_turn_ends_6e75:
 77CD: 0A 0B          DEC    $0B
 77CF: 26 10          BNE    $77E1
 77D1: 86 81          LDA    #$81
-77D3: BD 85 08       JSR    $8508
+77D3: BD 85 08       JSR    queue_sound_event_8508
 77D6: 86 FF          LDA    #$FF
-77D8: BD 85 08       JSR    $8508
+77D8: BD 85 08       JSR    queue_sound_event_8508
 77DB: 86 30          LDA    #$30
 77DD: 97 0B          STA    $0B
 77DF: 0C 09          INC    $09
@@ -3124,7 +3130,7 @@ player_turn_ends_6e75:
 7828: 26 69          BNE    $7893
 782A: 0A 0B          DEC    $0B
 782C: 26 65          BNE    $7893
-782E: 0D 22          TST    $22
+782E: 0D 22          TST    game_playing_22
 7830: 27 35          BEQ    $7867
 7832: 86 0D          LDA    #$0D
 7834: BD 85 0E       JSR    $850E
@@ -3151,11 +3157,11 @@ player_turn_ends_6e75:
 7863: 26 EE          BNE    $7853
 7865: 20 0F          BRA    $7876
 7867: 86 1A          LDA    #$1A
-7869: BD 85 08       JSR    $8508
+7869: BD 85 08       JSR    queue_sound_event_8508
 786C: 86 0C          LDA    #$0C
-786E: BD 85 08       JSR    $8508
+786E: BD 85 08       JSR    queue_sound_event_8508
 7871: 86 0D          LDA    #$0D
-7873: BD 85 08       JSR    $8508
+7873: BD 85 08       JSR    queue_sound_event_8508
 7876: CC 78 28       LDD    #$7828
 7879: BD CE 73       JSR    $CE73
 787C: CC 18 F8       LDD    #$18F8
@@ -3199,11 +3205,11 @@ player_turn_ends_6e75:
 78C8: A7 02          STA    $2,X
 78CA: BD CC AB       JSR    $CCAB
 78CD: 86 10          LDA    #$10
-78CF: A7 88 22       STA    $22,X
+78CF: A7 88 22       STA    game_playing_22,X
 78D2: 5F             CLRB
 78D3: 39             RTS
 
-78D4: 6A 88 22       DEC    $22,X
+78D4: 6A 88 22       DEC    game_playing_22,X
 78D7: 26 1F          BNE    $78F8
 78D9: 86 1A          LDA    #$1A
 78DB: BD 85 0E       JSR    $850E
@@ -3217,11 +3223,11 @@ player_turn_ends_6e75:
 78EE: A7 02          STA    $2,X
 78F0: BD CC B1       JSR    $CCB1
 78F3: 86 10          LDA    #$10
-78F5: A7 88 22       STA    $22,X
+78F5: A7 88 22       STA    game_playing_22,X
 78F8: 5F             CLRB
 78F9: 39             RTS
 
-78FA: 6A 88 22       DEC    $22,X
+78FA: 6A 88 22       DEC    game_playing_22,X
 78FD: 26 F9          BNE    $78F8
 78FF: 86 1A          LDA    #$1A
 7901: BD 85 0E       JSR    $850E
@@ -3422,7 +3428,7 @@ player_turn_ends_6e75:
 7A99: C6 02          LDB    #$02
 7A9B: 8E 28 A0       LDX    #$28A0
 7A9E: 34 04          PSHS   B
-7AA0: 6D 88 22       TST    $22,X
+7AA0: 6D 88 22       TST    game_playing_22,X
 7AA3: 26 0E          BNE    $7AB3
 7AA5: BD 9F 82       JSR    $9F82
 7AA8: 10 8E A9 30    LDY    #table_a930
@@ -3431,7 +3437,7 @@ player_turn_ends_6e75:
 7AAF: AD B6          JSR    [A,Y]	; [jump_table]
 7AB1: 20 03          BRA    $7AB6
 
-7AB3: 6A 88 22       DEC    $22,X
+7AB3: 6A 88 22       DEC    game_playing_22,X
 7AB6: 0C DF          INC    $DF
 7AB8: 30 89 01 60    LEAX   $0160,X
 7ABC: 35 04          PULS   B
@@ -3450,7 +3456,7 @@ player_turn_ends_6e75:
 7AD9: 81 05          CMPA   #$05
 7ADB: 26 0C          BNE    $7AE9
 7ADD: 4F             CLRA
-7ADE: BD 85 08       JSR    $8508
+7ADE: BD 85 08       JSR    queue_sound_event_8508
 7AE1: 86 30          LDA    #$30
 7AE3: 97 0B          STA    $0B
 7AE5: 0C 06          INC    $06
@@ -3508,7 +3514,7 @@ player_turn_ends_6e75:
 7B59: A7 88 16       STA    $16,X
 7B5C: 6C 88 36       INC    $36,X
 7B5F: 86 08          LDA    #$08
-7B61: A7 88 22       STA    $22,X
+7B61: A7 88 22       STA    game_playing_22,X
 7B64: 39             RTS
 
 7B65: CC 01 00       LDD    #$0100
@@ -3659,7 +3665,7 @@ player_turn_ends_6e75:
 7CA0: 0A 0B          DEC    $0B
 7CA2: 26 0E          BNE    $7CB2
 7CA4: 86 28          LDA    #$28
-7CA6: BD 85 08       JSR    $8508
+7CA6: BD 85 08       JSR    queue_sound_event_8508
 7CA9: BD 8E 77       JSR    $8E77
 7CAC: 0F 3F          CLR    $3F
 7CAE: 0C 06          INC    $06
@@ -3677,7 +3683,7 @@ player_turn_ends_6e75:
 7CC2: A4 84          ANDA   ,X
 7CC4: 84 05          ANDA   #$05
 7CC6: 26 23          BNE    $7CEB
-7CC8: 96 22          LDA    $22
+7CC8: 96 22          LDA    game_playing_22
 7CCA: 27 03          BEQ    $7CCF
 7CCC: BD 90 32       JSR    $9032
 7CCF: BD 8E 00       JSR    $8E00
@@ -3733,7 +3739,7 @@ player_turn_ends_6e75:
 7D3E: 39             RTS
 
 7D3F: BD D7 FF       JSR    chrono_tick_d7ff
-7D42: 96 22          LDA    $22
+7D42: 96 22          LDA    game_playing_22
 7D44: 26 18          BNE    $7D5E
 7D46: B6 2A 9A       LDA    $2A9A
 7D49: 26 13          BNE    $7D5E
@@ -3778,13 +3784,13 @@ player_turn_ends_6e75:
 7DA7: 86 14          LDA    #$14
 7DA9: 97 D8          STA    angle_d8
 7DAB: 4F             CLRA
-7DAC: BD 85 08       JSR    $8508
+7DAC: BD 85 08       JSR    queue_sound_event_8508
 7DAF: 86 05          LDA    #$05
-7DB1: BD 85 08       JSR    $8508
+7DB1: BD 85 08       JSR    queue_sound_event_8508
 7DB4: 86 14          LDA    #$14
-7DB6: BD 85 08       JSR    $8508
+7DB6: BD 85 08       JSR    queue_sound_event_8508
 7DB9: 86 15          LDA    #$15
-7DBB: BD 85 08       JSR    $8508
+7DBB: BD 85 08       JSR    queue_sound_event_8508
 7DBE: 96 B2          LDA    $B2
 7DC0: 9B E9          ADDA   $E9
 7DC2: 97 B2          STA    $B2
@@ -3902,7 +3908,7 @@ player_turn_ends_6e75:
 7EA8: ED 02          STD    $2,X
 7EAA: BD 86 A1       JSR    $86A1
 7EAD: 4F             CLRA
-7EAE: BD 85 08       JSR    $8508
+7EAE: BD 85 08       JSR    queue_sound_event_8508
 7EB1: 86 25          LDA    #$25
 7EB3: BD 85 0E       JSR    $850E
 7EB6: 35 10          PULS   X
@@ -4081,7 +4087,7 @@ player_turn_ends_6e75:
 800E: C6 02          LDB    #$02
 8010: 8E 28 A0       LDX    #$28A0
 8013: 34 04          PSHS   B
-8015: 6D 88 22       TST    $22,X
+8015: 6D 88 22       TST    game_playing_22,X
 8018: 26 0E          BNE    $8028
 801A: BD 9F 82       JSR    $9F82
 801D: 10 8E A9 6C    LDY    #table_a96c
@@ -4090,7 +4096,7 @@ player_turn_ends_6e75:
 8024: AD B6          JSR    [A,Y]	; [jump_table]
 8026: 20 03          BRA    $802B
 
-8028: 6A 88 22       DEC    $22,X
+8028: 6A 88 22       DEC    game_playing_22,X
 802B: 0C DF          INC    $DF
 802D: 30 89 01 60    LEAX   $0160,X
 8031: 35 04          PULS   B
@@ -4109,7 +4115,7 @@ player_turn_ends_6e75:
 804E: 81 05          CMPA   #$05
 8050: 26 0C          BNE    $805E
 8052: 4F             CLRA
-8053: BD 85 08       JSR    $8508
+8053: BD 85 08       JSR    queue_sound_event_8508
 8056: 86 30          LDA    #$30
 8058: 97 0B          STA    $0B
 805A: 0C 06          INC    $06
@@ -4340,7 +4346,7 @@ player_turn_ends_6e75:
 824A: 0A 0B          DEC    $0B
 824C: 26 12          BNE    $8260
 824E: 86 28          LDA    #$28
-8250: BD 85 08       JSR    $8508
+8250: BD 85 08       JSR    queue_sound_event_8508
 8253: BD 8E 77       JSR    $8E77
 8256: 7F 2A 98       CLR    $2A98
 8259: 7F 2A 99       CLR    $2A99
@@ -4494,9 +4500,9 @@ player_turn_ends_6e75:
 838C: 10 8E B6 E2    LDY    #$B6E2
 8390: BD A3 F8       JSR    $A3F8
 8393: 86 14          LDA    #$14
-8395: BD 85 08       JSR    $8508
+8395: BD 85 08       JSR    queue_sound_event_8508
 8398: 86 15          LDA    #$15
-839A: BD 85 08       JSR    $8508
+839A: BD 85 08       JSR    queue_sound_event_8508
 839D: 0C 09          INC    $09
 839F: 39             RTS
 
@@ -4604,9 +4610,9 @@ player_turn_ends_6e75:
 847E: 6F 02          CLR    $2,X
 8480: BD CC 81       JSR    $CC81
 8483: 4F             CLRA
-8484: BD 85 08       JSR    $8508
+8484: BD 85 08       JSR    queue_sound_event_8508
 8487: 86 09          LDA    #$09
-8489: BD 85 08       JSR    $8508
+8489: BD 85 08       JSR    queue_sound_event_8508
 848C: 0C 06          INC    $06
 848E: 0F 09          CLR    $09
 8490: 39             RTS
@@ -4667,22 +4673,23 @@ player_turn_ends_6e75:
 queue_event_84f5:
 84F5: 10 9E 18       LDY    event_pointer_18
 84F8: ED A1          STD    ,Y++
-84FA: 10 8C 29 40    CMPY   #$2940
+84FA: 10 8C 29 40    CMPY   #sound_queue_2940
 84FE: 26 04          BNE    $8504
 8500: 10 8E 29 00    LDY    #event_buffer_2900
 8504: 10 9F 18       STY    event_pointer_18
 8507: 39             RTS
 
+queue_sound_event_8508:
 8508: D6 2D          LDB    dsw2_copy_2d
 850A: C4 80          ANDB   #$80
-850C: 26 04          BNE    $8512
-850E: 0D 22          TST    $22
-8510: 27 12          BEQ    $8524
+850C: 26 04          BNE    $8512		; attract sounds: queue sound
+850E: 0D 22          TST    game_playing_22
+8510: 27 12          BEQ    $8524		; game not playing: skip
 8512: 10 9E 1C       LDY    $1C
 8515: A7 A0          STA    ,Y+
 8517: 10 8C 29 60    CMPY   #player_1_final_time_2960
 851B: 26 04          BNE    $8521
-851D: 10 8E 29 40    LDY    #$2940
+851D: 10 8E 29 40    LDY    #sound_queue_2940
 8521: 10 9F 1C       STY    $1C
 8524: 39             RTS
 
@@ -4850,6 +4857,7 @@ queue_event_84f5:
 8671: 26 03          BNE    $8676
 8673: 83 00 40       SUBD   #$0040
 8676: 20 02          BRA    $867A
+
 8678: DC 4C          LDD    $4C
 867A: ED 88 1E       STD    $1E,X
 867D: 39             RTS
@@ -5371,7 +5379,7 @@ compare_performances_8968:
 8A3B: A7 88 1F       STA    $1F,X
 8A3E: 39             RTS
 
-8A3F: 0D 22          TST    $22
+8A3F: 0D 22          TST    game_playing_22
 8A41: 26 08          BNE    $8A4B
 8A43: 86 01          LDA    #$01
 8A45: 97 AA          STA    $AA
@@ -5420,7 +5428,7 @@ compare_performances_8968:
 8A98: 30 8B          LEAX   D,X
 8A9A: 39             RTS
 
-8A9B: 96 22          LDA    $22
+8A9B: 96 22          LDA    game_playing_22
 8A9D: 27 66          BEQ    $8B05
 8A9F: 10 8E A9 E8    LDY    #$A9E8
 8AA3: 96 3F          LDA    $3F
@@ -5943,7 +5951,7 @@ partially_reset_scrolling_8c3e:
 8EC9: 26 F8          BNE    $8EC3
 8ECB: 39             RTS
 
-8ECC: 96 22          LDA    $22
+8ECC: 96 22          LDA    game_playing_22
 8ECE: 27 1F          BEQ    $8EEF
 8ED0: CE 32 03       LDU    #$3203
 8ED3: B6 2A BD       LDA    $2ABD
@@ -5960,7 +5968,7 @@ partially_reset_scrolling_8c3e:
 8EED: A7 C4          STA    ,U			; [video_address]
 8EEF: 39             RTS
 
-8EF0: 96 22          LDA    $22
+8EF0: 96 22          LDA    game_playing_22
 8EF2: 27 29          BEQ    $8F1D
 8EF4: 96 84          LDA    current_level_84
 8EF6: 81 00          CMPA   #$00
@@ -5982,7 +5990,7 @@ partially_reset_scrolling_8c3e:
 8F1B: A7 C4          STA    ,U          ; [video_address]
 8F1D: 39             RTS
 
-8F1E: 96 22          LDA    $22
+8F1E: 96 22          LDA    game_playing_22
 8F20: 27 28          BEQ    $8F4A
 8F22: 8E 2B 60       LDX    #$2B60
 8F25: 7F 2A BD       CLR    $2ABD
@@ -6054,7 +6062,7 @@ partially_reset_scrolling_8c3e:
 8FB5: A7 C0          STA    ,U+       ; [video_address]
 8FB7: 39             RTS
 
-8FB8: 96 22          LDA    $22
+8FB8: 96 22          LDA    game_playing_22
 8FBA: 27 1E          BEQ    $8FDA
 8FBC: 8E 2B 60       LDX    #$2B60
 8FBF: 7F 2A BE       CLR    $2ABE
@@ -6144,7 +6152,7 @@ partially_reset_scrolling_8c3e:
 9071: 26 F7          BNE    $906A
 9073: 39             RTS
 
-9074: 96 22          LDA    $22
+9074: 96 22          LDA    game_playing_22
 9076: 27 47          BEQ    $90BF
 9078: CE 32 0B       LDU    #$320B
 907B: B6 2A BD       LDA    $2ABD
@@ -7157,9 +7165,9 @@ compare_contestants_tile_96d3:
 98CA: BD 88 3C       JSR    $883C
 98CD: 7E CA F5       JMP    $CAF5
 98D0: 4F             CLRA
-98D1: BD 85 08       JSR    $8508
+98D1: BD 85 08       JSR    queue_sound_event_8508
 98D4: 86 09          LDA    #$09
-98D6: BD 85 08       JSR    $8508
+98D6: BD 85 08       JSR    queue_sound_event_8508
 98D9: A6 02          LDA    $2,X
 98DB: BB 2A BA       ADDA   $2ABA
 98DE: A7 02          STA    $2,X
@@ -7905,7 +7913,7 @@ compare_contestants_tile_96d3:
 9F2A: 1F 31          TFR    U,X
 9F2C: BD 88 CD       JSR    $88CD
 9F2F: 35 10          PULS   X
-9F31: 96 22          LDA    $22
+9F31: 96 22          LDA    game_playing_22
 9F33: 27 2B          BEQ    $9F60
 9F35: 86 06          LDA    #$06
 9F37: BD 84 F5       JSR    queue_event_84f5
@@ -8329,7 +8337,7 @@ A2B1: 4F             CLRA
 A2B2: E6 02          LDB    $2,X
 A2B4: 10 83 00 98    CMPD   #$0098
 A2B8: 10 24 00 F9    LBCC   $A3B5
-A2BC: 10 A3 88 22    CMPD   $22,X
+A2BC: 10 A3 88 22    CMPD   game_playing_22,X
 A2C0: 23 1C          BLS    $A2DE
 A2C2: E6 01          LDB    $1,X
 A2C4: A6 88 1A       LDA    $1A,X
@@ -8782,7 +8790,7 @@ CBE5: EF 0E          STU    $E,X
 CBE7: 96 D7          LDA    $D7
 CBE9: A7 05          STA    $5,X
 CBEB: 0C D0          INC    $D0
-CBED: 96 22          LDA    $22
+CBED: 96 22          LDA    game_playing_22
 CBEF: 26 11          BNE    $CC02
 CBF1: 96 D0          LDA    $D0
 CBF3: 81 4C          CMPA   #$4C
@@ -11173,7 +11181,7 @@ E28B: BD D7 FF       JSR    chrono_tick_d7ff
 E28E: DC 7E          LDD    chrono_hundredth_second_7e
 E290: 10 83 70 02    CMPD   #$7002
 E294: 26 0B          BNE    $E2A1
-E296: 0D 22          TST    $22
+E296: 0D 22          TST    game_playing_22
 E298: 26 07          BNE    $E2A1
 E29A: 86 01          LDA    #$01
 E29C: B7 2A 9A       STA    $2A9A
@@ -11720,7 +11728,7 @@ E754: BD D7 FF       JSR    chrono_tick_d7ff
 E757: DC 7E          LDD    chrono_hundredth_second_7e
 E759: C1 40          CMPB   #$40
 E75B: 27 D9          BEQ    $E736
-E75D: 0D 22          TST    $22
+E75D: 0D 22          TST    game_playing_22
 E75F: 26 11          BNE    $E772
 E761: 10 83 80 03    CMPD   #$8003
 E765: 26 0B          BNE    $E772
@@ -12499,7 +12507,7 @@ EFFD: 8A 80          ORA    #$80
 EFFF: 43             COMA                                                
 F000: BA 2A 9B       ORA    $2A9B
 F003: B7 2A 9B       STA    $2A9B
-F006: 0D 22          TST    $22
+F006: 0D 22          TST    game_playing_22
 F008: 26 0E          BNE    $F018
 F00A: 96 2C          LDA    dsw1_copy_2c
 F00C: 84 0F          ANDA   #$0F
@@ -12539,7 +12547,7 @@ F05B: 39             RTS
 
 F05C: 7D 2A 91       TST    $2A91
 F05F: 10 26 00 95    LBNE   $F0F8
-F063: 0D 22          TST    $22
+F063: 0D 22          TST    game_playing_22
 F065: 10 27 00 8F    LBEQ   $F0F8
 F069: 10 8E 2C C0    LDY    #$2CC0
 F06D: B6 2A 92       LDA    $2A92
@@ -12610,7 +12618,7 @@ F0F8: 7A 2A 92       DEC    $2A92
 F0FB: 27 01          BEQ    $F0FE
 F0FD: 39             RTS
 
-F0FE: 0D 22          TST    $22
+F0FE: 0D 22          TST    game_playing_22
 F100: 27 61          BEQ    $F163
 F102: 96 DF          LDA    $DF
 F104: 10 8E 2A 52    LDY    #$2A52
@@ -12699,7 +12707,7 @@ F1B1: 4A             DECA
 F1B2: 26 FB          BNE    $F1AF
 F1B4: 8E 31 88       LDX    #$3188
 F1B7: 10 8E FD A0    LDY    #$FDA0
-F1BB: 0D 22          TST    $22
+F1BB: 0D 22          TST    game_playing_22
 F1BD: 26 04          BNE    $F1C3
 F1BF: 10 8E FD AE    LDY    #$FDAE
 F1C3: 86 0E          LDA    #$0E
@@ -12708,7 +12716,7 @@ F1C7: C0 30          SUBB   #$30
 F1C9: E7 86          STB    A,X				; [video_address]
 F1CB: 4A             DECA
 F1CC: 26 F7          BNE    $F1C5
-F1CE: 0D 22          TST    $22
+F1CE: 0D 22          TST    game_playing_22
 F1D0: 27 17          BEQ    $F1E9
 F1D2: 96 DF          LDA    $DF
 F1D4: 4C             INCA
@@ -12918,7 +12926,7 @@ F36C: ED 81          STD    ,X++		; [video_address_word]
 F36E: ED C1          STD    ,U++		; [video_address_word]
 F370: 0A 48          DEC    nb_objects_48
 F372: 26 F8          BNE    $F36C
-F374: 0D 22          TST    $22
+F374: 0D 22          TST    game_playing_22
 F376: 26 02          BNE    $F37A
 F378: 0F DF          CLR    $DF
 F37A: CC 30 E8       LDD    #$30E8
@@ -12930,7 +12938,7 @@ F388: EC 01          LDD    $1,X
 F38A: C0 D0          SUBB   #$D0
 F38C: ED 01          STD    $1,X
 F38E: 33 48          LEAU   $8,U
-F390: 0D 22          TST    $22
+F390: 0D 22          TST    game_playing_22
 F392: 26 02          BNE    $F396
 F394: 0C DF          INC    $DF
 F396: BD CE C4       JSR    $CEC4
@@ -12938,7 +12946,7 @@ F399: EC 01          LDD    $1,X
 F39B: 8B 58          ADDA   #$58
 F39D: ED 01          STD    $1,X
 F39F: 33 48          LEAU   $8,U
-F3A1: 0D 22          TST    $22
+F3A1: 0D 22          TST    game_playing_22
 F3A3: 26 02          BNE    $F3A7
 F3A5: 0C DF          INC    $DF
 F3A7: BD CE C4       JSR    $CEC4
@@ -12946,7 +12954,7 @@ F3AA: EC 01          LDD    $1,X
 F3AC: CB D0          ADDB   #$D0
 F3AE: ED 01          STD    $1,X
 F3B0: 33 48          LEAU   $8,U
-F3B2: 0D 22          TST    $22
+F3B2: 0D 22          TST    game_playing_22
 F3B4: 26 02          BNE    $F3B8
 F3B6: 0C DF          INC    $DF
 F3B8: BD CE C4       JSR    $CEC4
@@ -12968,7 +12976,7 @@ F3D4: BD 85 12       JSR    $8512
 F3D7: 96 DF          LDA    $DF
 F3D9: 91 60          CMPA   nb_players_minus_one_60
 F3DB: 27 3D          BEQ    $F41A
-F3DD: 0D 22          TST    $22
+F3DD: 0D 22          TST    game_playing_22
 F3DF: 27 39          BEQ    $F41A
 F3E1: 0C DF          INC    $DF
 F3E3: 4C             INCA
@@ -12998,7 +13006,7 @@ F419: 39             RTS
 F41A: 0F 84          CLR    current_level_84
 F41C: 0F DF          CLR    $DF
 F41E: 0F 60          CLR    nb_players_minus_one_60
-F420: 0D 22          TST    $22
+F420: 0D 22          TST    game_playing_22
 F422: 0F 03          CLR    boot_state_03
 F424: 0F 0F          CLR    $0F
 F426: 26 04          BNE    $F42C

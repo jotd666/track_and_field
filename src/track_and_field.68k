@@ -100,6 +100,7 @@ boot_state_03 = 0x03
 event_pointer_18 = 0x18
 event_pointer_1a = 0x1a
 copy_of_screen_flipped_21 = 0x21
+game_playing_22 = 0x22
 number_of_credits_23 = 0x23
 dsw1_copy_2c = 0x2c
 dsw2_copy_2d = 0x2d
@@ -143,6 +144,7 @@ dsw1_1283 = 0x1283
 sprite_ram_1800 = 0x1800
 scroll_registers_1840 = 0x1840
 copy_of_inputs_2830 = 0x2830
+sound_queue_2940 = 0x2940
 current_attempted_height_metre_286a = 0x286a
 current_attempt_height_286b = 0x286b
 current_attempted_height_centimetres_286c = 0x286c
@@ -1415,7 +1417,7 @@ irq_6600:
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	read_inputs_6624                  	| [$6615: jsr    read_inputs_6624]
 	jbsr	l_664a                            	| [$6618: jsr    $664a]
-	jbsr	l_66eb                            	| [$661b: jsr    $66eb]
+	jbsr	update_sounds_66eb                	| [$661b: jsr    update_sounds_66eb]
 	 |  [$661e: lda    #$01]
 	jbsr	osd_enable_interrupts |  [$6620: sta    irq_mask_w_1087]
 	rts |  [$6623: rti]
@@ -1494,7 +1496,7 @@ l_666a:
 	jeq	l_66a4                             	| [$6679: beq    $66a4]
 	GET_DP_ADDRESS	nb_objects_48           	| [$667b: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	0x22                    	| [$667d: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$667d: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_6684                             	| [$667f: beq    $6684]
 	moveq	#0,d0                            	| [$6681: clra]
@@ -1588,7 +1590,7 @@ l_66e0:
 l_66ea:
 	rts                                    	| [$66ea: rts]
 
-l_66eb:
+update_sounds_66eb:
 	GET_DP_ADDRESS	0x1e                    	| [$66eb: ldx    $1e]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	GET_DP_ADDRESS	0x1c                    	| [$66ed: cmpx   $1c]
@@ -1611,7 +1613,7 @@ l_66f2:
 	 |  [$6700: sta    sh_irqtrigger_w_1081]
 	cmp.w	#player_1_final_time_2960,d2     	| [$6703: cmpx   #player_1_final_time_2960]
 	jne	l_670b                             	| [$6706: bne    $670b]
-	move.w	#0x2940,d2                      	| [$6708: ldx    #$2940]
+	move.w	#sound_queue_2940,d2            	| [$6708: ldx    #sound_queue_2940]
 l_670b:
 	GET_DP_ADDRESS	0x1e                    	| [$670b: stx    $1e]
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
@@ -1653,7 +1655,7 @@ rolling_demo_6726:
 	tst.b	d1                               	| [$6731: tstb]
 	jne	l_673e                             	| [$6732: bne    $673e]
 l_6734:
-	GET_DP_ADDRESS	0x22                    	| [$6734: clr    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6734: clr    game_playing_22]
 	clr.b	(a0)                         	| [...]
 	lea	table_a877,a2                  	| [$6736: ldx    #table_a877]
 	GET_DP_ADDRESS	0x0f                    	| [$6739: lda    $0f]
@@ -1819,7 +1821,7 @@ start_a_game_680a:
 	GET_DP_ADDRESS	0x10                    	| [$681a: sta    $10]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x01,d0                        	| [$681c: lda    #$01]
-	GET_DP_ADDRESS	0x22                    	| [$681e: sta    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$681e: sta    game_playing_22]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x01,d0                        	| [$6820: lda    #$01]
 	GET_DP_ADDRESS	dsw2_copy_2d            	| [$6822: ldb    dsw2_copy_2d]
@@ -2060,7 +2062,7 @@ l_695f:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_699f                             	| [$6961: bne    $699f]
 	jbsr	l_8825                            	| [$6963: jsr    $8825]
-	GET_DP_ADDRESS	0x22                    	| [$6966: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6966: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_696c                             	| [$6968: bne    $696c]
 	GET_DP_ADDRESS	max_accepted_faults_e1  	| [$696a: clr    max_accepted_faults_e1]
@@ -2148,7 +2150,7 @@ l_69af:
 	rts                                    	| [$69cc: rts]
 
 l_69cd:
-	GET_DP_ADDRESS	0x22                    	| [$69cd: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$69cd: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_69d6                             	| [$69cf: beq    $69d6]
 	move.b	#0x03,d0                        	| [$69d1: lda    #$03]
@@ -2244,7 +2246,7 @@ l_6a4a:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	cmp.w	#0x2a40,d2                       	| [$6a4c: cmpx   #$2a40]
 	jne	l_6a4a                             	| [$6a4f: bne    $6a4a]
-	GET_DP_ADDRESS	0x22                    	| [$6a51: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6a51: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_6a69                             	| [$6a53: bne    $6a69]
 	GET_DP_ADDRESS	dsw1_copy_2c            	| [$6a55: lda    dsw1_copy_2c]
@@ -2713,7 +2715,7 @@ l_6cd1:
 	jbsr	l_8b71                            	| [$6cd4: jsr    $8b71]
 l_6cd7:
 	jbsr	l_8ba3                            	| [$6cd7: jsr    $8ba3]
-	GET_DP_ADDRESS	0x22                    	| [$6cda: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6cda: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_6ce3                             	| [$6cdc: bne    $6ce3]
 	GET_DP_ADDRESS	0x06                    	| [$6cde: inc    $06]
@@ -2927,7 +2929,7 @@ l_6e0b:
 	cmp.b	#0x03,d0                         	| [$6e1a: cmpa   #$03]
 	jne	l_6e2e                             	| [$6e1c: bne    $6e2e]
 l_6e1e:
-	GET_DP_ADDRESS	0x22                    	| [$6e1e: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6e1e: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jeq	l_6e2e                             	| [$6e20: beq    $6e2e]
 	move.w	#0x3ec4,d4                      	| [$6e22: ldu    #$3ec4]
@@ -2959,7 +2961,7 @@ l_6e4e:
 l_6e4f:
 	jbsr	l_8a9b                            	| [$6e4f: jsr    $8a9b]
 	jbsr	l_8e5f                            	| [$6e52: jsr    $8e5f]
-	GET_DP_ADDRESS	0x22                    	| [$6e55: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6e55: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_6e5c                             	| [$6e57: bne    $6e5c]
 	jbsr	l_90c0                            	| [$6e59: jsr    $90c0]
@@ -2981,7 +2983,7 @@ l_6e6c:
 
 player_turn_ends_6e75:
 	jbsr	l_8e5f                            	| [$6e75: jsr    $8e5f]
-	GET_DP_ADDRESS	0x22                    	| [$6e78: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6e78: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_6e7f                             	| [$6e7a: bne    $6e7f]
 	jbsr	l_90c0                            	| [$6e7c: jsr    $90c0]
@@ -3215,7 +3217,7 @@ l_6fbc:
 	jeq	l_70a3                             	| [$6fce: lbeq   $70a3]
 	cmp.b	#0x03,d0                         	| [$6fd2: cmpa   #$03]
 	jeq	l_70a3                             	| [$6fd4: lbeq   $70a3]
-	GET_DP_ADDRESS	0x22                    	| [$6fd8: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$6fd8: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_6ff9                             	| [$6fda: beq    $6ff9]
 	GET_DP_ADDRESS	current_level_84        	| [$6fdc: lda    current_level_84]
@@ -3709,7 +3711,7 @@ l_724c:
 	move.w	#0x1822,d4                      	| [$7269: ldu    #$1822]
 	jbsr	l_d28c                            	| [$726c: jsr    $d28c]
 l_726f:
-	GET_DP_ADDRESS	0x22                    	| [$726f: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$726f: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_728c                             	| [$7271: beq    $728c]
 	GET_DP_ADDRESS	current_level_84        	| [$7273: lda    current_level_84]
@@ -3744,7 +3746,7 @@ l_728f:
 	GET_DP_ADDRESS	max_accepted_faults_e1  	| [$7291: cmpa   max_accepted_faults_e1]
 	cmp.b	(a0),d0                          	| [...]
 	jne	l_72bc                             	| [$7293: bne    $72bc]
-	GET_DP_ADDRESS	0x22                    	| [$7295: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$7295: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_72a2                             	| [$7297: bne    $72a2]
 	GET_DP_ADDRESS	0x12                    	| [$7299: inc    $12]
@@ -4594,7 +4596,7 @@ l_7693:
 l_76a5:
 	move.b	#0x01,d0                        	| [$76a5: ldd    #$0102]
 	move.w	#0x0102,d1                      	| [$76a5: ldd    #$0102]
-	GET_DP_ADDRESS	0x22                    	| [$76a8: sta    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$76a8: sta    game_playing_22]
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	global_state_00         	| [$76aa: stb    global_state_00]
 	move.b	d1,(a0)                         	| [...]
@@ -4702,9 +4704,9 @@ l_772f:
 	move.w	#0x023b,d1                      	| [$773b: ldd    #$023b]
 	jbsr	queue_event_84f5                  	| [$773e: jsr    queue_event_84f5]
 	move.b	#0x80,d0                        	| [$7741: lda    #$80]
-	jbsr	l_8508                            	| [$7743: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7743: jsr    queue_sound_event_8508]
 	move.b	#0xff,d0                        	| [$7746: lda    #$ff]
-	jbsr	l_8508                            	| [$7748: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7748: jsr    queue_sound_event_8508]
 	move.b	#0x30,d0                        	| [$774b: lda    #$30]
 	GET_DP_ADDRESS	0x0a                    	| [$774d: sta    $0a]
 	move.b	d0,(a0)                         	| [...]
@@ -4818,9 +4820,9 @@ l_77cd:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_77e1                             	| [$77cf: bne    $77e1]
 	move.b	#0x81,d0                        	| [$77d1: lda    #$81]
-	jbsr	l_8508                            	| [$77d3: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$77d3: jsr    queue_sound_event_8508]
 	move.b	#0xff,d0                        	| [$77d6: lda    #$ff]
-	jbsr	l_8508                            	| [$77d8: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$77d8: jsr    queue_sound_event_8508]
 	move.b	#0x30,d0                        	| [$77db: lda    #$30]
 	GET_DP_ADDRESS	0x0b                    	| [$77dd: sta    $0b]
 	move.b	d0,(a0)                         	| [...]
@@ -4885,7 +4887,7 @@ l_7810:
 	GET_DP_ADDRESS	0x0b                    	| [$782a: dec    $0b]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7893                             	| [$782c: bne    $7893]
-	GET_DP_ADDRESS	0x22                    	| [$782e: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$782e: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jeq	l_7867                             	| [$7830: beq    $7867]
 	move.b	#0x0d,d0                        	| [$7832: lda    #$0d]
@@ -4924,11 +4926,11 @@ l_7855:
 	jra	l_7876                             	| [$7865: bra    $7876]
 l_7867:
 	move.b	#0x1a,d0                        	| [$7867: lda    #$1a]
-	jbsr	l_8508                            	| [$7869: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7869: jsr    queue_sound_event_8508]
 	move.b	#0x0c,d0                        	| [$786c: lda    #$0c]
-	jbsr	l_8508                            	| [$786e: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$786e: jsr    queue_sound_event_8508]
 	move.b	#0x0d,d0                        	| [$7871: lda    #$0d]
-	jbsr	l_8508                            	| [$7873: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7873: jsr    queue_sound_event_8508]
 l_7876:
 	move.b	#0x78,d0                        	| [$7876: ldd    #$7828]
 	move.w	#0x7828,d1                      	| [$7876: ldd    #$7828]
@@ -4999,14 +5001,14 @@ l_78b7:
 	move.b	d0,(a0)                         	| [...]
 	jbsr	l_ccab                            	| [$78ca: jsr    $ccab]
 	move.b	#0x10,d0                        	| [$78cd: lda    #$10]
-	GET_REG_ADDRESS	0x22,d2                	| [$78cf: sta    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$78cf: sta    game_playing_22,x]
 	move.b	d0,(a0)                         	| [...]
 l_78d2:
 	moveq	#0,d1                            	| [$78d2: clrb]
 	rts                                    	| [$78d3: rts]
 
 l_78d4:
-	GET_REG_ADDRESS	0x22,d2                	| [$78d4: dec    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$78d4: dec    game_playing_22,x]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_78f8                             	| [$78d7: bne    $78f8]
 	move.b	#0x1a,d0                        	| [$78d9: lda    #$1a]
@@ -5024,14 +5026,14 @@ l_78d4:
 	move.b	d0,(a0)                         	| [...]
 	jbsr	l_ccb1                            	| [$78f0: jsr    $ccb1]
 	move.b	#0x10,d0                        	| [$78f3: lda    #$10]
-	GET_REG_ADDRESS	0x22,d2                	| [$78f5: sta    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$78f5: sta    game_playing_22,x]
 	move.b	d0,(a0)                         	| [...]
 l_78f8:
 	moveq	#0,d1                            	| [$78f8: clrb]
 	rts                                    	| [$78f9: rts]
 
 l_78fa:
-	GET_REG_ADDRESS	0x22,d2                	| [$78fa: dec    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$78fa: dec    game_playing_22,x]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_78f8                             	| [$78fd: bne    $78f8]
 	move.b	#0x1a,d0                        	| [$78ff: lda    #$1a]
@@ -5343,7 +5345,7 @@ l_7a80:
 	move.w	#0x28a0,d2                      	| [$7a9b: ldx    #$28a0]
 l_7a9e:
 	move.l	d1,-(sp)                        	| [$7a9e: pshs   b]
-	GET_REG_ADDRESS	0x22,d2                	| [$7aa0: tst    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$7aa0: tst    game_playing_22,x]
 	tst.b	(a0)                             	| [...]
 	jne	l_7ab3                             	| [$7aa3: bne    $7ab3]
 	jbsr	l_9f82                            	| [$7aa5: jsr    $9f82]
@@ -5355,7 +5357,7 @@ l_7a9e:
 	jra	l_7ab6                             	| [$7ab1: bra    $7ab6]
 
 l_7ab3:
-	GET_REG_ADDRESS	0x22,d2                	| [$7ab3: dec    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$7ab3: dec    game_playing_22,x]
 	subq.b	#1,(a0)                         	| [...]
 l_7ab6:
 	GET_DP_ADDRESS	0xdf                    	| [$7ab6: inc    $df]
@@ -5384,7 +5386,7 @@ l_7ab6:
 	jne	l_7ae9                             	| [$7adb: bne    $7ae9]
 l_7add:
 	moveq	#0,d0                            	| [$7add: clra]
-	jbsr	l_8508                            	| [$7ade: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7ade: jsr    queue_sound_event_8508]
 	move.b	#0x30,d0                        	| [$7ae1: lda    #$30]
 	GET_DP_ADDRESS	0x0b                    	| [$7ae3: sta    $0b]
 	move.b	d0,(a0)                         	| [...]
@@ -5478,7 +5480,7 @@ l_7b5c:
 	GET_REG_ADDRESS	0x36,d2                	| [$7b5c: inc    $36,x]
 	addq.b	#1,(a0)                         	| [...]
 	move.b	#0x08,d0                        	| [$7b5f: lda    #$08]
-	GET_REG_ADDRESS	0x22,d2                	| [$7b61: sta    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$7b61: sta    game_playing_22,x]
 	move.b	d0,(a0)                         	| [...]
 l_7b64:
 	rts                                    	| [$7b64: rts]
@@ -5726,7 +5728,7 @@ l_7ca0:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_7cb2                             	| [$7ca2: bne    $7cb2]
 	move.b	#0x28,d0                        	| [$7ca4: lda    #$28]
-	jbsr	l_8508                            	| [$7ca6: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7ca6: jsr    queue_sound_event_8508]
 	jbsr	l_8e77                            	| [$7ca9: jsr    $8e77]
 	GET_DP_ADDRESS	0x3f                    	| [$7cac: clr    $3f]
 	clr.b	(a0)                         	| [...]
@@ -5754,7 +5756,7 @@ l_7cbd:
 	and.b	(a0),d0                          	| [...]
 	and.b	#0x05,d0                         	| [$7cc4: anda   #$05]
 	jne	l_7ceb                             	| [$7cc6: bne    $7ceb]
-	GET_DP_ADDRESS	0x22                    	| [$7cc8: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$7cc8: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_7ccf                             	| [$7cca: beq    $7ccf]
 	jbsr	l_9032                            	| [$7ccc: jsr    $9032]
@@ -5831,7 +5833,7 @@ l_7d0c:
 
 l_7d3f:
 	jbsr	chrono_tick_d7ff                  	| [$7d3f: jsr    chrono_tick_d7ff]
-	GET_DP_ADDRESS	0x22                    	| [$7d42: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$7d42: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_7d5e                             	| [$7d44: bne    $7d5e]
 	GET_ADDRESS	0x2a9a                     	| [$7d46: lda    $2a9a]
@@ -5892,13 +5894,13 @@ l_7d92:
 	GET_DP_ADDRESS	angle_d8                	| [$7da9: sta    angle_d8]
 	move.b	d0,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$7dab: clra]
-	jbsr	l_8508                            	| [$7dac: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7dac: jsr    queue_sound_event_8508]
 	move.b	#0x05,d0                        	| [$7daf: lda    #$05]
-	jbsr	l_8508                            	| [$7db1: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7db1: jsr    queue_sound_event_8508]
 	move.b	#0x14,d0                        	| [$7db4: lda    #$14]
-	jbsr	l_8508                            	| [$7db6: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7db6: jsr    queue_sound_event_8508]
 	move.b	#0x15,d0                        	| [$7db9: lda    #$15]
-	jbsr	l_8508                            	| [$7dbb: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7dbb: jsr    queue_sound_event_8508]
 	GET_DP_ADDRESS	0xb2                    	| [$7dbe: lda    $b2]
 	move.b	(a0),d0                         	| [...]
 	GET_DP_ADDRESS	0xe9                    	| [$7dc0: adda   $e9]
@@ -6082,7 +6084,7 @@ l_7e7f:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jbsr	l_86a1                            	| [$7eaa: jsr    $86a1]
 	moveq	#0,d0                            	| [$7ead: clra]
-	jbsr	l_8508                            	| [$7eae: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$7eae: jsr    queue_sound_event_8508]
 	move.b	#0x25,d0                        	| [$7eb1: lda    #$25]
 	jbsr	l_850e                            	| [$7eb3: jsr    $850e]
 	movem.l	(sp)+,d2                       	| [$7eb6: puls   x]
@@ -6348,7 +6350,7 @@ l_800b:
 	move.w	#0x28a0,d2                      	| [$8010: ldx    #$28a0]
 l_8013:
 	move.l	d1,-(sp)                        	| [$8013: pshs   b]
-	GET_REG_ADDRESS	0x22,d2                	| [$8015: tst    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$8015: tst    game_playing_22,x]
 	tst.b	(a0)                             	| [...]
 	jne	l_8028                             	| [$8018: bne    $8028]
 	jbsr	l_9f82                            	| [$801a: jsr    $9f82]
@@ -6360,7 +6362,7 @@ l_8013:
 	jra	l_802b                             	| [$8026: bra    $802b]
 
 l_8028:
-	GET_REG_ADDRESS	0x22,d2                	| [$8028: dec    $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$8028: dec    game_playing_22,x]
 	subq.b	#1,(a0)                         	| [...]
 l_802b:
 	GET_DP_ADDRESS	0xdf                    	| [$802b: inc    $df]
@@ -6389,7 +6391,7 @@ l_802b:
 	jne	l_805e                             	| [$8050: bne    $805e]
 l_8052:
 	moveq	#0,d0                            	| [$8052: clra]
-	jbsr	l_8508                            	| [$8053: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$8053: jsr    queue_sound_event_8508]
 	move.b	#0x30,d0                        	| [$8056: lda    #$30]
 	GET_DP_ADDRESS	0x0b                    	| [$8058: sta    $0b]
 	move.b	d0,(a0)                         	| [...]
@@ -6753,7 +6755,7 @@ l_824a:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_8260                             	| [$824c: bne    $8260]
 	move.b	#0x28,d0                        	| [$824e: lda    #$28]
-	jbsr	l_8508                            	| [$8250: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$8250: jsr    queue_sound_event_8508]
 	jbsr	l_8e77                            	| [$8253: jsr    $8e77]
 	GET_ADDRESS	0x2a98                     	| [$8256: clr    $2a98]
 	clr.b	(a0)                         	| [...]
@@ -6987,9 +6989,9 @@ l_838c:
 	move.w	#0xb6e2,d3                      	| [$838c: ldy    #$b6e2]
 	jbsr	l_a3f8                            	| [$8390: jsr    $a3f8]
 	move.b	#0x14,d0                        	| [$8393: lda    #$14]
-	jbsr	l_8508                            	| [$8395: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$8395: jsr    queue_sound_event_8508]
 	move.b	#0x15,d0                        	| [$8398: lda    #$15]
-	jbsr	l_8508                            	| [$839a: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$839a: jsr    queue_sound_event_8508]
 	GET_DP_ADDRESS	0x09                    	| [$839d: inc    $09]
 	addq.b	#1,(a0)                         	| [...]
 	rts                                    	| [$839f: rts]
@@ -7175,9 +7177,9 @@ l_846a:
 	clr.b	(a0)                         	| [...]
 	jbsr	l_cc81                            	| [$8480: jsr    $cc81]
 	moveq	#0,d0                            	| [$8483: clra]
-	jbsr	l_8508                            	| [$8484: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$8484: jsr    queue_sound_event_8508]
 	move.b	#0x09,d0                        	| [$8487: lda    #$09]
-	jbsr	l_8508                            	| [$8489: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$8489: jsr    queue_sound_event_8508]
 	GET_DP_ADDRESS	0x06                    	| [$848c: inc    $06]
 	addq.b	#1,(a0)                         	| [...]
 	GET_DP_ADDRESS	0x09                    	| [$848e: clr    $09]
@@ -7280,7 +7282,7 @@ queue_event_84f5:
 	GET_REG_ADDRESS	0,d3                   	| [$84f8: std    ,y++]
 	addq.w	#2,d3                           	| [...]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	cmp.w	#0x2940,d3                       	| [$84fa: cmpy   #$2940]
+	cmp.w	#sound_queue_2940,d3             	| [$84fa: cmpy   #sound_queue_2940]
 	jne	l_8504                             	| [$84fe: bne    $8504]
 	move.w	#event_buffer_2900,d3           	| [$8500: ldy    #event_buffer_2900]
 l_8504:
@@ -7288,15 +7290,15 @@ l_8504:
 	MOVE_W_FROM_REG	d3,a0                         	| [...]
 	rts                                    	| [$8507: rts]
 
-l_8508:
+queue_sound_event_8508:
 	GET_DP_ADDRESS	dsw2_copy_2d            	| [$8508: ldb    dsw2_copy_2d]
 	move.b	(a0),d1                         	| [...]
 	and.b	#0x80,d1                         	| [$850a: andb   #$80]
-	jne	l_8512                             	| [$850c: bne    $8512]
+	jne	l_8512                             	| [$850c: bne    $8512] attract sounds: queue sound
 l_850e:
-	GET_DP_ADDRESS	0x22                    	| [$850e: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$850e: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
-	jeq	l_8524                             	| [$8510: beq    $8524]
+	jeq	l_8524                             	| [$8510: beq    $8524] game not playing: skip
 l_8512:
 	GET_DP_ADDRESS	0x1c                    	| [$8512: ldy    $1c]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
@@ -7305,7 +7307,7 @@ l_8512:
 	move.b	d0,(a0)                         	| [...]
 	cmp.w	#player_1_final_time_2960,d3     	| [$8517: cmpy   #player_1_final_time_2960]
 	jne	l_8521                             	| [$851b: bne    $8521]
-	move.w	#0x2940,d3                      	| [$851d: ldy    #$2940]
+	move.w	#sound_queue_2940,d3            	| [$851d: ldy    #sound_queue_2940]
 l_8521:
 	GET_DP_ADDRESS	0x1c                    	| [$8521: sty    $1c]
 	MOVE_W_FROM_REG	d3,a0                         	| [...]
@@ -7585,6 +7587,7 @@ l_8652:
 	POP_SR                                 	| [...]
 l_8676:
 	jra	l_867a                             	| [$8676: bra    $867a]
+
 l_8678:
 	GET_DP_ADDRESS	0x4c                    	| [$8678: ldd    $4c]
 	LOAD_D                                 	| [$8678: ldd    $4c]
@@ -8409,7 +8412,7 @@ l_8a2a:
 	rts                                    	| [$8a3e: rts]
 
 l_8a3f:
-	GET_DP_ADDRESS	0x22                    	| [$8a3f: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$8a3f: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_8a4b                             	| [$8a41: bne    $8a4b]
 	move.b	#0x01,d0                        	| [$8a43: lda    #$01]
@@ -8488,7 +8491,7 @@ l_8a8d:
 	rts                                    	| [$8a9a: rts]
 
 l_8a9b:
-	GET_DP_ADDRESS	0x22                    	| [$8a9b: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$8a9b: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8b05                             	| [$8a9d: beq    $8b05]
 	move.w	#0xa9e8,d3                      	| [$8a9f: ldy    #$a9e8]
@@ -9426,7 +9429,7 @@ l_8ec3:
 	rts                                    	| [$8ecb: rts]
 
 l_8ecc:
-	GET_DP_ADDRESS	0x22                    	| [$8ecc: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$8ecc: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8eef                             	| [$8ece: beq    $8eef]
 l_8ed0:
@@ -9457,7 +9460,7 @@ l_8eef:
 	rts                                    	| [$8eef: rts]
 
 l_8ef0:
-	GET_DP_ADDRESS	0x22                    	| [$8ef0: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$8ef0: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8f1d                             	| [$8ef2: beq    $8f1d]
 	GET_DP_ADDRESS	current_level_84        	| [$8ef4: lda    current_level_84]
@@ -9494,7 +9497,7 @@ l_8f1d:
 	rts                                    	| [$8f1d: rts]
 
 l_8f1e:
-	GET_DP_ADDRESS	0x22                    	| [$8f1e: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$8f1e: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8f4a                             	| [$8f20: beq    $8f4a]
 	move.w	#0x2b60,d2                      	| [$8f22: ldx    #$2b60]
@@ -9635,7 +9638,7 @@ l_8f8b:
 	rts                                    	| [$8fb7: rts]
 
 l_8fb8:
-	GET_DP_ADDRESS	0x22                    	| [$8fb8: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$8fb8: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_8fda                             	| [$8fba: beq    $8fda]
 	move.w	#0x2b60,d2                      	| [$8fbc: ldx    #$2b60]
@@ -9784,7 +9787,7 @@ l_906a:
 	rts                                    	| [$9073: rts]
 
 l_9074:
-	GET_DP_ADDRESS	0x22                    	| [$9074: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$9074: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_90bf                             	| [$9076: beq    $90bf]
 	move.w	#0x320b,d4                      	| [$9078: ldu    #$320b]
@@ -11428,9 +11431,9 @@ l_98c2:
 	jmp	l_caf5                             	| [$98cd: jmp    $caf5]
 l_98d0:
 	moveq	#0,d0                            	| [$98d0: clra]
-	jbsr	l_8508                            	| [$98d1: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$98d1: jsr    queue_sound_event_8508]
 	move.b	#0x09,d0                        	| [$98d4: lda    #$09]
-	jbsr	l_8508                            	| [$98d6: jsr    $8508]
+	jbsr	queue_sound_event_8508            	| [$98d6: jsr    queue_sound_event_8508]
 	GET_REG_ADDRESS	0x2,d2                 	| [$98d9: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
 	GET_ADDRESS	0x2aba                     	| [$98db: adda   $2aba]
@@ -12674,7 +12677,7 @@ l_9f1b:
 	move.w	d4,d2                           	| [$9f2a: tfr    u,x]
 	jbsr	l_88cd                            	| [$9f2c: jsr    $88cd]
 	movem.l	(sp)+,d2                       	| [$9f2f: puls   x]
-	GET_DP_ADDRESS	0x22                    	| [$9f31: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$9f31: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_9f60                             	| [$9f33: beq    $9f60]
 	move.b	#0x06,d0                        	| [$9f35: lda    #$06]
@@ -13372,7 +13375,7 @@ l_a2b1:
 	cmp.w	#0x0098,d1                       	| [$a2b4: cmpd   #$0098]
 	jcc	l_a3b5                             	| [$a2b8: lbcc   $a3b5]
 	MAKE_D
-	GET_REG_ADDRESS	0x22,d2                	| [$a2bc: cmpd   $22,x]
+	GET_REG_ADDRESS	game_playing_22,d2     	| [$a2bc: cmpd   game_playing_22,x]
 	cmp.w	(a0),d1                          	| [...]
 	jls	l_a2de                             	| [$a2c0: bls    $a2de]
 	GET_REG_ADDRESS	0x1,d2                 	| [$a2c2: ldb    $1,x]
@@ -14025,7 +14028,7 @@ l_cbe5:
 	move.b	d0,(a0)                         	| [...]
 	GET_DP_ADDRESS	0xd0                    	| [$cbeb: inc    $d0]
 	addq.b	#1,(a0)                         	| [...]
-	GET_DP_ADDRESS	0x22                    	| [$cbed: lda    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$cbed: lda    game_playing_22]
 	move.b	(a0),d0                         	| [...]
 	jne	l_cc02                             	| [$cbef: bne    $cc02]
 	GET_DP_ADDRESS	0xd0                    	| [$cbf1: lda    $d0]
@@ -17952,7 +17955,7 @@ l_e28b:
 	LOAD_D                                 	| [$e28e: ldd    chrono_hundredth_second_7e]
 	cmp.w	#0x7002,d1                       	| [$e290: cmpd   #$7002]
 	jne	l_e2a1                             	| [$e294: bne    $e2a1]
-	GET_DP_ADDRESS	0x22                    	| [$e296: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$e296: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_e2a1                             	| [$e298: bne    $e2a1]
 	move.b	#0x01,d0                        	| [$e29a: lda    #$01]
@@ -18828,7 +18831,7 @@ l_e754:
 	LOAD_D                                 	| [$e757: ldd    chrono_hundredth_second_7e]
 	cmp.b	#0x40,d1                         	| [$e759: cmpb   #$40]
 	jeq	l_e736                             	| [$e75b: beq    $e736]
-	GET_DP_ADDRESS	0x22                    	| [$e75d: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$e75d: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_e772                             	| [$e75f: bne    $e772]
 	MAKE_D
@@ -20036,7 +20039,7 @@ high_scores_effb:
 	or.b	(a0),d0                           	| [...]
                                          | [$f003: sta    $2a9b]
 	move.b	d0,(a0)                         	| [...]
-	GET_DP_ADDRESS	0x22                    	| [$f006: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f006: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_f018                             	| [$f008: bne    $f018]
 	GET_DP_ADDRESS	dsw1_copy_2c            	| [$f00a: lda    dsw1_copy_2c]
@@ -20103,7 +20106,7 @@ l_f05c:
 	GET_ADDRESS	0x2a91                     	| [$f05c: tst    $2a91]
 	tst.b	(a0)                             	| [...]
 	jne	l_f0f8                             	| [$f05f: lbne   $f0f8]
-	GET_DP_ADDRESS	0x22                    	| [$f063: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f063: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jeq	l_f0f8                             	| [$f065: lbeq   $f0f8]
 	move.w	#0x2cc0,d3                      	| [$f069: ldy    #$2cc0]
@@ -20225,7 +20228,7 @@ l_f0f8:
 	rts                                    	| [$f0fd: rts]
 
 l_f0fe:
-	GET_DP_ADDRESS	0x22                    	| [$f0fe: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f0fe: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jeq	l_f163                             	| [$f100: beq    $f163]
 	GET_DP_ADDRESS	0xdf                    	| [$f102: lda    $df]
@@ -20380,7 +20383,7 @@ l_f1af:
 	jne	l_f1af                             	| [$f1b2: bne    $f1af]
 	move.w	#0x3188,d2                      	| [$f1b4: ldx    #$3188]
 	move.w	#0xfda0,d3                      	| [$f1b7: ldy    #$fda0]
-	GET_DP_ADDRESS	0x22                    	| [$f1bb: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f1bb: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_f1c3                             	| [$f1bd: bne    $f1c3]
 	move.w	#0xfdae,d3                      	| [$f1bf: ldy    #$fdae]
@@ -20399,7 +20402,7 @@ l_f1c5:
 	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d0                           	| [$f1cb: deca]
 	jne	l_f1c5                             	| [$f1cc: bne    $f1c5]
-	GET_DP_ADDRESS	0x22                    	| [$f1ce: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f1ce: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jeq	l_f1e9                             	| [$f1d0: beq    $f1e9]
 	GET_DP_ADDRESS	0xdf                    	| [$f1d2: lda    $df]
@@ -20762,7 +20765,7 @@ l_f36c:
 	GET_DP_ADDRESS	nb_objects_48           	| [$f370: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_f36c                             	| [$f372: bne    $f36c]
-	GET_DP_ADDRESS	0x22                    	| [$f374: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f374: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_f37a                             	| [$f376: bne    $f37a]
 	GET_DP_ADDRESS	0xdf                    	| [$f378: clr    $df]
@@ -20783,7 +20786,7 @@ l_f37a:
 	GET_REG_ADDRESS	0x1,d2                 	| [$f38c: std    $1,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	add.w	#0x8,d4                          	| [$f38e: leau   $8,u]
-	GET_DP_ADDRESS	0x22                    	| [$f390: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f390: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_f396                             	| [$f392: bne    $f396]
 	GET_DP_ADDRESS	0xdf                    	| [$f394: inc    $df]
@@ -20797,7 +20800,7 @@ l_f396:
 	GET_REG_ADDRESS	0x1,d2                 	| [$f39d: std    $1,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	add.w	#0x8,d4                          	| [$f39f: leau   $8,u]
-	GET_DP_ADDRESS	0x22                    	| [$f3a1: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f3a1: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_f3a7                             	| [$f3a3: bne    $f3a7]
 	GET_DP_ADDRESS	0xdf                    	| [$f3a5: inc    $df]
@@ -20811,7 +20814,7 @@ l_f3a7:
 	GET_REG_ADDRESS	0x1,d2                 	| [$f3ae: std    $1,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	add.w	#0x8,d4                          	| [$f3b0: leau   $8,u]
-	GET_DP_ADDRESS	0x22                    	| [$f3b2: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f3b2: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jne	l_f3b8                             	| [$f3b4: bne    $f3b8]
 	GET_DP_ADDRESS	0xdf                    	| [$f3b6: inc    $df]
@@ -20850,7 +20853,7 @@ l_f3d7:
 	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f3d9: cmpa   nb_players_minus_one_60]
 	cmp.b	(a0),d0                          	| [...]
 	jeq	l_f41a                             	| [$f3db: beq    $f41a]
-	GET_DP_ADDRESS	0x22                    	| [$f3dd: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f3dd: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	jeq	l_f41a                             	| [$f3df: beq    $f41a]
 	GET_DP_ADDRESS	0xdf                    	| [$f3e1: inc    $df]
@@ -20905,7 +20908,7 @@ l_f41a:
 	clr.b	(a0)                         	| [...]
 	GET_DP_ADDRESS	nb_players_minus_one_60 	| [$f41e: clr    nb_players_minus_one_60]
 	clr.b	(a0)                         	| [...]
-	GET_DP_ADDRESS	0x22                    	| [$f420: tst    $22]
+	GET_DP_ADDRESS	game_playing_22         	| [$f420: tst    game_playing_22]
 	tst.b	(a0)                             	| [...]
 	GET_DP_ADDRESS	boot_state_03           	| [$f422: clr    boot_state_03]
 	clr.b	(a0)                         	| [...]

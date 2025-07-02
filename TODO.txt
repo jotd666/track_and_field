@@ -3,13 +3,15 @@
 - https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
   centuri game is too hard
 - rip run sounds: let one player play
+- cheer correct loop plus why doesn't stop on 0xFF or 0x80 sound
+- speech synthesis figure out when plays doesn't seem the same mechanism
+- remove music at start, rip name entry pings
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - is game playing: not working (should be able to insert coin in the push start screen)
 - save NV RAM each time a record is broken (find when) or game is over
-- sound and music!
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
 
 optims:
-- optimize code manually in the end
+- profile on MAME and optimize code manually in the end
