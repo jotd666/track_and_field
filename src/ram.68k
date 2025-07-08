@@ -6,8 +6,6 @@
 	.global skip_intro_flag
 	.global log_ptr
 	.global highscore_needs_saving_flag
-	.global sprite_ram_9000
-	.global	regscopy
 	.global vbl_sync_counter
 	.global vbl_sync_flag
 	.global no_sync_flag
@@ -50,11 +48,7 @@ high_score_beaten:
 	.word	0
 stack_top:
 	.long	0
-sprite_ram_9000:
-	.skip	0x500
-	
-regscopy:
-	.skip	56
+
 
 i_reg:
 	.byte	0

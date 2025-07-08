@@ -13,5 +13,3 @@
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
 
-optims:
-- profile on MAME and optimize code manually in the end

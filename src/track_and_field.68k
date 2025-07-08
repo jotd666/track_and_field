@@ -1591,6 +1591,7 @@ l_66ea:
 	rts                                    	| [$66ea: rts]
 
 update_sounds_66eb:
+* consume queued sounds
 	GET_DP_ADDRESS	0x1e                    	| [$66eb: ldx    $1e]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	GET_DP_ADDRESS	0x1c                    	| [$66ed: cmpx   $1c]
@@ -1603,6 +1604,7 @@ l_66f2:
 	addq.w	#1,d2                           	| [...]
 	move.b	(a0),d0                         	| [...]
 	jbsr	osd_sound_start |  [$66f4: sta    audio_register_w_1100]
+* peak the irq register
 	moveq	#0,d0                            	| [$66f7: clra]
 	 |  [$66f8: sta    sh_irqtrigger_w_1081]
                                          | [$66fb: nop]
@@ -1613,6 +1615,7 @@ l_66f2:
 	 |  [$6700: sta    sh_irqtrigger_w_1081]
 	cmp.w	#player_1_final_time_2960,d2     	| [$6703: cmpx   #player_1_final_time_2960]
 	jne	l_670b                             	| [$6706: bne    $670b]
+* cycle the event pointer
 	move.w	#sound_queue_2940,d2            	| [$6708: ldx    #sound_queue_2940]
 l_670b:
 	GET_DP_ADDRESS	0x1e                    	| [$670b: stx    $1e]
@@ -7467,7 +7470,7 @@ l_85de:
 	add.w	#0x0240,d4                       	| [$85e0: leau   $0240,u]
 	GET_REG_ADDRESS	0x2,d2                 	| [$85e4: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
-	and.b	#0xf8,d0                         	| [$85e6: anda   #$f8]
+	 |  [$85e6: anda   #$f8]
                                          | [$85e8: lsra]
                                          | [$85e9: lsra]
 	lsr.b	#3,d0                            	| [$85ea: lsra]
@@ -7481,7 +7484,7 @@ l_85f6:
 	jne	l_85eb                             	| [$85f7: bne    $85eb]
 	GET_REG_ADDRESS	0x1,d2                 	| [$85f9: lda    $1,x]
 	move.b	(a0),d0                         	| [...]
-	and.b	#0xf8,d0                         	| [$85fb: anda   #$f8]
+	and.b	#0xf8,d0                         	| [$85fb: anda   #$f8] useless, the 3 lsrs will do the job!
                                          | [$85fd: lsra]
                                          | [$85fe: lsra]
 	lsr.b	#3,d0                            	| [$85ff: lsra]
@@ -7537,7 +7540,7 @@ l_8631:
 	add.w	#0x00c0,d4                       	| [$8633: leau   $00c0,u]
 	GET_REG_ADDRESS	0x2,d2                 	| [$8637: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
-	and.b	#0xf8,d0                         	| [$8639: anda   #$f8]
+	 |  [$8639: anda   #$f8]
                                          | [$863b: lsra]
                                          | [$863c: lsra]
 	lsr.b	#3,d0                            	| [$863d: lsra]
@@ -11241,17 +11244,19 @@ l_97c1:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_97b6                             	| [$97d0: bne    $97b6]
 l_97d2:
-	move.w	#scroll_offsets_2af0,d2         	| [$97d2: ldx    #scroll_offsets_2af0]
-	moveq	#0,d0                            	| [$97d5: clra]
-	moveq	#0,d1                            	| [$97d6: clrb]
+*** manual optimization start ($97d2) ***
+
+    move.w    #scroll_offsets_2af0,d2             | [$97d2: ldx    #scroll_offsets_2af0]
+    GET_REG_ADDRESS    0,d2                       | [$97d7: std    ,x++]
+    moveq    #0,d0                                | [$97d6: clra] not needed but just in case
+    moveq    #0,d1                                | [$97d6: clrb]
 l_97d7:
-	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0,d2                   	| [$97d7: std    ,x++]
-	addq.w	#2,d2                           	| [...]
-	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	cmp.w	#0x2b00,d2                       	| [$97d9: cmpx   #$2b00]
-	jne	l_97d7                             	| [$97dc: bne    $97d7]
-	rts                                    	| [$97de: rts]
+    addq.w    #4,d2                               | [...]
+    clr.l    (a0)+                             | [...]
+    tst.b    d2                           | [$97d9: cmpx   #$2b00]
+    jne    l_97d7                                 | [$97dc: bne    $97d7]
+    rts                                        | [$97de: rts]
+*** manual optimization end ($97de) ***
 
 l_97df:
 	jbsr	l_deff                            	| [$97df: jsr    $deff]

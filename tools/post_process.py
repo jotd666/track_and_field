@@ -4,6 +4,40 @@ import re,pathlib
 tablere = re.compile("move.w\t#(\w*table_....),d(.)")
 jmpre = re.compile("(j..)\s+\[a,(.)\]")
 
+optimize_list = [
+
+# 100m dash (not working properly...)
+##{"start":0x85FB,"end":0x8606,"contents":"""
+##    and.w    #0xf8,d0
+##    * no need for the loop
+##    * we shift LEFT instead of right: times 64
+##    * then sub to d4 in one go
+##    lsl.w    #3,d0
+##    sub.w    d0,d4
+##"""},
+{"start":0x97d2,"end":0x97de,"contents":"""
+    move.w    #scroll_offsets_2af0,d2             | [$97d2: ldx    #scroll_offsets_2af0]
+    GET_REG_ADDRESS    0,d2                       | [$97d7: std    ,x++]
+    moveq    #0,d0                                | [$97d6: clra] not needed but just in case
+    moveq    #0,d1                                | [$97d6: clrb]
+l_97d7:
+    addq.w    #4,d2                               | [...]
+    clr.l    (a0)+                             | [...]
+    tst.b    d2                           | [$97d9: cmpx   #$2b00]
+    jne    l_97d7                                 | [$97dc: bne    $97d7]
+    rts                                        | [$97de: rts]
+"""},
+
+
+
+]
+
+# exact same copy paste of the same unefficient code :)
+##javelin_code = optimize_list[0].copy()
+##javelin_code["start"] = 0x85A6
+##javelin_code["end"] = 0x85B1
+##optimize_list.append(javelin_code)
+
 def remove_instruction(lines,i):
     return change_instruction("",lines,i)
 
@@ -184,6 +218,22 @@ with open(source_dir / "conv.s") as f:
                 reg = "A2" if m.group(2)=="x" else "A3"
                 rest = re.sub(".*\"","",line)
                 line = f"\t{inst}_A_INDEXED\t{reg}{rest}"
+
+        if True:
+            for offset in [0x85e6,0x8639]:
+                if f"[${offset:04x}" in line.lower():
+                    line = remove_instruction(lines,i)  # useless mask
+
+            for optimize in optimize_list:
+                if f"[${optimize['start']:04x}" in line.lower():
+
+                    line = f"*** manual optimization start (${optimize['start']:04x}) ***\n"+optimize["contents"]
+                    for j in range(i,len(lines)):
+                        if f"[${optimize['end']:04x}" in lines[j].lower():
+                            break
+                        lines[j] = ""
+                    lines[j] = f"*** manual optimization end (${optimize['end']:04x}) ***\n"
+
         if "ERROR" in line:
             print(line)
         lines[i] = line

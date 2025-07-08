@@ -4738,7 +4738,7 @@ queue_sound_event_8508:
 8589: DE 85          LDU    $85
 858B: 33 C9 00 C0    LEAU   $00C0,U
 858F: A6 02          LDA    $2,X
-8591: 84 F8          ANDA   #$F8
+8591: 84 F8          ANDA   #$F8		; useless, the 3 lsrs will
 8593: 44             LSRA
 8594: 44             LSRA
 8595: 44             LSRA
@@ -4749,7 +4749,7 @@ queue_sound_event_8508:
 85A1: 4A             DECA
 85A2: 26 F2          BNE    $8596
 85A4: A6 01          LDA    $1,X
-85A6: 84 F8          ANDA   #$F8
+85A6: 84 F8          ANDA   #$F8		; useless, the 3 lsrs will
 85A8: 44             LSRA
 85A9: 44             LSRA
 85AA: 44             LSRA
@@ -4782,7 +4782,7 @@ queue_sound_event_8508:
 85DE: DE 77          LDU    $77
 85E0: 33 C9 02 40    LEAU   $0240,U
 85E4: A6 02          LDA    $2,X
-85E6: 84 F8          ANDA   #$F8
+85E6: 84 F8          ANDA   #$F8		; useless, the 3 lsrs will do the job!
 85E8: 44             LSRA
 85E9: 44             LSRA
 85EA: 44             LSRA
@@ -4793,7 +4793,7 @@ queue_sound_event_8508:
 85F6: 4A             DECA
 85F7: 26 F2          BNE    $85EB
 85F9: A6 01          LDA    $1,X
-85FB: 84 F8          ANDA   #$F8
+85FB: 84 F8          ANDA   #$F8		; useless, the 3 lsrs will do the job!
 85FD: 44             LSRA
 85FE: 44             LSRA
 85FF: 44             LSRA
