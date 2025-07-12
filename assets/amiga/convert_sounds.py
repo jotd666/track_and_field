@@ -30,29 +30,39 @@ def convert():
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
 
+    #"THE_TIME_SND"               :{"index":0xA2,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "STEP_SND"               :{"index":0x1,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "SOUND_B_SND"               :{"index":0xb,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "SOUND_C_SND"               :{"index":0xc,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "SOUND_D_SND"               :{"index":0xd,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "FOUL_SND"               :{"index":0x82,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "ON_YOUR_MARK_SND"               :{"index":0x80,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "GET_SET_SND"               :{"index":0x81,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "LETTER_ENTERED_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "NAME_ENTERED_SND"            :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True,"priority":40},
-    #"LEVEL_1_COMPLETED_TUNE_SND"                :{"index":0x1E,"pattern":0x14,"volume":32,"loops":False,"ticks":480},
+    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x7,"volume":32,"loops":False,"ticks":480},
+    "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
+    "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
+    "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":140},
+    "NAME_ENTRY_SND"      :{"index":0x18,"pattern":0x0,"volume":32,"loops":True},
 
 
     }
 
     dummy_sounds = [0,
-    1,  # run?
     2,3,4,
     0xC,0xB,
     0x17,  # arrow sound name enter
-    0x18,  # name enter music
     0x40,
-    0x80,  # stop sound?
-    0x2C,  # event start music
     0x1B,  # letter entry name
-    0x33,  # broken record music
     0x9,0x25,  # long jump land
     5,0x14,0x15,  # long jump jump
     0x31,  # ???? drawf crossing after dash
+    0x1A,  # false start
     0xE,0xF, # jav throw, land
     0xFF,
     ]
@@ -149,24 +159,23 @@ def convert():
                 maxsigned = max(signed_data)
                 minsigned = min(signed_data)
 
-                amp_ratio = max(maxsigned,abs(minsigned))/128
+                amp_ratio = max(maxsigned,abs(minsigned))/64
 
-                # JOTD: for that one, I'm using maxxed out sfx by no9, no amp
-                amp_ratio = 0.9
+                print(f"amp_ratio: {amp_ratio}")
 
                 wav = os.path.splitext(wav_name)[0]
                 if amp_ratio > 1:
                     print(f"{wav}: volume peaked {amp_ratio}")
                     amp_ratio = 1
-                sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,used_sampling_rate,int(64*amp_ratio),used_priority)
+                sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,used_sampling_rate,int(128*amp_ratio),used_priority)
                 sound_table_set_1[sound_index] = f"\t.word\t1,{int(details.get('loops',0))}\n\t.long\t{wav}_sound"
 
-##                if amp_ratio > 0:
-##                    maxed_contents = [int(x/amp_ratio) for x in signed_data]
-##                else:
-##                    maxed_contents = signed_data
+                if amp_ratio > 0:
+                    maxed_contents = [int(x/amp_ratio) for x in signed_data]
+                else:
+                    maxed_contents = signed_data
 
-                maxed_contents = signed_data
+
 
                 signed_contents = bytes([x if x >= 0 else 256+x for x in maxed_contents])
                 # pre-pad with 0W, used by ptplayer for idling
@@ -191,8 +200,8 @@ def convert():
 
 
         # make sure next section will be aligned
-##        with open(os.path.join(sound_dir,f"{gamename}_conv.mod"),"rb") as f:
-##            contents = f.read()
+        with open(os.path.join(sound_dir,f"tracknfield_conv.mod"),"rb") as f:
+            contents = f.read()
 
         fw.write("{}:".format(music_module_label))
         write_asm(contents,fw)

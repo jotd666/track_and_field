@@ -1392,7 +1392,6 @@ update_one_bob:
 	btst	#7,d3
 	jeq		101f
 	* flipped: correct Y start
-	move.b	#0,0x101
 	neg.w	d2
 	sub.w	d4,d2
 	add.w	#SPRITE_HEIGHT,d2

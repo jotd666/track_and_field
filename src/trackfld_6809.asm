@@ -93,6 +93,7 @@ global_state_00 = $00
 boot_state_03 = $03
 event_pointer_18 = $18
 event_pointer_1a = $1a
+sound_event_pointer_1c = $1c
 copy_of_screen_flipped_21 = $21
 game_playing_22 = $22
 number_of_credits_23 = $23
@@ -210,7 +211,7 @@ reset_6000:
 6071: 9F 18          STX    event_pointer_18			; copy contents of 2900 in 2818,281A
 6073: 9F 1A          STX    event_pointer_1a
 6075: 8E 29 40       LDX    #event_buffer_2900+$40		; copy contents of 2940 in 281C,281E
-6078: 9F 1C          STX    $1C
+6078: 9F 1C          STX    sound_event_pointer_1c
 607A: 9F 1E          STX    $1E
 607C: 7F 10 80       CLR    flip_screen_set_1080		; no flip screen
 607F: 7F 10 82       CLR    nmi_mask_w_1082		; nmi mask?
@@ -1014,7 +1015,7 @@ read_inputs_6624:
 update_sounds_66eb:
 ; consume queued sounds
 66EB: 9E 1E          LDX    $1E
-66ED: 9C 1C          CMPX   $1C
+66ED: 9C 1C          CMPX   sound_event_pointer_1c
 66EF: 26 01          BNE    $66F2
 66F1: 39             RTS
 
@@ -3531,7 +3532,7 @@ player_turn_ends_6e75:
 7B83: A7 0C          STA    $C,X
 7B85: 86 0C          LDA    #$0C
 7B87: 7E 84 F5       JMP    queue_event_84f5
-7B8A: A6 88 1C       LDA    $1C,X
+7B8A: A6 88 1C       LDA    sound_event_pointer_1c,X
 7B8D: 26 05          BNE    $7B94
 7B8F: EC 88 10       LDD    $10,X
 7B92: 27 17          BEQ    $7BAB
@@ -4069,7 +4070,7 @@ player_turn_ends_6e75:
 7FE1: 81 40          CMPA   #$40
 7FE3: 25 26          BCS    $800B
 7FE5: 8E 28 A0       LDX    #$28A0
-7FE8: A6 88 1C       LDA    $1C,X
+7FE8: A6 88 1C       LDA    sound_event_pointer_1c,X
 7FEB: 26 1E          BNE    $800B
 7FED: B6 2A 1C       LDA    $2A1C
 7FF0: 26 19          BNE    $800B
@@ -4123,7 +4124,7 @@ player_turn_ends_6e75:
 805E: 39             RTS
 
 805F: BD 9E 7D       JSR    $9E7D
-8062: A6 88 1C       LDA    $1C,X
+8062: A6 88 1C       LDA    sound_event_pointer_1c,X
 8065: 81 02          CMPA   #$02
 8067: 10 27 01 0A    LBEQ   $8175
 806B: 81 01          CMPA   #$01
@@ -4219,14 +4220,14 @@ player_turn_ends_6e75:
 
 813F: A6 88 32       LDA    $32,X
 8142: 26 04          BNE    $8148
-8144: 6F 88 1C       CLR    $1C,X
+8144: 6F 88 1C       CLR    sound_event_pointer_1c,X
 8147: 39             RTS
 
 8148: 86 02          LDA    #$02
-814A: A7 88 1C       STA    $1C,X
+814A: A7 88 1C       STA    sound_event_pointer_1c,X
 814D: A7 88 2A       STA    $2A,X
 8150: 7E 80 91       JMP    $8091
-8153: 6C 88 1C       INC    $1C,X
+8153: 6C 88 1C       INC    sound_event_pointer_1c,X
 8156: BD 81 96       JSR    $8196
 8159: 8D 63          BSR    $81BE
 815B: 8D 61          BSR    $81BE
@@ -4685,12 +4686,12 @@ queue_sound_event_8508:
 850C: 26 04          BNE    $8512		; attract sounds: queue sound
 850E: 0D 22          TST    game_playing_22
 8510: 27 12          BEQ    $8524		; game not playing: skip
-8512: 10 9E 1C       LDY    $1C
+8512: 10 9E 1C       LDY    sound_event_pointer_1c
 8515: A7 A0          STA    ,Y+
 8517: 10 8C 29 60    CMPY   #player_1_final_time_2960
 851B: 26 04          BNE    $8521
 851D: 10 8E 29 40    LDY    #sound_queue_2940
-8521: 10 9F 1C       STY    $1C
+8521: 10 9F 1C       STY    sound_event_pointer_1c
 8524: 39             RTS
 
 8525: B6 2F E8       LDA    $2FE8
@@ -6525,7 +6526,7 @@ load_and_display_qualifying_value_9309:
 9375: A7 88 16       STA    $16,X
 9378: 39             RTS
 
-9379: A6 88 1C       LDA    $1C,X
+9379: A6 88 1C       LDA    sound_event_pointer_1c,X
 937C: 81 01          CMPA   #$01
 937E: 27 1B          BEQ    $939B
 9380: 6F 88 15       CLR    $15,X
@@ -7381,9 +7382,9 @@ compare_contestants_tile_96d3:
 9A90: 27 11          BEQ    $9AA3
 9A92: BD D2 3E       JSR    $D23E
 9A95: 35 10          PULS   X
-9A97: B6 1C 20       LDA    $1C20
+9A97: B6 1C 20       LDA    sound_event_pointer_1c20
 9A9A: 27 06          BEQ    $9AA2
-9A9C: 7A 1C 20       DEC    $1C20
+9A9C: 7A 1C 20       DEC    sound_event_pointer_1c20
 9A9F: 39             RTS
 
 9AA0: 35 10          PULS   X
@@ -7660,7 +7661,7 @@ compare_contestants_tile_96d3:
 9CE9: A6 06          LDA    $6,X
 9CEB: 81 4D          CMPA   #$4D
 9CED: 10 27 00 00    LBEQ   $9CF1
-9CF1: A6 88 1C       LDA    $1C,X
+9CF1: A6 88 1C       LDA    sound_event_pointer_1c,X
 9CF4: 26 08          BNE    $9CFE
 9CF6: A6 0D          LDA    $D,X
 9CF8: 81 06          CMPA   #$06
@@ -7688,7 +7689,7 @@ compare_contestants_tile_96d3:
 9D30: A6 06          LDA    $6,X
 9D32: 81 4D          CMPA   #$4D
 9D34: 10 27 00 EF    LBEQ   $9E27
-9D38: 6D 88 1C       TST    $1C,X
+9D38: 6D 88 1C       TST    sound_event_pointer_1c,X
 9D3B: 26 03          BNE    $9D40
 9D3D: 16 00 E7       LBRA   $9E27
 9D40: 16 FF 37       LBRA   $9C7A
@@ -7821,10 +7822,10 @@ compare_contestants_tile_96d3:
 9E5F: ED 88 12       STD    $12,X
 9E62: 86 01          LDA    #$01
 9E64: A7 88 31       STA    $31,X
-9E67: 6D 88 1C       TST    $1C,X
+9E67: 6D 88 1C       TST    sound_event_pointer_1c,X
 9E6A: 26 05          BNE    $9E71
 9E6C: 86 02          LDA    #$02
-9E6E: A7 88 1C       STA    $1C,X
+9E6E: A7 88 1C       STA    sound_event_pointer_1c,X
 9E71: 86 01          LDA    #$01
 9E73: A7 88 29       STA    $29,X
 9E76: A7 88 2F       STA    difficulty_2f,X
@@ -8144,7 +8145,7 @@ A126: 26 03          BNE    $A12B
 A128: 7E 96 22       JMP    $9622
 A12B: BD 9A 82       JSR    $9A82
 A12E: 7E 96 38       JMP    $9638
-A131: A6 88 1C       LDA    $1C,X
+A131: A6 88 1C       LDA    sound_event_pointer_1c,X
 A134: 81 02          CMPA   #$02
 A136: 27 28          BEQ    $A160
 A138: 81 01          CMPA   #$01
@@ -8199,12 +8200,12 @@ A1AE: 86 10          LDA    #$10
 A1B0: A7 88 2B       STA    $2B,X
 A1B3: 39             RTS
 
-A1B4: 6F 88 1C       CLR    $1C,X
+A1B4: 6F 88 1C       CLR    sound_event_pointer_1c,X
 A1B7: 6F 88 31       CLR    $31,X
 A1BA: 6F 88 32       CLR    $32,X
 A1BD: 39             RTS
 
-A1BE: A6 88 1C       LDA    $1C,X
+A1BE: A6 88 1C       LDA    sound_event_pointer_1c,X
 A1C1: 81 02          CMPA   #$02
 A1C3: 27 25          BEQ    $A1EA
 A1C5: 81 01          CMPA   #$01
@@ -13723,7 +13724,7 @@ FA19: 97 00          STA    global_state_00
 FA1B: 0F DF          CLR    $DF
 FA1D: CC 00 00       LDD    #$0000
 FA20: FD 18 00       STD    sprite_ram_1800
-FA23: FD 1C 00       STD    $1C00
+FA23: FD 1C 00       STD    sound_event_pointer_1c00
 FA26: FD 29 9C       STD    $299C
 FA29: FD 29 9E       STD    $299E
 FA2C: B6 2F E6       LDA    $2FE6

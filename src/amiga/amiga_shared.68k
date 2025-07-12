@@ -186,15 +186,6 @@ osd_sound_start:
 	jbsr	osd_music_stop
 	jra		10f
 0:
-	* original sound stop commands have bit 7 set. But if we follow them, they'll kill the
-	btst	#7,d0
-	jeq		1f
-	clr.b	looped_sound_enabled
-	moveq	#2,d0		| the loop channel?
-	jbsr	_mt_stopfx
-	jra		10f
-1:
-
 
 	lsl.w	#3,d0
 	lea		sound_table,a0
@@ -252,12 +243,13 @@ osd_sound_start:
 	bsr		force_sound_stop
     lea _custom,a6
  	movem.l	d0/a0,-(a7)
-	*lea	pooyan_tunes,a0
+	lea	track_and_field_tunes,a0
 
 	
 	move.b	d1,music_track_start_number
 	move.w	d1,d0
     sub.l   a1,a1		| samples are in the module
+
     jsr _mt_init
 	movem.l	(a7)+,d0/a0
 
@@ -292,7 +284,7 @@ music_loops:
 music_volume:
 	.byte	0
 music_track_start_number:
-	.word	0
+	.word	-1
 music_pattern:
 	.word	0
 music_tick:
