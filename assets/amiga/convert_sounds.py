@@ -30,14 +30,12 @@ def convert():
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
 
-    #"THE_TIME_SND"               :{"index":0xA2,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+
     "STEP_SND"               :{"index":0x1,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_B_SND"               :{"index":0xb,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_C_SND"               :{"index":0xc,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_D_SND"               :{"index":0xd,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "FOUL_SND"               :{"index":0x82,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "ON_YOUR_MARK_SND"               :{"index":0x80,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "GET_SET_SND"               :{"index":0x81,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "LETTER_ENTERED_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
@@ -53,12 +51,50 @@ def convert():
 
     }
 
+    speech =  {"THE":0xA2,
+    "TIME":0x87,
+    "POINT":0x85,
+    "METRES":0x86,
+    "SECONDS":0x88,
+    "ZERO":0x90,
+    "ONE":0x91,
+    "TWO":0x92,
+    #"THREE":0x93,
+    "FOUR":0x94,
+    #"FIVE":0x95,  # missing
+    "SIX":0x96,
+    "SEVEN":0x97,
+    #"EIGHT":0x98,
+    #"NINE":0x99,
+    #"TEN":0x9A,
+    #"ELEVEN":0x9B,
+    "TWELVE":0x9C,
+    #"THIRTEEN":0x9D,
+    #"FOURTEEN":0xB6,
+    #"FIFTEEN":0xB7,
+    #"SIXTEEN":0xB8,
+    #"SEVENTEEN":0xB9,
+    #"EIGHTTEEN":0xBA00,#
+    #"NINETEEN":0xBA,
+    #"TWENTY":0xBB,#TBC
+    #"THIRTY":0xBC,#TBC
+    #"FORTY":0xB???,#TBC
+    #"FIFTY":0xBC????,#TBC
+    "SIXTY":0xBD,
+    #"SEVENTY":0xBE,#TBC
+    #"EIGHTY":0xBF,#TBC
+    #"NINETY":0xC0,#TBC
+    "ON_YOUR_MARK":0x80,
+    "GET_SET":0x81,
+    #"FLYING":0x83,
+}
+
+    sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":hq_sample_rate,"priority":40} for k,v in speech.items()})
+
     dummy_sounds = [0,
     2,3,4,
     0xC,0xB,
-    0x17,  # arrow sound name enter
     0x40,
-    0x1B,  # letter entry name
     0x9,0x25,  # long jump land
     5,0x14,0x15,  # long jump jump
     0x31,  # ???? drawf crossing after dash

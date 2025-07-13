@@ -14,5 +14,6 @@
 
 
 log sounds: bpset 66F4,,{print A;g}
-sim sound on credit:
-bpset 66F4,,{A=$81;g}
+sim sound on credit: bpset 66F4,,{A=$81;g}
+skip all non-speech: bpset 66F4,A<=$7F,{PC=66f1;g}: doesn't work
+skip cheering: bpset 66F4,A==$41,{PC=66f1;g}
