@@ -1,8 +1,6 @@
-- speech A0 not ripped
-- rip 5, 9, 0x25 (long jump)
--rip 6: hurdles
-- cheer correct loop
-- javelin throw + movement no sound
+- speech A0 not ripped: 6 ?
+- rip long jump measurement (0x25) ?
+- rip hurdles 7
 - hammer ??
 
 

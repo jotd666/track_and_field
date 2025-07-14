@@ -32,7 +32,9 @@ def convert():
     sound_dict = {
 
 
-    "STEP_SND"               :{"index":0x1,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "STEP_SND"               :{"index":0x1,"channel":-1,"sample_rate":hq_sample_rate,"priority":40},
+    "HURDLE_SND"               :{"index":0x6,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "LONG_JUMP_SND"               :{"index":0x5,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "HURRY_SND"               :{"index":0x2f,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "THROW_SND"               :{"index":0xe,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "IN_AIR_SND"               :{"index":0x14,"channel":on_air_channel,"sample_rate":vlq_sample_rate,"priority":40},
@@ -47,7 +49,7 @@ def convert():
     "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "NAME_ENTERED_SND"            :{"index":0x1d,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True,"priority":40},
+    "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":lq_sample_rate,"loops":True,"priority":40},
     "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":160},
     "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
     "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
@@ -72,7 +74,7 @@ def convert():
     "THREE":0x93,
     "FOUR":0x94,
     "FIVE":0x95,
-    "SIX":0x96,
+    "SIX":0xA0,
     "SEVEN":0x97,
     "EIGHT":0x98,
     "NINE":0x99,
@@ -110,8 +112,7 @@ def convert():
     2,3,4,
     0xC,0xB,
     0x40,
-    #0x9,0x25,  # long jump land
-    #5,  # long jump jump
+    0x25,  # long jump land
     0x1A,  # false start
     0xFF,
     # needs ripping
