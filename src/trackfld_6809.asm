@@ -7382,9 +7382,9 @@ compare_contestants_tile_96d3:
 9A90: 27 11          BEQ    $9AA3
 9A92: BD D2 3E       JSR    $D23E
 9A95: 35 10          PULS   X
-9A97: B6 1C 20       LDA    sound_event_pointer_1c20
+9A97: B6 1C 20       LDA    $1c20
 9A9A: 27 06          BEQ    $9AA2
-9A9C: 7A 1C 20       DEC    sound_event_pointer_1c20
+9A9C: 7A 1C 20       DEC    $1c20
 9A9F: 39             RTS
 
 9AA0: 35 10          PULS   X
@@ -13724,7 +13724,7 @@ FA19: 97 00          STA    global_state_00
 FA1B: 0F DF          CLR    $DF
 FA1D: CC 00 00       LDD    #$0000
 FA20: FD 18 00       STD    sprite_ram_1800
-FA23: FD 1C 00       STD    sound_event_pointer_1c00
+FA23: FD 1C 00       STD    $1c00
 FA26: FD 29 9C       STD    $299C
 FA29: FD 29 9E       STD    $299E
 FA2C: B6 2F E6       LDA    $2FE6

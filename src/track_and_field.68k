@@ -99,6 +99,7 @@ global_state_00 = 0x00
 boot_state_03 = 0x03
 event_pointer_18 = 0x18
 event_pointer_1a = 0x1a
+sound_event_pointer_1c = 0x1c
 copy_of_screen_flipped_21 = 0x21
 game_playing_22 = 0x22
 number_of_credits_23 = 0x23
@@ -170,7 +171,7 @@ high_jump_attempted_heights_edea = 0xedea
 reset_6000:
 l_6000:
 	jbsr	osd_disable_interrupts |  [$6000: clr    irq_mask_w_1087] disable interrupts
-	 |  [$6003: lds    #$1f80] set stack
+	move.w	#0x1f80,d5                      	| [$6003: lds    #$1f80] set stack
 	move.b	#0x28,d0                        	| [$6007: lda    #$28]
 	SET_DP_FROM_A                          	| [$6009: tfr    a,dp] set direct page to nvram
 	 |  [$600b: clr    flip_screen_set_1080] no flip screen
@@ -246,7 +247,7 @@ l_6067:
 	GET_DP_ADDRESS	event_pointer_1a        	| [$6073: stx    event_pointer_1a]
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
 	move.w	#event_buffer_2900+0x40,d2      	| [$6075: ldx    #event_buffer_2900+$40] copy contents of 2940 in 281C,281E
-	GET_DP_ADDRESS	0x1c                    	| [$6078: stx    $1c]
+	GET_DP_ADDRESS	sound_event_pointer_1c  	| [$6078: stx    sound_event_pointer_1c]
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
 	GET_DP_ADDRESS	0x1e                    	| [$607a: stx    $1e]
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
@@ -1594,7 +1595,7 @@ update_sounds_66eb:
 * consume queued sounds
 	GET_DP_ADDRESS	0x1e                    	| [$66eb: ldx    $1e]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
-	GET_DP_ADDRESS	0x1c                    	| [$66ed: cmpx   $1c]
+	GET_DP_ADDRESS	sound_event_pointer_1c  	| [$66ed: cmpx   sound_event_pointer_1c]
 	cmp.w	(a0),d2                          	| [...]
 	jne	l_66f2                             	| [$66ef: bne    $66f2]
 	rts                                    	| [$66f1: rts]
@@ -5513,7 +5514,7 @@ l_7b83:
 	move.b	#0x0c,d0                        	| [$7b85: lda    #$0c]
 	jmp	queue_event_84f5                   	| [$7b87: jmp    queue_event_84f5]
 l_7b8a:
-	GET_REG_ADDRESS	0x1c,d2                	| [$7b8a: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$7b8a: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_7b94                             	| [$7b8d: bne    $7b94]
 	GET_REG_ADDRESS	0x10,d2                	| [$7b8f: ldd    $10,x]
@@ -6325,7 +6326,7 @@ l_7fd1:
 	cmp.b	#0x40,d0                         	| [$7fe1: cmpa   #$40]
 	jcs	l_800b                             	| [$7fe3: bcs    $800b]
 	move.w	#0x28a0,d2                      	| [$7fe5: ldx    #$28a0]
-	GET_REG_ADDRESS	0x1c,d2                	| [$7fe8: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$7fe8: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_800b                             	| [$7feb: bne    $800b]
 	GET_ADDRESS	0x2a1c                     	| [$7fed: lda    $2a1c]
@@ -6407,7 +6408,7 @@ l_805e:
 
 l_805f:
 	jbsr	l_9e7d                            	| [$805f: jsr    $9e7d]
-	GET_REG_ADDRESS	0x1c,d2                	| [$8062: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$8062: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$8065: cmpa   #$02]
 	jeq	l_8175                             	| [$8067: lbeq   $8175]
@@ -6558,19 +6559,19 @@ l_813f:
 	GET_REG_ADDRESS	0x32,d2                	| [$813f: lda    $32,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_8148                             	| [$8142: bne    $8148]
-	GET_REG_ADDRESS	0x1c,d2                	| [$8144: clr    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$8144: clr    sound_event_pointer_1c,x]
 	clr.b	(a0)                         	| [...]
 	rts                                    	| [$8147: rts]
 
 l_8148:
 	move.b	#0x02,d0                        	| [$8148: lda    #$02]
-	GET_REG_ADDRESS	0x1c,d2                	| [$814a: sta    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$814a: sta    sound_event_pointer_1c,x]
 	move.b	d0,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x2a,d2                	| [$814d: sta    $2a,x]
 	move.b	d0,(a0)                         	| [...]
 	jmp	l_8091                             	| [$8150: jmp    $8091]
 l_8153:
-	GET_REG_ADDRESS	0x1c,d2                	| [$8153: inc    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$8153: inc    sound_event_pointer_1c,x]
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	l_8196                            	| [$8156: jsr    $8196]
 	jbsr	l_81be                            	| [$8159: bsr    $81be]
@@ -7303,7 +7304,7 @@ l_850e:
 	tst.b	(a0)                             	| [...]
 	jeq	l_8524                             	| [$8510: beq    $8524] game not playing: skip
 l_8512:
-	GET_DP_ADDRESS	0x1c                    	| [$8512: ldy    $1c]
+	GET_DP_ADDRESS	sound_event_pointer_1c  	| [$8512: ldy    sound_event_pointer_1c]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	GET_REG_ADDRESS	0,d3                   	| [$8515: sta    ,y+]
 	addq.w	#1,d3                           	| [...]
@@ -7312,7 +7313,7 @@ l_8512:
 	jne	l_8521                             	| [$851b: bne    $8521]
 	move.w	#sound_queue_2940,d3            	| [$851d: ldy    #sound_queue_2940]
 l_8521:
-	GET_DP_ADDRESS	0x1c                    	| [$8521: sty    $1c]
+	GET_DP_ADDRESS	sound_event_pointer_1c  	| [$8521: sty    sound_event_pointer_1c]
 	MOVE_W_FROM_REG	d3,a0                         	| [...]
 l_8524:
 	rts                                    	| [$8524: rts]
@@ -7398,7 +7399,7 @@ l_8587:
 	add.w	#0x00c0,d4                       	| [$858b: leau   $00c0,u]
 	GET_REG_ADDRESS	0x2,d2                 	| [$858f: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
-	and.b	#0xf8,d0                         	| [$8591: anda   #$f8]
+	and.b	#0xf8,d0                         	| [$8591: anda   #$f8] useless, the 3 lsrs will
                                          | [$8593: lsra]
                                          | [$8594: lsra]
 	lsr.b	#3,d0                            	| [$8595: lsra]
@@ -7412,7 +7413,7 @@ l_85a1:
 	jne	l_8596                             	| [$85a2: bne    $8596]
 	GET_REG_ADDRESS	0x1,d2                 	| [$85a4: lda    $1,x]
 	move.b	(a0),d0                         	| [...]
-	and.b	#0xf8,d0                         	| [$85a6: anda   #$f8]
+	and.b	#0xf8,d0                         	| [$85a6: anda   #$f8] useless, the 3 lsrs will
                                          | [$85a8: lsra]
                                          | [$85a9: lsra]
 	lsr.b	#3,d0                            	| [$85aa: lsra]
@@ -7470,7 +7471,7 @@ l_85de:
 	add.w	#0x0240,d4                       	| [$85e0: leau   $0240,u]
 	GET_REG_ADDRESS	0x2,d2                 	| [$85e4: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
-	 |  [$85e6: anda   #$f8]
+	 |  [$85e6: anda   #$f8] useless, the 3 lsrs will do the job!
                                          | [$85e8: lsra]
                                          | [$85e9: lsra]
 	lsr.b	#3,d0                            	| [$85ea: lsra]
@@ -10387,7 +10388,7 @@ l_9373:
 	rts                                    	| [$9378: rts]
 
 l_9379:
-	GET_REG_ADDRESS	0x1c,d2                	| [$9379: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$9379: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x01,d0                         	| [$937c: cmpa   #$01]
 	jeq	l_939b                             	| [$937e: beq    $939b]
@@ -12262,7 +12263,7 @@ l_9ce1:
 	cmp.b	#0x4d,d0                         	| [$9ceb: cmpa   #$4d]
 	jeq	l_9cf1                             	| [$9ced: lbeq   $9cf1]
 l_9cf1:
-	GET_REG_ADDRESS	0x1c,d2                	| [$9cf1: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$9cf1: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	jne	l_9cfe                             	| [$9cf4: bne    $9cfe]
 	GET_REG_ADDRESS	0xd,d2                 	| [$9cf6: lda    $d,x]
@@ -12304,7 +12305,7 @@ l_9d20:
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x4d,d0                         	| [$9d32: cmpa   #$4d]
 	jeq	l_9e27                             	| [$9d34: lbeq   $9e27]
-	GET_REG_ADDRESS	0x1c,d2                	| [$9d38: tst    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$9d38: tst    sound_event_pointer_1c,x]
 	tst.b	(a0)                             	| [...]
 	jne	l_9d40                             	| [$9d3b: bne    $9d40]
 	jra	l_9e27                             	| [$9d3d: lbra   $9e27]
@@ -12535,11 +12536,11 @@ l_9e59:
 	move.b	#0x01,d0                        	| [$9e62: lda    #$01]
 	GET_REG_ADDRESS	0x31,d2                	| [$9e64: sta    $31,x]
 	move.b	d0,(a0)                         	| [...]
-	GET_REG_ADDRESS	0x1c,d2                	| [$9e67: tst    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$9e67: tst    sound_event_pointer_1c,x]
 	tst.b	(a0)                             	| [...]
 	jne	l_9e71                             	| [$9e6a: bne    $9e71]
 	move.b	#0x02,d0                        	| [$9e6c: lda    #$02]
-	GET_REG_ADDRESS	0x1c,d2                	| [$9e6e: sta    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$9e6e: sta    sound_event_pointer_1c,x]
 	move.b	d0,(a0)                         	| [...]
 l_9e71:
 	move.b	#0x01,d0                        	| [$9e71: lda    #$01]
@@ -13074,7 +13075,7 @@ l_a12b:
 	jbsr	l_9a82                            	| [$a12b: jsr    $9a82]
 	jmp	l_9638                             	| [$a12e: jmp    $9638]
 l_a131:
-	GET_REG_ADDRESS	0x1c,d2                	| [$a131: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$a131: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$a134: cmpa   #$02]
 	jeq	l_a160                             	| [$a136: beq    $a160]
@@ -13163,7 +13164,7 @@ l_a1b3:
 	rts                                    	| [$a1b3: rts]
 
 l_a1b4:
-	GET_REG_ADDRESS	0x1c,d2                	| [$a1b4: clr    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$a1b4: clr    sound_event_pointer_1c,x]
 	clr.b	(a0)                         	| [...]
 	GET_REG_ADDRESS	0x31,d2                	| [$a1b7: clr    $31,x]
 	clr.b	(a0)                         	| [...]
@@ -13172,7 +13173,7 @@ l_a1b4:
 	rts                                    	| [$a1bd: rts]
 
 l_a1be:
-	GET_REG_ADDRESS	0x1c,d2                	| [$a1be: lda    $1c,x]
+	GET_REG_ADDRESS	sound_event_pointer_1c,d2	| [$a1be: lda    sound_event_pointer_1c,x]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$a1c1: cmpa   #$02]
 	jeq	l_a1ea                             	| [$a1c3: beq    $a1ea]

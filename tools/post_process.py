@@ -207,8 +207,6 @@ with open(source_dir / "conv.s") as f:
 
         elif "unsupported instruction rti" in line:
             line = change_instruction("rts",lines,i)
-        elif "unsupported instruction lds" in line:
-            line = remove_instruction(lines,i)
         elif "unsupported instruction andcc" in line:
             line = change_instruction("CLR_XC_FLAGS",lines,i)
         elif "jump_table" in line:
