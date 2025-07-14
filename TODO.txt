@@ -1,8 +1,15 @@
+- speech A0 not ripped
+- rip 5, 9, 0x25 (long jump)
+-rip 6: hurdles
+- cheer correct loop
+- javelin throw + movement no sound
+- hammer ??
+
+
 - cycle exact: sprites blinking despite double buffering
 
 - https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
   centuri game is too hard
-- cheer correct loop plus why doesn't stop on 0xFF or 0x80 sound
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - is game playing: not working (should be able to insert coin in the push start screen)

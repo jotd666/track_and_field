@@ -153,16 +153,17 @@ save_highscores:
     
 
 osd_music_stop:
-*	movem.l	d0/a0/a6,-(a7)
-*	lea		_custom,a6
-*	move.w	#3,d0
-*	jbsr	_mt_stopfx
-*	movem.l	(a7)+,d0/a0/a6
+	movem.l	d0/a0/a6,-(a7)
+	lea		_custom,a6
+	move.w	#2,d0
+	jbsr	_mt_stopfx
+	clr.b	looped_sound_enabled
+	movem.l	(a7)+,d0/a0/a6
 
 	
 	tst.b	music_playing
 	jne		force_sound_stop
-rts
+	rts
 
 force_sound_stop:
 	movem.l	d0-d1/a0/a6,-(a7)

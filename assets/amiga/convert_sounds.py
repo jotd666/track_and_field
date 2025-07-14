@@ -23,26 +23,32 @@ def convert():
 
     hq_sample_rate = 18004  #{"aga":18004,"ecs":12000,"ocs":11025}[mode]
     lq_sample_rate = hq_sample_rate//2 # if aga_mode else 8000
-
+    vlq_sample_rate = 5000
 
     loop_channel = 2
+    on_air_channel = 1
 
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
 
 
     "STEP_SND"               :{"index":0x1,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "HURRY_SND"               :{"index":0x2f,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "THROW_SND"               :{"index":0xe,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
+    "IN_AIR_SND"               :{"index":0x14,"channel":on_air_channel,"sample_rate":vlq_sample_rate,"priority":40},
+    "LAND_SND"               :{"index":0xf,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_B_SND"               :{"index":0xb,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_C_SND"               :{"index":0xc,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_D_SND"               :{"index":0xd,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "FOUL_SND"               :{"index":0x82,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "LETTER_ENTERED_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "NAME_ENTERED_SND"            :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "CURSOR_MOVE_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "NAME_ENTERED_SND"            :{"index":0x1d,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True,"priority":40},
-    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x7,"volume":32,"loops":False,"ticks":480},
+    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":160},
     "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
     "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
     "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":140},
@@ -51,6 +57,10 @@ def convert():
 
     }
 
+    # ordering isn't very logic... ended up ripping the sounds with
+    # cheering off, snapshot load just before finish in dash and setting
+    # the proper second chrono. It's the fastest way to get sound ids and
+    # rip them
     speech =  {"THE":0xA2,
     "TIME":0x87,
     "POINT":0x85,
@@ -73,21 +83,25 @@ def convert():
     "FOURTEEN":0xB6,
     "FIFTEEN":0xB7,
     "SIXTEEN":0xB8,
-    "SEVENTEEN":0xB9,
-    "EIGHTEEN":0xBA00,#
+    "SEVENTEEN":0x9E,
+    "EIGHTEEN":0xB9,
     "NINETEEN":0xBA,
-    "TWENTY":0xBB,#TBC
-    "THIRTY":0xBC,#TBC
-    "FORTY":0xBD,#TBC
-    "FIFTY":0xBC,#TBC
+    "TWENTY":0xBE,
+    "THIRTY":0x9F,
+    "FORTY":0xBB,
+    "FIFTY":0xBC,
     "SIXTY":0xBD,
-    "SEVENTY":0xBE,#TBC
-    "EIGHTY":0xBF,#TBC
-    "NINETY":0xC0,#TBC
+    "SEVENTY":0xBF,
+    "EIGHTY":0xC0,
+    "NINETY":0xC1,
     "ON_YOUR_MARK":0x80,
     "GET_SET":0x81,
     "FLYING":0x83,
+    "DISTANCE":0x84,
 }
+
+
+
 
     # low quality is probably enough, speech sound is crap
     sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
@@ -96,12 +110,12 @@ def convert():
     2,3,4,
     0xC,0xB,
     0x40,
-    0x9,0x25,  # long jump land
-    5,0x14,0x15,  # long jump jump
-    0x31,  # ???? drawf crossing after dash
+    #0x9,0x25,  # long jump land
+    #5,  # long jump jump
     0x1A,  # false start
-    0xE,0xF, # jav throw, land
     0xFF,
+    # needs ripping
+      0x15,  # jav mount down
     ]
 
     with open(os.path.join(src_dir,"..","sounds.inc"),"w") as f:
@@ -196,7 +210,7 @@ def convert():
                 maxsigned = max(signed_data)
                 minsigned = min(signed_data)
 
-                amp_ratio = max(maxsigned,abs(minsigned))/64
+                amp_ratio = max(maxsigned,abs(minsigned))/32
 
                 print(f"amp_ratio: {amp_ratio}")
 
