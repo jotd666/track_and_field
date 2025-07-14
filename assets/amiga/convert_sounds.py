@@ -64,32 +64,33 @@ def convert():
     "FIVE":0x95,
     "SIX":0x96,
     "SEVEN":0x97,
-    #"EIGHT":0x98,
+    "EIGHT":0x98,
     "NINE":0x99,
-    #"TEN":0x9A,
+    "TEN":0x9A,
     "ELEVEN":0x9B,
     "TWELVE":0x9C,
-    #"THIRTEEN":0x9D,
-    #"FOURTEEN":0xB6,
-    #"FIFTEEN":0xB7,
-    #"SIXTEEN":0xB8,
-    #"SEVENTEEN":0xB9,
-    #"EIGHTTEEN":0xBA00,#
-    #"NINETEEN":0xBA,
-    #"TWENTY":0xBB,#TBC
-    #"THIRTY":0xBC,#TBC
-    #"FORTY":0xB???,#TBC
-    #"FIFTY":0xBC????,#TBC
+    "THIRTEEN":0x9D,
+    "FOURTEEN":0xB6,
+    "FIFTEEN":0xB7,
+    "SIXTEEN":0xB8,
+    "SEVENTEEN":0xB9,
+    "EIGHTEEN":0xBA00,#
+    "NINETEEN":0xBA,
+    "TWENTY":0xBB,#TBC
+    "THIRTY":0xBC,#TBC
+    "FORTY":0xBD,#TBC
+    "FIFTY":0xBC,#TBC
     "SIXTY":0xBD,
-    #"SEVENTY":0xBE,#TBC
-    #"EIGHTY":0xBF,#TBC
-    #"NINETY":0xC0,#TBC
+    "SEVENTY":0xBE,#TBC
+    "EIGHTY":0xBF,#TBC
+    "NINETY":0xC0,#TBC
     "ON_YOUR_MARK":0x80,
     "GET_SET":0x81,
-    #"FLYING":0x83,
+    "FLYING":0x83,
 }
 
-    sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":hq_sample_rate,"priority":40} for k,v in speech.items()})
+    # low quality is probably enough, speech sound is crap
+    sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
 
     dummy_sounds = [0,
     2,3,4,
