@@ -2,7 +2,7 @@
 ..\assets\amiga\convert_graphics.py
 6809to68k.py -i mot -o mit --data data.s --code conv.s -I include.inc trackfld_6809.asm
 ..\tools\post_process.py
-rem goto skip_instrum
+goto skip_instrum
 add_reg_log.py -s 6000 -e 615E -p 1 track_and_field.68k
 add_reg_log.py -s 617F -e FF00 -p 1 track_and_field.68k
 :skip_instrum

@@ -1,8 +1,6 @@
-- speech A0 not ripped: 6 ? seems so!
-- rip long jump measurement (0x25) in-game:stop loop
-- rip hurdles A
-- rip bar 13, 2E land, 10  ??
-
+- rip long jump measurement (0x25) in-game:stop loop doesn't work (0 write): retry
+- rip successful high jump 2B
+- speech 0xA0 seems to be 6 too 
 - speech queung works not perfect: on your mark/get set not played... debug
 
 - cycle exact: sprites blinking despite double buffering

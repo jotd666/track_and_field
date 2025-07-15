@@ -34,9 +34,12 @@ def convert():
 
     "STEP_SND"               :{"index":0x1,"channel":-1,"sample_rate":hq_sample_rate,"priority":40},
     "DWARF_SND"               :{"index":0x31,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+   "BAR_13_SND"               :{"index":0x13,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
+   "BAR_10_SND"               :{"index":0x10,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
    "HURDLE_SND"               :{"index":0x6,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "HURDLE_2_SND"               :{"index":0x7,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
-    "HURDLE_3_SND"               :{"index":0xA,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "HURDLE_A_SND"               :{"index":0xA,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "HIGH_JUMP_FAIL_SND"            :{"index":0x2E,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "LONG_JUMP_SND"               :{"index":0x5,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "JUMP_MEASURE_SND"               :{"index":0x25,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True},
     "HURRY_SND"               :{"index":0x2f,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
@@ -80,7 +83,7 @@ def convert():
     "THREE":0x93,
     "FOUR":0x94,
     "FIVE":0x95,
-    "SIX":0xA0,
+    "SIX":0x96,
     "SEVEN":0x97,
     "EIGHT":0x98,
     "NINE":0x99,
@@ -115,7 +118,7 @@ def convert():
     # low quality is probably enough, speech sound is crap
     sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
 
-    dummy_sounds = [0,
+    dummy_sounds = [
     2,3,4,
     0xC,0xB,
     0x40,
