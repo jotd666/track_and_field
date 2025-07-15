@@ -25,14 +25,6 @@
 	jbsr	osd_video_byte_dirty
 	.endm
 
-	.macro	SCROLL_BYTE_DIRTY
-	| called when a write to scroll memory was done in a0
-	*jbsr	osd_scroll_byte_dirty
-	.endm
-	.macro	SCROLL_WORD_DIRTY
-	| called when a word write to scroll memory was done in a0
-	*jbsr	osd_scroll_byte_dirty
-	.endm
 
 	.macro	VIDEO_WORD_DIRTY
 	| called when a word write to video memory was done in a0
@@ -386,7 +378,7 @@ cpu_init:
 	moveq	#0,d2
 	moveq	#0,d3
 	moveq	#0,d4
-	moveq	#0,d5
+
 	moveq	#0,d6
 	moveq	#0,d7
 	rts

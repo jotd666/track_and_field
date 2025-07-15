@@ -6,7 +6,7 @@
 		.global osd_sound_start
 		.global osd_music_stop
 		.global music_tick
-		
+		.global	process_speech_queue
 
 
 * sound engine and also highscore management, common to all versions
@@ -14,6 +14,8 @@
 	.include "lvo/dos_lvos.i"
 	.include "track_and_field.inc"
 	.include "sounds.inc"
+
+NB_SOUND_QUEUE_ENTRIES = 16
 
 SCORE_FILE_SIZE = 3+30*3
 
@@ -150,8 +152,54 @@ save_highscores:
     jsr (_LVOClose,a6)   
 1:	
     rts
-    
 
+* no need to save any registers, this is called at the end of the
+* copper interrupt
+process_speech_queue:
+	move.w	speech_tick,d0
+	jeq		0f
+	* a speech sound is playing: decrease timer and exit
+	subq	#1,d0
+	move.w	d0,speech_tick
+	rts
+0:
+	* no speech sound is playing. See if there's something to do
+	*move.l	a1,-(a7)
+	move.l	consumed_speech_pointer,a1
+	cmp.l	queued_speech_pointer,a1
+	jeq		1f
+	* consumed/queued at different addresses: do something
+	move.l	(a1)+,a0
+	jbsr	wrap_speech_pointer
+	* initialize tick
+	move.w	(12,a0),speech_tick
+	* and play speech sample
+	*move.l	a6,-(a7)
+	lea		_custom,a6
+	jbsr 	_mt_playfx
+	*move.l	(a7)+,a6
+1:
+	*move.l	(a7)+,a1
+	* nothing to process
+	rts
+* < A0: sounfx extended structure (with tick information)
+queue_speech:
+	move.l	a1,-(a7)
+	move.l	queued_speech_pointer,a1
+	move.l	a0,(a1)+
+	jbsr	wrap_speech_pointer
+	move.l	a1,queued_speech_pointer
+	move.l	(a7)+,a1
+	rts
+
+wrap_speech_pointer:
+	cmp.l 	#queued_speech_buffer_end,a1
+	jne		0f
+	* wrap
+	lea		queued_speech_buffer_start,a1
+0:
+	rts
+	
 osd_music_stop:
 	movem.l	d0/a0/a6,-(a7)
 	lea		_custom,a6
@@ -170,6 +218,7 @@ force_sound_stop:
 	lea		_custom,a6
 	move.b	#-1,music_track_start_number
     clr.w   music_tick   | not playing anymore
+    clr.w   speech_tick   | not playing anymore
 	clr.b	music_playing
 	clr.b	looped_sound_enabled
     jsr		_mt_end
@@ -210,6 +259,18 @@ osd_sound_start:
 	jsr		_mt_loopfx
 	bra.b	10f
 3:
+	* game is using speech, which acts differently from other sounds
+	* any sound is played immediately, but speech sound is played after another
+	* speech sound. The game announces times/distances by queuing all speech samples
+	* without any delay, leaving the job of timing the plays to the sound CPU. We have
+	* to emulate that behaviour
+	btst	#10,d0		| 7+3 bit set: speech
+	jeq		4f
+	* speech: just queue the sound sample, the vblank
+	* irq will handle this, on a dedicated channel
+	jbsr	queue_speech
+	jra		10f
+4:
 	jsr		_mt_playfx
 10:
 	movem.l	(a7)+,d0/d1/a0/a6
@@ -275,6 +336,13 @@ osd_sound_start:
 
 	
 
+consumed_speech_pointer:
+	.long 	queued_speech_buffer_start
+queued_speech_pointer:
+	.long 	queued_speech_buffer_start
+queued_speech_buffer_start:
+	.skip	NB_SOUND_QUEUE_ENTRIES*4
+queued_speech_buffer_end:
 	
 music_playing:
 	.byte	0
@@ -290,7 +358,8 @@ music_pattern:
 	.word	0
 music_tick:
 	.word	0
-
+speech_tick:
+	.word	
 music_duration:
 	.word	0
 high_score_buffer:

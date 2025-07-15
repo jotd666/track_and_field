@@ -814,6 +814,7 @@ demo_game:
 
 	
 	GET_MEMORY_START_AND_DP
+	moveq	#0,d5 			| zero D5.L just in case
 	jbsr	cpu_init
 	jmp			reset_6000					| pass control to the cpu core
 
@@ -832,6 +833,8 @@ easy_high_jump_values:
 jotd_message:	
 	.asciz	"AMIGA@PORT@BY@JOTD@"
 	.align  2
+
+* < D5: S register from 6809
 do_irq:
 	* set base for RAM
 	jbsr	cpu_init
@@ -889,6 +892,7 @@ _vblank:
 	jra	3f
 1:
 	* has to be copper
+	* still do NOT change D5, there are enough free registers!
 
 	* we're going to ack copper & software interrupt now
 	* do it twice (040/pistorm bug)
@@ -912,6 +916,7 @@ _vblank:
 	addq.b	#1,d0
 	cmp.b	#5,d0
 	bne.b	1f
+	* D5 should be left untouched!
 	jbsr		do_irq
 	clr.b	interrupt_mode	
 	clr.b	d0
@@ -924,7 +929,10 @@ _vblank:
 	
 	subq.w	#1,delay_timer
 		
+	* make sure that we didn't change D5 from there. The IRQ
+	* may use it (D5 = S) to create local variables
 	jbsr		do_irq
+	* now D5 can be destroyed
 	jbsr	really_update_scroll
 	
 	tst.b	frameskip
@@ -941,6 +949,7 @@ _vblank:
 	.endif
 	
 23:
+	jbsr	process_speech_queue
 
 
 3:

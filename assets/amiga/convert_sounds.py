@@ -128,7 +128,7 @@ def convert():
     sound_table_set_1 = ["\t.long\t0,0"]*max_sound
 
     for d in dummy_sounds:
-        sound_table_set_1[d] = "\t.word\t3,0,0,0   | valid but muted"
+        sound_table_set_1[d] = f"\t.word\t3,0,0,0   | valid but muted"
 
 
 
@@ -141,15 +141,18 @@ def convert():
     # longword: sample data pointer if sample, 0 if no entry and
     # 2 words: 0/1 noloop/loop followed by duration in ticks
     #
+    # SOUND_ENTRY macro defines a ptplayer-compatible structure, with added the number
+    # of ticks (PAL) giving the duration of the sample (offset 0xA)
     FXFREQBASE = 3579564
 
-        .macro    SOUND_ENTRY    sound_name,size,channel,soundfreq,volume,priority
+        .macro    SOUND_ENTRY    sound_name,size,channel,soundfreq,volume,priority,ticks
     \sound_name\()_sound:
         .long    \sound_name\()_raw
         .word   \size
         .word   FXFREQBASE/\soundfreq,\volume
         .byte    \channel
         .byte    \priority
+        .word    \ticks
         .endm
 
     """
@@ -192,7 +195,7 @@ def convert():
                 wav_file = os.path.join(sound_dir,wav_name+".wav")
 
                 def get_sox_cmd(sr,output):
-                    return [sox,"--volume","2.0",wav_file,"--channels","1","-D","--bits","8","-r",str(sr),"--encoding","signed-integer",output]
+                    return [sox,"--volume","3.0",wav_file,"--channels","1","-D","--bits","8","-r",str(sr),"--encoding","signed-integer",output]
 
 
                 used_sampling_rate = details["sample_rate"]
@@ -219,7 +222,16 @@ def convert():
                 if amp_ratio > 1:
                     print(f"{wav}: volume peaked {amp_ratio}")
                     amp_ratio = 1
-                sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,used_sampling_rate,int(128*amp_ratio),used_priority)
+
+                # added so we can monitor a kind of sound and queue it instead of
+                # playing it right away (speech)
+                ticks = details.get("ticks")
+                if not ticks:
+                    # default value
+                    ticks = int(len(signed_data)/used_sampling_rate*50)+1  # PAL
+
+                sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,
+                            used_sampling_rate,int(128*amp_ratio),used_priority,ticks)
                 sound_table_set_1[sound_index] = f"\t.word\t1,{int(details.get('loops',0))}\n\t.long\t{wav}_sound"
 
                 if amp_ratio > 0:

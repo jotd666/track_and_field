@@ -2,7 +2,7 @@
 - rip long jump measurement (0x25) ?
 - rip hurdles 7, jump land 9
 - hammer ??
-- speech queued but not wait for end
+- speech queued but not wait for end: test it
 
 - cycle exact: sprites blinking despite double buffering
 
