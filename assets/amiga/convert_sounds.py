@@ -33,17 +33,23 @@ def convert():
 
 
     "STEP_SND"               :{"index":0x1,"channel":-1,"sample_rate":hq_sample_rate,"priority":40},
-    "HURDLE_SND"               :{"index":0x6,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "DWARF_SND"               :{"index":0x31,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+   "HURDLE_SND"               :{"index":0x6,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "HURDLE_2_SND"               :{"index":0x7,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "HURDLE_3_SND"               :{"index":0xA,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "LONG_JUMP_SND"               :{"index":0x5,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "JUMP_MEASURE_SND"               :{"index":0x25,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True},
     "HURRY_SND"               :{"index":0x2f,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "SWOOSH_SND"               :{"index":0x12,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
+    "HAMMER_MISS_SND"               :{"index":0x8,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "THROW_SND"               :{"index":0xe,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "IN_AIR_SND"               :{"index":0x14,"channel":on_air_channel,"sample_rate":vlq_sample_rate,"priority":40},
     "LAND_SND"               :{"index":0xf,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_B_SND"               :{"index":0xb,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_C_SND"               :{"index":0xc,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_D_SND"               :{"index":0xd,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "FOUL_SND"               :{"index":0x82,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "LONG_JUMP_LAND_SND"        :{"index":0x9,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CURSOR_MOVE_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
@@ -100,6 +106,7 @@ def convert():
     "GET_SET":0x81,
     "FLYING":0x83,
     "DISTANCE":0x84,
+    "FOUL":0x82,
 }
 
 
@@ -112,7 +119,6 @@ def convert():
     2,3,4,
     0xC,0xB,
     0x40,
-    0x25,  # long jump land
     0x1A,  # false start
     0xFF,
     # needs ripping

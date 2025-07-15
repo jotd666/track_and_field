@@ -171,6 +171,7 @@ process_speech_queue:
 	* consumed/queued at different addresses: do something
 	move.l	(a1)+,a0
 	jbsr	wrap_speech_pointer
+	move.l	a1,consumed_speech_pointer
 	* initialize tick
 	move.w	(12,a0),speech_tick
 	* and play speech sample
@@ -246,7 +247,7 @@ osd_sound_start:
 	jeq		10f		| skipped (normal)
 2:
 	cmp.w	#1,d1
-	bne.b	4f		| music module
+	bne.b	5f		| music module
 	move.w	(2,a0,d0.w),d1
 	move.l	(4,a0,d0.w),a0
 	lea		_custom,a6
@@ -283,7 +284,7 @@ osd_sound_start:
 	jra		10b
 	
 	* music
-4:
+5:
 	* don't play if already playing
 	* (music_tick value is not important for looped tunes
 	* as long as it's not zero)

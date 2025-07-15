@@ -1,8 +1,9 @@
-- speech A0 not ripped: 6 ?
-- rip long jump measurement (0x25) ?
-- rip hurdles 7, jump land 9
-- hammer ??
-- speech queued but not wait for end: test it
+- speech A0 not ripped: 6 ? seems so!
+- rip long jump measurement (0x25) in-game:stop loop
+- rip hurdles A
+- rip bar 13, 2E land, 10  ??
+
+- speech queung works not perfect: on your mark/get set not played... debug
 
 - cycle exact: sprites blinking despite double buffering
 
@@ -17,8 +18,7 @@
 
 
 log sounds: bpset 66F4,,{print A;g}
-sim sound on credit: bpset 66F4,,{A=$81;g}
-skip all non-speech: bpset 66F4,A<=$7F,{PC=66f1;g}: doesn't work
+sim sound on credit: bpset 66F4,,{A=$12;g}
 skip cheering: bpset 66F4,A==$41,{PC=66f1;g}
 chrono_hundredth_second_7e = 0x7e
 chrono_second_7f = 0x7f

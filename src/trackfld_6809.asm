@@ -13626,7 +13626,7 @@ F95D: 3D             MUL
 F95E: 33 CB          LEAU   D,U
 F960: F6 29 9E       LDB    $299E
 F963: 86 10          LDA    #$10
-F965: A7 A5          STA    B,Y
+F965: A7 A5          STA    B,Y		; [video_address]
 F967: A7 C5          STA    B,U
 F969: 39             RTS
 
