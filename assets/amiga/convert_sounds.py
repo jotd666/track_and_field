@@ -59,11 +59,11 @@ def convert():
     "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":lq_sample_rate,"priority":40},
-    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":160},
+    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":150},
     "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
     "CHARIOTS_WIN_TUNE_SND"      :{"index":0x22,"pattern":0x3,"volume":32,"loops":True},  # same music for end and highscore
     "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
-    "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":140},
+    "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":130},
     "NAME_ENTRY_SND"      :{"index":0x18,"pattern":0x0,"volume":32,"loops":True},
 
 
@@ -250,7 +250,7 @@ def convert():
                 ticks = details.get("ticks")
                 if not ticks:
                     # default value
-                    ticks = int(len(signed_data)/used_sampling_rate*50)+1  # PAL  20% length (else speech is too fast)
+                    ticks = int(len(signed_data)/used_sampling_rate*75)+1  # PAL  50% length (else speech is too fast)
 
                 sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,
                             used_sampling_rate,int(64*amp_ratio),used_priority,ticks)

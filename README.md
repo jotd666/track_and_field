@@ -3,6 +3,7 @@ remake of Track and Field / Hyper Olympics for amiga
 
 credits:
 - jotd: transcode and amiga port, graphics & sound conversion
+- no9: music
 - PascalDe73: amiga icon
 - Konami: original game
 
