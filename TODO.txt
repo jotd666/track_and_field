@@ -1,8 +1,7 @@
-- rip long jump measurement (0x25) in-game:stop loop doesn't work (0 write): retry
-- rip successful high jump 2B
-- speech 0xA0 seems to be 6 too 
 - speech queung works not perfect: on your mark/get set not played... debug
-
+- crowd cheering not working
+- display trashed when scrolling (long jump, javelin)
+- bars at stat 
 - cycle exact: sprites blinking despite double buffering
 
 - https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
@@ -10,7 +9,6 @@
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - is game playing: not working (should be able to insert coin in the push start screen)
-- save NV RAM each time a record is broken (find when) or game is over
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
 

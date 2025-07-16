@@ -40,6 +40,7 @@ def convert():
     "HURDLE_2_SND"               :{"index":0x7,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "HURDLE_A_SND"               :{"index":0xA,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "HIGH_JUMP_FAIL_SND"            :{"index":0x2E,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
+    "HIGH_JUMP_PASS_SND"            :{"index":0x2B,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "LONG_JUMP_SND"               :{"index":0x5,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "JUMP_MEASURE_SND"               :{"index":0x25,"channel":loop_channel,"sample_rate":hq_sample_rate,"loops":True},
     "HURRY_SND"               :{"index":0x2f,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
@@ -56,7 +57,6 @@ def convert():
     "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CURSOR_MOVE_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "NAME_ENTERED_SND"            :{"index":0x1d,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":lq_sample_rate,"loops":True,"priority":40},
     "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":160},
@@ -117,6 +117,8 @@ def convert():
 
     # low quality is probably enough, speech sound is crap
     sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
+
+    sound_dict["SIX_2_SND"] = {"index":0xA0,"same_as":"SIX_SND"}
 
     dummy_sounds = [
     2,3,4,
@@ -196,9 +198,19 @@ def convert():
 
             channel = details.get("channel")
             if channel is None:
-                # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
 
-                sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],details.get("ticks",0),details["volume"],int(details["loops"]))
+                same_as = details.get("same_as")
+                if same_as is None:
+                    # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
+
+                    sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],details.get("ticks",0),details["volume"],int(details["loops"]))
+                else:
+                    # aliased sound: reuse sample for a different sound index
+                    wav_entry = same_as
+                    details = sound_dict[same_as]
+                    wav_name = os.path.basename(wav_entry).lower()[:-4]
+                    wav = os.path.splitext(wav_name)[0]
+                    sound_table_set_1[sound_index] = f"\t.word\t1,{int(details.get('loops',0))}\n\t.long\t{wav}_sound"
             else:
                 wav_name = os.path.basename(wav_entry).lower()[:-4]
                 wav_file = os.path.join(sound_dir,wav_name+".wav")

@@ -398,9 +398,7 @@ _user:
 	* set them even if reset by game afterwards
 	* avoiding ugly stripe bitplane effect at startup
 
-	lea	tiles_bitplanes+2,a0
-    move.l	background_ptr,d0
-	jbsr		set_static_bitplanes
+	jbsr	really_update_scroll
 	
 	bsr		set_bob_bitplanes
 
@@ -812,6 +810,7 @@ demo_game:
 	dbf	d0,0b
 	.endif
 
+	jbsr	osd_read_high_scores
 	
 	GET_MEMORY_START_AND_DP
 	moveq	#0,d5 			| zero D5.L just in case

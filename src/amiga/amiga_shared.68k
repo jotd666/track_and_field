@@ -17,7 +17,8 @@
 
 NB_SOUND_QUEUE_ENTRIES = 16
 
-SCORE_FILE_SIZE = 3+30*3
+NV_RAM_ADDRESS = 0x2800
+SCORE_FILE_SIZE = 0x800
 
 .macro	GET_MEMORY_START_IN_A6
 	move.l	m6809_direct_page_pointer,a4
@@ -36,14 +37,15 @@ osd_read_high_scores:
 	move.l	_resload,d0
 	beq.b	0f
 	move.l	d0,a2
+	GET_MEMORY_START_IN_A6
 	bsr		get_hiscore_name
  	jsr		resload_GetFileSize(a2)		
 	tst.l	d0
 	beq.b	1f
 	bsr		get_hiscore_name
-	lea		high_score_buffer(pc),a1
+	lea		(NV_RAM_ADDRESS,a6),a1
 	jsr		resload_LoadFile(a2)	
-	bra.b	2f
+	bra.b	1f
 0:
 	tst.b	highscore_loaded
 	beq.b	1f
@@ -51,14 +53,10 @@ osd_read_high_scores:
 	* from DOS: just copy buffer
 	GET_MEMORY_START_IN_A6
 	* first just copy buffer as contiguous 
-
+	lea		(NV_RAM_ADDRESS,a6),a1
 	lea		high_score_buffer(pc),a0
-	*lea	high_score_88A8(a6),a1
-	move.b	(a0)+,(a1)+
-	move.b	(a0)+,(a1)+
-	move.b	(a0)+,(a1)+
-	*lea	high_score_table_8A00(a6),a1
-	move.w	#30-1,d0
+	move.w	#SCORE_FILE_SIZE-1,d0
+
 0:
 	move.b	(a0)+,(a1)+
 	dbf		d0,0b
@@ -71,37 +69,31 @@ osd_write_high_scores:
 	movem.l	d0-d7/a0-a6,-(a7)
 	.ifdef	RELEASE
 	tst.b	cheat_used		| don't save score if cheat on
-	bne.b	1f
+	bne.b	10f
 	.endif
 	GET_MEMORY_START_IN_A6
-	* first just copy buffer as contiguous 
+	lea		(NV_RAM_ADDRESS,a6),a1
 
-	lea		high_score_buffer(pc),a1
-	*lea	high_score_88A8(a6),a0
-	move.b	(a0)+,(a1)+
-	move.b	(a0)+,(a1)+
-	move.b	(a0)+,(a1)+
-	*lea	high_score_table_8A00(a6),a0
-	move.w	#30-1,d0
-0:
-
-1:
-	move.b	(a0)+,(a1)+
-	dbf		d0,0b
-
-
-	st.b	highscore_needs_saving
-1:
-	
 	move.l	_resload,d0
 	beq.b	0f
 	move.l	d0,a2
 	move.l	#SCORE_FILE_SIZE,d0
-	lea		high_score_buffer(pc),a1
 	bsr		get_hiscore_name
 	jsr		resload_SaveFile(a2)
+	jra 	10f
 0:
 
+	* first just copy buffer as contiguous 
+	lea 	high_score_buffer,a0
+	move.w	#SCORE_FILE_SIZE-1,d0
+0:
+	move.b	(a1)+,(a0)+
+	dbf	d0,0b
+
+	st.b	highscore_needs_saving
+	
+
+10:
 	movem.l	(a7)+,d0-d7/a0-a6
 	rts
 
@@ -185,6 +177,8 @@ process_speech_queue:
 	rts
 * < A0: sounfx extended structure (with tick information)
 queue_speech:
+	rts
+	
 	move.l	a1,-(a7)
 	move.l	queued_speech_pointer,a1
 	move.l	a0,(a1)+
@@ -227,17 +221,33 @@ force_sound_stop:
 	movem.l	(a7)+,d0-d1/a0/a6
 	rts
 	
-* tunes sounds are: sound index followed by 0x15,0x16,0x17 (that we ignore!)
 osd_sound_start:
 	movem.l	d0/d1/a0/a6,-(a7)
 	lea		_custom,a6
 	and.w	#0xFF,d0
 	jne		0f
+
 	* null sound: stop
+	clr.b	last_sound_played
 	jbsr	osd_music_stop
 	jra		10f
 0:
-
+	cmp.b	#RECORD_BROKEN_TUNE_SND,d0
+	jne		0f
+	* try to save memory when game triggers a "record broken"
+	jbsr	osd_write_high_scores
+0:
+	cmp.b	#JUMP_MEASURE_SND,d0
+	jne		0f
+	* kludge: if long jump measure sound is played just after loop stop, don't play it
+	tst.b	last_sound_played
+	jeq		10f
+0:
+	cmp.b	#CHARIOTS_TUNE_SND,d0
+	jne		0f
+	* try to save memory when game triggers a "chariots of fire" tune
+	jbsr	osd_write_high_scores
+0:
 	lsl.w	#3,d0
 	lea		sound_table,a0
 
@@ -265,13 +275,15 @@ osd_sound_start:
 	* speech sound. The game announces times/distances by queuing all speech samples
 	* without any delay, leaving the job of timing the plays to the sound CPU. We have
 	* to emulate that behaviour
-	btst	#10,d0		| 7+3 bit set: speech
+	lsr.w	#3,d0
+	btst	#7,d0		| 7 bit set: speech
 	jeq		4f
 	* speech: just queue the sound sample, the vblank
 	* irq will handle this, on a dedicated channel
 	jbsr	queue_speech
 	jra		10f
 4:
+	move.b	d0,last_sound_played
 	jsr		_mt_playfx
 10:
 	movem.l	(a7)+,d0/d1/a0/a6
@@ -349,10 +361,13 @@ music_playing:
 	.byte	0
 looped_sound_enabled:
 	.byte	0
+last_sound_played:
+	.byte	0
 music_loops:
 	.byte	0
 music_volume:
 	.byte	0
+	.align	2
 music_track_start_number:
 	.word	-1
 music_pattern:
@@ -371,6 +386,6 @@ highscore_loaded:
 	.byte	0
 
 normal_hiscorename:
-	.asciz	"pooyan.high"
+	.asciz	"track_and_field.high"
 
 
