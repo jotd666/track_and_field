@@ -1,14 +1,7 @@
-- speech queung works not perfect: on your mark/get set not played... debug
-- crowd cheering not working
-- display trashed when scrolling (long jump, javelin)
-- bars at stat 
+- Chariots of fire music pattern restarts too soon
 - cycle exact: sprites blinking despite double buffering
-
-- https://tcrf.net/Track_%26_Field_(Arcade) restore original settings
-  centuri game is too hard
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
-- is game playing: not working (should be able to insert coin in the push start screen)
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
 

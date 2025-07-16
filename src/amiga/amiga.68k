@@ -808,6 +808,17 @@ demo_game:
 0:
 	move.l	(a1)+,(a0)+
 	dbf	d0,0b
+	.else
+	* patch centuri ROM to restore Konami easier settings
+	* https://tcrf.net/Track_%26_Field_(Arcade), Centuri game is too hard
+	move.l	a6,a0
+	lea		easy_values(pc),a1
+	add.l	#qualifying_values_aaf3,a0
+	move.w	#5,d0
+0:
+	move.w	(a1)+,(a0)+
+	dbf	d0,0b
+	
 	.endif
 
 	jbsr	osd_read_high_scores
@@ -817,6 +828,17 @@ demo_game:
 	jbsr	cpu_init
 	jmp			reset_6000					| pass control to the cpu core
 
+	.ifeq	OPT_VERY_EASY
+
+easy_values:
+	.word	0x1600	| dash
+	.word	0x0600	| long jump
+	.word	0x6500	| javelin
+	.word	0x1450	| hurdles
+	.word	0x7300	| hammer
+	.word	0x0230	| long jump (not changed by centuri)
+	.else
+	* dev cheat
 easy_values:
 	.word	0x1600	| dash
 	.word	0x0500	| long jump
@@ -828,7 +850,8 @@ easy_values:
 easy_high_jump_values:
 * originally: 00 02 01 05 00 02 02 05 00 02 03 00 00 02 03 05   ................
 	.long	0x0010800,0x00010905,0x00020000,0x00020005
-
+	.endif
+	
 jotd_message:	
 	.asciz	"AMIGA@PORT@BY@JOTD@"
 	.align  2
@@ -1078,16 +1101,19 @@ osd_wait:
 
 	
 	
-* 2 conditions I can think of:
+* mostly used for pause and for insert coin
+* using button
 
 * Z: set if not playing
 is_game_playing:
 	move.l	a4,-(a7)
 	move.l	m6809_direct_page_pointer,a4
-	*GET_MEMORY_START_AND_DP
+
 	cmp.b	#1,global_state_00(a4)
 	jeq		0f
 	cmp.b	#4,global_state_00(a4)
+	jeq		0f
+	cmp.b	#2,global_state_00(a4)
 0:
 	move.l	(a7)+,a4
 	rts

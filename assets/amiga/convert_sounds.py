@@ -54,13 +54,14 @@ def convert():
     "SOUND_D_SND"               :{"index":0xd,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "LONG_JUMP_LAND_SND"        :{"index":0x9,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
-    "GUNSHOT_SND"               :{"index":0xD,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "GUNSHOT_SND"               :{"index":0xD,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
     "CURSOR_MOVE_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":lq_sample_rate,"loops":True,"priority":40},
+    "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":lq_sample_rate,"priority":40},
     "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":160},
     "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
+    "CHARIOTS_WIN_TUNE_SND"      :{"index":0x22,"pattern":0x3,"volume":32,"loops":True},  # same music for end and highscore
     "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
     "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":140},
     "NAME_ENTRY_SND"      :{"index":0x18,"pattern":0x0,"volume":32,"loops":True},
@@ -107,7 +108,7 @@ def convert():
     "NINETY":0xC1,
     "ON_YOUR_MARK":0x80,
     "GET_SET":0x81,
-    "FLYING":0x83,
+    "FLYING":0xB3,
     "DISTANCE":0x84,
     "FOUL":0x82,
 }
@@ -235,7 +236,7 @@ def convert():
                 maxsigned = max(signed_data)
                 minsigned = min(signed_data)
 
-                amp_ratio = max(maxsigned,abs(minsigned))/64
+                amp_ratio = max(maxsigned,abs(minsigned))/32
 
                 print(f"amp_ratio: {amp_ratio}")
 
@@ -249,10 +250,10 @@ def convert():
                 ticks = details.get("ticks")
                 if not ticks:
                     # default value
-                    ticks = int(len(signed_data)/used_sampling_rate*50)+1  # PAL
+                    ticks = int(len(signed_data)/used_sampling_rate*50)+1  # PAL  20% length (else speech is too fast)
 
                 sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,
-                            used_sampling_rate,int(128*amp_ratio),used_priority,ticks)
+                            used_sampling_rate,int(64*amp_ratio),used_priority,ticks)
                 sound_table_set_1[sound_index] = f"\t.word\t1,{int(details.get('loops',0))}\n\t.long\t{wav}_sound"
 
                 if amp_ratio > 0:

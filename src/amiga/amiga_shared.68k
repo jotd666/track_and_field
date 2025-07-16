@@ -160,6 +160,7 @@ process_speech_queue:
 	move.l	consumed_speech_pointer,a1
 	cmp.l	queued_speech_pointer,a1
 	jeq		1f
+
 	* consumed/queued at different addresses: do something
 	move.l	(a1)+,a0
 	jbsr	wrap_speech_pointer
@@ -177,8 +178,6 @@ process_speech_queue:
 	rts
 * < A0: sounfx extended structure (with tick information)
 queue_speech:
-	rts
-	
 	move.l	a1,-(a7)
 	move.l	queued_speech_pointer,a1
 	move.l	a0,(a1)+
@@ -263,6 +262,7 @@ osd_sound_start:
 	lea		_custom,a6
 	tst.w	d1
 	beq.b	3f
+	* looped sound
 	tst.b	looped_sound_enabled
 	bne.b	3f
 	* looped sound
