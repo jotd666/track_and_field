@@ -64,7 +64,7 @@ as opposed to Gyruss, most of the sprites don't
 """
     rval = {k for k,v in get_sprite_names().items() if "hammer" in v}
     rval.update(range(0xCE,0xDD))
-    rval.update({0xC6,0xC7})
+    rval.update({0xC6,0xC7,0xFC})
     return rval
 
 alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))

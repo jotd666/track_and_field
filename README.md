@@ -23,3 +23,8 @@ controls (keyboard):
 
 5/6: insert coins
 1-4: start 1-4 player game
+
+cheat keys:
+
+- F1: clear fouls/faults
+- F2: set best super-speed for current event

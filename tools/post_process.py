@@ -149,6 +149,10 @@ with open(source_dir / "conv.s") as f:
             lines[i-3] = ""
             lines[i-1] = ""
 
+        if "[$9487" in line:
+            # insert speed cheat
+            line = "\tjbsr\tosd_super_speed\n" + line
+
         if "[$6853" in line:
             # insert level select cheat
             line = line + "\tGET_DP_ADDRESS\tcurrent_level_84\n\tmove.b\tstart_level,(a0)\n"

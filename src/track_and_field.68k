@@ -6530,7 +6530,7 @@ l_8110:
 	GET_DP_ADDRESS	0x49                    	| [$8118: sta    $49]
 	move.b	d0,(a0)                         	| [...]
 l_811a:
-	jbsr	l_944c                            	| [$811a: jsr    $944c]
+	jbsr	decrease_speed_944c               	| [$811a: jsr    decrease_speed_944c]
 	GET_DP_ADDRESS	0x49                    	| [$811d: dec    $49]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_811a                             	| [$811f: bne    $811a]
@@ -10449,7 +10449,7 @@ l_93cd:
 	GET_DP_ADDRESS	nb_objects_48           	| [$93cf: sta    nb_objects_48]
 	move.b	d0,(a0)                         	| [...]
 l_93d1:
-	jbsr	l_944c                            	| [$93d1: jsr    $944c]
+	jbsr	decrease_speed_944c               	| [$93d1: jsr    decrease_speed_944c]
 	GET_DP_ADDRESS	nb_objects_48           	| [$93d4: dec    nb_objects_48]
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_93d1                             	| [$93d6: bne    $93d1]
@@ -10551,7 +10551,7 @@ l_93fe:
 l_944b:
 	rts                                    	| [$944b: rts]
 
-l_944c:
+decrease_speed_944c:
 	move.b	#0x09,d1                        	| [$944c: ldb    #$09]
 	GET_REG_ADDRESS	0x13,d2                	| [$944e: dec    $13,x]
 	subq.b	#1,(a0)                         	| [...]
@@ -10592,6 +10592,7 @@ l_944c:
 	GET_REG_ADDRESS	0x12,d2                	| [$9484: std    $12,x]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 l_9487:
+	jbsr	osd_super_speed
 	rts                                    	| [$9487: rts]
 
 l_9488:

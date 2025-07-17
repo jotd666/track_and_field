@@ -27,15 +27,17 @@ def convert():
 
     loop_channel = 2
     on_air_channel = 1
+    speech_channel = 3
 
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
 
 
     "STEP_SND"               :{"index":0x1,"channel":-1,"sample_rate":hq_sample_rate,"priority":40},
-    "DWARF_SND"               :{"index":0x31,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+    "DWARF_SND"               :{"index":0x31,"channel":0,"sample_rate":hq_sample_rate,"priority":40},
    "BAR_13_SND"               :{"index":0x13,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
    "BAR_10_SND"               :{"index":0x10,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
+   "SPACESHIP_FALLING_SND"               :{"index":0x1C,"channel":speech_channel,"sample_rate":lq_sample_rate,"priority":40},
    "HURDLE_SND"               :{"index":0x6,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "HURDLE_2_SND"               :{"index":0x7,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
     "HURDLE_A_SND"               :{"index":0xA,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
@@ -74,6 +76,7 @@ def convert():
     # the proper second chrono. It's the fastest way to get sound ids and
     # rip them
     speech =  {"THE":0xA2,
+    "SPACESHIP_SHOT":0xB0,
     "TIME":0x87,
     "POINT":0x85,
     "METRES":0x86,
@@ -117,7 +120,7 @@ def convert():
 
 
     # low quality is probably enough, speech sound is crap
-    sound_dict.update({k+"_SND":{"index":v,"channel":3,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
+    sound_dict.update({k+"_SND":{"index":v,"channel":speech_channel,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
 
     sound_dict["SIX_2_SND"] = {"index":0xA0,"same_as":"SIX_SND"}
 
@@ -127,8 +130,8 @@ def convert():
     0x40,
     0x1A,  # false start
     0xFF,
-    # needs ripping
-      0x15,  # jav mount down
+    0x1D,  # echo of ufo falling
+      0x15,  # jav mount down echo
     ]
 
     with open(os.path.join(src_dir,"..","sounds.inc"),"w") as f:

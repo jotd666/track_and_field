@@ -222,6 +222,7 @@ start:
 		.global osd_read_inputs_1
 		.global osd_read_inputs_2
 		.global osd_read_system_inputs
+		.global	osd_super_speed
 		
 		* read/write on memory
 		.ifndef	RELEASE
@@ -1431,6 +1432,10 @@ update_one_bob:
 	add.w	#SPRITE_HEIGHT,d2
 101:
 	add.w	d2,d1
+
+
+ 	cmp.w	#Y_MAX,d1
+	jcc		21f			| too low (javelin hits roof: skip)
 
 	* A0 points on the first bitplane of the bob
 
@@ -2737,6 +2742,53 @@ osd_read_inputs_2:
 	movem.l	(a7)+,a0/d1
 	rts
 	
+* if implementations don't want to do anything, just return...
+
+osd_super_speed:
+	tst.b	speed_cheat_mode
+	jeq		0f
+	movem.l	a0/d0/a4,-(a7)
+	move.l	m6809_direct_page_pointer,a4
+	* cheat is smarter on that version. It adapts to the current
+	* level to avoid to create an unplayable game
+	lea		speed_jump_table(pc),a0
+	moveq	#0,d0
+	move.b	current_level_84(a4),d0
+	add.w	d0,d0
+	add.w	d0,d0
+	move.l	(a0,d0.w),a0
+	jsr		(a0)
+
+	movem.l	(a7)+,a0/d0/a4
+0:
+	rts
+	
+speed_jump_table:
+	.long	run_speed
+	.long	long_jump_speed
+	.long	javelin_speed
+	.long	run_speed
+	.long	nope
+	.long	high_jump_speed
+	
+nope:
+	rts
+high_jump_speed:
+	move.b	#0,0x34(a4)		| maybe not efficient
+	rts
+
+long_jump_speed:
+javelin_speed:
+	move.b	#1,0xB0(a4)
+	move.b	#5,0xB1(a4)
+	move.b	#0,0xB2(a4)
+	rts
+run_speed:
+	move.b	#1,0xB0(a4)
+	move.b	#2,0xB1(a4)
+	move.b	#0,0xB2(a4)
+	rts
+	
 osd_read_system_inputs:
 	st.b	d0
 
@@ -2929,20 +2981,15 @@ handle_keyboard:
 	jbsr	clear_all_faults
 	st.b	cheat_used
 	
-0:
-	cmp.b	#0x51,d0	|² F2 key
-	bne.b	0f
-	st.b	cheat_used
-	move.w	#0x0FF,_custom+color
+
 	
 0:
-	cmp.b	#0x52,d0	| F3 key
+	cmp.b	#0x51,d0	| F2 key
 	bne.b	0f
 	st.b	cheat_used
-	* add 10000 points
+	* toggle speeds
+	eor.b	#1,speed_cheat_mode
 	move.w	#0x0FF,_custom+color
-	jbsr	add_10000_points
-	
 0:
 	cmp.b	#0x53,d0	| F4 key
 	bne.b	0f
@@ -3118,7 +3165,8 @@ mid_screen_interrupt_count:
 system_vbr:
 	.long	0
 
-
+speed_cheat_mode:
+	.byte	0
 flip_flop:
 	.byte	0
 
@@ -3394,9 +3442,9 @@ scroll_rows_bottom:
 	* set 0-scroll value value for both plane sets
 reset_bplcon1_2:
 	.word	0			| reset scrolling
-	.word	0x1601,0xFFFE
+	.word	0x1A01,0xFFFE
 
-	| no bobs from now on, get a LOT of drawing time
+	| no bobs from now on
 	.word	 intreq,0x8010
 
 	* black color sprites

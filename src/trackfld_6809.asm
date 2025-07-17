@@ -4202,7 +4202,7 @@ player_turn_ends_6e75:
 8113: A7 88 15       STA    $15,X
 8116: 86 04          LDA    #$04
 8118: 97 49          STA    $49
-811A: BD 94 4C       JSR    $944C
+811A: BD 94 4C       JSR    decrease_speed_944C
 811D: 0A 49          DEC    $49
 811F: 26 F9          BNE    $811A
 8121: 86 0C          LDA    #$0C
@@ -6562,7 +6562,7 @@ load_and_display_qualifying_value_9309:
 93CA: 7E CD 87       JMP    $CD87
 93CD: 86 02          LDA    #$02
 93CF: 97 48          STA    nb_objects_48
-93D1: BD 94 4C       JSR    $944C
+93D1: BD 94 4C       JSR    decrease_speed_944C
 93D4: 0A 48          DEC    nb_objects_48
 93D6: 26 F9          BNE    $93D1
 93D8: 10 8E 28 39    LDY    #$2839
@@ -6627,6 +6627,7 @@ load_and_display_qualifying_value_9309:
 9448: 6C 88 10       INC    $10,X
 944B: 39             RTS
 
+decrease_speed_944c:
 944C: C6 09          LDB    #$09
 944E: 6A 88 13       DEC    $13,X
 9451: A6 88 13       LDA    $13,X
