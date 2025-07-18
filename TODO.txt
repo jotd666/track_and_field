@@ -1,7 +1,13 @@
+- if bob called "player" & no mirror, create an attached sprite entry (32 pixels)
+  (check memory, can be reduced to running/jumping frames!!)
+  each frame:
+  if bob can be a sprite, allocate it. If not possible bob remains a bob
+  IN PROgRESS
+  
 - Chariots of fire music pattern restarts too soon
 - leave more room for all tunes (so I can stop them not too accurately)
 - copperlist interrupt too soon (flickering?)
-- test attached sprites for main characters
+- test attached sprites for 2 first main characters (made of 2 sprites each)
 - option to enable the second joystick
 - maybe read joystick directions & button in the half frame with classic
   joystick & fire button read
@@ -11,9 +17,6 @@
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
-
-1. On my A1200 (64 meg with 030)  the WHD version hangs and gives garbage
-   before the welcome screen.
 
 log sounds: bpset 66F4,,{print A;g}
 sim sound on credit: bpset 66F4,,{A=$12;g}

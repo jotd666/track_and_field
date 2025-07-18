@@ -295,6 +295,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
             if tile:
 
                 for b,(plane_name,plane_func) in zip(plane_orientation_flags,plane_orientations):
+                    bitplane_sprite_data = None
                     if b:
 
                         actual_nb_planes = nb_planes
@@ -314,6 +315,11 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                             height = wtile.size[1]
                             width = wtile.size[0]//8 + 2
                             bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette,generate_mask=True)
+
+                            # add sprite data if eligible: player frame, not mirrored
+                            if i not in mirror_sprites and "player" in sprite_names.get(i,""):
+                                bitplane_sprite_data = bitplanelib.palette_image2attached_sprites(wtile,None,palette,
+                                sprite_fmode=2,with_control_words=True)
                         else:
                             # 4 planes, no mask
                             height = 8
@@ -337,7 +343,10 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                                     next_cache_id += 1
                                 else:
                                     bitplane_plane_ids.append(0)  # blank
+
                         entry[plane_name] = {"width":width,"height":height,"y_start":y_start,"bitplanes":bitplane_plane_ids}
+                        if bitplane_sprite_data:
+                            entry[plane_name]["sprdat"] = bitplane_sprite_data
 
             tile_entry.append(entry)
 
