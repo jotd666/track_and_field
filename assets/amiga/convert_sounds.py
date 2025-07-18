@@ -64,6 +64,7 @@ def convert():
     "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":150},
     "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
     "CHARIOTS_WIN_TUNE_SND"      :{"index":0x22,"pattern":0x3,"volume":32,"loops":True},  # same music for end and highscore
+    "BEST_PLAYER_TUNE_SND"      :{"index":0x30,"pattern":0xA,"volume":32,"loops":False,"ticks":180},
     "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
     "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":130},
     "NAME_ENTRY_SND"      :{"index":0x18,"pattern":0x0,"volume":32,"loops":True},

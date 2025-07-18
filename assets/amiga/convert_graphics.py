@@ -11,6 +11,7 @@ mirror_sprites = get_mirror_sprites()
 NB_SPRITES = 0x100
 NB_TILES = 0x300
 
+athlete_cluts = [0,1,2,3]
 dump_it = True
 
 if dump_it:
@@ -153,9 +154,9 @@ add_tile(sprite_cluts,[0xB0,0xB1,0xB8,0xB9],ac)
 # for all player frames with all player "races" (sorry)
 for index,name in sprite_names.items():
     if "player" in name:
-        add_tile(sprite_cluts,index,cluts=[0,1,2,3])
+        add_tile(sprite_cluts,index,cluts=athlete_cluts)
         if index in player_sprite_pairs:
-            add_tile(sprite_cluts,index+1,cluts=[0,1,2,3])
+            add_tile(sprite_cluts,index+1,cluts=athlete_cluts)
 
 if all_tile_cluts:
     tile_cluts = None
@@ -206,6 +207,17 @@ def add_hw_sprite(index,name,cluts=[0]):
 
 sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(16)}
 tile_sheet_dict = {i:Image.open(sheets_path / "tiles" / f"pal_{i:02x}.png") for i in range(16)}
+
+# correct original graphical bugs (that have been corrected in for instance
+# hyper olympic)
+for c in athlete_cluts:
+    for bp,gp in [((443,64),(44,64)),
+    ((403,67),(403,68)),
+    ((435,75),(434,75)),
+    ((347,72),(348,72))
+    ]:
+        img = sprite_sheet_dict[c]
+        img.putpixel(bp,img.getpixel(gp))
 
 tile_palette = set()
 tile_set_list = []

@@ -1,11 +1,12 @@
 - Chariots of fire music pattern restarts too soon
 - leave more room for all tunes (so I can stop them not too accurately)
 - copperlist interrupt too soon (flickering?)
-- multi-player music on multi-player (maybe use cheat to keep contestants in the game)
 - test attached sprites for main characters
 - option to enable the second joystick
-- test update chars @ 25 fps but sprites @50 for floppt nofast
-- cycle exact: sprites blinking despite double buffering
+- maybe read joystick directions & button in the half frame with classic
+  joystick & fire button read
+- test update chars @ 25 fps but sprites @50 for floppy nofast
+- cycle exact: sprites blinking despite double buffering:
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
@@ -13,8 +14,6 @@
 
 1. On my A1200 (64 meg with 030)  the WHD version hangs and gives garbage
    before the welcome screen.
-2. The floppy version works :-) In the Javelin if you hold the fire
-   button down to get near vertical angle to bring down the BIRD when the bird is hit (ie the javelin leaves the top of the screen) the game crashes.
 
 log sounds: bpset 66F4,,{print A;g}
 sim sound on credit: bpset 66F4,,{A=$12;g}
