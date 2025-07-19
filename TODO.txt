@@ -1,12 +1,8 @@
-- if bob called "player" & no mirror, create an attached sprite entry (32 pixels)
-  (check memory, can be reduced to running/jumping frames!!)
-  each frame:
-  if bob can be a sprite, allocate it. If not possible bob remains a bob
-  IN PROgRESS
-- remove "ticks" in music and use E80 command  
+- add referee in hw sprite, add background characters
+- clarify why previous positions need nb sprites * 2 else it crashes!
+- remove "ticks" in music and use E8x command: debug Karate Cahmp first
 - check when run/hurdles records are stored in MAME... seems NEVER
 - leave more room for all tunes (so I can stop them not too accurately): test it
-- test attached sprites for 2 first main characters (made of 2 sprites each)
 - option to enable the second joystick
 - maybe read joystick directions & button in the half frame with classic
   joystick & fire button read

@@ -105,7 +105,7 @@ FG_SCREEN_SIZE = FG_SCREEN_PLANE_SIZE*NB_BOB_PLANES
 VIDEO_ADDRESS = 0x3000
 NB_HOST_SPRITES = 8
 
-NB_TARGET_SPRITES = 0x40  
+NB_TARGET_SPRITES = 0x20  
 	
 TARGET_SPRITE_X = 0x400
 TARGET_SPRITE_Y = 1 
@@ -975,7 +975,8 @@ _vblank:
 	jbsr		do_irq
 	* now D5 can be destroyed
 	jbsr	really_update_scroll
-	
+	jbsr	really_update_hw_sprites
+
 	tst.b	frameskip
 	jeq		0f
 	eor.b	#1,flip_flop
@@ -997,8 +998,6 @@ _vblank:
 	* we want
 
 	jbsr		really_update_tiles
-
-	
 23:
 
 
@@ -1253,7 +1252,7 @@ really_update_hw_sprites:
 	lea		hws_table,a4
 	lea		game_sprites+2,a2				| copperlist part
 	lea		game_sprites_end+2,a6
-	move.w	#NB_TARGET_SPRITES/2-1,d7
+	move.w	#NB_TARGET_SPRITES-1,d7
 	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
 1:
 	jbsr	update_one_hw_sprite
@@ -1285,7 +1284,7 @@ really_update_bobs:
 	lea		_custom,a5
 	* clear previous positions
 	move.l	playfield_drawn_screen_ptr(pc),a1
-	move.w	#NB_TARGET_SPRITES/2-1,d7
+	move.w	#NB_TARGET_SPRITES-1,d7
 1:
 	move.l	(a4),d1	| read X and Y
 	jeq		11f		| x=y=0: inactive, skip
@@ -1319,7 +1318,7 @@ really_update_bobs:
 	GET_MEMORY_START_AND_DP
 	lea		(LAST_SPRITE,a6),a0		| sprite start
 	lea		bob_table,a4
-	move.w	#NB_TARGET_SPRITES/2-1,d7
+	move.w	#NB_TARGET_SPRITES-1,d7
 	move.l	bob_previous_drawn_sprites(pc),a6
 1:
 	lea		sprite_drawn(pc),a3
@@ -1984,7 +1983,7 @@ sprite_buffer:
 	.skip	NB_TARGET_SPRITES*SPRITE_SIZEOF
 	
 bob_previous_positions_1:
-	ds.b	NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZEOF
+	ds.b	NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZEOF*2
 bob_previous_drawn_sprites:
 	.long	bob_previous_positions_1
 bob_previous_displayed_sprites:
@@ -1993,7 +1992,7 @@ bob_previous_displayed_sprites:
 	.else
 	.long	bob_previous_positions_2	
 bob_previous_positions_2:
-	ds.b	NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZEOF	
+	ds.b	NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZEOF*2
 	.endif
 
 		
