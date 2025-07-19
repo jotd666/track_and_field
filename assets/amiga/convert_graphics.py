@@ -453,7 +453,8 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
         f.write("\t.long\t")
         if any(t and "sprdat" in t['standard'] for t in tile_entry):
             prefix = sprite_names.get(i,"bob")
-            f.write(f"hws_{prefix}_{i:02x}")
+            prefix = f"hws_{prefix}_{i:02x}"
+            f.write(prefix)
         else:
             f.write("0")
         f.write("\n")
@@ -466,9 +467,10 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
             for j,t in enumerate(tile_entry):
                 f.write("\t.long\t")
                 if t:
-                    f.write(f"hws_{prefix}_{i:02x}_{j:02x}")
+                    z = f"hws_{prefix}_{i:02x}_{j:02x}"
+                    f.write(f"{z}_0,{z}_1")
                 else:
-                    f.write("0")
+                    f.write("0,0")
                 f.write("\n")
 
 
@@ -540,8 +542,8 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
             for j,t in enumerate(tile_entry):
 
                 if t:
-                    f.write(f"hws_{prefix}_{i:02x}_{j:02x}:")
                     data = t["standard"]["sprdat"]
-                    for d in data:
+                    for k,d in enumerate(data):
+                        f.write(f"hws_{prefix}_{i:02x}_{j:02x}_{k}:")
                         bitplanelib.dump_asm_bytes(d,f,mit_format=True)
                     f.write("\n")

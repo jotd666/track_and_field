@@ -3,7 +3,7 @@
   each frame:
   if bob can be a sprite, allocate it. If not possible bob remains a bob
   IN PROgRESS
-  
+- remove "ticks" in music and use E80 command  
 - check when run/hurdles records are stored in MAME... seems NEVER
 - leave more room for all tunes (so I can stop them not too accurately): test it
 - test attached sprites for 2 first main characters (made of 2 sprites each)

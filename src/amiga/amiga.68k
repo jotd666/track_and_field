@@ -31,18 +31,21 @@ NB_SCROLL_ROWS_PART_1 = NB_SCROLL_ROWS/2
 NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1
 NB_SCROLL_ROWS_PART_3 = 1
 
-* 3 & 3: most performant
+* most performant bitplane fetch
 BITPLANE_FMODE = 3			| works with 1, albeit slower
-SPRITE_FMODE = 3			| required!!
+* we only need 32-pixel wide sprites, no need for 64
+SPRITE_FMODE = 1			| required!!
 
 BORDERBLANK = 1
 
-COPPEY_Y_START = 0x18
+COPPER_Y_START = 0x18
 BASE_BPLCON3_VALUE = (1<<12)+(BORDERBLANK<<5)  | dpf second playfield palette starts at color 16!
 BASE_BPLCON2_VALUE = 0x0024		| sprites above all playfields
 
 SPRITE_X_CORRECTION = 32
 SPRITE_Y_CORRECTION = 0
+HW_SPRITE_Y_CORRECTION = -4
+HW_SPRITE_X_CORRECTION = 64
 SPRITE_HEIGHT = 16
 SPRITE_WIDTH = 16
 
@@ -54,6 +57,7 @@ _custom = 0xDFF000
 RAM_START = 0x1800
 ROM_START = 0x6000
 
+SPRITE_START = RAM_START+0x3E
 
 
 
@@ -98,6 +102,7 @@ FG_SCREEN_PLANE_SIZE = FG_NB_BYTES_PER_ROW*NB_PLAYFIELD_LINES
 BG_SCREEN_SIZE = BG_SCREEN_PLANE_SIZE*NB_TILE_PLANES
 FG_SCREEN_SIZE = FG_SCREEN_PLANE_SIZE*NB_BOB_PLANES
 
+VIDEO_ADDRESS = 0x3000
 NB_HOST_SPRITES = 8
 
 NB_TARGET_SPRITES = 0x40  
@@ -113,7 +118,7 @@ TARGET_SPRITE_SIZEOF = 4
 	UWORD	PREV_Y
 	UWORD	PREV_HEIGHT			
 	UWORD	PREV_WIDTH			
-	UBYTE	PREV_STAR			
+	UBYTE	PREV_STAR		| not used	
 	UBYTE	PREV_ACTIVE_PLANES	
 	LABEL		PREVIOUS_SPRITE_SIZEOF
 
@@ -160,6 +165,14 @@ BIT_LEFT_2P = 6
 	.endm
 	
 .macro	WAIT_BLIT
+	.ifndef	RELEASE
+	* always check that custom is set (in dev mode)
+	* saves a lot of time!
+	cmp.l	#_custom,a5
+	jeq		customok\@
+	BREAKPOINT	"custom not set in A5"
+customok\@:
+	.endif
 	move.w	#0x8400,(dmacon,a5)		| blitter high priority
 wait\@:
 	BTST	#6,(dmaconr,a5)
@@ -968,13 +981,18 @@ _vblank:
 	eor.b	#1,flip_flop
 	jeq		23f
 0:
-	jbsr		really_update_tiles
-	jbsr		really_update_sprites
+	jbsr		really_update_bobs
 	
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	bsr		switch_screen_buffers
 	.endif
+	
+	* update tiles in the end, dual playfield means that
+	* we can do that when we want and at the frequency
+	* we want
+	jbsr		really_update_tiles
+
 	* process speech queue at each copper interrupt including PAL mid-screen
 	* so in NTSC the timings are the same
 	jbsr	process_speech_queue
@@ -1135,17 +1153,7 @@ lose_all_lives:
 	movem.l	(a7)+,a6/a4
 	rts
 
-add_10000_points:
-	move.l	a6,-(a7)
-	GET_MEMORY_START_AND_DP
-	movem.w	d0/d7,-(a7)
-	*move.b	player_1_score_9663+2(a6),d0
-	MOVEQ	#1,d7
-	abcd	d7,d0
-	*move.b	d0,player_1_score_9663+2(a6)
-	movem.w	(a7)+,d0/d7
-	move.l	(a7)+,a6
-	rts
+
 
 * we're going to scan for scroll values with some optimization
 * to avoid to update copperlist if values don't change
@@ -1192,10 +1200,10 @@ really_update_scroll:
 * instead of 0x400 each frame.
 
 really_update_tiles:
-	lea		_custom,a5
+	*lea		_custom,a5
 	*WAIT_BLIT  | no need in AGA: dual playfield
 	GET_MEMORY_START_AND_DP
-	lea		(0x3000,a6),a6
+	lea		(VIDEO_ADDRESS,a6),a6
 	lea		(0x800,a6),a5
 	lea		tiles_row_flags(pc),a1
 	moveq	#0,d3
@@ -1230,9 +1238,35 @@ really_update_tiles:
 
 
 
-really_update_sprites:
+really_update_bobs:
 update_bobs_and_hw_sprites:
-	
+	************************************************
+	* draw current sprites from 6809 sprite memory *
+	************************************************
+	GET_MEMORY_START_AND_DP
+	lea		(SPRITE_START,a6),a0		| sprite start
+	lea		hws_table,a4
+	lea		game_sprites+2,a2				| copperlist part
+	lea		game_sprites_end+2,a6
+	move.w	#NB_TARGET_SPRITES/2-1,d7
+	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
+1:
+	*jbsr	update_one_hw_sprite
+	subq.w	#2,a0
+	cmp.l	a2,a6
+	jeq		2f			| all sprites are used already: bail out
+	dbf		d7,1b
+	* blank the rest of the unused sprites
+	move.l	#blank_sprite,d0
+1:
+	move.w	d0,(4,a2)
+	swap	d0
+	move.w	d0,(a2)
+	swap	d0
+	addq	#8,a2
+	cmp.l	a2,a6
+	jne		1b
+2:	
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -1270,11 +1304,9 @@ update_bobs_and_hw_sprites:
 	* draw current BOBs from 6809 sprite memory *
 	*********************************************
 
-
-    lea _custom,A5
 	lea		sprite_groups(pc),a2
 	GET_MEMORY_START_AND_DP
-	lea		(0x183E,a6),a0		| sprite start
+	lea		(SPRITE_START,a6),a0		| sprite start
 	lea		bob_table,a4
 	move.w	#NB_TARGET_SPRITES/2-1,d7
 	move.l	bob_previous_drawn_sprites(pc),a6
@@ -1508,60 +1540,78 @@ update_one_bob:
 
 sprite_groups:
 	.include	"sprite_groups.68k"
-	
-	.ifdef	HW_SPRITES
+
+
+* < A0: target sprite memory
+* < A1: hw sprite y table
+* < A2: part copperlist where the sprites are
 update_one_hw_sprite:
-	* code = 0 and clut = 0 => disabled ?? to check
-	moveq	#0,d2
-	move.b	(TARGET_SPRITE_CODE,a0),d2
-	jeq	2f
-
-	move.b	(TARGET_SPRITE_X,a0),d0
-	add.w	d2,d2
-	add.w	d2,d2
-	btst    #2,(TARGET_SPRITE_ATTR,a0)
-	jeq		0f
-	addq	#2,d2
-0:
-	cmp.b	#1,(a6,d2.w)
-	jne		2f		| not a hw sprite: zap
-	* get the actual sprite index for our engine
-	move.b	(1,a6,d2.w),d2
-	and.w	#0xFF,d2
-	* it is a HW sprite all right
-	lsl.w	#4,d2	| 4 pointers for each sprite
-	move.b  (TARGET_SPRITE_CODE,a0),d3
-	btst	#0,d3
-	jeq		10f
-	addq	#8,d2			| mirror sprite couple
-10:
-	lea		(a4,d2.w),a5	| pointer on first sprite
-
 	moveq	#0,d0
 	moveq	#0,d1
 	move.b	(TARGET_SPRITE_Y,a0),d1  | sprite Y
-	beq.b	2f			| Y set to 0: not shown
-	not.b	d1
+	move.b	(TARGET_SPRITE_X,a0),d0
 
-	move.b	(TARGET_SPRITE_X,a0),d0  | sprite X
+	* filter out if X=0 AND Y=0
+	tst.b	d1
+	jne		0f
+	tst.b	d0
+	jeq	2f
+0:
+
+	* get code immediately. we want to know if it's a
+	* hardware sprite right away
+	moveq	#0,d3
+	move.b	(TARGET_SPRITE_CODE,a0),d3
+	.ifdef	NO68020
+	add.w	d3,d3
+	add.w	d3,d3
+	move.l	(a4,d3.w),d3
+	.else
+	move.l	(a4,d3.w*4),d3
+	.endif
+	jeq		2f		| not defined or no HW sprite, pass to BOBs
+	move.l	d3,a5	| clut table
 	
-	.ifne	SPRITE_Y_CORRECTION
-	add.b	#SPRITE_Y_CORRECTION,d1
+	* we're taking from here, mark the sprite as empty
+	* so BOB pass isn't going to consider it
+	* (no worries as game updates the sprite memory
+	* at each frame)
+	clr.b	(TARGET_SPRITE_X,a0)
+	clr.b	(TARGET_SPRITE_Y,a0)
+	
+	* now change coordinates
+
+	neg.w	d1
+	add.w	#241+HW_SPRITE_Y_CORRECTION,d1
+	jmi		2f		| negative after correction => skip
+
+
+	.ifne	HW_SPRITE_X_CORRECTION
+	add.w	#HW_SPRITE_X_CORRECTION,d0
 	.endif
-	.ifne	SPRITE_X_CORRECTION
-	add.b	#SPRITE_X_CORRECTION,d0
-	.endif
+
+	moveq	#0,d2
+	move.b	(TARGET_SPRITE_ATTR,a0),d2
+	and.b	#0xF,d2		| CLUT
+	
+	* it is a HW sprite all right
+	lsl.w	#3,d2	| 2 pointers for each sprite
+
+	lea		(a5,d2.w),a5	| pointer on first sprite
 
 	* D0 and D1 are already set
-
-	sub.w	#16,d0	| move each sprite 16 bits to the left
-	bmi.b	2f			| X < 0 after correction: can't show
+	* so is A1 with sprite Y pos table
+	
 	bsr		store_sprite_pos
 
 	
 	* first sprite of couple
 	move.l	(a5)+,a3
-	move.l	d0,(a3)
+	* fmode = 2: sprite control word is 8 bytes
+	move.w	d0,(4,a3)
+	swap	d0
+	move.w	d0,(a3)
+	swap	d0
 	move.l	a3,d1
 	* store sprite pointer in copperlist
 	move.w	d1,(4,a2)
@@ -1570,7 +1620,10 @@ update_one_hw_sprite:
 	* second sprite of couple
 	BSET	#7,d0		| attach bit set
 	move.l	(a5),a3
-	move.l	d0,(a3)
+	move.w	d0,(4,a3)
+	swap	d0
+	move.w	d0,(a3)
+	swap	d0
 	move.l	a3,d1
 	* store sprite pointer in copperlist
 	move.w	d1,(4+8,a2)
@@ -1580,7 +1633,6 @@ update_one_hw_sprite:
 2:
 	
 	rts
-	.endif
 	
 
 	.ifne	OPT_ENABLE_LOGGING
@@ -2102,8 +2154,8 @@ platform_init:
 	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
 	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
  	*         VVHH
-    move.w #0x99-0X18+0x40+(COPPEY_Y_START<<8),diwstrt(a5)
-    move.w #0x79+0x48+(COPPEY_Y_START<<8),diwstop(a5)
+    move.w #0x99-0X18+0x40+(COPPER_Y_START<<8),diwstrt(a5)
+    move.w #0x79+0x48+(COPPER_Y_START<<8),diwstop(a5)
     move.w #0x0038,ddfstrt(a5)
     move.w #0x00D0,ddfstop(a5)
 
@@ -2264,7 +2316,7 @@ video_byte_dirty:
 	.endif
 
 	* remove 0x8000 offset (ram starts at 0x8000)
-	sub.w	#0x3000,d7
+	sub.w	#VIDEO_ADDRESS,d7
 	* in this game (around 892B) the code is used with either
 	* a video address or a RAM address, so ignore if too low
 	jmi		osd_video_dirty_out
@@ -2273,7 +2325,7 @@ video_byte_dirty:
 	jpl	1f
 
 	* should not happen
-	add.w	#0x3000,d7
+	add.w	#VIDEO_ADDRESS,d7
 	jbsr	osd_get_last_known_pc
 	BREAKPOINT	"write videoram out of range (D7 < $3000), PC in D6"
 	jra		osd_video_dirty_out
@@ -2398,8 +2450,12 @@ update_bg_tile:
 
 
 	lea		mulBG_NB_BYTES_PER_ROW_table,A2
+	.ifdef	NO68020
 	add.w	d1,d1
 	move.w	(a2,d1.w),d1
+	.else
+	move.w	(a2,d1.w*2),d1
+	.endif
 	add.w	d1,d0
 	add.w	d0,a1
 	
@@ -2415,7 +2471,7 @@ update_bg_tile:
 	jeq		11f					| clear tile, no error (release)
 	.else
 	jne		12f
-	add.w	#0x3000,d7
+	add.w	#VIDEO_ADDRESS,d7
 	lsr.w	#2,d2
 	move.w	#0xF0F,_custom+color
 	jra		11f
@@ -2436,7 +2492,7 @@ update_bg_tile:
 	jeq		11f						| not necessarily a problem
 	.else
 	jne		12f
-	add.w	#0x3000,d7
+	add.w	#VIDEO_ADDRESS,d7
 	lsr.w	#2,d2
 	lsr.w	#2,d3
 	move.w	#0xF0F,_custom+color
@@ -3423,7 +3479,7 @@ tiles_colors:
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 
-	.set	y_start,COPPEY_Y_START
+	.set	y_start,COPPER_Y_START
 scroll_rows_first_half:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_1
 	* not sure if it's really half screen but it doesn't matter
