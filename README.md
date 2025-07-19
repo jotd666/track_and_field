@@ -1,5 +1,5 @@
 # track_and_field
-remake of Track and Field / Hyper Olympics for amiga
+remake of Track and Field / Hyper Olympic for amiga
 
 credits:
 - jotd: transcode and amiga port, graphics & sound conversion
@@ -7,8 +7,11 @@ credits:
 - PascalDe73: amiga icon
 - Konami: original game
 
-runs in PAL or NTSC, NTSC being possibly more reactive to button readings
+features:
+
+- runs in PAL or NTSC, NTSC being possibly more reactive to button readings
 (no effect when playing from keyboard)
+- fixed record times not registering on dash/hurdles in the original
 
 controls (joypad 1P/2P):
 

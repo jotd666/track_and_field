@@ -62,9 +62,24 @@ osd_read_high_scores:
 	dbf		d0,0b
 
 1:
+	* fix here: in the arcade it's not possible to beat
+	* times for dash & hurdles, simply because the memory is
+	* zeroed, which creates impossible times at 0 seconds...
+	lea		(NV_RAM_ADDRESS+0x400,a6),a1
+	jbsr	fix_times
+	lea		(NV_RAM_ADDRESS+0x460,a6),a1
+	jbsr	fix_times
 	movem.l	(a7)+,d0-d7/a0-a6
 	rts
-	
+fix_times:
+	tst.b	(a1)
+	jne		2f
+	* zero for 110m hurdles: we should fix it
+	move.b	#4,(a1)
+	move.b	#5,(8,a1)
+	move.b	#6,(16,a1)
+2:
+	rts
 osd_write_high_scores:
 	movem.l	d0-d7/a0-a6,-(a7)
 	.ifdef	RELEASE
