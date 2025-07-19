@@ -57,7 +57,7 @@ _custom = 0xDFF000
 RAM_START = 0x1800
 ROM_START = 0x6000
 
-SPRITE_START = RAM_START+0x3E
+LAST_SPRITE = RAM_START+0x3E
 
 
 
@@ -1244,7 +1244,13 @@ update_bobs_and_hw_sprites:
 	* draw current sprites from 6809 sprite memory *
 	************************************************
 	GET_MEMORY_START_AND_DP
-	lea		(SPRITE_START,a6),a0		| sprite start
+	* clear "sprite drawn" table
+	lea		sprite_drawn(pc),a0
+	move.w	#NB_TARGET_SPRITES/4-1,d7
+0:
+	*clr.l	(a0)+
+	dbf		d7,0b
+	lea		(LAST_SPRITE,a6),a0		| sprite start
 	lea		hws_table,a4
 	lea		game_sprites+2,a2				| copperlist part
 	lea		game_sprites_end+2,a6
@@ -1306,7 +1312,7 @@ update_bobs_and_hw_sprites:
 
 	lea		sprite_groups(pc),a2
 	GET_MEMORY_START_AND_DP
-	lea		(SPRITE_START,a6),a0		| sprite start
+	lea		(LAST_SPRITE,a6),a0		| sprite start
 	lea		bob_table,a4
 	move.w	#NB_TARGET_SPRITES/2-1,d7
 	move.l	bob_previous_drawn_sprites(pc),a6
@@ -1963,6 +1969,8 @@ clear_planes_any_blitter_internal:
 	move.w  d4,bltsize(a5)	|rectangle size, starts blit
     rts
 
+sprite_drawn:
+	.skip	NB_TARGET_SPRITES
 	
 sprite_buffer:
 	.skip	NB_TARGET_SPRITES*SPRITE_SIZEOF
