@@ -58,7 +58,7 @@ RAM_START = 0x1800
 ROM_START = 0x6000
 
 LAST_SPRITE = RAM_START+0x3E
-
+FIRST_SPRITE = RAM_START
 
 
 	.ifdef	RELEASE
@@ -887,6 +887,16 @@ _nmi:
 	move.w	#0x7FFF,_custom+intreq
 	rts
 	
+read_joypads:
+	moveq	#0,d0
+	jsr	_read_joystick
+	move.l	d0,_joypad_2_state
+
+	moveq	#1,d0
+	jsr	_read_joystick
+	move.l	d0,_joypad_1_state
+	rts
+	
 _vblank:
     movem.l d0-d7/a0-a6,-(a7)
 	lea		_custom,a5
@@ -896,15 +906,8 @@ _vblank:
 
 	clr.b	vbl_sync_flag
 	
-	moveq	#0,d0
-	jsr	_read_joystick
-	move.l	d0,_joypad_2_state
-
 	move.l	_joypad_1_state(pc),d1
-	moveq	#1,d0
-	jsr	_read_joystick
-	move.l	d0,_joypad_1_state
-
+	jbsr		read_joypads
 	
 	* CD32 "play" is disabled but it's free to read
 	* 3rd button on a Sega 3-button so 3rd button is pause
@@ -950,8 +953,10 @@ _vblank:
 	* is the source of the interrupt
 	btst	#2,d0
 	beq.b	2f
-	* mid-screen copper interrupt, must occur once every 5 times
-	* to simulate ~60 Hz on 50 Hz display
+	* mid-screen copper interrupt. Read controls again to reduce
+	* input lag
+	jbsr		read_joypads
+	* once every 5 times we simulate ~60 Hz on 50 Hz display
 	move.b	mid_screen_interrupt_count,d0
 	addq.b	#1,d0
 	cmp.b	#5,d0
@@ -1248,7 +1253,9 @@ really_update_hw_sprites:
 0:
 	clr.l	(a0)+
 	dbf		d7,0b
-	lea		(LAST_SPRITE,a6),a0		| sprite start
+	
+	* now update in the reverted order // the bobs
+	lea		(FIRST_SPRITE,a6),a0		| sprite start
 	lea		hws_table,a4
 	lea		game_sprites+2,a2				| copperlist part
 	lea		game_sprites_end+2,a6
@@ -1256,7 +1263,7 @@ really_update_hw_sprites:
 	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
 1:
 	jbsr	update_one_hw_sprite
-	subq.w	#2,a0
+	addq.w	#2,a0
 	cmp.l	a2,a6
 	jeq		2f			| all sprites are used already: bail out
 	dbf		d7,1b

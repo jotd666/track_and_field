@@ -8,8 +8,14 @@ sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
 
-NB_SPRITES = 0x100
-NB_TILES = 0x300
+def get_possible_hw_sprites():
+    # declare all player frames plus bystanders & referee (which appear when tiles scroll)
+    possible_hw_sprites = {i for i in range(NB_SPRITES) if i not in mirror_sprites and
+    any(x in sprite_names.get(i,"") for x in ("girl","player","referee","bystanders"))}
+    return possible_hw_sprites
+
+possible_hw_sprites = get_possible_hw_sprites()
+
 
 athlete_cluts = [0,1,2,3]
 dump_it = True
@@ -317,7 +323,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                             bitplane_data = bitplanelib.palette_image2raw(wtilec,None,palette,generate_mask=True)
 
                             # add sprite data if eligible: player frame, not mirrored
-                            if i not in mirror_sprites and "player" in sprite_names.get(i,""):
+                            if i in possible_hw_sprites:
                                 # using original, uncropped bitplane data
                                 bitplane_sprite_data = bitplanelib.palette_image2attached_sprites(wtile,None,palette,
                                 sprite_fmode=2,with_control_words=True)

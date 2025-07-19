@@ -13,6 +13,9 @@ used_sprite_cluts_file = this_dir / "used_sprite_cluts.json"
 used_tile_cluts_file = this_dir / "used_tile_cluts.json"
 used_graphics_dir = this_dir / "used_graphics"
 
+NB_SPRITES = 0x100
+NB_TILES = 0x300
+
 def palette_pad(palette,pad_nb):
     palette += (pad_nb-len(palette)) * [(0x10,0x20,0x30)]
 
@@ -51,10 +54,11 @@ def get_sprite_names():
     rval[0xB0] = rval[0xB8] = "up_arrow"
     rval |= {k:"bystanders" for k in {0xDE,0xF4,0xF5}}
     #rval |= {k:"" for k in {0xDE,0xF4,0xF5}}
-    rval |= {k:"referee" for k in sr2(0x62,0x68) | {0x68,0x69,0x6A,0x6B,0x6C,0x6D,
-    0x82,0x83,0x84,0x86}}
+    rval |= {k:"referee" for k in {0x68,0x69,0x6A,0x6B,0x6C,0x6D,0x82,0x83,0x84,0x86}}
+    rval |= {k:"meter_guy" for k in sr2(0x62,0x68)}
     rval |= {k:"javelin" for k in range(0xE0,0xF1)}
     rval |= {k:"hammer" for k in sr2(0x34,0x3E)}
+    rval |= {k:"girl" for k in (0xB2,0xB3,0xBA,0xBB)}
     return rval
 
 def get_mirror_sprites():
@@ -66,6 +70,8 @@ as opposed to Gyruss, most of the sprites don't
     rval.update(range(0xCE,0xDD))
     rval.update({0xC6,0xC7,0xFC})
     return rval
+
+
 
 alphanum_tile_codes = set(range(0,10)) | set(range(65-48,65+27-48))
 
