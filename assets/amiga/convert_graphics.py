@@ -383,6 +383,7 @@ with open(os.path.join(src_dir,"sprite_groups.68k"),"w") as f:
 with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
     f.write("\t.global\tcharacter_table\n")
     f.write("\t.global\tbob_table\n")
+    f.write("\t.global\thws_table\n")
 
     f.write("character_table:\n")
 
@@ -405,7 +406,7 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
                     f.write("0")
                 f.write("\n")
 
-
+    # tiles
     for i,tile_entry in enumerate(tile_table):
         if tile_entry and any(tile_entry):
             for j,t in enumerate(tile_entry):
@@ -447,6 +448,31 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
             f.write("0")
         f.write("\n")
 
+    f.write("hws_table:\n")
+    for i,tile_entry in enumerate(sprite_table):
+        f.write("\t.long\t")
+        if any(t and "sprdat" in t['standard'] for t in tile_entry):
+            prefix = sprite_names.get(i,"bob")
+            f.write(f"hws_{prefix}_{i:02x}")
+        else:
+            f.write("0")
+        f.write("\n")
+
+    # HW sprites clut declaration
+    for i,tile_entry in enumerate(sprite_table):
+        if any(t and "sprdat" in t['standard'] for t in tile_entry):
+            prefix = sprite_names.get(i,"bob")
+            f.write(f"hws_{prefix}_{i:02x}:\n")
+            for j,t in enumerate(tile_entry):
+                f.write("\t.long\t")
+                if t:
+                    f.write(f"hws_{prefix}_{i:02x}_{j:02x}")
+                else:
+                    f.write("0")
+                f.write("\n")
+
+
+    # BObs clut declaration
     for i,tile_entry in enumerate(sprite_table):
         if any(tile_entry):
             prefix = sprite_names.get(i,"bob")
@@ -507,3 +533,15 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
         f.write(f"bob_plane_{v:02d}:")
         dump_asm_bytes(k,f)
 
+    # HW sprites bitplane data
+    for i,tile_entry in enumerate(sprite_table):
+        if any(t and "sprdat" in t['standard'] for t in tile_entry):
+            prefix = sprite_names.get(i,"bob")
+            for j,t in enumerate(tile_entry):
+
+                if t:
+                    f.write(f"hws_{prefix}_{i:02x}_{j:02x}:")
+                    data = t["standard"]["sprdat"]
+                    for d in data:
+                        bitplanelib.dump_asm_bytes(d,f,mit_format=True)
+                    f.write("\n")

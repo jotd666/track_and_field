@@ -11,7 +11,7 @@
 - maybe read joystick directions & button in the half frame with classic
   joystick & fire button read
 - test update chars @ 25 fps but sprites @50 for floppy nofast
-- cycle exact: sprites blinking despite double buffering:
+- cycle exact: sprites blinking despite double buffering: test after hw sprite
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
