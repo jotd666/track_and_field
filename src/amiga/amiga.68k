@@ -1248,7 +1248,7 @@ update_bobs_and_hw_sprites:
 	lea		sprite_drawn(pc),a0
 	move.w	#NB_TARGET_SPRITES/4-1,d7
 0:
-	*clr.l	(a0)+
+	clr.l	(a0)+
 	dbf		d7,0b
 	lea		(LAST_SPRITE,a6),a0		| sprite start
 	lea		hws_table,a4
@@ -1280,7 +1280,7 @@ update_bobs_and_hw_sprites:
 	lea		_custom,a5
 	* clear previous positions
 	move.l	playfield_drawn_screen_ptr(pc),a1
-	move.w	#NB_TARGET_SPRITES-1,d7
+	move.w	#NB_TARGET_SPRITES/2-1,d7
 1:
 	move.l	(a4),d1	| read X and Y
 	jeq		11f		| x=y=0: inactive, skip
@@ -1317,7 +1317,11 @@ update_bobs_and_hw_sprites:
 	move.w	#NB_TARGET_SPRITES/2-1,d7
 	move.l	bob_previous_drawn_sprites(pc),a6
 1:
+	lea		sprite_drawn(pc),a3
+	tst.b	(a3,d7.w)
+	jne		3f
 	jbsr	update_one_bob
+3:
 	subq.w	#2,a0
 	dbf		d7,1b
 2:
@@ -1551,6 +1555,7 @@ sprite_groups:
 * < A0: target sprite memory
 * < A1: hw sprite y table
 * < A2: part copperlist where the sprites are
+* < D7: loop counter (decreasing, used for flag index)
 update_one_hw_sprite:
 	moveq	#0,d0
 	moveq	#0,d1
@@ -1580,10 +1585,8 @@ update_one_hw_sprite:
 	
 	* we're taking from here, mark the sprite as empty
 	* so BOB pass isn't going to consider it
-	* (no worries as game updates the sprite memory
-	* at each frame)
-	*clr.b	(TARGET_SPRITE_X,a0)
-	*clr.b	(TARGET_SPRITE_Y,a0)
+	lea		sprite_drawn(pc),a3
+	st.b	(a3,d7.w)
 	
 	* now change coordinates
 
