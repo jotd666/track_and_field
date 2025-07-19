@@ -987,15 +987,17 @@ _vblank:
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	bsr		switch_screen_buffers
 	.endif
-	
-	* update tiles in the end, dual playfield means that
-	* we can do that when we want and at the frequency
-	* we want
-	jbsr		really_update_tiles
 
 	* process speech queue at each copper interrupt including PAL mid-screen
 	* so in NTSC the timings are the same
 	jbsr	process_speech_queue
+	
+	* update tiles in the end, dual playfield means that
+	* we can do that when we want and at the frequency
+	* we want
+
+	jbsr		really_update_tiles
+
 	
 23:
 
@@ -1236,10 +1238,7 @@ really_update_tiles:
 	rts
 	
 
-
-
-really_update_bobs:
-update_bobs_and_hw_sprites:
+really_update_hw_sprites:
 	************************************************
 	* draw current sprites from 6809 sprite memory *
 	************************************************
@@ -1273,6 +1272,12 @@ update_bobs_and_hw_sprites:
 	cmp.l	a2,a6
 	jne		1b
 2:	
+	rts
+	
+
+really_update_bobs:
+
+
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -3241,7 +3246,8 @@ speed_cheat_mode:
 	.byte	0
 flip_flop:
 	.byte	0
-
+tile_flip_flop:
+	.byte	0
 
 	.align	2
 
