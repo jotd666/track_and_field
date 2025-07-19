@@ -7,6 +7,9 @@ credits:
 - PascalDe73: amiga icon
 - Konami: original game
 
+runs in PAL or NTSC, NTSC being possibly more reactive to button readings
+(no effect when playing from keyboard)
+
 controls (joypad 1P/2P):
 
 run: left/right or blue/green

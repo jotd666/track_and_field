@@ -254,7 +254,7 @@ def convert():
                 ticks = details.get("ticks")
                 if not ticks:
                     # default value
-                    ticks = int(len(signed_data)/used_sampling_rate*75)+1  # PAL  50% length (else speech is too fast)
+                    ticks = int(len(signed_data)/used_sampling_rate*85)+1  # inflate time (else speech is too fast)
 
                 sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,
                             used_sampling_rate,int(64*amp_ratio),used_priority,ticks)

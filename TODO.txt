@@ -4,9 +4,8 @@
   if bob can be a sprite, allocate it. If not possible bob remains a bob
   IN PROgRESS
   
-- Chariots of fire music pattern restarts too soon
-- leave more room for all tunes (so I can stop them not too accurately)
-- copperlist interrupt too soon (flickering?)
+- check when run/hurdles records are stored in MAME... seems NEVER
+- leave more room for all tunes (so I can stop them not too accurately): test it
 - test attached sprites for 2 first main characters (made of 2 sprites each)
 - option to enable the second joystick
 - maybe read joystick directions & button in the half frame with classic

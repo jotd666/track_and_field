@@ -27,6 +27,9 @@ NB_POSSIBLE_SPRITES = 256
 NB_POSSIBLE_TILES = 768
 
 NB_SCROLL_ROWS = 28
+NB_SCROLL_ROWS_PART_1 = NB_SCROLL_ROWS/2
+NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1
+NB_SCROLL_ROWS_PART_3 = 1
 
 * 3 & 3: most performant
 BITPLANE_FMODE = 3			| works with 1, albeit slower
@@ -34,6 +37,7 @@ SPRITE_FMODE = 3			| required!!
 
 BORDERBLANK = 1
 
+COPPEY_Y_START = 0x18
 BASE_BPLCON3_VALUE = (1<<12)+(BORDERBLANK<<5)  | dpf second playfield palette starts at color 16!
 BASE_BPLCON2_VALUE = 0x0024		| sprites above all playfields
 
@@ -942,10 +946,11 @@ _vblank:
 	* D5 should be left untouched!
 	jbsr		do_irq
 	clr.b	interrupt_mode	
+	jbsr	process_speech_queue	| process here too (PAL)
 	clr.b	d0
 1:
 	move.b	d0,mid_screen_interrupt_count
-	jra		3f
+	jra		23f
 2:
 
 
@@ -970,12 +975,15 @@ _vblank:
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	bsr		switch_screen_buffers
 	.endif
+	* process speech queue at each copper interrupt including PAL mid-screen
+	* so in NTSC the timings are the same
+	jbsr	process_speech_queue
 	
 23:
-	jbsr	process_speech_queue
 
 
 3:
+
     movem.l (a7)+,d0-d7/a0-a6
     rte
 	
@@ -2094,12 +2102,8 @@ platform_init:
 	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
 	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
  	*         VVHH
-    move.w #0x2099-0X18+0x40,diwstrt(a5)
-    move.w #0x2079+0x48,diwstop(a5)
-*	cmp.l	#NTSC_MONITOR_ID,monitor
-*	jne		0f
-*    move.w #0xFC81,diwstop(a5)
-*0:	
+    move.w #0x99-0X18+0x40+(COPPEY_Y_START<<8),diwstrt(a5)
+    move.w #0x79+0x48+(COPPEY_Y_START<<8),diwstop(a5)
     move.w #0x0038,ddfstrt(a5)
     move.w #0x00D0,ddfstop(a5)
 
@@ -3220,19 +3224,20 @@ fg_screen_data_2:
 	.long	0
 	.endif
 	
+
 	.set	offset,0
 scroll_row_copper_address_table:
-	.rept	NB_SCROLL_ROWS/2
+	.rept	NB_SCROLL_ROWS_PART_1
 	.long	scroll_rows_first_half+6+offset
 	.set	offset,offset+40
 	.endr
 	.set	offset,0
-	.rept	NB_SCROLL_ROWS/2
+	.rept	NB_SCROLL_ROWS_PART_2
 	.long	scroll_rows_second_half+6+offset
 	.set	offset,offset+40
 	.endr
 	.set	offset,0
-	.rept	2
+	.rept	NB_SCROLL_ROWS_PART_3
 	.long	scroll_rows_bottom+6+offset
 	.set	offset,offset+40
 	.endr
@@ -3363,7 +3368,7 @@ character_log_table:
     .endr
 	.endm
 
-	.macro  HALF_SCROLL_ROWS	nb_rows
+	.macro  DEF_SCROLL_ROWS	nb_rows
 	.rept	\nb_rows
 	.word	0x01+(y_start*256),0xFFFE
 	.word	bplcon1
@@ -3418,25 +3423,26 @@ tiles_colors:
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 
-	.set	y_start,0x20
+	.set	y_start,COPPEY_Y_START
 scroll_rows_first_half:
-	HALF_SCROLL_ROWS	NB_SCROLL_ROWS/2
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_1
 	* not sure if it's really half screen but it doesn't matter
 intreq_block_game:
 	.word	 intreq,0x8014  | call copper interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
 
 scroll_rows_second_half:
-	HALF_SCROLL_ROWS	NB_SCROLL_ROWS/2
-
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_2
 
 	* purple 
 
 
 	* pal limit
     .word  0xFFCF,0xFFFE       | PAL wait
+	| no bobs from now on (as a bonus it runs on NTSC!)
+	.word	 intreq,0x8010
 	.set	y_start,0
 scroll_rows_bottom:
-	HALF_SCROLL_ROWS	2
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_3
 	
 	.word	bplcon1
 	* set 0-scroll value value for both plane sets
@@ -3444,8 +3450,6 @@ reset_bplcon1_2:
 	.word	0			| reset scrolling
 	.word	0x1A01,0xFFFE
 
-	| no bobs from now on
-	.word	 intreq,0x8010
 
 	* black color sprites
 	*DECL_COLORS	16,16
