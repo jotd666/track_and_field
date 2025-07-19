@@ -311,13 +311,14 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
 
 
                             # only 4 planes + mask => 5 planes
-                            y_start,wtile = bitplanelib.autocrop_y(wtile)
-                            height = wtile.size[1]
-                            width = wtile.size[0]//8 + 2
-                            bitplane_data = bitplanelib.palette_image2raw(wtile,None,palette,generate_mask=True)
+                            y_start,wtilec = bitplanelib.autocrop_y(wtile)
+                            height = wtilec.size[1]
+                            width = wtilec.size[0]//8 + 2
+                            bitplane_data = bitplanelib.palette_image2raw(wtilec,None,palette,generate_mask=True)
 
                             # add sprite data if eligible: player frame, not mirrored
                             if i not in mirror_sprites and "player" in sprite_names.get(i,""):
+                                # using original, uncropped bitplane data
                                 bitplane_sprite_data = bitplanelib.palette_image2attached_sprites(wtile,None,palette,
                                 sprite_fmode=2,with_control_words=True)
                         else:
