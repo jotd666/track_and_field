@@ -154,6 +154,7 @@ player_1_final_time_2960 = $2960		; dash/hurdles
 player_2_final_time_296c = $296C		; dash/hurdles
 qualifying_value_2866 = $2866
 chrono_hundredth_second_287e = $287e
+player_current_attempt_2968 = $2968
 
 qualifying_values_aaf3 = $aaf3
 high_jump_attempted_heights_edea = $edea
@@ -11251,7 +11252,7 @@ E322: 96 9F          LDA    high_jump_fault_9f
 E324: 81 02          CMPA   #$02
 E326: 10 26 00 78    LBNE   $E3A2
 E32A: 10 8E ED EA    LDY    #high_jump_attempted_heights_edea
-E32E: 8E 29 68       LDX    #$2968
+E32E: 8E 29 68       LDX    #player_current_attempt_2968
 E331: 96 DF          LDA    $DF
 E333: C6 0C          LDB    #$0C
 E335: 3D             MUL

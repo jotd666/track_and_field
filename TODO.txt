@@ -1,7 +1,6 @@
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - remove "ticks" in music and use E8x command: debug Karate Cahmp first
-- fix bug on run/hurdles records never being updated
-2C00 => 7 8 times, 8 8 times, 9 8 times
+- try to fake 100+ meters on the javelin
 - leave more room for all tunes (so I can stop them not too accurately): test it
 - option to enable the second joystick
 - test update chars @ 25 fps but sprites @50 for floppy nofast
