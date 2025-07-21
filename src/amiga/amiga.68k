@@ -160,7 +160,7 @@ BIT_LEFT_2P = 6
 	move.l		ram_start_1800,a6
 	
 	* adjust offset to avoid subbing at run-time
-	sub.w	#0x1800,a6
+	sub.w	#RAM_START,a6
 	.endif
 	.endm
 	
@@ -454,6 +454,13 @@ _user:
 	move.l	misc_options,d1
 	btst	#0,d1
 	sne		frameskip
+	tst.b	controller_joypad_0
+	sne		second_joystick
+	jne		0f						| if joypad in 0, force 2nd joy
+	btst	#1,d1
+	* not a joystick but joypad: forced
+	sne		second_joystick
+0:
 	.ifndef	RELEASE
 	btst	#31,d1
 	sne		break_at_startup_flag
@@ -768,7 +775,7 @@ demo_game:
 	move.l	a6,d0
 	clr.w	d0
 	move.l	d0,d1
-	add.l	#0x11800,d1
+	add.l	#0x10000+RAM_START,d1
 	move.l	d1,ram_start_1800		| memory (0x1800-0xFFFF)
 	
 	* relocate rom tables just after shared RAM
@@ -776,7 +783,7 @@ demo_game:
 	* and 6809 memory access is way faster (no bank switching)
 	
 	* copy the ROM data
-	add.l	#ROM_START-0x1800,d1
+	add.l	#ROM_START-RAM_START,d1
 	move.l 	d1,a1
 	move.w	#(0x10000-ROM_START)/4-1,d0
 	lea		rom_base,a0
@@ -888,13 +895,16 @@ _nmi:
 	rts
 	
 read_joypads:
-	moveq	#0,d0
-	jsr	_read_joystick
-	move.l	d0,_joypad_2_state
-
 	moveq	#1,d0
 	jsr	_read_joystick
 	move.l	d0,_joypad_1_state
+
+	tst.b	second_joystick
+	jeq		0f
+	moveq	#0,d0
+	jsr	_read_joystick
+	move.l	d0,_joypad_2_state
+0:
 	rts
 	
 _vblank:
@@ -917,18 +927,7 @@ _vblank:
 	bne.b	0f
 	bsr		toggle_pause
 0:
-	* here music doesn't loop. We have to stop it when it ends
-	move.w	music_tick,d1
-	beq.b	13f
-	bmi.b	13f		| negative: infinite, not interruptible
-	
-	subq	#1,d1
 
-	move.w	d1,music_tick
-	bne.b	13f
-	jbsr		osd_music_stop
-13:
-	
 	* ack vbl twice (040/pistorm bug)
 	move.w	#0x20,(intreq,a5)
 	move.w	#0x20,(intreq,a5)	
@@ -1259,14 +1258,17 @@ really_update_hw_sprites:
 	lea		hws_table,a4
 	lea		game_sprites+2,a2				| copperlist part
 	lea		game_sprites_end+2,a6
-	move.w	#NB_TARGET_SPRITES-1,d7
+	move.w	#NB_TARGET_SPRITES,d6
+	moveq	#0,d7
 	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
 1:
 	jbsr	update_one_hw_sprite
 	addq.w	#2,a0
 	cmp.l	a2,a6
 	jeq		2f			| all sprites are used already: bail out
-	dbf		d7,1b
+	addq	#1,d7
+	cmp.w	d6,d7		| we have to increase d7 (priority inverted vs bobs)
+	jne		1b
 	* blank the rest of the unused sprites
 	move.l	#blank_sprite,d0
 1:
@@ -1566,7 +1568,7 @@ sprite_groups:
 * < A0: target sprite memory
 * < A1: hw sprite y table
 * < A2: part copperlist where the sprites are
-* < D7: loop counter (decreasing, used for flag index)
+* < D7: loop counter (used for flag index)
 update_one_hw_sprite:
 	moveq	#0,d0
 	moveq	#0,d1
@@ -1675,7 +1677,7 @@ osd_dump_logs:
 		
 	GET_MEMORY_START_AND_DP
 	lea		sprites_ram_name_1800(pc),a0
-	lea	(0x1800,a6),a1		| sprites
+	lea	(RAM_START,a6),a1		| sprites
 	move.l	#0x440,d0
 	jbsr	resload_SaveFile(a2)
 
@@ -2956,9 +2958,9 @@ osd_read_inputs_1:
 	move.l	_joypad_1_state(pc),d1
 	jbsr	read_player_joypad_1P
 
-	* 2P active with joypad only if joypad connected
-	tst.b	controller_joypad_0
+	tst.b	second_joystick
 	jeq		0f
+	* 2P active with joypad only if joypad connected
 	move.l	_joypad_2_state(pc),d1
 	jbsr	read_player_joypad_2P
 0:
@@ -3271,8 +3273,9 @@ last_known_m6809_pc:
 pause_flag:
 	.word	0
 frameskip:
-	.word	0
-
+	.byte	0
+second_joystick:
+	.byte	0
 tiles_row_flags:
 	.skip	0x20
 tiles_refresh_table:

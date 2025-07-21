@@ -5,7 +5,6 @@
 		.global update_elevator_sound
 		.global osd_sound_start
 		.global osd_music_stop
-		.global music_tick
 		.global	process_speech_queue
 
 
@@ -227,7 +226,6 @@ force_sound_stop:
 	movem.l	d0-d1/a0/a6,-(a7)
 	lea		_custom,a6
 	move.b	#-1,music_track_start_number
-    clr.w   music_tick   | not playing anymore
     clr.w   speech_tick   | not playing anymore
 	clr.b	music_playing
 	clr.b	looped_sound_enabled
@@ -313,10 +311,6 @@ osd_sound_start:
 	
 	* music
 5:
-	* don't play if already playing
-	* (music_tick value is not important for looped tunes
-	* as long as it's not zero)
-
 
 	* here we allow music to override another looping music
 	*tst.w	music_tick
@@ -346,12 +340,8 @@ osd_sound_start:
 
     * set master volume a little less loud if needed
 	move.b	(6,a0,d0.w),music_volume
-	move.b	(7,a0,d0.w),music_loops
 	move.w	(2,a0,d0.w),music_pattern	| pattern number in .mod file
-	move.w	(4,a0,d0.w),d2
 
-	move.w	d2,music_duration
-	move.w	d2,music_tick
 
     moveq	#0,d0
 	move.b	music_volume(pc),d0
@@ -388,8 +378,7 @@ music_track_start_number:
 	.word	-1
 music_pattern:
 	.word	0
-music_tick:
-	.word	0
+
 speech_tick:
 	.word	
 music_duration:

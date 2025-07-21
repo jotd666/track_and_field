@@ -61,12 +61,12 @@ def convert():
     "LETTER_ENTERED_SND"            :{"index":0x1b,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "HORN_SND"               :{"index":0x28,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "CHEERING_SND"               :{"index":0x41,"channel":loop_channel,"sample_rate":lq_sample_rate,"priority":40},
-    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32,"loops":False,"ticks":150},
+    "RECORD_BROKEN_TUNE_SND"      :{"index":0x33,"pattern":0x8,"volume":32},
     "CHARIOTS_TUNE_SND"      :{"index":0x1F,"pattern":0x3,"volume":32,"loops":True},
     "CHARIOTS_WIN_TUNE_SND"      :{"index":0x22,"pattern":0x3,"volume":32,"loops":True},  # same music for end and highscore
-    "BEST_PLAYER_TUNE_SND"      :{"index":0x30,"pattern":0xA,"volume":32,"loops":False,"ticks":180},
-    "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32,"loops":False,"ticks":140},
-    "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32,"loops":False,"ticks":130},
+    "BEST_PLAYER_TUNE_SND"      :{"index":0x30,"pattern":0xA,"volume":32},
+    "GAME_OVER_TUNE_SND"      :{"index":0x2D,"pattern":0xC,"volume":32},
+    "START_EVENT_TUNE_SND"      :{"index":0x2C,"pattern":0xE,"volume":32},
     "NAME_ENTRY_SND"      :{"index":0x18,"pattern":0x0,"volume":32,"loops":True},
 
 
@@ -208,7 +208,7 @@ def convert():
                 if same_as is None:
                     # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
 
-                    sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],details.get("ticks",0),details["volume"],int(details["loops"]))
+                    sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],0,details["volume"],int(details.get("loops",0)))
                 else:
                     # aliased sound: reuse sample for a different sound index
                     wav_entry = same_as

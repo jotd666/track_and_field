@@ -1,13 +1,15 @@
 - clarify why previous positions need nb sprites * 2 else it crashes!
-- remove "ticks" in music and use E8x command: debug Karate Cahmp first
-- try to fake 100+ meters on the javelin
-- leave more room for all tunes (so I can stop them not too accurately): test it
-- option to enable the second joystick
 - test update chars @ 25 fps but sprites @50 for floppy nofast
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
+- mole bonus not triggered on high jump
+
+
+
 - converter: GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
 	cmp.w	(a0),d1   => macro!
+
+
 
 log sounds: bpset 66F4,,{print A;g}
 sim sound on credit: bpset 66F4,,{A=$12;g}

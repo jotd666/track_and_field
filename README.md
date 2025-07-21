@@ -11,7 +11,9 @@ features:
 
 - runs in PAL or NTSC, NTSC being possibly more reactive to button readings
 (no effect when playing from keyboard)
-- fixed record times not registering on dash/hurdles in the original
+- fixed record times at zero on dash/hurdles in the original. On the original game
+  you have to use DSW to reset records and get valid times (but they're super hard
+  to beat... At least with this version you get your own times, even if they suck).
 
 controls (joypad 1P/2P):
 
@@ -34,3 +36,16 @@ cheat keys:
 
 - F1: clear fouls/faults
 - F2: set best super-speed for current event
+
+Secret point bonuses
+Every event (besides the fifth) has a secret way of earning an extra 1000 points:
+
+1st Event - 100 Meter Dash: Finish at the same time (tie) as the CPU or other player and you will be given 1000 points by a leprechaun
+
+2nd Event - Long Jump: Finish three completely identical jumps. The leprechaun will again give you 1000 points.
+
+3rd Event - Javelin Throw: Speed up and right before you reach the foul line, hold the throw button but do not release it. The javelin miraculously goes incredibly high, leaving the screen. It eventually hits an alien who gives you 1000 points.
+
+4th Event - 110 Meter Hurdles: Finish at the same time (tie) as the CPU or other player and you will be given 1000 points by the leprechaun again.
+
+6th Event - High Jump: On your first two attempts hit the bar which results in a foul. On the next attempt the bar properly until you qualify. A mole will reward you with 1000 points.
