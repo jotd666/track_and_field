@@ -6,7 +6,7 @@
 		.global osd_sound_start
 		.global osd_music_stop
 		.global	process_speech_queue
-
+		.global	music_playing
 
 * sound engine and also highscore management, common to all versions
 	
@@ -210,12 +210,15 @@ wrap_speech_pointer:
 	rts
 	
 osd_music_stop:
+	tst.b	looped_sound_enabled
+	jeq		0f
 	movem.l	d0/a0/a6,-(a7)
 	lea		_custom,a6
 	move.w	#2,d0			| loop channel
 	jbsr	_mt_stopfx
 	clr.b	looped_sound_enabled
 	movem.l	(a7)+,d0/a0/a6
+0:
 
 	
 	tst.b	music_playing
@@ -245,6 +248,7 @@ osd_sound_start:
 	jbsr	osd_music_stop
 	jra		10f
 0:
+
 	cmp.b	#RECORD_BROKEN_TUNE_SND,d0
 	jne		0f
 	* try to save memory when game triggers a "record broken"

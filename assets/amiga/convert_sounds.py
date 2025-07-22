@@ -54,7 +54,7 @@ def convert():
     "SOUND_B_SND"               :{"index":0xb,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_C_SND"               :{"index":0xc,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "SOUND_D_SND"               :{"index":0xd,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-    "CREDIT_SND"               :{"index":0x34,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
+    "CREDIT_SND"               :{"index":0x2,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
     "LONG_JUMP_LAND_SND"        :{"index":0x9,"channel":on_air_channel,"sample_rate":hq_sample_rate,"priority":40},
     "GUNSHOT_SND"               :{"index":0xD,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
     "CURSOR_MOVE_SND"            :{"index":0x17,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
@@ -126,7 +126,7 @@ def convert():
     sound_dict["SIX_2_SND"] = {"index":0xA0,"same_as":"SIX_SND"}
 
     dummy_sounds = [
-    2,3,4,
+    0x34,3,4,  # credit
     0xC,0xB,
     0x40,
     0x1A,  # false start
