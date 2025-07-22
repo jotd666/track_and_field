@@ -160,6 +160,7 @@ player_1_final_time_2960 = 0x2960
 player_2_final_time_296c = 0x296C
 qualifying_value_2866 = 0x2866
 chrono_hundredth_second_287e = 0x287e
+player_current_attempt_2968 = 0x2968
 
 qualifying_values_aaf3 = 0xaaf3
 high_jump_attempted_heights_edea = 0xedea
@@ -1596,7 +1597,7 @@ update_sounds_66eb:
 	GET_DP_ADDRESS	0x1e                    	| [$66eb: ldx    $1e]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	GET_DP_ADDRESS	sound_event_pointer_1c  	| [$66ed: cmpx   sound_event_pointer_1c]
-	cmp.w	(a0),d2                          	| [...]
+	CMP_W_TO_REG	a0,d2                          	| [...]
 	jne	l_66f2                             	| [$66ef: bne    $66f2]
 	rts                                    	| [$66f1: rts]
 
@@ -10749,21 +10750,21 @@ l_94ef:
 	move.b	(a0),d1                         	| [...]
 	MAKE_D
 	GET_DP_ADDRESS	0x58                    	| [$9529: cmpd   $58]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	l_9542                             	| [$952c: bcs    $9542]
 	jhi	l_94ef                             	| [$952e: bhi    $94ef]
 	GET_DP_ADDRESS	0x51                    	| [$9530: ldb    $51]
 	move.b	(a0),d1                         	| [...]
 	MAKE_D
 	GET_DP_ADDRESS	0x5a                    	| [$9532: cmpd   $5a]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	l_9542                             	| [$9535: bcs    $9542]
 	jhi	l_94ef                             	| [$9537: bhi    $94ef]
 	GET_DP_ADDRESS	0x52                    	| [$9539: ldb    $52]
 	move.b	(a0),d1                         	| [...]
 	MAKE_D
 	GET_DP_ADDRESS	0x5c                    	| [$953b: cmpd   $5c]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jls	l_9542                             	| [$953e: bls    $9542]
 	jra	l_94ef                             	| [$9540: bra    $94ef]
 l_9542:
@@ -11526,11 +11527,11 @@ l_993f:
 	GET_REG_ADDRESS	0x3,d2                 	| [$993f: ldy    $3,x]
 	MOVE_W_TO_REG	a0,d3                         	| [...]
 	GET_DP_ADDRESS	0x95                    	| [$9942: cmpy   $95]
-	cmp.w	(a0),d3                          	| [...]
+	CMP_W_TO_REG	a0,d3                          	| [...]
 	jeq	l_9952                             	| [$9945: beq    $9952]
 	jbsr	l_8852                            	| [$9947: jsr    $8852]
 	GET_DP_ADDRESS	0x95                    	| [$994a: cmpy   $95]
-	cmp.w	(a0),d3                          	| [...]
+	CMP_W_TO_REG	a0,d3                          	| [...]
 	jeq	l_9964                             	| [$994d: beq    $9964]
 	jmp	l_9984                             	| [$994f: jmp    $9984]
 l_9952:
@@ -11725,7 +11726,7 @@ l_9a2a:
 	GET_REG_ADDRESS	0x1e,d2                	| [$9a2a: ldd    $1e,x]
 	LOAD_D                                 	| [$9a2a: ldd    $1e,x]
 	GET_DP_ADDRESS	0x95                    	| [$9a2d: cmpd   $95]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcc	l_9a35                             	| [$9a30: bcc    $9a35]
 	MAKE_D                                 	| [...]
 	add.w	#0x0040,d1                       	| [$9a32: addd   #$0040]
@@ -13383,7 +13384,7 @@ l_a2b1:
 	jcc	l_a3b5                             	| [$a2b8: lbcc   $a3b5]
 	MAKE_D
 	GET_REG_ADDRESS	game_playing_22,d2     	| [$a2bc: cmpd   game_playing_22,x]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jls	l_a2de                             	| [$a2c0: bls    $a2de]
 	GET_REG_ADDRESS	0x1,d2                 	| [$a2c2: ldb    $1,x]
 	move.b	(a0),d1                         	| [...]
@@ -13394,14 +13395,14 @@ l_a2b1:
 	moveq	#0,d0                            	| [$a2cb: clra]
 	MAKE_D
 	GET_REG_ADDRESS	0x20,d2                	| [$a2cc: cmpd   $20,x]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jls	l_a366                             	| [$a2d0: lbls   $a366]
 	jra	l_a2dd                             	| [$a2d4: bra    $a2dd]
 l_a2d6:
 	moveq	#0,d0                            	| [$a2d6: clra]
 	MAKE_D
 	GET_REG_ADDRESS	0x20,d2                	| [$a2d7: cmpd   $20,x]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcc	l_a348                             	| [$a2db: bcc    $a348]
 l_a2dd:
 	rts                                    	| [$a2dd: rts]
@@ -13420,14 +13421,14 @@ l_a2de:
 	moveq	#0,d0                            	| [$a2ec: clra]
 	MAKE_D
 	GET_REG_ADDRESS	0x20,d2                	| [$a2ed: cmpd   $20,x]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jls	l_a2fe                             	| [$a2f1: bls    $a2fe]
 	jra	l_a303                             	| [$a2f3: bra    $a303]
 l_a2f5:
 	moveq	#0,d0                            	| [$a2f5: clra]
 	MAKE_D
 	GET_REG_ADDRESS	0x20,d2                	| [$a2f6: cmpd   $20,x]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcc	l_a2fe                             	| [$a2fa: bcc    $a2fe]
 	jra	l_a303                             	| [$a2fc: bra    $a303]
 l_a2fe:
@@ -18062,7 +18063,7 @@ l_e2fc:
 	cmp.b	#0x02,d0                         	| [$e324: cmpa   #$02]
 	jne	l_e3a2                             	| [$e326: lbne   $e3a2]
 	move.w	#high_jump_attempted_heights_edea,d3	| [$e32a: ldy    #high_jump_attempted_heights_edea]
-	move.w	#0x2968,d2                      	| [$e32e: ldx    #$2968]
+	move.w	#player_current_attempt_2968,d2 	| [$e32e: ldx    #player_current_attempt_2968]
 	GET_DP_ADDRESS	0xdf                    	| [$e331: lda    $df]
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x0c,d1                        	| [$e333: ldb    #$0c]
@@ -19747,7 +19748,7 @@ l_ec35:
 	GET_ADDRESS	0x2b18                     	| [$ec43: ldd    $2b18]
 	LOAD_D                                 	| [$ec43: ldd    $2b18]
 	GET_ADDRESS	0x2b1e                     	| [$ec46: cmpd   $2b1e]
-	cmp.w	(a0),d1                          	| [...]
+	CMP_W_TO_REG	a0,d1                          	| [...]
 	jne	l_ec60                             	| [$ec4a: bne    $ec60]
 	move.b	#0x04,d1                        	| [$ec4c: ldb    #$04]
 	move.b	#0x03,d0                        	| [$ec4e: lda    #$03]

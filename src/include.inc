@@ -203,6 +203,10 @@ get_address:
 	move.w	(\src),\dest
 	.endm
 
+	.macro	CMP_W_TO_REG	src,dest
+	move.w	(\src),\dest
+	.endm
+
 	.macro    MOVE_W_FROM_REG    src,dest
 	move.w	\src,(\dest)
 	.endm
@@ -237,6 +241,13 @@ get_address:
 	move.b	(\src),\dest
 	ror.w	#8,\dest
 	move.b	(1,\src),\dest
+	.endm
+
+	.macro	CMP_W_TO_REG	src,dest
+	move.b	(\src),d6
+	ror.w	#8,d6
+	move.b	(1,\src),d6
+	cmp.w	d6,\dest
 	.endm
 
 	.macro	MOVE_W_FROM_REG	src,dest

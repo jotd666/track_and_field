@@ -62,5 +62,6 @@ player_1_final_time_2960 = 0x2960
 player_2_final_time_296c = 0x296C
 qualifying_value_2866 = 0x2866
 chrono_hundredth_second_287e = 0x287e
+player_current_attempt_2968 = 0x2968
 qualifying_values_aaf3 = 0xaaf3
 high_jump_attempted_heights_edea = 0xedea
