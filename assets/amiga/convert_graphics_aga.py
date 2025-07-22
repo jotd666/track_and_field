@@ -3,6 +3,7 @@ import os,sys,bitplanelib
 
 from shared import *
 
+src_dir = aga_src_dir
 
 sprite_names = get_sprite_names()
 
