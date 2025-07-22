@@ -4,13 +4,26 @@
 		.global	save_highscores
 		.global update_elevator_sound
 		.global osd_sound_start
+		.global	osd_break
 		.global osd_music_stop
 		.global	process_speech_queue
 		.global	music_playing
+		.global	delay_timer
+		
+		* read/write on memory
+		.ifndef	RELEASE
+		.global	character_log_table
+		.global	sprite_log_table
+		.global	osd_log_cpu
+		.global osd_get_last_known_pc
+		.global	osd_dump_logs
+		.global	osd_cpu_logging_control
+		.endif
 
 * sound engine and also highscore management, common to all versions
 	
 	.include "lvo/dos_lvos.i"
+	.include "hardware/custom.i"
 	.include "track_and_field.inc"
 	.include "sounds.inc"
 
@@ -19,6 +32,16 @@ NB_SOUND_QUEUE_ENTRIES = 16
 NV_RAM_ADDRESS = 0x2800
 SCORE_FILE_SIZE = 0x800
 
+	.ifdef	RELEASE
+OPT_ENABLE_LOGGING = 0           | DO NOT CHANGE THIS
+	.else
+OPT_ENABLE_LOGGING = 1
+
+* set to higher values than 1 to speed game up
+
+
+	.endif
+	
 .macro	GET_MEMORY_START_IN_A6
 	move.l	m6809_direct_page_pointer,a4
 	.ifdef	RELEASE
@@ -31,6 +54,13 @@ SCORE_FILE_SIZE = 0x800
 	.endif
 	.endm
 		
+
+
+osd_get_last_known_pc:
+	move.w	last_known_m6809_pc,d6
+	rts
+
+
 osd_read_high_scores:
 	movem.l	d0-d7/a0-a6,-(a7)
 	move.l	_resload,d0
@@ -53,7 +83,7 @@ osd_read_high_scores:
 	GET_MEMORY_START_IN_A6
 	* first just copy buffer as contiguous 
 	lea		(NV_RAM_ADDRESS,a6),a1
-	lea		high_score_buffer(pc),a0
+	lea		high_score_buffer,a0
 	move.w	#SCORE_FILE_SIZE-1,d0
 
 0:
@@ -325,7 +355,7 @@ osd_sound_start:
 	move.w	(2,a0,d0.w),d1	| pattern number in .mod file
 	* since it's not zero, next vbl tick will play the music
 	
-	cmp.b	music_track_start_number(pc),d1
+	cmp.b	music_track_start_number,d1
 	beq.b	10b		| same track, skip
 
     movem.l d0-a6,-(a7)
@@ -348,7 +378,7 @@ osd_sound_start:
 
 
     moveq	#0,d0
-	move.b	music_volume(pc),d0
+	move.b	music_volume,d0
     jsr	_mt_mastervol
 	st.b	music_playing
     jsr _mt_start
@@ -357,7 +387,199 @@ osd_sound_start:
 6:
 	jra	10b
 
+
+osd_break:
+	* sends a WinUAE command to enter WinUAE debugger
+	.ifndef	RELEASE
+	move.l	D0,-(a7)
+	pea     0.w
+	* Normally it would point to where the result of the command is written, but since the last parameter (first pushed)
+	* indicating the number of bytes to write is 0, nothing is written.
+	pea     0.w	
+	pea     1003f-1002f
+	pea     1002f(pc)
+	pea     -1.w
+	pea     82.w
+	jsr     0xf0ff60
+	lea     24(sp),sp
+	move.l	(a7)+,d0
+	.endif
+    rts
+		
+1002: .asciz    "AKS_ENTERDEBUGGER 1"
+1003:
+        .align	2
+
 	
+
+* < D0: number of 1/60Hz ticks
+* can work with interrupts enabled or disabled
+osd_wait:
+	move.w	d0,delay_timer
+	**jbsr	osd_is_vblank_interrupt_enabled
+	tst.w	d0
+	jne		2f
+	* interrupts are disabled: timer isn't going to change
+	* wait using vertical blank interrupt request (we don't need it!)
+	clr.w	one_out_of_five
+0:
+	move.w	#0x20,_custom+intreq
+	move.w	#0x20,_custom+intreq
+1:
+	move.w	_custom+intreqr,d0
+	btst	#5,d0
+	beq.b	1b
+	addq.w	#1,one_out_of_five
+	cmp.w	#5,one_out_of_five
+	bne.b	5f
+	subq.w	#1,delay_timer	
+	clr.w	one_out_of_five
+5:
+	subq.w	#1,delay_timer
+	beq.b	4f
+	bpl.b	0b
+4:
+	rts
+	
+2:
+	tst.w	delay_timer
+	bne.b	2b
+	rts
+
+
+
+	.ifndef	RELEASE
+
+	.macro	CHECK_ZERO_MSW	reg
+	swap	\reg
+	tst		\reg
+	jeq		0f
+	move.w	(6,a7),d6
+	BREAKPOINT		"\reg MSW is not zero, PC=check d6!"
+0:
+	swap	\reg
+	.endm
+
+osd_log_cpu:
+	* first, check that registers don't have a wrong longword mask
+	CHECK_ZERO_MSW	d1
+	CHECK_ZERO_MSW	d2
+	CHECK_ZERO_MSW	d3
+	CHECK_ZERO_MSW	d4
+	move.w	(6,a7),last_known_m6809_pc
+
+	move.l	a6,-(a7)
+	* check if cpu log is enabled
+	tst.b	cpu_log_enable
+	jeq		445f
+	move.l	log_ptr,a6
+	move.w	(10,a7),(a6)+	| the PC
+	move.l	d1,-(a7)
+	rol.w	#8,d1
+	move.b	d0,d1
+	rol.w	#8,d1   | make D, make sure that not too many diffs
+	move.w	d0,(a6)+
+	move.w	d1,(a6)+
+	move.w	d2,(a6)+
+	move.w	d3,(a6)+
+	move.w	d4,(a6)+
+	move.w	#0xDEAD,(a6)+
+	move.l	a6,log_ptr
+	cmp.w	#0xCAFE,(a6)  | hitting the protection buffer
+	jne		444f
+	BREAKPOINT	"cpu log buffer full, dumping and exiting!"
+	jbsr	osd_dump_logs
+	illegal
+444:
+	move.l	(a7)+,d1
+445:
+	move.l	(a7)+,a6
+	rts
+	
+	
+* < D6: 0 disable, 1 enable
+osd_cpu_logging_control:
+	move.b	d6,cpu_log_enable
+	rts
+	.endif
+	
+	.ifne	OPT_ENABLE_LOGGING
+
+
+
+osd_dump_logs:
+	move.w	sr,-(a7)
+	move.w	#0x2700,SR
+	movem.l	d0-a6,-(a7)
+	move.l	_resload,a2
+	lea		sprite_log_table,a1
+	lea		sprite_log_name(pc),a0
+	move.l	#16*NB_POSSIBLE_SPRITES,d0
+	jbsr	resload_SaveFile(a2)
+	
+	move.l	_resload,a2
+	lea		character_log_table,a1
+	lea		character_log_name(pc),a0
+	move.l	#16*NB_POSSIBLE_TILES,d0
+	jbsr	resload_SaveFile(a2)
+		
+	GET_MEMORY_START_AND_DP
+	lea		sprites_ram_name_1800(pc),a0
+	lea	(RAM_START,a6),a1		| sprites
+	move.l	#0x440,d0
+	jbsr	resload_SaveFile(a2)
+
+	
+	jbsr	save_cpu_log
+	
+    movem.l (a7)+,d0-a6
+	move.w	(a7)+,SR
+	rts
+
+save_cpu_log:
+	move.l	_resload,a2
+	lea		log_buffer,a1
+	move.l	log_ptr,d0
+	sub.l	a1,d0
+	jeq		0f
+	move.l	log_ptr,a0
+	* add RAM & ROM base in the end
+	move.l	a6,(a0)+
+	move.l	#rom_base,(a0)+
+	addq	#8,d0
+	lea		cpu_log_name(pc),a0
+	jbsr	resload_SaveFile(a2)
+0:	
+	rts
+	
+
+sprites_ram_name_1800:
+	.asciz	"sprite_ram_1800"
+
+
+sprite_log_name:
+	.asciz	"used_sprites"
+character_log_name:
+	.asciz	"used_tiles"
+cpu_log_name:
+	.asciz	"cpu_log"
+	.align	2
+	.endif	
+
+
+	.ifndef	RELEASE
+log_ptr:
+	.long	log_buffer
+
+log_buffer:
+	.skip	LOG_BUFFER_SIZE
+	.rept	20
+	.long	0xCAFECAFE
+	.endr
+
+cpu_log_enable:
+	.word	0
+	.endif
 
 consumed_speech_pointer:
 	.long 	queued_speech_buffer_start
@@ -382,9 +604,15 @@ music_track_start_number:
 	.word	-1
 music_pattern:
 	.word	0
-
+delay_timer:
+	.word	0
+one_out_of_five:
+	.word	0
 speech_tick:
 	.word	
+
+last_known_m6809_pc:
+	.word	-1
 music_duration:
 	.word	0
 high_score_buffer:
@@ -396,5 +624,22 @@ highscore_loaded:
 
 normal_hiscorename:
 	.asciz	"track_and_field.high"
+	.align	2
+	
+	.ifndef	RELEASE
+	* easier to debug game to have memory aligned on 0x10000
 
+	.ifne	OPT_ENABLE_LOGGING
+	.section	.bss
 
+sprite_log_table:
+	* 16 cluts, 256 tiles
+	* a lot of combinations aren't used (fortunately!)
+	.skip	16*NB_POSSIBLE_SPRITES
+character_log_table:
+	* 16 cluts, 768 tiles
+	* a lot of combinations aren't used (fortunately!)
+	.skip	16*NB_POSSIBLE_TILES
+	.skip	16*(1024-NB_POSSIBLE_TILES)  | just in case of a bug
+	.endif
+	.endif

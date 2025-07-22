@@ -68,7 +68,7 @@ DECL_VERSION:MACRO
 	ENDC
 	ENDM
 _data   dc.b    0
-_name	dc.b	"Track'N'Field",0
+_name	dc.b	"Track'N'Field (OCS)",0
 _copy	dc.b	'2025 JOTD',0
 _info
     dc.b    "Music by no9",0
@@ -133,5 +133,5 @@ _resload:
 progstart
     dc.l    0
 exe
-	dc.b	"track_and_field",0
+	dc.b	"track_and_field_ocs",0
 	

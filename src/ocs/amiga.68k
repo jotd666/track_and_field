@@ -22,6 +22,7 @@ AFB_68010 = 0
 AFB_68020 = 1
 AFB_68030 = 2
 
+NO68020 = 1
 
 
 NB_SCROLL_ROWS = 28
@@ -30,20 +31,16 @@ NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1
 NB_SCROLL_ROWS_PART_3 = 1
 
 * most performant bitplane fetch
-BITPLANE_FMODE = 3			| works with 1, albeit slower
-* we only need 32-pixel wide sprites, no need for 64
-SPRITE_FMODE = 1			| required!!
 
 BORDERBLANK = 1
 
 COPPER_Y_START = 0x18
-BASE_BPLCON3_VALUE = (1<<12)+(BORDERBLANK<<5)  | dpf second playfield palette starts at color 16!
 BASE_BPLCON2_VALUE = 0x0024		| sprites above all playfields
 
-SPRITE_X_CORRECTION = 32
+SPRITE_X_CORRECTION = 8
 SPRITE_Y_CORRECTION = 0
 HW_SPRITE_Y_CORRECTION = -4
-HW_SPRITE_X_CORRECTION = 64
+HW_SPRITE_X_CORRECTION = 16
 SPRITE_HEIGHT = 16
 SPRITE_WIDTH = 16
 
@@ -60,10 +57,12 @@ FIRST_SPRITE = RAM_START
 
 
 	.ifdef	RELEASE
+OPT_ENABLE_PROFILING = 0         | DO NOT CHANGE THIS
 OPT_ENABLE_LOGGING = 0           | DO NOT CHANGE THIS
 OPT_VERY_EASY = 0
 	.else
 OPT_ENABLE_LOGGING = 1
+OPT_ENABLE_PROFILING = 0
 OPT_VERY_EASY = 1
 * set to higher values than 1 to speed game up
 
@@ -81,8 +80,8 @@ OPT_ENABLE_DOUBLE_BUFFERING = 1
 
 OPT_ENABLE_MULTIPLEXED_SPRITES = 0
 
-NB_TILE_PLANES = 4
-NB_BOB_PLANES = 4
+NB_TILE_PLANES = 3
+NB_BOB_PLANES = 3
 TOTAL_NB_COLORS = 1<<NB_TILE_PLANES
 FG_NB_BYTES_PER_ROW = 40
 BG_NB_BYTES_PER_ROW = FG_NB_BYTES_PER_ROW*3
@@ -148,7 +147,6 @@ BIT_FIRE_2P = 5
 BIT_LEFT_2P = 6
 
 
-	
 .macro	WAIT_BLIT
 	.ifndef	RELEASE
 	* always check that custom is set (in dev mode)
@@ -233,6 +231,7 @@ start:
 	.include	"ReadJoypad.i"
 	.include	"whdload_funcs.i"
 		.text
+
 
 
 	    
@@ -986,9 +985,14 @@ _vblank:
     rte
 	
 
+
 osd_blitz:
 	blitz
 	rts
+
+
+		
+
 
 	
 	
@@ -1108,6 +1112,7 @@ really_update_tiles:
 	
 
 really_update_hw_sprites:
+	.ifdef		XXX
 	************************************************
 	* draw current sprites from 6809 sprite memory *
 	************************************************
@@ -1146,6 +1151,7 @@ really_update_hw_sprites:
 	cmp.l	a2,a6
 	jne		1b
 2:	
+	.endif
 	rts
 	
 
@@ -1523,6 +1529,18 @@ update_one_hw_sprite:
 	rts
 	
 
+
+	
+		
+
+	
+	
+
+	
+
+
+
+	
 
 * < A5: custom
 * < D0.W,D1.W: x,y
@@ -1979,26 +1997,23 @@ platform_init:
 	* disable extra mid-screen interrupt, as it would be too fast (NTSC)
 	move.w	#0x1FE,intreq_block_game
 0:
-     move.w #0x0610+BORDERBLANK,bplcon0(a5) | 8 bitplanes, dual playfield, borderblank
+     move.w #0x6600+BORDERBLANK,bplcon0(a5) | 6 bitplanes, dual playfield, borderblank
 	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
-	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
-	move.w	#0,bplcon4(a5)			| use the same colors as bobs playfield
  	*         VVHH
-    move.w #0x99-0X18+0x40+(COPPER_Y_START<<8),diwstrt(a5)
-    move.w #0x79+0x48+(COPPER_Y_START<<8),diwstop(a5)
+    move.w #0x99-0X18+0x10+(COPPER_Y_START<<8),diwstrt(a5)
+    move.w #0x79+0x18+(COPPER_Y_START<<8),diwstop(a5)
     move.w #0x0038,ddfstrt(a5)
     move.w #0x00D0,ddfstop(a5)
 
 	* restrict borders: we don't see bobs on the borders!
 	* try to hide color 0 on the border (except on OCS)
 
-    move.w #(SPRITE_FMODE<<2)+BITPLANE_FMODE,fmode(a5)	| 32 bit bitplane fetch, 64 bit wide sprites
 
 	move.w	#0,bplcon1(a5)
 
-	move.w	#-8+BG_NB_BYTES_PER_ROW-40,d0
+	move.w	#BG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl2mod(a5)
-	move.w	#-8+FG_NB_BYTES_PER_ROW-40,d0
+	move.w	#FG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl1mod(a5)
 
 	lea		game_copperlist,a0
@@ -2060,6 +2075,7 @@ platform_init:
 	move.l	system_vbr(pc),a0
 	moveq	#1,d0	| PAL
 	jsr		_mt_install_cia
+
 
 
 	
@@ -3157,18 +3173,21 @@ palette:
 	.include "palette.68k"
 
 
+
+
 current_scroll_values:
 	.rept	NB_SCROLL_ROWS+2
 	.word	-1
 	.endr
 
 scroll_table:
-	.include	"scroll_table_64.68k"
+	.include	"scroll_table_16.68k"
 
 	
 	* on amiga, this file is included in mpatrol.68k file
 	* so the assembler can optimize by using PC-relative addressing
 	* whenever possible (and it does)
+
 
 
 

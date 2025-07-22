@@ -45,3 +45,4 @@ def doit(width):
 
 if __name__ == "__main__":
     doit(width = 64)   # FMODE=3
+    doit(width = 16)   # FMODE=0
