@@ -3114,22 +3114,23 @@ fg_screen_data_2:
 	.long	0
 	.endif
 	
+ROW_SIZE = NB_TILE_PLANES*8+8
 
 	.set	offset,0
 scroll_row_copper_address_table:
 	.rept	NB_SCROLL_ROWS_PART_1
 	.long	scroll_rows_first_half+6+offset
-	.set	offset,offset+40
+	.set	offset,offset+ROW_SIZE
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_2
 	.long	scroll_rows_second_half+6+offset
-	.set	offset,offset+40
+	.set	offset,offset+ROW_SIZE
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_3
 	.long	scroll_rows_bottom+6+offset
-	.set	offset,offset+40
+	.set	offset,offset+ROW_SIZE
 	.endr
 
 background_ptr:
@@ -3237,7 +3238,7 @@ scroll_table:
 	.word	0x01+(y_start*256),0xFFFE
 	.word	bplcon1
 	.word	0
-	DECL_EVEN_BITPLANES	4,4
+	DECL_EVEN_BITPLANES	4,NB_TILE_PLANES
 	.set	y_start,y_start+8
 	.endr
 	.endm 
@@ -3268,9 +3269,9 @@ game_copperlist:
 	* enable sprite colors now
 
 bobs_bitplanes:
-	DECL_EVEN_BITPLANES	0,4
+	DECL_EVEN_BITPLANES	0,NB_BOB_PLANES
 tiles_bitplanes:
-	DECL_EVEN_BITPLANES	4,4
+	DECL_EVEN_BITPLANES	4,NB_TILE_PLANES
 	* set 0-scroll value value for both plane sets
 	.word	bplcon1
 reset_bplcon1_1:
@@ -3278,7 +3279,7 @@ reset_bplcon1_1:
 
 
 tiles_colors:
-	DECL_COLORS	16,TOTAL_NB_COLORS
+	DECL_COLORS	TOTAL_NB_COLORS,TOTAL_NB_COLORS
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 

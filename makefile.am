@@ -44,7 +44,7 @@ all: $(MAIN_OCS) $(MAIN_AGA) $(WHDLOADER_OCS) $(WHDLOADER_OCS_CHIP) $(WHDLOADER)
 
 
 clean:
-	del $(OBJS) "$(MAIN)"
+	del $(OCS_OBJS) $(AGA_OBJS) $(MAIN_OCS) $(MAIN_AGA)
 	
 $(AGASRC)/graphics.68k: $(ASSETS)/convert_graphics_aga.py
 	cmd /c $(ASSETS)\convert_graphics_aga.py
@@ -78,7 +78,7 @@ amiga_shared.o: $(AMIGASRC)/amiga_shared.68k data.inc $(AMIGASRC)/sound_entries.
 vbr.o: $(AMIGASRC)/vbr.68k
 	$(ASM_020) -Iamiga $(AMIGASRC)/vbr.68k -o vbr.o
 ptplayer.o: $(AMIGASRC)/ptplayer.68k
-	$(ASM) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/ptplayer.68k -o ptplayer.o
+	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/ptplayer.68k -o ptplayer.o
 sounds.o: $(AMIGASRC)/sounds.68k
 	$(ASM_000) -I$(AMIGASRC) $(AMIGASRC)/sounds.68k -o sounds.o
 ReadJoyPad.o: $(AMIGASRC)/ReadJoyPad.68k amiga/ReadJoyPad.i
