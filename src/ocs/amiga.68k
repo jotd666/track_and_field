@@ -2320,7 +2320,6 @@ update_bg_tile:
 	.ifdef	NO68020
 	add.w	d3,d3
 	add.w	d3,d3
-	add.w	d3,d3
 	move.l	(a2,d3.w),d0			| pointer on tile bitplanes for that CLUT
 	.else
 	move.l	(a2,d3.w*4),d0			| pointer on tile bitplanes for that CLUT	

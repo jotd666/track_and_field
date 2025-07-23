@@ -1,8 +1,13 @@
-- complete OCS version
-  => tiles palette to rework: browns => red, blue => leave, white => leave
-  red change to brown with copper maybe (dash, long jump)
-  => chars seem shifted (but not for all cluts???): ex "AAA" => OK, but START => TUBSU
-  => use HW sprites for background characters, referees ... if 16-pixel wide
+- OCS: use HW sprites for background characters, referees ... if 16-pixel wide
+- OCS: trashed sprites on the right
+- OCS: green dots => cyan and red dots (of tracks) => some other color 
+  and change with copper to re-create bi-color grass/track
+  restore brown too for red??
+- maybe setting per level?
+
+- cntinue merging common routines in amiga_shared, and also create
+  several control settings like "up" to jump/throw and fire/blue for left/right
+  
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - test update chars @ 25 fps but sprites @50 for floppy nofast
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
