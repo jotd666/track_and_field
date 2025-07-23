@@ -9,6 +9,22 @@ sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
 
+##(255,255,0),    # yellow
+##(184,184,171),  # grey
+##(222,104,80),   # brown
+##(0,255,251),    # cyan
+##(0,0,251),      # blue
+##(255,0,251),    # purple => (255,184,171)
+##(0,184,171),    # green  => (33,222,0)
+##(255,0,0),      # red
+##(33,222,0),     # green
+##(0,184,80 ),    # green  => (33,222,0)
+##(151,151,171),  # gray => (184,184,171)
+##(184,71,80),    # brown => (222,104,80)
+##(151,151,80),   # green => (33,222,0)
+##(255,184,171),  # pink
+##(255,255,251)   # white
+
 def apply_quantize(tile_set,quantized):
     if tile_set:
         for t in tile_set:
@@ -299,7 +315,34 @@ for i,tsd in tile_sheet_dict.items():
 
 # pad
 tile_palette = sorted(tile_palette)
-tile_quant = quantize_palette(tile_palette,"tiles",8)
+
+# no quantize: hand picked works best with this game
+#tile_quant = quantize_palette(tile_palette,"tiles",8)
+
+tile_quant = {}
+
+for unchanged in ((255,255,0),    # yellow
+(184,184,171),  # grey
+(0,255,251),    # cyan
+(0,0,251),      # blue
+(255,0,0),      # red
+(33,222,0),     # green
+(255,184,171),  # pink
+(0,0,0)         # black
+):
+    tile_quant[unchanged] = unchanged
+
+for org,new in (((255,0,251),(255,184,171)),   # purple
+((0,184,171),(33,222,0)),    # green
+((0,184,80 ),(33,222,0)),    # green
+((151,151,171),(184,184,171)),  # gray
+((184,71,80),(255,0,0)),    # brown
+((222,104,80),(255,0,0)),   # brown
+((151,151,80),(33,222,0)),   # green
+((255,255,251),(184,184,171)),   # white
+
+):
+    tile_quant[org] = new
 
 for tile_set in tile_set_list:
     apply_quantize(tile_set,tile_quant)
@@ -328,12 +371,45 @@ for clut_index,tsd in sprite_sheet_dict.items():
     sprite_palette.update(sp)
 
 sprite_palette = sorted(sprite_palette)
-sprite_quant = quantize_palette(sprite_palette,"sprites",8)
+
+sprite_quant = {}
+pink = (255, 184, 171)
+yellow =  (255, 255, 0)
+blue = (0, 0, 251)
+brown =  (151, 71, 0)
+for unchanged in [(0, 0, 0),
+    blue,
+
+     (255, 0, 0),
+     (71, 0, 0),
+     pink,
+        (255, 255, 251)
+     ]:
+    sprite_quant[unchanged] = unchanged
+
+gray = (100,100,100)
+
+for org,new in (((0, 222, 0),brown),   # sacrified green
+      ((255, 222, 171),pink),
+      ((222, 151, 171),pink),
+((71, 71, 80),gray),
+(yellow,blue),
+((184, 184, 171),gray),
+((151, 71, 0),brown),
+((0, 255, 251),brown),  # cyan
+((184, 184, 0),pink),
+     ((222, 151, 80),pink),
+):
+    sprite_quant[org] = new
+
+
+#sprite_quant = quantize_palette(sprite_palette,"sprites",8)
 
 for sprite_set in sprite_set_list:
     apply_quantize(sprite_set,sprite_quant)
 
 sprite_palette = sorted(set(sprite_quant.values()))
+print(sprite_palette)
 sprite_palette += (8-len(sprite_palette)) * [(0x10,0x20,0x30)]
 
 
