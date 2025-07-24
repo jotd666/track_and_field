@@ -162,12 +162,13 @@ with open(source_dir / "conv.s") as f:
         if "[$727f" in line:
             line = "0:\n"+line
 
-##        if "[$7315" in line:
-##            # insert nb attempts trainer
-##            line = "\ttst.b\tinfinite_lives_flag\n\tjne\tl_732b\n" + line
-        if "[$83bd" in line or "[$9db1" in line or "[$d804" in line:
+        if "[$83bd" in line or "[$d804" in line:
             line = "\tPUSH_SR\n"+line
-            lines[i+1] = lines[i+1]+"\tPOP_SR\n"
+            lines[i+1] = "\tPOP_SR\n"+lines[i+1]
+            lines[i+2] = ""
+        if  "[$9db1" in line:
+            line = "\tPUSH_SR\n"+line
+            lines[i+1] = lines[i+1] + "\tPOP_SR\n"
             lines[i+3] = ""
 
 ##        elif "[$877a" in line:
@@ -180,10 +181,9 @@ with open(source_dir / "conv.s") as f:
 
         elif "[$83cc" in line:
             line = change_instruction("subq.b\t#0x01,(a0)",lines,i)
-            lines[i-1] = ""
+            lines[i-1] = change_instruction("GET_DP_ADDRESS\t0xb1",lines,i)
             lines[i+1] = remove_instruction(lines,i+1)
-            lines[i+2] = ""
-            lines[i+4] = ""
+            lines[i+3] = ""
 
         elif "flip_screen_set_1080" in line or "nmi_mask_1082" in line:
             line = remove_instruction(lines,i)

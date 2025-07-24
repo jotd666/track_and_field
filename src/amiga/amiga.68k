@@ -830,9 +830,9 @@ demo_game:
 	move.l	a6,a0
 	lea		easy_values(pc),a1
 	add.l	#qualifying_values_aaf3,a0
-	move.w	#5,d0
+	move.w	#11,d0
 0:
-	move.w	(a1)+,(a0)+
+	move.b	(a1)+,(a0)+
 	dbf	d0,0b
 	
 	move.l	a6,a0
@@ -848,9 +848,9 @@ demo_game:
 	move.l	a6,a0
 	lea		easy_values(pc),a1
 	add.l	#qualifying_values_aaf3,a0
-	move.w	#5,d0
+	move.w	#11,d0
 0:
-	move.w	(a1)+,(a0)+
+	move.b	(a1)+,(a0)+
 	dbf	d0,0b
 	
 	.endif

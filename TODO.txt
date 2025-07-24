@@ -1,16 +1,13 @@
-- OCS: crash on 68000
 - OCS: use HW sprites for background characters, referees ... if 16-pixel wide
-- OCS: trashed sprites on the right
+- OCS: trashed sprites on the right: sprite adjust issue?
 - OCS: green dots => cyan and red dots (of tracks) => some other color 
   and change with copper to re-create bi-color grass/track
   restore brown too for red??
 - maybe setting per level?
+- create several control settings like "up" to jump/throw and fire/blue for left/right
 
-- cntinue merging common routines in amiga_shared, and also create
-  several control settings like "up" to jump/throw and fire/blue for left/right
-  
+- post-processing optimize GET_DP_ADDRESS  xx + move.b xx,(a0) ou clr.b (a0) ou move.b (a0),xx
 - clarify why previous positions need nb sprites * 2 else it crashes!
-- test update chars @ 25 fps but sprites @50 for floppy nofast
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
 - mole bonus not triggered on high jump

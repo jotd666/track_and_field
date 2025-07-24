@@ -94,6 +94,7 @@ boot_state_03 = $03
 event_pointer_18 = $18
 event_pointer_1a = $1a
 sound_event_pointer_1c = $1c
+sound_event_pointer_1e = $1e
 copy_of_screen_flipped_21 = $21
 game_playing_22 = $22
 number_of_credits_23 = $23
@@ -213,7 +214,7 @@ reset_6000:
 6073: 9F 1A          STX    event_pointer_1a
 6075: 8E 29 40       LDX    #event_buffer_2900+$40		; copy contents of 2940 in 281C,281E
 6078: 9F 1C          STX    sound_event_pointer_1c
-607A: 9F 1E          STX    $1E
+607A: 9F 1E          STX    sound_event_pointer_1e
 607C: 7F 10 80       CLR    flip_screen_set_1080		; no flip screen
 607F: 7F 10 82       CLR    nmi_mask_w_1082		; nmi mask?
 6082: B6 12 83       LDA    dsw1_1283
@@ -1015,7 +1016,7 @@ read_inputs_6624:
 
 update_sounds_66eb:
 ; consume queued sounds
-66EB: 9E 1E          LDX    $1E
+66EB: 9E 1E          LDX    sound_event_pointer_1e
 66ED: 9C 1C          CMPX   sound_event_pointer_1c
 66EF: 26 01          BNE    $66F2
 66F1: 39             RTS
@@ -1035,7 +1036,7 @@ update_sounds_66eb:
 6706: 26 03          BNE    $670B
 ; cycle the event pointer
 6708: 8E 29 40       LDX    #sound_queue_2940
-670B: 9F 1E          STX    $1E
+670B: 9F 1E          STX    sound_event_pointer_1e
 670D: 39             RTS
 
 boot_670e:
@@ -4861,7 +4862,7 @@ queue_sound_event_8508:
 8676: 20 02          BRA    $867A
 
 8678: DC 4C          LDD    $4C
-867A: ED 88 1E       STD    $1E,X
+867A: ED 88 1E       STD    sound_event_pointer_1e,X
 867D: 39             RTS
 
 867E: BD 86 F7       JSR    $86F7
@@ -7261,7 +7262,7 @@ compare_contestants_tile_96d3:
 
 998B: 96 97          LDA    $97
 998D: 26 25          BNE    $99B4
-998F: EC 88 1E       LDD    $1E,X
+998F: EC 88 1E       LDD    sound_event_pointer_1e,X
 9992: BD 88 54       JSR    $8854
 9995: A6 A4          LDA    ,Y		; [video_address]
 9997: 81 52          CMPA   #$52
@@ -7337,7 +7338,7 @@ compare_contestants_tile_96d3:
 9A27: 0C D6          INC    $D6
 9A29: 39             RTS
 
-9A2A: EC 88 1E       LDD    $1E,X
+9A2A: EC 88 1E       LDD    sound_event_pointer_1e,X
 9A2D: 10 93 95       CMPD   $95
 9A30: 24 03          BCC    $9A35
 9A32: C3 00 40       ADDD   #$0040
@@ -8300,7 +8301,7 @@ A26B: 56             RORB
 A26C: 44             LSRA
 A26D: 56             RORB
 A26E: D7 4D          STB    $4D
-A270: A6 88 1E       LDA    $1E,X
+A270: A6 88 1E       LDA    sound_event_pointer_1e,X
 A273: E6 88 19       LDB    $19,X
 A276: C4 02          ANDB   #$02
 A278: 27 04          BEQ    $A27E
@@ -8452,7 +8453,7 @@ A3B8: 44             LSRA
 A3B9: 97 48          STA    nb_objects_48
 A3BB: CC 5C 14       LDD    #$5C14
 A3BE: DB 48          ADDB   nb_objects_48
-A3C0: ED 88 1E       STD    $1E,X
+A3C0: ED 88 1E       STD    sound_event_pointer_1e,X
 A3C3: ED 0B          STD    $B,X
 A3C5: FD 2A 41       STD    $2A41
 A3C8: 6F 88 1D       CLR    $1D,X

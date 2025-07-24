@@ -4,6 +4,7 @@ boot_state_03 = 0x03
 event_pointer_18 = 0x18
 event_pointer_1a = 0x1a
 sound_event_pointer_1c = 0x1c
+sound_event_pointer_1e = 0x1e
 copy_of_screen_flipped_21 = 0x21
 game_playing_22 = 0x22
 number_of_credits_23 = 0x23

@@ -94,7 +94,7 @@ get_address:
 	BREAKPOINT	"unsupported address range 0x3000-0x3FFF, PC in D6"
 0:
 10:
-	lea		(a6,a0.l),a0
+	GET_UNCHECKED_ADDRESS_FUNC
 	rts
 
 	.endif 
@@ -204,7 +204,7 @@ get_address:
 	.endm
 
 	.macro	CMP_W_TO_REG	src,dest
-	move.w	(\src),\dest
+	cmp.w	(\src),\dest
 	.endm
 
 	.macro    MOVE_W_FROM_REG    src,dest
@@ -294,6 +294,18 @@ get_address:
 
 	.macro GET_DP_ADDRESS	offset
 	lea	(a4,\offset\().W),a0
+	.endm
+
+	.macro OP_1_ON_DP_ADDRESS	inst,offset
+	\inst\().b	(a4,\offset\().W)
+	.endm
+
+	.macro OP_R_ON_DP_ADDRESS	inst,offset,reg
+	\inst\().b	(a4,\offset\().W),\reg
+	.endm
+
+	.macro OP_W_ON_DP_ADDRESS	inst,offset,reg
+	\inst\().b	\reg,(a4,\offset\().W)
 	.endm
 
 
