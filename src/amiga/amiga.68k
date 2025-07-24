@@ -33,10 +33,6 @@ FMODE_OFFSET = 0
 SCROLL_WIDTH = 0x10
 
 
-NB_SCROLL_ROWS = 28
-NB_SCROLL_ROWS_PART_1 = NB_SCROLL_ROWS/2
-NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1
-NB_SCROLL_ROWS_PART_3 = 1
 
 BORDERBLANK = 1
 
@@ -63,11 +59,6 @@ SPRITE_FMODE = 1			| required!!
 FMODE_OFFSET = -8
 SCROLL_WIDTH = 0x40
 
-NB_SCROLL_ROWS = 28
-NB_SCROLL_ROWS_PART_1 = NB_SCROLL_ROWS/2
-NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1
-NB_SCROLL_ROWS_PART_3 = 1
-
 
 BORDERBLANK = 1
 
@@ -83,6 +74,13 @@ HW_SPRITE_X_CORRECTION = 64
 	
 	
 	.endif
+
+NB_SCROLL_ROWS = 28
+NB_SCROLL_ROWS_PART_1 = NB_SCROLL_ROWS/2
+NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1-10
+NB_SCROLL_ROWS_PART_3 = 2
+NB_SCROLL_ROWS_PART_4 = 8
+NB_SCROLL_ROWS_PART_5 = 1
 
 SPRITE_HEIGHT = 16
 SPRITE_WIDTH = 16
@@ -3175,16 +3173,26 @@ ROW_SIZE = NB_TILE_PLANES*8+8
 	.set	offset,0
 scroll_row_copper_address_table:
 	.rept	NB_SCROLL_ROWS_PART_1
-	.long	scroll_rows_first_half+6+offset
+	.long	scroll_rows_first_part+6+offset
 	.set	offset,offset+ROW_SIZE
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_2
-	.long	scroll_rows_second_half+6+offset
+	.long	scroll_rows_second_part+6+offset
 	.set	offset,offset+ROW_SIZE
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_3
+	.long	scroll_rows_third_part+6+offset
+	.set	offset,offset+ROW_SIZE
+	.endr
+	.set	offset,0
+	.rept	NB_SCROLL_ROWS_PART_4
+	.long	scroll_rows_fourth_part+6+offset
+	.set	offset,offset+ROW_SIZE
+	.endr
+	.set	offset,0
+	.rept	NB_SCROLL_ROWS_PART_5
 	.long	scroll_rows_bottom+6+offset
 	.set	offset,offset+ROW_SIZE
 	.endr
@@ -3354,14 +3362,27 @@ game_sprites_end:
 	.word	0x01+((COPPER_Y_START-4)*256),0xFFFE
 
 	.set	y_start,COPPER_Y_START
-scroll_rows_first_half:
+scroll_rows_first_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_1
 	* not sure if it's really half screen but it doesn't matter
 intreq_block_game:
 	.word	 intreq,0x8014  | call copper interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
-
-scroll_rows_second_half:
+scroll_rows_second_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_2
+	.ifdef	OCS_VERSION
+	* here we can change colors to restore 2 greens
+	*.word	color+6+16,0x995  | 0xBB
+	.word	color+4+16,0x0B5
+	.endif
+scroll_rows_third_part:
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_3
+	* here we can change colors to restore 2 browns for the track
+	.ifdef	OCS_VERSION
+	.word	color+10+16,0xD65
+	.word	color+12+16,0xB45
+	.endif
+scroll_rows_fourth_part:
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_4
 
 	* purple 
 
@@ -3372,7 +3393,7 @@ scroll_rows_second_half:
 	.word	 intreq,0x8010
 	.set	y_start,0
 scroll_rows_bottom:
-	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_3
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_5
 	
 	.word	bplcon1
 	* set 0-scroll value value for both plane sets

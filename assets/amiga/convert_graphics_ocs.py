@@ -320,25 +320,28 @@ tile_palette = sorted(tile_palette)
 #tile_quant = quantize_palette(tile_palette,"tiles",8)
 
 tile_quant = {}
-
+green = (33,222,0)
+pink = (255,184,171)
+red = (255,0,0)
+cyan = (0,255,251)
 for unchanged in ((255,255,0),    # yellow
 (184,184,171),  # grey
-(0,255,251),    # cyan
+cyan,    # cyan
 (0,0,251),      # blue
-(255,0,0),      # red
+red,      # red
 (33,222,0),     # green
-(255,184,171),  # pink
+pink,  # pink
 (0,0,0)         # black
 ):
     tile_quant[unchanged] = unchanged
 
 for org,new in (((255,0,251),(255,184,171)),   # purple
-((0,184,171),(33,222,0)),    # green
-((0,184,80 ),(33,222,0)),    # green
+((0,184,171),green),    # green
+((0,184,80),green),    # green
 ((151,151,171),(184,184,171)),  # gray
-((184,71,80),(255,0,0)),    # brown
-((222,104,80),(255,0,0)),   # brown
-((151,151,80),(33,222,0)),   # green
+((184,71,80),pink),    # brown B45  fake will be switched back
+((222,104,80),red),   # brown D15  fake will be switched back
+((151,151,80),cyan),   # green  fake will be switched back
 ((255,255,251),(184,184,171)),   # white
 
 ):
