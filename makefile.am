@@ -10,7 +10,7 @@ endif
 # Bebbo's package usually installs itself there
 GCC_BIN = C:\amiga-gcc\bin
 ASM_BASE = $(GCC_BIN)/m68k-amigaos-as -c --defsym __amiga__=1
-ASM_000 = $(ASM_BASE) -m68000 $(OPT_RELEASE) 
+ASM_000 = $(ASM_BASE) -m68000 --defsym OCS_VERSION=1 $(OPT_RELEASE) 
 ASM_020 = $(ASM_BASE) -m68020 --defsym MC68020=1 $(OPT_RELEASE) 
 WHDLOADER_OCS = $(MAIN_OCS).slave
 WHDLOADER_OCS_CHIP = $(MAIN_OCS)_chip.slave
@@ -69,10 +69,10 @@ $(PROGNAME)_020.o: $(PROGNAME).68k $(PROGNAME).inc include.inc sounds.inc data.i
 	$(ASM_020) $(PROGNAME).68k -o $(PROGNAME)_020.o
 $(PROGNAME)_000.o: $(PROGNAME).68k $(PROGNAME).inc include.inc sounds.inc data.inc
 	$(ASM_000) $(PROGNAME).68k -o $(PROGNAME)_000.o
-amiga_aga.o: $(AGASRC)/amiga.68k $(PROGNAME).inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AGASRC)/palette.68k $(AMIGASRC)/sound_entries.68k
-	$(ASM_020) -I$(AGASRC) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AGASRC)/amiga.68k -o amiga_aga.o 
-amiga_ocs.o: $(OCSSRC)/amiga.68k $(PROGNAME).inc data.inc $(AMIGASRC)/ReadJoyPad.i $(OCSSRC)/palette.68k $(AMIGASRC)/sound_entries.68k
-	$(ASM_000) -I$(OCSSRC) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(OCSSRC)/amiga.68k -o amiga_ocs.o 
+amiga_aga.o: $(AMIGASRC)/amiga.68k $(PROGNAME).inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AGASRC)/palette.68k $(AMIGASRC)/sound_entries.68k
+	$(ASM_020) -I$(AGASRC) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_aga.o 
+amiga_ocs.o: $(AMIGASRC)/amiga.68k $(PROGNAME).inc data.inc $(AMIGASRC)/ReadJoyPad.i $(OCSSRC)/palette.68k $(AMIGASRC)/sound_entries.68k
+	$(ASM_000) -I$(OCSSRC) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_ocs.o 
 amiga_shared.o: $(AMIGASRC)/amiga_shared.68k data.inc $(AMIGASRC)/sound_entries.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i
 	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga_shared.68k -o amiga_shared.o
 vbr.o: $(AMIGASRC)/vbr.68k
