@@ -89,10 +89,10 @@ def quantize_palette(rgb_tuples,img_type,nb_quantize,transparent=None):
 def get_possible_hw_sprites():
     # declare all player frames plus bystanders & referee (which appear when tiles scroll)
     possible_hw_sprites = {i for i in range(NB_SPRITES) if i not in mirror_sprites and
-    any(x in sprite_names.get(i,"") for x in ("girl","player","referee","bystanders"))}
+    any(x in sprite_names.get(i,"") for x in ("dwarf","girl","bystanders","cursor"))}  # "referee"
     return possible_hw_sprites
 
-possible_hw_sprites = [] #get_possible_hw_sprites()
+possible_hw_sprites = get_possible_hw_sprites()
 
 
 athlete_cluts = [0,1,2,3]
@@ -184,7 +184,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
                 tileset_1[tile_number] = new_tile
                 tileset_1[tile_number+1] = None  # discatd
                 wtile = new_tile
-            if dump_it and wtile:
+            if dump and wtile:
                 img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
                 if sprite_names:
                     name = sprite_names.get(tile_number,"unknown")
@@ -352,7 +352,7 @@ tile_palette += (8-len(tile_palette)) * [(0x10,0x20,0x30)]
 
 sprite_palette = set()
 sprite_set_list = [[] for _ in range(16)]
-hw_sprite_set_list = []
+hw_sprite_set_list = [[] for _ in range(16)]
 
 sprite_dump_dir = dump_dir / "sprites"
 
@@ -370,7 +370,14 @@ for clut_index,tsd in sprite_sheet_dict.items():
     sprite_set_list[clut_index] = sprite_set
     sprite_palette.update(sp)
 
+    # load again (sure to be copied)
+    _,hw_sprite_set = load_tileset(tsd,clut_index,16,16,"sprites",dump_dir,dump=False,
+    name_dict=sprite_names,cluts=sprite_cluts,is_bob=True)
+    hw_sprite_set_list[clut_index] = hw_sprite_set
+
 sprite_palette = sorted(sprite_palette)
+
+hw_sprites_palette = sprite_palette    # unchanged palette, used for HW sprites
 
 sprite_quant = {}
 pink = (255, 184, 171)
@@ -393,7 +400,7 @@ for org,new in (((0, 222, 0),brown),   # sacrified green
       ((255, 222, 171),pink),
       ((222, 151, 171),pink),
 ((71, 71, 80),gray),
-(yellow,blue),
+(yellow,pink),
 ((184, 184, 171),gray),
 ((151, 71, 0),brown),
 ((0, 255, 251),brown),  # cyan
@@ -403,13 +410,11 @@ for org,new in (((0, 222, 0),brown),   # sacrified green
     sprite_quant[org] = new
 
 
-#sprite_quant = quantize_palette(sprite_palette,"sprites",8)
-
 for sprite_set in sprite_set_list:
     apply_quantize(sprite_set,sprite_quant)
 
 sprite_palette = sorted(set(sprite_quant.values()))
-print(sprite_palette)
+
 sprite_palette += (8-len(sprite_palette)) * [(0x10,0x20,0x30)]
 
 
@@ -472,12 +477,13 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob):
                             bitplane_data = bitplanelib.palette_image2raw(wtilec,None,palette,generate_mask=True)
 
                             # add sprite data if eligible: player frame, not mirrored
-                            if i in possible_hw_sprites:
+                            if i in possible_hw_sprites and wtile.size[0]==16:
                                 # using original, uncropped bitplane data
-                                bitplane_sprite_data = bitplanelib.palette_image2attached_sprites(wtile,None,palette,
-                                sprite_fmode=2,with_control_words=True)
+                                wtile_sprite = hw_sprite_set_list[n][i]  # proper palette
+                                bitplane_sprite_data = bitplanelib.palette_image2attached_sprites(wtile_sprite,None,hw_sprites_palette,
+                                with_control_words=True)
                         else:
-                            # 4 planes, no mask
+                            # 3 planes, no mask
                             height = 8
                             width = 1
                             y_start = 0
@@ -525,7 +531,7 @@ bob_plane_cache = {}
 sprite_table = read_tileset(sprite_set_list,full_palette[8:],[True,False,True,False],cache=bob_plane_cache, is_bob=True)
 
 with open(os.path.join(src_dir,"palette.68k"),"w") as f:
-    bitplanelib.palette_dump(full_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
+    bitplanelib.palette_dump(full_palette+hw_sprites_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
 
 gs_array = [0]*0x100
 for i in group_sprite_pairs:
@@ -604,30 +610,30 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
             f.write("0")
         f.write("\n")
 
-##    f.write("hws_table:\n")
-##    for i,tile_entry in enumerate(sprite_table):
-##        f.write("\t.long\t")
-##        if any(t and "sprdat" in t['standard'] for t in tile_entry):
-##            prefix = sprite_names.get(i,"bob")
-##            prefix = f"hws_{prefix}_{i:02x}"
-##            f.write(prefix)
-##        else:
-##            f.write("0")
-##        f.write("\n")
-##
-##    # HW sprites clut declaration
-##    for i,tile_entry in enumerate(sprite_table):
-##        if any(t and "sprdat" in t['standard'] for t in tile_entry):
-##            prefix = sprite_names.get(i,"bob")
-##            f.write(f"hws_{prefix}_{i:02x}:\n")
-##            for j,t in enumerate(tile_entry):
-##                f.write("\t.long\t")
-##                if t:
-##                    z = f"hws_{prefix}_{i:02x}_{j:02x}"
-##                    f.write(f"{z}_0,{z}_1")
-##                else:
-##                    f.write("0,0")
-##                f.write("\n")
+    f.write("hws_table:\n")
+    for i,tile_entry in enumerate(sprite_table):
+        f.write("\t.long\t")
+        if any(t and "sprdat" in t['standard'] for t in tile_entry):
+            prefix = sprite_names.get(i,"bob")
+            prefix = f"hws_{prefix}_{i:02x}"
+            f.write(prefix)
+        else:
+            f.write("0")
+        f.write("\n")
+
+    # HW sprites clut declaration
+    for i,tile_entry in enumerate(sprite_table):
+        if any(t and "sprdat" in t['standard'] for t in tile_entry):
+            prefix = sprite_names.get(i,"bob")
+            f.write(f"hws_{prefix}_{i:02x}:\n")
+            for j,t in enumerate(tile_entry):
+                f.write("\t.long\t")
+                if t:
+                    z = f"hws_{prefix}_{i:02x}_{j:02x}"
+                    f.write(f"{z}_0,{z}_1")
+                else:
+                    f.write("0,0")
+                f.write("\n")
 
 
     # BObs clut declaration
@@ -692,14 +698,14 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
         dump_asm_bytes(k,f)
 
     # HW sprites bitplane data
-##    for i,tile_entry in enumerate(sprite_table):
-##        if any(t and "sprdat" in t['standard'] for t in tile_entry):
-##            prefix = sprite_names.get(i,"bob")
-##            for j,t in enumerate(tile_entry):
-##
-##                if t:
-##                    data = t["standard"]["sprdat"]
-##                    for k,d in enumerate(data):
-##                        f.write(f"hws_{prefix}_{i:02x}_{j:02x}_{k}:")
-##                        bitplanelib.dump_asm_bytes(d,f,mit_format=True)
-##                    f.write("\n")
+    for i,tile_entry in enumerate(sprite_table):
+        if any(t and "sprdat" in t['standard'] for t in tile_entry):
+            prefix = sprite_names.get(i,"bob")
+            for j,t in enumerate(tile_entry):
+
+                if t:
+                    data = t["standard"]["sprdat"]
+                    for k,d in enumerate(data):
+                        f.write(f"hws_{prefix}_{i:02x}_{j:02x}_{k}:")
+                        bitplanelib.dump_asm_bytes(d,f,mit_format=True)
+                    f.write("\n")

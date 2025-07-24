@@ -434,6 +434,13 @@ _user:
 	lea		tiles_colors,a1
 	bsr		load_palette
 	
+	.ifdef	OCS_VERSION
+	move.w	#16,d0
+	lea		sprite_colors,a1
+	lea		palette+TOTAL_NB_COLORS*2*2,a0
+	bsr		load_palette
+	.endif
+	
 	jsr	 _detect_controller_types 
 
 	move.l	cheat_flags,d0
@@ -1496,11 +1503,15 @@ update_one_hw_sprite:
 	
 	* first sprite of couple
 	move.l	(a5)+,a3
+	.ifdef	OCS_VERSION
+	move.l	d0,(a3)
+	.else
 	* fmode = 2: sprite control word is 8 bytes
 	move.w	d0,(4,a3)
 	swap	d0
 	move.w	d0,(a3)
 	swap	d0
+	.endif
 	move.l	a3,d1
 	* store sprite pointer in copperlist
 	move.w	d1,(4,a2)
@@ -1509,10 +1520,14 @@ update_one_hw_sprite:
 	* second sprite of couple
 	BSET	#7,d0		| attach bit set
 	move.l	(a5),a3
+	.ifdef	OCS_VERSION
+	move.l	d0,(a3)
+	.else
 	move.w	d0,(4,a3)
 	swap	d0
 	move.w	d0,(a3)
 	swap	d0
+	.endif
 	move.l	a3,d1
 	* store sprite pointer in copperlist
 	move.w	d1,(4+8,a2)
@@ -1979,7 +1994,6 @@ quit_to_os:
 
 
 really_update_hw_sprites:
-	.ifndef		OCS_VERSION
 	************************************************
 	* draw current sprites from 6809 sprite memory *
 	************************************************
@@ -1998,7 +2012,7 @@ really_update_hw_sprites:
 	lea		game_sprites_end+2,a6
 	move.w	#NB_TARGET_SPRITES,d6
 	moveq	#0,d7
-	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
+	lea		HW_SpriteYTable_16,a1		| all sprites have same size 16 high
 1:
 	jbsr	update_one_hw_sprite
 	addq.w	#2,a0
@@ -2018,7 +2032,6 @@ really_update_hw_sprites:
 	cmp.l	a2,a6
 	jne		1b
 2:	
-	.endif
 	rts
 	
 	
@@ -3329,7 +3342,11 @@ tiles_colors:
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 
-
+	* OCS has 8+8 dpf + sprites
+	.ifdef	OCS_VERSION
+sprite_colors:
+	DECL_COLORS	16,16
+	.endif
 game_sprites:
 	DECL_SPRITES
 game_sprites_end:

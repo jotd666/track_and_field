@@ -61,6 +61,7 @@ def get_sprite_names():
     rval |= {k:"javelin" for k in range(0xE0,0xF1)}
     rval |= {k:"hammer" for k in sr2(0x34,0x3E)}
     rval |= {k:"girl" for k in (0xB2,0xB3,0xBA,0xBB)}
+    rval |= {k:"dwarf" for k in {0x6F,0xA2,0xA3}}
     return rval
 
 def get_mirror_sprites():
