@@ -1,3 +1,4 @@
+- OCS: crash on 68000
 - OCS: use HW sprites for background characters, referees ... if 16-pixel wide
 - OCS: trashed sprites on the right
 - OCS: green dots => cyan and red dots (of tracks) => some other color 

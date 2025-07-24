@@ -22,6 +22,8 @@ AFB_68010 = 0
 AFB_68020 = 1
 AFB_68030 = 2
 
+NB_TILE_PLANES = 4
+NB_BOB_PLANES = 4
 
 
 NB_SCROLL_ROWS = 28
@@ -33,6 +35,7 @@ NB_SCROLL_ROWS_PART_3 = 1
 BITPLANE_FMODE = 3			| works with 1, albeit slower
 * we only need 32-pixel wide sprites, no need for 64
 SPRITE_FMODE = 1			| required!!
+FMODE_OFFSET = -8
 
 BORDERBLANK = 1
 
@@ -81,8 +84,7 @@ OPT_ENABLE_DOUBLE_BUFFERING = 1
 
 OPT_ENABLE_MULTIPLEXED_SPRITES = 0
 
-NB_TILE_PLANES = 4
-NB_BOB_PLANES = 4
+
 TOTAL_NB_COLORS = 1<<NB_TILE_PLANES
 FG_NB_BYTES_PER_ROW = 40
 BG_NB_BYTES_PER_ROW = FG_NB_BYTES_PER_ROW*3
@@ -1107,47 +1109,7 @@ really_update_tiles:
 	rts
 	
 
-really_update_hw_sprites:
-	************************************************
-	* draw current sprites from 6809 sprite memory *
-	************************************************
-	GET_MEMORY_START_AND_DP
-	* clear "sprite drawn" table
-	lea		sprite_drawn(pc),a0
-	move.w	#NB_TARGET_SPRITES/4-1,d7
-0:
-	clr.l	(a0)+
-	dbf		d7,0b
-	
-	* now update in the reverted order // the bobs
-	lea		(FIRST_SPRITE,a6),a0		| sprite start
-	lea		hws_table,a4
-	lea		game_sprites+2,a2				| copperlist part
-	lea		game_sprites_end+2,a6
-	move.w	#NB_TARGET_SPRITES,d6
-	moveq	#0,d7
-	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
-1:
-	jbsr	update_one_hw_sprite
-	addq.w	#2,a0
-	cmp.l	a2,a6
-	jeq		2f			| all sprites are used already: bail out
-	addq	#1,d7
-	cmp.w	d6,d7		| we have to increase d7 (priority inverted vs bobs)
-	jne		1b
-	* blank the rest of the unused sprites
-	move.l	#blank_sprite,d0
-1:
-	move.w	d0,(4,a2)
-	swap	d0
-	move.w	d0,(a2)
-	swap	d0
-	addq	#8,a2
-	cmp.l	a2,a6
-	jne		1b
-2:	
-	rts
-	
+
 
 really_update_bobs:
 
@@ -1964,6 +1926,47 @@ quit_to_os:
 
 
 
+really_update_hw_sprites:
+	************************************************
+	* draw current sprites from 6809 sprite memory *
+	************************************************
+	GET_MEMORY_START_AND_DP
+	* clear "sprite drawn" table
+	lea		sprite_drawn(pc),a0
+	move.w	#NB_TARGET_SPRITES/4-1,d7
+0:
+	clr.l	(a0)+
+	dbf		d7,0b
+	
+	* now update in the reverted order // the bobs
+	lea		(FIRST_SPRITE,a6),a0		| sprite start
+	lea		hws_table,a4
+	lea		game_sprites+2,a2				| copperlist part
+	lea		game_sprites_end+2,a6
+	move.w	#NB_TARGET_SPRITES,d6
+	moveq	#0,d7
+	lea		HW_SpriteYTable_16,a1		| all sprites have same size 32x16
+1:
+	jbsr	update_one_hw_sprite
+	addq.w	#2,a0
+	cmp.l	a2,a6
+	jeq		2f			| all sprites are used already: bail out
+	addq	#1,d7
+	cmp.w	d6,d7		| we have to increase d7 (priority inverted vs bobs)
+	jne		1b
+	* blank the rest of the unused sprites
+	move.l	#blank_sprite,d0
+1:
+	move.w	d0,(4,a2)
+	swap	d0
+	move.w	d0,(a2)
+	swap	d0
+	addq	#8,a2
+	cmp.l	a2,a6
+	jne		1b
+2:	
+	rts
+	
 	
 platform_init:
 	bsr		store_system
@@ -1996,9 +1999,9 @@ platform_init:
 
 	move.w	#0,bplcon1(a5)
 
-	move.w	#-8+BG_NB_BYTES_PER_ROW-40,d0
+	move.w	#FMODE_OFFSET+BG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl2mod(a5)
-	move.w	#-8+FG_NB_BYTES_PER_ROW-40,d0
+	move.w	#FMODE_OFFSET+FG_NB_BYTES_PER_ROW-40,d0
     move.w d0,bpl1mod(a5)
 
 	lea		game_copperlist,a0
@@ -2302,7 +2305,6 @@ update_bg_tile:
 	move.b	d3,d1
 	and.w	#0xF,d3
 	.ifdef	NO68020
-	add.w	d3,d3
 	add.w	d3,d3
 	add.w	d3,d3
 	move.l	(a2,d3.w),d0			| pointer on tile bitplanes for that CLUT
@@ -3098,22 +3100,23 @@ fg_screen_data_2:
 	.long	0
 	.endif
 	
+ROW_SIZE = NB_TILE_PLANES*8+8
 
 	.set	offset,0
 scroll_row_copper_address_table:
 	.rept	NB_SCROLL_ROWS_PART_1
 	.long	scroll_rows_first_half+6+offset
-	.set	offset,offset+40
+	.set	offset,offset+ROW_SIZE
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_2
 	.long	scroll_rows_second_half+6+offset
-	.set	offset,offset+40
+	.set	offset,offset+ROW_SIZE
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_3
 	.long	scroll_rows_bottom+6+offset
-	.set	offset,offset+40
+	.set	offset,offset+ROW_SIZE
 	.endr
 
 background_ptr:
@@ -3218,7 +3221,7 @@ scroll_table:
 	.word	0x01+(y_start*256),0xFFFE
 	.word	bplcon1
 	.word	0
-	DECL_EVEN_BITPLANES	4,4
+	DECL_EVEN_BITPLANES	4,NB_TILE_PLANES
 	.set	y_start,y_start+8
 	.endr
 	.endm 
@@ -3249,9 +3252,9 @@ game_copperlist:
 	* enable sprite colors now
 
 bobs_bitplanes:
-	DECL_EVEN_BITPLANES	0,4
+	DECL_EVEN_BITPLANES	0,NB_BOB_PLANES
 tiles_bitplanes:
-	DECL_EVEN_BITPLANES	4,4
+	DECL_EVEN_BITPLANES	4,NB_TILE_PLANES
 	* set 0-scroll value value for both plane sets
 	.word	bplcon1
 reset_bplcon1_1:
@@ -3259,7 +3262,7 @@ reset_bplcon1_1:
 
 
 tiles_colors:
-	DECL_COLORS	16,TOTAL_NB_COLORS
+	DECL_COLORS	TOTAL_NB_COLORS,TOTAL_NB_COLORS
 bobs_colors:
 	DECL_COLORS	0,TOTAL_NB_COLORS
 
