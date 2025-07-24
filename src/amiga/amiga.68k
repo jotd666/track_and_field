@@ -3358,6 +3358,9 @@ sprite_colors:
 game_sprites:
 	DECL_SPRITES
 game_sprites_end:
+	.ifdef	OCS_VERSION
+	.word	color+2+16,0xFFF
+	.endif
 
 	.word	0x01+((COPPER_Y_START-4)*256),0xFFFE
 
@@ -3380,6 +3383,7 @@ scroll_rows_third_part:
 	.ifdef	OCS_VERSION
 	.word	color+10+16,0xD65
 	.word	color+12+16,0xB45
+	.word	color+2+16,0xFFF
 	.endif
 scroll_rows_fourth_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_4

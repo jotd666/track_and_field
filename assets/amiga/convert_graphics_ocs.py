@@ -324,10 +324,13 @@ green = (33,222,0)
 pink = (255,184,171)
 red = (255,0,0)
 cyan = (0,255,251)
+blue = (0,0,251)
+gray = (184,184,171)
+
 for unchanged in ((255,255,0),    # yellow
-(184,184,171),  # grey
+gray,  # grey
 cyan,    # cyan
-(0,0,251),      # blue
+blue,      # blue
 red,      # red
 (33,222,0),     # green
 pink,  # pink
@@ -338,11 +341,11 @@ pink,  # pink
 for org,new in (((255,0,251),(255,184,171)),   # purple
 ((0,184,171),green),    # green
 ((0,184,80),green),    # green
-((151,151,171),(184,184,171)),  # gray
+((151,151,171),gray),  # gray
 ((184,71,80),pink),    # brown B45  fake will be switched back
 ((222,104,80),red),   # brown D15  fake will be switched back
 ((151,151,80),cyan),   # green  fake will be switched back
-((255,255,251),(184,184,171)),   # white
+((255,255,251),blue),   # white
 
 ):
     tile_quant[org] = new

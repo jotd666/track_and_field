@@ -1,7 +1,5 @@
 - OCS: trashed sprites on the right: sprite adjust issue?
-- OCS: green dots => cyan and red dots (of tracks) => some other color 
-  and change with copper to re-create bi-color grass/track
-  restore brown too for red??
+- OCS: speed bar re-turn to blue then white again 
 - maybe setting per level?
 - create several control settings like "up" to jump/throw and fire/blue for left/right
 
