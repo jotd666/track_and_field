@@ -58,7 +58,7 @@ BASE_BPLCON0_VALUE = 0x6600+BORDERBLANK  | 6 bitplanes, dual playfield, borderbl
 SPRITE_X_CORRECTION = 8
 SPRITE_Y_CORRECTION = 0
 HW_SPRITE_Y_CORRECTION = -4
-HW_SPRITE_X_CORRECTION = 16
+HW_SPRITE_X_CORRECTION = 14
 	.else
 	
 ********************************
@@ -94,8 +94,9 @@ NB_SCROLL_ROWS = 28
 NB_SCROLL_ROWS_PART_1 = NB_SCROLL_ROWS/2
 NB_SCROLL_ROWS_PART_2 = NB_SCROLL_ROWS/2+1-10
 NB_SCROLL_ROWS_PART_3 = 2
-NB_SCROLL_ROWS_PART_4 = 8
-NB_SCROLL_ROWS_PART_5 = 1
+NB_SCROLL_ROWS_PART_4 = 5
+NB_SCROLL_ROWS_PART_5 = 3
+NB_SCROLL_ROWS_PART_6 = 1
 
 SPRITE_HEIGHT = 16
 SPRITE_WIDTH = 16
@@ -1175,7 +1176,9 @@ really_update_tiles:
 detect_current_screen:
 	* too difficult to know which screen is currently displayed
 	* the current screen allows to know which is the screen/color
-	* layout and change copperlist accordignly
+	* layout and change copperlist accordignly by reading at
+	* strategic locations for each screen
+	
 	GET_MEMORY_START_AND_DP
 	lea		(VIDEO_ADDRESS,a6),a6
 	move.b	#0,0x110
@@ -1188,9 +1191,45 @@ detect_current_screen:
 	jne		0f
 	move.w	#CS_PUSH_START,d0
 	jra		1f
+0:
 	cmp.b	#0xE6,(0x448,a6)
 	jne		0f
 	move.w	#CS_ENTER_NAME,d0
+	jra		1f
+0:
+	cmp.b	#0x01,(0x448,a6)
+	jne		0f
+	move.w	#CS_DASH,d0
+	jra		1f
+0:
+	cmp.b	#0x4A,(0x4CC,a6)
+	jne		0f
+	move.w	#CS_LONG_JUMP,d0
+	jra		1f
+0:
+	cmp.b	#0x1A,(0x505,a6)
+	jne		0f
+	move.w	#CS_JAVELIN,d0
+	jra		1f
+0:
+	cmp.b	#0x56,(0x586,a6)
+	jne		0f
+	move.w	#CS_HAMMER,d0
+	jra		1f
+0:
+	cmp.b	#0x18,(0x504,a6)
+	jne		0f
+	move.w	#CS_HIGH_JUMP,d0
+	jra		1f
+0:
+	cmp.b	#0x48,(0x10B,a6)
+	jne		0f
+	move.w	#CS_COMMENDATION,d0
+	jra		1f
+0:
+	cmp.b	#0x22,(0x10D,a6)
+	jne		0f
+	move.w	#CS_HIGH_SCORES,d0
 	jra		1f
 0:
 	* could not detect screen
@@ -1200,11 +1239,18 @@ detect_current_screen:
 	jeq		1f
 	* context switch: first reset all
 	move.w	#COPPER_NOP,d1
-	move.w 	d1,white_top_color
+	move.w 	d1,top_color
+	move.w 	d1,mid_color
 	move.w	d1,track_brown_colors
 	move.w	d1,track_brown_colors+4
 	move.w	d1,track_brown_colors+8
+	move.w	d1,javelin_track_white
+	move.w	d1,javelin_track_white+4
+	move.w	d1,javelin_track_white+8
 	move.w	d1,track_white
+	move.w	d1,lawn_green
+	move.w	d1,lawn_green+4
+	move.w	d1,lawn_green+8
 	
 	
 	move.w	d0,current_screen
@@ -1228,7 +1274,7 @@ screen_table:
 	.long	dash_colors				| CS_DASH = 16
 	.long	long_jump_colors		| CS_LONG_JUMP = 20
 	.long	javelin_colors			| CS_JAVELIN = 24
-	.long	hurdles_colors			| CS_HURDLES = 28
+	.long	hurdles_colors			| CS_HURDLES = 28 will land on 100m dash anyway
 	.long	hammer_colors			| CS_HAMMER = 32
 	.long	high_jump_colors		| CS_HIGH_JUMP = 36
 	.long	record_broken_colors	| CS_RECORD_BROKEN = 40
@@ -1237,26 +1283,52 @@ screen_table:
 
 
 title_colors:
-	move.l	#(color+2+16)<<16+0x00F,track_white
+	move.l	#(color+8+16)<<16+0xFFF,track_white
+enter_name_colors:
+push_start_colors:	
+high_scores_colors:
+	move.l	#(color+8+16)<<16+0xFFF,top_color
 	rts
 	
-push_start_colors:	
-enter_name_colors:	
-
+commendation_colors:
+	move.l	#(color+8+16)<<16+0xBBA,mid_color
+	move.l	#(color+8+16)<<16+0xFFF,top_color
+	rts
+	
+hurdles_colors:
 dash_colors:
+	move.l	#(color+8+16)<<16+0xFFF,top_color
 	move.l	#(color+10+16)<<16+0xD65,track_brown_colors
 	move.l	#(color+12+16)<<16+0xB45,track_brown_colors+4
-	move.l	#(color+2+16)<<16+0xFFF,track_white
+	move.l	#(color+8+16)<<16+0xFFF,track_white
+	move.l	#(color+4+16)<<16+0x0B5,lawn_green
 	rts
 	
 long_jump_colors:
+	move.l	#(color+8+16)<<16+0xFFF,top_color
+	move.l	#(color+8+16)<<16+0xFFF,track_white
+	move.l	#(color+4+16)<<16+0x0B5,lawn_green
+	move.l	#(color+10+16)<<16+0xD65,lawn_green+8
+	move.l	#(color+12+16)<<16+0xB45,lawn_green+4
+	rts
+	
 javelin_colors:	
-hurdles_colors:		
-hammer_colors:	
+	move.l	#(color+4+16)<<16+0x0B5,javelin_track_white+4	| green
 high_jump_colors:
+	move.l	#(color+8+16)<<16+0xFFF,top_color
+	move.l	#(color+8+16)<<16+0xBBA,mid_color
+	move.l	#(color+8+16)<<16+0xFFF,javelin_track_white
+	move.l	#(color+12+16)<<16+0xB45,javelin_track_white+8
+	rts
+	
+	
+hammer_colors:
+	move.l	#(color+8+16)<<16+0xFFF,top_color
+	move.l	#(color+4+16)<<16+0x0B5,mid_color		| green
+
 record_broken_colors:
-high_scores_colors:
-commendation_colors:	
+	* don't change anything, don't even register it
+	* it would break the screen on return
 	rts
 	
 
@@ -3288,8 +3360,8 @@ fg_screen_data_2:
 	
 ROW_SIZE = NB_TILE_PLANES*8+8
 
-	.set	offset,0
 scroll_row_copper_address_table:
+	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_1
 	.long	scroll_rows_first_part+6+offset
 	.set	offset,offset+ROW_SIZE
@@ -3311,6 +3383,11 @@ scroll_row_copper_address_table:
 	.endr
 	.set	offset,0
 	.rept	NB_SCROLL_ROWS_PART_5
+	.long	scroll_rows_fifth_part+6+offset
+	.set	offset,offset+ROW_SIZE
+	.endr
+	.set	offset,0
+	.rept	NB_SCROLL_ROWS_PART_6
 	.long	scroll_rows_bottom+6+offset
 	.set	offset,offset+ROW_SIZE
 	.endr
@@ -3477,9 +3554,8 @@ game_sprites:
 	DECL_SPRITES
 game_sprites_end:
 	.ifdef	OCS_VERSION
-white_top_color:
-	.word	COPPER_NOP
-	.word	0xFFF
+top_color:
+	.word	COPPER_NOP,0xFFF
 	.endif
 
 	.word	0x01+((COPPER_Y_START-4)*256),0xFFFE
@@ -3490,25 +3566,41 @@ scroll_rows_first_part:
 	* not sure if it's really half screen but it doesn't matter
 intreq_block_game:
 	.word	 intreq,0x8014  | call copper interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
+	.ifdef	OCS_VERSION
+mid_color:
+	.word	COPPER_NOP,0xFFF
+	.endif
 scroll_rows_second_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_2
 	.ifdef	OCS_VERSION
-	* here we can change colors to restore 2 greens
-	*.word	color+6+16,0x995  | 0xBB
-	.word	color+4+16,0x0B5
+	* here we can change colors to restore 2 track browns
+	* and a green
+lawn_green:
+	.word	COPPER_NOP,0x0B5
+	.word	COPPER_NOP,0xD65
+	.word	COPPER_NOP,0xD65
 	.endif
 scroll_rows_third_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_3
 	* here we can change colors to restore 2 browns for the track
 	.ifdef	OCS_VERSION
 track_brown_colors:
-	.word	color+10+16,0xD65
-	.word	color+12+16,0xB45
+	.word	COPPER_NOP,0xD65
+	.word	COPPER_NOP,0xB45
 track_white:
-	.word	color+2+16,0xFFF
+	.word	COPPER_NOP,0xFFF
 	.endif
 scroll_rows_fourth_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_4
+	.ifdef	OCS_VERSION
+javelin_track_white:
+	.word	COPPER_NOP,0xFFF
+	.word	COPPER_NOP,0xD65		| green
+	.word	COPPER_NOP,0xD65		| green
+	.endif
+
+scroll_rows_fifth_part:
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_5
 
 	* purple 
 
@@ -3519,7 +3611,7 @@ scroll_rows_fourth_part:
 	.word	 intreq,0x8010
 	.set	y_start,0
 scroll_rows_bottom:
-	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_5
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_6
 	
 	.word	bplcon1
 	* set 0-scroll value value for both plane sets

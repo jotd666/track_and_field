@@ -1,13 +1,10 @@
-- OCS: trashed sprites on the right: sprite adjust issue?
-- OCS: speed bar re-turn to blue then white again 
-- maybe setting per level?
 - create several control settings like "up" to jump/throw and fire/blue for left/right
 
 - sub.w/add.w in the code
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
-- mole bonus not triggered on high jump (or maybe it works)
+- mole bonus triggered on high jump, mole appears but missing the "nice" & 1000 points sprite
 
 
 log sounds: bpset 66F4,,{print A;g}
