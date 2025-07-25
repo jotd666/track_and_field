@@ -345,7 +345,7 @@ for org,new in (((255,0,251),(255,184,171)),   # purple
 ((184,71,80),pink),    # brown B45  fake will be switched back
 ((222,104,80),red),   # brown D15  fake will be switched back
 ((151,151,80),cyan),   # green  fake will be switched back
-((255,255,251),blue),   # white
+((255,255,251),gray),   # white
 
 ):
     tile_quant[org] = new

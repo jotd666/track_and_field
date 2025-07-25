@@ -33,6 +33,21 @@ FMODE_OFFSET = 0
 SCROLL_WIDTH = 0x10
 
 
+* 12 different screens
+* in OCS it allows to select dynamic colors
+CS_UNKNOWN = 0
+CS_TITLE = 4
+CS_PUSH_START = 8
+CS_ENTER_NAME = 12
+CS_DASH = 16
+CS_LONG_JUMP = 20
+CS_JAVELIN = 24
+CS_HURDLES = 28
+CS_HAMMER = 32
+CS_HIGH_JUMP = 36
+CS_RECORD_BROKEN = 40
+CS_HIGH_SCORES = 44
+CS_COMMENDATION = 48
 
 BORDERBLANK = 1
 
@@ -1021,7 +1036,9 @@ _vblank:
 
 	jbsr		really_update_tiles
 23:
-
+	.ifdef	OCS_VERSION
+	jbsr	detect_current_screen
+	.endif
 
 3:
 
@@ -1154,7 +1171,101 @@ really_update_tiles:
 	jne		3b
 	rts
 	
+	.ifdef	OCS_VERSION
+detect_current_screen:
+	* too difficult to know which screen is currently displayed
+	* the current screen allows to know which is the screen/color
+	* layout and change copperlist accordignly
+	GET_MEMORY_START_AND_DP
+	lea		(VIDEO_ADDRESS,a6),a6
+	move.b	#0,0x110
+	cmp.b	#3,(0x716,a6)
+	jne		0f
+	move.w	#CS_TITLE,d0
+	jra		1f
+0:
+	cmp.b	#0x20,(0x4CA,a6)
+	jne		0f
+	move.w	#CS_PUSH_START,d0
+	jra		1f
+	cmp.b	#0xE6,(0x448,a6)
+	jne		0f
+	move.w	#CS_ENTER_NAME,d0
+	jra		1f
+0:
+	* could not detect screen
+	rts		
+1:
+	cmp.w	current_screen,d0
+	jeq		1f
+	* context switch: first reset all
+	move.w	#COPPER_NOP,d1
+	move.w 	d1,white_top_color
+	move.w	d1,track_brown_colors
+	move.w	d1,track_brown_colors+4
+	move.w	d1,track_brown_colors+8
+	move.w	d1,track_white
+	
+	
+	move.w	d0,current_screen
+	lea		screen_table,a0
+	.ifdef	NO68020
+	move.l	(a0,d0.w),a0
+	jsr		(a0)
+	.else
+	jsr		([a0,d0.w])
+	.endif
+1:
+	rts
+	
+COPPER_NOP = 0x01FE
 
+screen_table:
+	.long	nope					| CS_UNKNOWN = 0
+	.long	title_colors			| CS_TITLE = 4
+	.long	push_start_colors		| CS_PUSH_START = 8
+	.long	enter_name_colors		| CS_ENTER_NAME = 12
+	.long	dash_colors				| CS_DASH = 16
+	.long	long_jump_colors		| CS_LONG_JUMP = 20
+	.long	javelin_colors			| CS_JAVELIN = 24
+	.long	hurdles_colors			| CS_HURDLES = 28
+	.long	hammer_colors			| CS_HAMMER = 32
+	.long	high_jump_colors		| CS_HIGH_JUMP = 36
+	.long	record_broken_colors	| CS_RECORD_BROKEN = 40
+	.long	high_scores_colors		| CS_HIGH_SCORES = 44
+	.long	commendation_colors		| CS_COMMENDATION = 48
+
+
+title_colors:
+	move.l	#(color+2+16)<<16+0x00F,track_white
+	rts
+	
+push_start_colors:	
+enter_name_colors:	
+
+dash_colors:
+	move.l	#(color+10+16)<<16+0xD65,track_brown_colors
+	move.l	#(color+12+16)<<16+0xB45,track_brown_colors+4
+	move.l	#(color+2+16)<<16+0xFFF,track_white
+	rts
+	
+long_jump_colors:
+javelin_colors:	
+hurdles_colors:		
+hammer_colors:	
+high_jump_colors:
+record_broken_colors:
+high_scores_colors:
+commendation_colors:	
+	rts
+	
+
+
+
+
+	.endif
+	
+	
 really_update_bobs:
 
 
@@ -1401,9 +1512,14 @@ update_one_bob:
 
 
 	moveq	#NB_BOB_PLANES,d3
+	.ifndef	OCS_VERSION
 	cmp.w	#256+SPRITE_X_CORRECTION-SPRITE_WIDTH,d0
 	jcs		102f
 	* too far on the right: wrap around (means: blit twice)
+	* this has very little interest. In AGA, it allows runners
+	* from the intro to wrap around. In ECS this corrupts the display
+	* and I didn't want to investigate too much as this feature is not
+	* used in the game. Besides even in AGA, HW sprites don't wrap.
 	movem.l	d0-d6/a0/a1/a3,-(a7)
 	sub.w	#0x100,d0
 	move.w	d0,(a6)+			| store current sprite attributes to previous ones
@@ -1415,6 +1531,7 @@ update_one_bob:
 	jbsr		blit_planes_any_internal_cookie_cut
 	movem.l	(a7)+,d0-d6/a0/a1/a3
 102:
+	.endif
 	jbsr		blit_planes_any_internal_cookie_cut
 	move.l	(a7)+,a0
 	rts
@@ -3075,7 +3192,8 @@ old_actiview:
 	.long	0
 old_stack:
 	.long	0
-
+current_screen:
+	.word	0
 	
 _tag:
 		.long	WHDLTAG_MONITOR_GET
@@ -3359,7 +3477,9 @@ game_sprites:
 	DECL_SPRITES
 game_sprites_end:
 	.ifdef	OCS_VERSION
-	.word	color+2+16,0xFFF
+white_top_color:
+	.word	COPPER_NOP
+	.word	0xFFF
 	.endif
 
 	.word	0x01+((COPPER_Y_START-4)*256),0xFFFE
@@ -3381,8 +3501,10 @@ scroll_rows_third_part:
 	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_3
 	* here we can change colors to restore 2 browns for the track
 	.ifdef	OCS_VERSION
+track_brown_colors:
 	.word	color+10+16,0xD65
 	.word	color+12+16,0xB45
+track_white:
 	.word	color+2+16,0xFFF
 	.endif
 scroll_rows_fourth_part:
@@ -3403,7 +3525,6 @@ scroll_rows_bottom:
 	* set 0-scroll value value for both plane sets
 reset_bplcon1_2:
 	.word	0			| reset scrolling
-	.word	0x1A01,0xFFFE
 
 
 	* black color sprites
