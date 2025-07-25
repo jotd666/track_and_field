@@ -207,6 +207,14 @@ get_address:
 	cmp.w	(\src),\dest
 	.endm
 
+	.macro	ADD_W_TO_REG	src,dest
+	add.w	(\src),\dest
+	.endm
+
+	.macro	SUB_W_TO_REG	src,dest
+	sub.w	(\src),\dest
+	.endm
+
 	.macro    MOVE_W_FROM_REG    src,dest
 	move.w	\src,(\dest)
 	.endm
@@ -243,12 +251,25 @@ get_address:
 	move.b	(1,\src),\dest
 	.endm
 
-	.macro	CMP_W_TO_REG	src,dest
+	.macro	INST_W_TO_REG	inst,src,dest
 	move.b	(\src),d6
 	ror.w	#8,d6
 	move.b	(1,\src),d6
-	cmp.w	d6,\dest
+	\inst\().w	d6,\dest
 	.endm
+
+    .macro    SUB_W_TO_REG    src,dest
+    INST_W_TO_REG   sub,\src,\dest
+    .endm
+
+    .macro    ADD_W_TO_REG    src,dest
+    INST_W_TO_REG   add,\src,\dest
+    .endm
+
+    .macro    CMP_W_TO_REG    src,dest
+    INST_W_TO_REG   cmp,\src,\dest
+    .endm
+
 
 	.macro	MOVE_W_FROM_REG	src,dest
 	ror.w	#8,\src

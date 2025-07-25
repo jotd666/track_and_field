@@ -1,6 +1,7 @@
 - create several control settings like "up" to jump/throw and fire/blue for left/right
+- create a OCS sound bank 
+- create ocs/aga shell
 
-- sub.w/add.w in the code
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!

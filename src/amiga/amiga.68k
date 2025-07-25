@@ -26,7 +26,6 @@ AFB_68030 = 2
 NO68020 = 1
 NB_TILE_PLANES = 3
 NB_BOB_PLANES = 3
-* most performant bitplane fetch
 BITPLANE_FMODE = 0			| works with 1, albeit slower
 SPRITE_FMODE = 0			| required!!
 FMODE_OFFSET = 0
@@ -52,7 +51,7 @@ CS_COMMENDATION = 48
 BORDERBLANK = 1
 
 COPPER_Y_START = 0x18
-BASE_BPLCON2_VALUE = 0x0024		| sprites above all playfields
+BASE_BPLCON2_VALUE = 0x0020		| sprites above tiles playfield, below bobs playfield
 BASE_BPLCON0_VALUE = 0x6600+BORDERBLANK  | 6 bitplanes, dual playfield, borderblank
 
 SPRITE_X_CORRECTION = 8
