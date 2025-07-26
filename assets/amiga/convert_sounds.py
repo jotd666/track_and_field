@@ -8,7 +8,7 @@ sox = "sox"
 
 sound_dir = this_dir / ".." / "sounds"
 
-def convert():
+def convert(out_dir,hq_sample_rate,lq_sample_rate,vlq_sample_rate):
     if not shutil.which("sox"):
         raise Exception("sox command not in path, please install it")
     # BTW convert wav to mp3: ffmpeg -i input.wav -codec:a libmp3lame -b:a 330k output.mp3
@@ -17,13 +17,13 @@ def convert():
 
 
 
-    outfile = os.path.join(src_dir,"sounds.68k")
-    sndfile = os.path.join(src_dir,"sound_entries.68k")
+    outfile = os.path.join(out_dir,"sounds.68k")
+    sndfile = os.path.join(out_dir,"sound_entries.68k")
 
 
-    hq_sample_rate = 18004  #{"aga":18004,"ecs":12000,"ocs":11025}[mode]
-    lq_sample_rate = hq_sample_rate//2 # if aga_mode else 8000
-    vlq_sample_rate = 5000
+      #{"aga":18004,"ecs":12000,"ocs":11025}[mode]
+     # if aga_mode else 8000
+
 
     loop_channel = 2
     on_air_channel = 1
@@ -305,6 +305,9 @@ def convert():
             fst.write(" | {}\n".format(i))
 
 
-convert()
+hq=18004
+convert(aga_src_dir,hq,hq//2,5000)
+hq=11025
+convert(ocs_src_dir,hq,8192,4000)
 
 

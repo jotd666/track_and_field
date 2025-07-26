@@ -326,7 +326,7 @@ red = (255,0,0)
 cyan = (0,255,251)
 blue = (0,0,251)
 gray = (184,184,171)
-
+white = (255,255,251)
 for unchanged in ((255,255,0),    # yellow
 gray,  # grey
 cyan,    # cyan
