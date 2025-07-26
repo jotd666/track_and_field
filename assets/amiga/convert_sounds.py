@@ -308,7 +308,7 @@ def convert(out_dir,hq_sample_rate,lq_sample_rate,speech_sample_rate):
 hq=18004
 convert(aga_src_dir,hq,hq//2,hq//2)
 hq=11025
-convert(ocs_src_dir,hq,8192,hq//2)
+convert(ocs_src_dir,hq,8192,4000)
 
 
 
