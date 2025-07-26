@@ -20,7 +20,7 @@ if os.path.exists(outdir):
         os.remove(x)
 else:
     os.mkdir(outdir)
-for file in ["readme.md",f"{gamename}.slave",f"{gamename}_ocs.slave"]:  #f"{gamename}.slave",
+for file in ["readme.md",f"{gamename}_aga.slave",f"{gamename}_ocs.slave"]:  #f"{gamename}.slave",
     shutil.copy(os.path.join(progdir,file),outdir)
 
 shutil.copy(os.path.join(progdir,"assets","amiga","Track'N'Field.info"),outdir)
@@ -28,9 +28,9 @@ shutil.copy(os.path.join(progdir,"assets","amiga","Track'N'Field.info"),outdir)
 
 
 exename = gamename
-shutil.copy(os.path.join(progdir,exename),outdir)
+shutil.copy(os.path.join(progdir,exename+"_aga"),outdir)
 shutil.copy(os.path.join(progdir,exename+"_ocs"),outdir)
-subprocess.check_output(["cranker_windows.exe","-f",os.path.join(progdir,exename),"-o",os.path.join(progdir,f"{exename}.rnc")])
+subprocess.check_output(["cranker_windows.exe","-f",os.path.join(progdir,exename+"_aga"),"-o",os.path.join(progdir,f"{exename}_aga.rnc")])
 subprocess.check_output(["cranker_windows.exe","-f",os.path.join(progdir,exename+"_ocs"),"-o",os.path.join(progdir,f"{exename}_ocs.rnc")])
 
 subprocess.check_call(cmd_prefix+["clean"],cwd=os.path.join(progdir,"src"))

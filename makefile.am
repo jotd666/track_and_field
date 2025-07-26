@@ -1,6 +1,7 @@
 PROGNAME = track_and_field
-MAIN_AGA = ..\$(PROGNAME)
+MAIN_AGA = ..\$(PROGNAME)_aga
 MAIN_OCS = ..\$(PROGNAME)_ocs
+AMIGA_SHELL = ..\$(PROGNAME)
 
 
 ifdef RELEASE_BUILD
@@ -39,8 +40,12 @@ OCS_OBJS = amiga_ocs.o sounds_ocs.o $(PROGNAME)_000.o graphics_ocs.o $(OBJS)
 AGA_OBJS = amiga_aga.o sounds_aga.o $(PROGNAME)_020.o graphics_aga.o $(OBJS)
 
 
-all: $(MAIN_OCS) $(MAIN_AGA) $(WHDLOADER_OCS) $(WHDLOADER_OCS_CHIP) $(WHDLOADER) $(WHDLOADER_CHIP) $(AGASRC)/graphics.68k $(AGASRC)/sounds.68k $(OCSSRC)/sounds.68k
+all: $(MAIN_OCS) $(MAIN_AGA) $(AMIGA_SHELL) $(WHDLOADER_OCS) $(WHDLOADER_OCS_CHIP) $(WHDLOADER) $(WHDLOADER_CHIP) $(AGASRC)/graphics.68k $(AGASRC)/sounds.68k $(OCSSRC)/sounds.68k
  
+ 
+$(AMIGA_SHELL): shell.o
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(AMIGA_SHELL) shell.o
+
 
 
 clean:
@@ -50,6 +55,10 @@ $(AGASRC)/graphics.68k: $(ASSETS)/convert_graphics_aga.py
 	cmd /c $(ASSETS)\convert_graphics_aga.py
 $(OCSSRC)/graphics.68k: $(ASSETS)/convert_graphics_ocs.py
 	cmd /c $(ASSETS)\convert_graphics_ocs.py
+
+
+shell.o: $(AMIGASRC)/shell.68k
+	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/shell.68k -o shell.o
 
 $(AMIGASRC)/sounds.68k: $(ASSETS)/convert_sounds.py 
 	cmd /c $(ASSETS)\convert_sounds.py

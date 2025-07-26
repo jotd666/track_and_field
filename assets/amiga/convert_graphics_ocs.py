@@ -327,18 +327,21 @@ cyan = (0,255,251)
 blue = (0,0,251)
 gray = (184,184,171)
 white = (255,255,251)
-for unchanged in ((255,255,0),    # yellow
+yellow = (255,255,0)
+# fixed colors first
+for unchanged in (yellow,    # yellow
 gray,  # grey
 cyan,    # cyan
 blue,      # blue
 red,      # red
-(33,222,0),     # green
-pink,  # pink
+green,     # green
+pink,
 (0,0,0)         # black
 ):
     tile_quant[unchanged] = unchanged
 
-for org,new in (((255,0,251),(255,184,171)),   # purple
+# then the ones we can merge or switch dynamically
+for org,new in (((255,0,251),pink),   # purple
 ((0,184,171),green),    # green
 ((0,184,80),green),    # green
 ((151,151,171),gray),  # gray
