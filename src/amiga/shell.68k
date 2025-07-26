@@ -8,10 +8,10 @@
 *For Agnus, check ($dff004.b & $7f): $0x/$1x is Agnus pal/ntsc, $20/$30 and $21/$31 is ECS Fat Agnus pal/ntsc, $22/$32 and $23/$33 is AGA (Alice) pal/ntsc.
 *For Denise, check $dff07d.b: ECS is $fc, AGA (Lisa) is $f8. OCS returns a random value (whatever was previously on the data bus). 
 
-.include "lvo/exec_lvos.i"
-.include "lvo/dos_lvos.i"
-.include "lvo/graphics_lvos.i"
-.include "whdload_funcs.i"
+	.include "lvo/exec_lvos.i"
+	.include "lvo/dos_lvos.i"
+	.include "lvo/graphics_lvos.i"
+	.include "whdload_funcs.i"
 
 .macro 	blitz_bypass
 	move.w	d0,-(a7)
@@ -71,6 +71,7 @@ run_it:
 	move.l	d1,a1
 	move.l	a5,a0
 	move.l	d5,d0	| restore arguments, pass them as-is
+	
 	jsr		(4,a1)
 out:
 	move.l	segments,d1

@@ -3324,6 +3324,12 @@ flip_flop:
 	.byte	0
 tile_flip_flop:
 	.byte	0
+frameskip:
+	.byte	0
+second_joystick:
+	.byte	0
+fire1fire2up_controls:
+	.byte	0
 
 	.align	2
 
@@ -3338,12 +3344,8 @@ interrupt_mode:
 	
 pause_flag:
 	.word	0
-frameskip:
-	.byte	0
-second_joystick:
-	.byte	0
-fire1fire2up_controls:
-	.byte	0
+
+
 tiles_row_flags:
 	.skip	0x20
 tiles_refresh_table:

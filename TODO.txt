@@ -1,4 +1,4 @@
-
+- OCS version crashing from floppy
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!
