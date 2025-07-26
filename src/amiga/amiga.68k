@@ -321,16 +321,6 @@ _user:
 0:	
 	lea		program_args,a0
 
-	move.l	(A0)+,D0	| INVINCIBLE/S
-	beq.b	1f
-	or.l	#1,cheat_flags
-	st.b	cheat_used
-1:
-	move.l	(A0)+,D0	| INFLIVES/S
-	beq.b	2f
-	or.l	#2,cheat_flags
-	st.b	cheat_used
-2:
 
 	move.l	(A0)+,D0	| CHEATKEYS/S
 	beq.b	2f
@@ -338,18 +328,6 @@ _user:
 	or.l	#0x10,cheat_flags
 2:
 
-	move.l	(A0)+,D0	| STARTLIVES/K/N
-	beq.b	2f
-	bsr		bcpl_string_to_int
-	subq	#3,d0
-	jmi		2f
-	move.l	d0,start_lives
-2:
-	move.l	(A0)+,D0	| SKILL/K/N
-	beq.b	2f
-	bsr		bcpl_string_to_int
-	move.l	d0,difficulty_level
-2:
 	move.l	(A0)+,D0	| STARTLEVEL/K/N
 	beq.b	2f
 	bsr		bcpl_string_to_int
@@ -490,6 +468,10 @@ _user:
 	btst	#1,d1
 	* not a joystick but joypad: forced
 	sne		second_joystick
+0:
+	btst	#2,d1
+	* not a joystick but joypad: forced
+	sne		fire1fire2up_controls
 0:
 	.ifndef	RELEASE
 	btst	#31,d1
@@ -923,17 +905,49 @@ _nmi:
 	move.w	#0x7FFF,_custom+intreq
 	rts
 	
+read_controller:
+
+	jbsr	_read_joystick
+	tst.b	fire1fire2up_controls
+	jeq		1f
+	move.l	d1,-(a7)
+	moveq	#0,d1
+	btst	#JPB_BTN_BLU,d0
+	jeq		0f
+	bset	#JPB_BTN_LEFT,d1
+0:	
+	btst	#JPB_BTN_RED,d0
+	jeq		0f
+	bset	#JPB_BTN_RIGHT,d1
+0:	
+	btst	#JPB_BTN_UP,d0
+	jeq		0f
+	bset	#JPB_BTN_RED,d1
+0:
+	btst	#JPB_BTN_LEFT,d0
+	jeq		0f
+	bset	#JPB_BTN_DOWN,d1		| to start 2P game
+0:
+	btst	#JPB_BTN_RIGHT,d0
+	jeq		0f
+	bset	#JPB_BTN_UP,d1		| to start 2P game
+0:
+	move.l	d1,d0
+	move.l (a7)+,d1
+1:
+	rts
+	
 read_joypads:
 	move.l	d0,-(a7)
 	moveq	#1,d0
-	jsr	_read_joystick
+	jbsr	read_controller
 	move.l	d0,_joypad_1_state
 
 	tst.b	second_joystick
 	jeq		0f
 	
 	moveq	#0,d0
-	jsr	_read_joystick
+	jbsr	read_controller
 	move.l	d0,_joypad_2_state
 0:
 	move.l 	(a7)+,d0
@@ -3232,8 +3246,7 @@ program_args_end:
 	.align	4
 read_args_string:
 	.byte	read_args_string_end-read_args_string
-	.ascii	"INVINCIBLE/S,INFLIVES/S,"
-	.ascii	"CHEATKEYS/S,STARTLIVES/K/N,SKILL/K/N,STARTLEVEL/K/N"
+	.ascii	"CHEATKEYS/S,STARTLEVEL/K/N"
 read_args_string_end:
 	.align	2
 
@@ -3328,6 +3341,8 @@ pause_flag:
 frameskip:
 	.byte	0
 second_joystick:
+	.byte	0
+fire1fire2up_controls:
 	.byte	0
 tiles_row_flags:
 	.skip	0x20

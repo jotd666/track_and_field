@@ -1,6 +1,3 @@
-- create several control settings like "up" to jump/throw and fire/blue for left/right
-- create a OCS sound bank 
-- create ocs/aga shell
 
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)

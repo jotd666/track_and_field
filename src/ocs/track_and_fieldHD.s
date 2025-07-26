@@ -44,6 +44,7 @@ _config
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:25 Hz update:0;"
 	dc.b	"C2:X:force joystick in port 0:1;"
+	dc.b	"C2:X:fire1/fire2/up controls:2;"
 	IFD		CHIP_ONLY
 	dc.b	"C2:X:break at startup:31;"
 	ENDC

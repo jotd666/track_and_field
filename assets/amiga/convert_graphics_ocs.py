@@ -359,6 +359,9 @@ for tile_set in tile_set_list:
 tile_palette = sorted(set(tile_quant.values()))
 tile_palette += (8-len(tile_palette)) * [(0x10,0x20,0x30)]
 
+if len(tile_palette)>8:
+    raise Exception(f"Tiles: Too many colors ({len(tile_palette)})")
+
 sprite_palette = set()
 sprite_set_list = [[] for _ in range(16)]
 hw_sprite_set_list = [[] for _ in range(16)]

@@ -1,12 +1,13 @@
 .key nope
-set game track_and_field
-copy $game DF0:$game
-protect DF0:$game RWED
 set game track_and_field_aga
 copy $game.RNC DF0:$game
 protect DF0:$game RWED
 set game track_and_field_ocs
 copy $game.RNC DF0:$game
+protect DF0:$game RWED
+
+set game track_and_field
+copy $game DF0:$game
 protect DF0:$game RWED
 
 copy readme.md df0:
