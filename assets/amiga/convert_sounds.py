@@ -8,14 +8,14 @@ sox = "sox"
 
 sound_dir = this_dir / ".." / "sounds"
 
-def convert(out_dir,hq_sample_rate,lq_sample_rate,vlq_sample_rate):
+def convert(out_dir,hq_sample_rate,lq_sample_rate,speech_sample_rate):
     if not shutil.which("sox"):
         raise Exception("sox command not in path, please install it")
     # BTW convert wav to mp3: ffmpeg -i input.wav -codec:a libmp3lame -b:a 330k output.mp3
 
     #wav_files = glob.glob("sounds/*.wav")
 
-
+    vlq_sample_rate = 5000
 
     outfile = os.path.join(out_dir,"sounds.68k")
     sndfile = os.path.join(out_dir,"sound_entries.68k")
@@ -121,7 +121,7 @@ def convert(out_dir,hq_sample_rate,lq_sample_rate,vlq_sample_rate):
 
 
     # low quality is probably enough, speech sound is crap
-    sound_dict.update({k+"_SND":{"index":v,"channel":speech_channel,"sample_rate":lq_sample_rate,"priority":40} for k,v in speech.items()})
+    sound_dict.update({k+"_SND":{"index":v,"channel":speech_channel,"sample_rate":speech_sample_rate,"priority":40} for k,v in speech.items()})
 
     sound_dict["SIX_2_SND"] = {"index":0xA0,"same_as":"SIX_SND"}
 
@@ -306,8 +306,9 @@ def convert(out_dir,hq_sample_rate,lq_sample_rate,vlq_sample_rate):
 
 
 hq=18004
-convert(aga_src_dir,hq,hq//2,5000)
+convert(aga_src_dir,hq,hq//2,hq//2)
 hq=11025
 convert(ocs_src_dir,hq,8192,4000)
+
 
 

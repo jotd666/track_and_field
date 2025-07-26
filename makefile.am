@@ -21,6 +21,7 @@ ASSETS = ..\assets\amiga
 AMIGASRC = amiga
 AGASRC = aga
 OCSSRC = ocs
+ECSSRC = ecs
 
 AGA_WHD_SOURCE = $(AGASRC)/$(PROGNAME)HD.s
 OCS_WHD_SOURCE = $(OCSSRC)/$(PROGNAME)HD.s
@@ -37,6 +38,7 @@ WHDASM = vasmm68k_mot -DDATETIME -I$(HDBASE)/amiga39_JFF_OS/include -I$(WHDBASE)
 # leave MAIN_OBJ first
 OBJS = amiga_shared.o ram.o rom.o vbr.o ReadJoyPad.o ptplayer.o 
 OCS_OBJS = amiga_ocs.o sounds_ocs.o $(PROGNAME)_000.o graphics_ocs.o $(OBJS)
+#ECS_OBJS = amiga_ocs.o sounds_ecs.o $(PROGNAME)_000.o graphics_ocs.o $(OBJS)
 AGA_OBJS = amiga_aga.o sounds_aga.o $(PROGNAME)_020.o graphics_aga.o $(OBJS)
 
 
@@ -49,7 +51,7 @@ $(AMIGA_SHELL): shell.o
 
 
 clean:
-	del $(OCS_OBJS) $(AGA_OBJS) $(MAIN_OCS) $(MAIN_AGA)
+	del $(OCS_OBJS) $(AGA_OBJS) $(MAIN_OCS) $(MAIN_AGA) $(MAIN_ECS)
 	
 $(AGASRC)/graphics.68k: $(ASSETS)/convert_graphics_aga.py
 	cmd /c $(ASSETS)\convert_graphics_aga.py
@@ -66,6 +68,9 @@ $(AMIGASRC)/sounds.68k: $(ASSETS)/convert_sounds.py
 	
 $(MAIN_OCS): $(OCS_OBJS)
 	$(GCC_BIN)/m68k-amigaos-ld -o $(MAIN_OCS) $(OCS_OBJS)
+
+$(MAIN_ECS): $(ECS_OBJS)
+	$(GCC_BIN)/m68k-amigaos-ld -o $(MAIN_ECS) $(ECS_OBJS)
 
 $(MAIN_AGA): $(AGA_OBJS)
 	$(GCC_BIN)/m68k-amigaos-ld -o $(MAIN_AGA) $(AGA_OBJS)
@@ -90,6 +95,8 @@ ptplayer.o: $(AMIGASRC)/ptplayer.68k
 	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/ptplayer.68k -o ptplayer.o
 sounds_ocs.o: $(OCSSRC)/sounds.68k
 	$(ASM_000) -I$(OCSSRC) $(OCSSRC)/sounds.68k -o sounds_ocs.o
+sounds_ecs.o: $(ECSSRC)/sounds.68k
+	$(ASM_000) -I$(ECSSRC) $(ECSSRC)/sounds.68k -o sounds_ecs.o
 sounds_aga.o: $(AGASRC)/sounds.68k
 	$(ASM_000) -I$(AGASRC) $(AGASRC)/sounds.68k -o sounds_aga.o
 ReadJoyPad.o: $(AMIGASRC)/ReadJoyPad.68k amiga/ReadJoyPad.i
