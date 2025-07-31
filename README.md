@@ -47,6 +47,21 @@ cheat keys:
 - F1: clear fouls/faults
 - F2: set best super-speed for current event
 
+
+I'm certainly no expert but here are simple tactics:
+
+- 100 Meter Dash: just press run buttons as fast as possible.
+- Long Jump: press run buttons as fast as possible, and when reaching
+  the jump line, press until the angle is at least 40 degrees. Not sure if
+  45 degrees is the best angle.
+- Javelin: same as long jump. Optimal angle may be different
+- 110 Meter Hurdles: for me the hardest event. Press run buttons and jump when
+  a hurdle is arriving, while still pressing run buttons.
+- Hammer throw: choose the moment when the hammer is changing color to "red" to push
+  "action" button & maintain it. 45 degrees is a good angle.
+- Long jump: near the poles, press jump briefly, then press run buttons to gain height
+  and after a while press (and maintain) jump again to adjust player position.
+  
 Secret point bonuses:
 Every event (besides the fifth) has a secret way of earning an extra 1000 points:
 1st Event - 100 Meter Dash: Finish at the same time (tie) as the CPU or other player and you will be given 1000 points by a leprechaun

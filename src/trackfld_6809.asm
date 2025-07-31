@@ -6425,7 +6425,7 @@ partially_reset_scrolling_8c3e:
 92B7: 26 0A          BNE    $92C3
 92B9: CC F8 F8       LDD    #$F8F8
 92BC: ED 01          STD    $1,X
-92BE: BD D1 2F       JSR    $D12F
+92BE: BD D1 2F       JSR    update_sprites_d12f
 92C1: 20 45          BRA    $9308
 92C3: 96 3F          LDA    $3F
 92C5: 84 3F          ANDA   #$3F
@@ -6448,7 +6448,7 @@ partially_reset_scrolling_8c3e:
 92EC: A6 84          LDA    ,X
 92EE: 4A             DECA
 92EF: 31 A6          LEAY   A,Y
-92F1: BD D1 2F       JSR    $D12F
+92F1: BD D1 2F       JSR    update_sprites_d12f
 92F4: 6A 02          DEC    $2,X
 92F6: A6 02          LDA    $2,X
 92F8: 91 A2          CMPA   $A2
@@ -8929,7 +8929,7 @@ CD12: A7 05          STA    $5,X
 CD14: 10 AF 0E       STY    $E,X
 CD17: 10 AE 0E       LDY    $E,X
 CD1A: CE 18 18       LDU    #$1818
-CD1D: 7E D1 2F       JMP    $D12F
+CD1D: 7E D1 2F       JMP    update_sprites_d12f
 CD20: 10 8E DD 67    LDY    #$DD67
 CD24: DC 9A          LDD    $9A
 CD26: CE 18 2C       LDU    #$182C
@@ -8995,22 +8995,22 @@ CDBB: CE 18 00       LDU    #sprite_ram_1800
 CDBE: A6 02          LDA    $2,X
 CDC0: 81 EA          CMPA   #$EA
 CDC2: 24 61          BCC    $CE25
-CDC4: BD D1 2F       JSR    $D12F
+CDC4: BD D1 2F       JSR    update_sprites_d12f
 CDC7: 10 8E DD 93    LDY    #$DD93
 CDCB: CE 18 02       LDU    #$1802
 CDCE: 8E 2B 10       LDX    #$2B10
-CDD1: BD D1 2F       JSR    $D12F
+CDD1: BD D1 2F       JSR    update_sprites_d12f
 CDD4: 10 8E DD 93    LDY    #$DD93
 CDD8: CE 18 04       LDU    #$1804
 CDDB: 8E 2B 00       LDX    #$2B00
-CDDE: BD D1 2F       JSR    $D12F
+CDDE: BD D1 2F       JSR    update_sprites_d12f
 CDE1: 10 8E DD 93    LDY    #$DD93
 CDE5: CE 18 2A       LDU    #$182A
 CDE8: 8E 2B 00       LDX    #$2B00
 CDEB: 86 06          LDA    #$06
 CDED: AB 02          ADDA   $2,X
 CDEF: A7 02          STA    $2,X
-CDF1: BD D1 2F       JSR    $D12F
+CDF1: BD D1 2F       JSR    update_sprites_d12f
 CDF4: 86 FA          LDA    #$FA
 CDF6: AB 02          ADDA   $2,X
 CDF8: A7 02          STA    $2,X
@@ -9020,7 +9020,7 @@ CE01: 8E 2B 10       LDX    #$2B10
 CE04: 86 06          LDA    #$06
 CE06: AB 02          ADDA   $2,X
 CE08: A7 02          STA    $2,X
-CE0A: BD D1 2F       JSR    $D12F
+CE0A: BD D1 2F       JSR    update_sprites_d12f
 CE0D: 86 FA          LDA    #$FA
 CE0F: AB 02          ADDA   $2,X
 CE11: A7 02          STA    $2,X
@@ -9029,7 +9029,7 @@ CE16: 27 0D          BEQ    $CE25
 CE18: 10 8E DD 94    LDY    #$DD94
 CE1C: CE 18 28       LDU    #$1828
 CE1F: 8E 2B 20       LDX    #$2B20
-CE22: BD D1 2F       JSR    $D12F
+CE22: BD D1 2F       JSR    update_sprites_d12f
 CE25: 39             RTS
 
 CE26: A6 84          LDA    ,X
@@ -9394,8 +9394,7 @@ D125: A7 41          STA    $1,U
 D127: E7 C9 04 00    STB    $0400,U
 D12B: 39             RTS
 
-D12C: 10 AE 0E       LDY    $E,X
-
+update_sprites_d12f:
 D12F: 96 21          LDA    copy_of_screen_flipped_21
 D131: 26 DA          BNE    $D10D
 D133: 16 FF A2       LBRA   update_sprite_buffer_d0d8
@@ -11252,6 +11251,7 @@ E320: ED 84          STD    ,X
 E322: 96 9F          LDA    high_jump_fault_9f
 E324: 81 02          CMPA   #$02
 E326: 10 26 00 78    LBNE   $E3A2
+; 2 faults
 E32A: 10 8E ED EA    LDY    #high_jump_attempted_heights_edea
 E32E: 8E 29 68       LDX    #player_current_attempt_2968
 E331: 96 DF          LDA    $DF
@@ -11279,8 +11279,8 @@ E361: 8E 29 D0       LDX    #$29D0
 E364: 10 8E DE D3    LDY    #$DED3
 E368: 31 A6          LEAY   A,Y
 E36A: CC 36 30       LDD    #$3630
-E36D: FD 29 D1       STD    $29D1
-E370: BD D1 2F       JSR    $D12F
+E36D: FD 29 D1       STD    $29D1		; address of high jump poles
+E370: BD D1 2F       JSR    update_sprites_d12f
 E373: 7F 2A 8E       CLR    failed_rom_check_2a8e
 * rom check!
 E376: B6 C4 18       LDA    $C418                     ; [rom_check_code]
@@ -11296,7 +11296,7 @@ E389: B7 29 D1       STA    $29D1
 E38C: 8E 29 D0       LDX    #$29D0
 E38F: CE 18 06       LDU    #$1806
 E392: 10 8E DE DB    LDY    #$DEDB
-E396: BD D1 2F       JSR    $D12F
+E396: BD D1 2F       JSR    update_sprites_d12f
 E399: BD D5 40       JSR    $D540
 E39C: 7F 29 D3       CLR    $29D3
 E39F: 7F 29 D4       CLR    failed_rom_check_29d4
@@ -11609,7 +11609,7 @@ E635: B7 2B 21       STA    $2B21
 E638: 10 8E DD 94    LDY    #$DD94
 E63C: CE 18 28       LDU    #$1828
 E63F: 8E 2B 20       LDX    #$2B20
-E642: BD D1 2F       JSR    $D12F
+E642: BD D1 2F       JSR    update_sprites_d12f
 E645: 8E 28 A0       LDX    #$28A0
 E648: 39             RTS
 
@@ -11906,7 +11906,7 @@ E8E9: FD 2B 31       STD    $2B31
 E8EC: 8E 2B 30       LDX    #$2B30
 E8EF: CE 18 00       LDU    #sprite_ram_1800
 E8F2: 10 8E DE D7    LDY    #$DED7
-E8F6: BD D1 2F       JSR    $D12F
+E8F6: BD D1 2F       JSR    update_sprites_d12f
 E8F9: 86 04          LDA    #$04
 E8FB: A4 C4          ANDA   ,U
 E8FD: A7 C4          STA    ,U
@@ -11921,7 +11921,7 @@ E90E: 25 14          BCS    $E924
 E910: B7 2B 31       STA    $2B31
 E913: 33 42          LEAU   $2,U
 E915: 31 21          LEAY   $1,Y
-E917: BD D1 2F       JSR    $D12F
+E917: BD D1 2F       JSR    update_sprites_d12f
 E91A: 96 49          LDA    $49
 E91C: A7 C4          STA    ,U
 E91E: 0C 49          INC    $49
@@ -11934,7 +11934,7 @@ E92B: 39             RTS
 
 E92C: CE 18 04       LDU    #$1804
 E92F: 10 8E DE DB    LDY    #$DEDB
-E933: BD D1 2F       JSR    $D12F
+E933: BD D1 2F       JSR    update_sprites_d12f
 E936: BD D5 40       JSR    $D540
 E939: 0D C9          TST    jump_foul_C9
 E93B: 26 05          BNE    $E942
@@ -12048,7 +12048,7 @@ EA05: 33 42          LEAU   $2,U	; next sprite block
 EA07: 0C 4F          INC    $4F
 EA09: 34 20          PSHS   Y
 EA0B: 10 8E 28 4E    LDY    #$284E
-EA0F: BD D1 2F       JSR    $D12F
+EA0F: BD D1 2F       JSR    update_sprites_d12f
 EA12: 96 4F          LDA    $4F
 EA14: A7 C4          STA    ,U
 EA16: 35 20          PULS   Y
@@ -12066,7 +12066,7 @@ EA2D: 8E 2B 30       LDX    #$2B30
 EA30: 10 8E 28 4E    LDY    #$284E
 EA34: CC E0 44       LDD    #$E044
 EA37: DD 4E          STD    $4E
-EA39: BD D1 2F       JSR    $D12F
+EA39: BD D1 2F       JSR    update_sprites_d12f
 EA3C: 96 21          LDA    copy_of_screen_flipped_21
 EA3E: 43             COMA
 EA3F: 1C 00          ANDCC  #$00
@@ -12084,7 +12084,7 @@ EA52: 2B 11          BMI    $EA65
 EA54: A7 02          STA    $2,X
 EA56: 33 42          LEAU   $2,U
 EA58: 6C 21          INC    $1,Y
-EA5A: BD D1 2F       JSR    $D12F
+EA5A: BD D1 2F       JSR    update_sprites_d12f
 EA5D: 96 4F          LDA    $4F
 EA5F: A7 C4          STA    ,U
 EA61: 0A 48          DEC    nb_objects_48
@@ -13533,7 +13533,7 @@ F892: 97 A2          STA    $A2
 F894: 8E 28 A0       LDX    #$28A0
 F897: 10 8E DD 6E    LDY    #$DD6E
 F89B: CE 18 00       LDU    #sprite_ram_1800
-F89E: BD D1 2F       JSR    $D12F
+F89E: BD D1 2F       JSR    update_sprites_d12f
 F8A1: 86 40          LDA    #$40
 F8A3: 0D 21          TST    copy_of_screen_flipped_21
 F8A5: 27 02          BEQ    $F8A9
