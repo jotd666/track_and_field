@@ -5256,6 +5256,7 @@ check_player_qualified_877a:
 ; < Y: time/length to compare to
 ; > B: 1 if time in X is < time in Y
 ; > B: 1 if length in X is > length in Y
+; > $62: 1 if performance is OK
 compare_performances_8968:
 8968: 0F 62          CLR    $62
 896A: 5F             CLRB
@@ -11252,6 +11253,7 @@ E322: 96 9F          LDA    high_jump_fault_9f
 E324: 81 02          CMPA   #$02
 E326: 10 26 00 78    LBNE   $E3A2
 ; 2 faults
+; btw records for high jump are located from 2CA0
 E32A: 10 8E ED EA    LDY    #high_jump_attempted_heights_edea
 E32E: 8E 29 68       LDX    #player_current_attempt_2968
 E331: 96 DF          LDA    $DF

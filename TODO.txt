@@ -4,7 +4,7 @@
 - mole bonus triggered on high jump, mole appears but missing the "nice" & 1000 points sprite
   also there's a crash report on the mole. 68000? the fact that some sprites don't
   show isn't a good sign
-  debug more around E32A
+  debug more around E32A. Even with MAME it's difficult to trigger the mole...
 
 log sounds: bpset 66F4,,{print A;g}
 sim sound on credit: bpset 66F4,,{A=$12;g}

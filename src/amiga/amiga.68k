@@ -2951,18 +2951,24 @@ osd_read_system_inputs:
 	tst.b	(6,a0)		| "6" key like in MAME
 	beq.b	0f
 	bclr	#BIT_INSERT_COIN_2,d0
+	
 0:
 	tst.b	(5,a0)		| "5" key like in MAME
 	beq.b	0f
 	bclr	#BIT_INSERT_COIN_1,d0
+
 0:
 	tst.b	(1,a0)		| "1" key like in MAME
 	beq.b	0f
 	bclr	#BIT_START_1P,d0
+	* rescan controller types in case the user swapped mouse after bootup
+	jsr	 _detect_controller_types 
 0:
 	tst.b	(2,a0)		| "2" key like in MAME
 	beq.b	0f
 	bclr	#BIT_START_2P,d0
+	* rescan controller types
+	jsr	 _detect_controller_types 
 0:	
 
 	jbsr		is_game_playing
