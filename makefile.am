@@ -3,9 +3,12 @@ MAIN_AGA = ..\$(PROGNAME)_aga
 MAIN_OCS = ..\$(PROGNAME)_ocs
 AMIGA_SHELL = ..\$(PROGNAME)
 
-
 ifdef RELEASE_BUILD
 OPT_RELEASE = --defsym RELEASE=1
+OPT_RELEASE_LINK = -s
+else
+OPT_RELEASE = 
+OPT_RELEASE_LINK = 
 endif
 
 # Bebbo's package usually installs itself there
@@ -67,13 +70,13 @@ $(AMIGASRC)/sounds.68k: $(ASSETS)/convert_sounds.py
 	del sound_entries_ocs.o sounds_ocs.o sound_entries_aga.o sounds_aga.o
 	
 $(MAIN_OCS): $(OCS_OBJS)
-	$(GCC_BIN)/m68k-amigaos-ld -o $(MAIN_OCS) $(OCS_OBJS)
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_OCS) $(OCS_OBJS)
 
 $(MAIN_ECS): $(ECS_OBJS)
-	$(GCC_BIN)/m68k-amigaos-ld -o $(MAIN_ECS) $(ECS_OBJS)
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_ECS) $(ECS_OBJS)
 
 $(MAIN_AGA): $(AGA_OBJS)
-	$(GCC_BIN)/m68k-amigaos-ld -o $(MAIN_AGA) $(AGA_OBJS)
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_AGA) $(AGA_OBJS)
 
 ram.o: ram.68k $(PROGNAME).inc
 	$(ASM_000) ram.68k -o ram.o
