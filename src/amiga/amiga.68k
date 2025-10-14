@@ -1858,6 +1858,7 @@ process_1_plane:
 	.ifeq	OPT_IGNORE_ZERO_BITPLANE
 	WAIT_BLIT
 	* source is 0: just apply mask (less bandwidth lost) and change bltcon
+	move.l  a3,bltapt(a5)	|source graphic top left corner (mask)
 	move.l	d6,bltcon0(a5)	| sets con0 and con1: C-A->D cookie cut, B fixed
  	move.w	d2,bltbdat(a5)	|B word is zero
 	move.l	a1,bltcpt(a5)	|pristine background top (bottom) left corner
