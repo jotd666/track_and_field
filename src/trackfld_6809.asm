@@ -147,7 +147,7 @@ current_attempted_height_centimetres_286c = $286c
 failed_rom_check_2a8e = $2a8e
 scroll_offsets_2af0 = $2af0
 event_buffer_2900 = $2900
-failed_rom_check_29d4 = $29d4
+mole_state_29d4 = $29d4
 display_state_2b40 = $2b40
 video_ram_3000 = $3000
 color_ram_3800 = $3800
@@ -11264,7 +11264,7 @@ E338: BD 89 68       JSR    compare_performances_8968
 E33B: 0D 62          TST    $62
 E33D: 27 06          BEQ    $E345
 E33F: 7C 29 D3       INC    $29D3
-E342: 7F 29 D4       CLR    failed_rom_check_29d4
+E342: 7F 29 D4       CLR    mole_state_29d4
 E345: BD 87 7A       JSR    check_player_qualified_877a
 E348: 0D CD          TST    player_is_qualified_cd
 E34A: 27 56          BEQ    $E3A2
@@ -11273,9 +11273,9 @@ E34F: 27 51          BEQ    $E3A2
 E351: 96 3F          LDA    $3F
 E353: 84 07          ANDA   #$07
 E355: 26 2C          BNE    $E383
-E357: B6 29 D4       LDA    failed_rom_check_29d4	; [rom_check_code]
-E35A: 81 04          CMPA   #$04                    ; [rom_check_code]
-E35C: 27 26          BEQ    $E384                   ; [rom_check_code]
+E357: B6 29 D4       LDA    mole_state_29d4
+E35A: 81 04          CMPA   #$04
+E35C: 27 26          BEQ    mole_appeared_fully_e384
 E35E: CE 18 2E       LDU    #$182E
 E361: 8E 29 D0       LDX    #$29D0
 E364: 10 8E DE D3    LDY    #$DED3
@@ -11289,9 +11289,10 @@ E376: B6 C4 18       LDA    $C418                     ; [rom_check_code]
 E379: 81 B1          CMPA   #$B1                      ; [rom_check_code]
 E37B: 27 03          BEQ    $E380                     ; [rom_check_code]
 E37D: 7C 2A 8E       INC    failed_rom_check_2a8e     ; [rom_check_code]
-E380: 7C 29 D4       INC    failed_rom_check_29d4     ; [rom_check_code]
+E380: 7C 29 D4       INC    mole_state_29d4
 E383: 39             RTS
 
+mole_appeared_fully_e384:
 E384: B6 29 D1       LDA    $29D1
 E387: 8B 10          ADDA   #$10
 E389: B7 29 D1       STA    $29D1
@@ -11301,7 +11302,7 @@ E392: 10 8E DE DB    LDY    #$DEDB
 E396: BD D1 2F       JSR    update_sprites_d12f
 E399: BD D5 40       JSR    $D540
 E39C: 7F 29 D3       CLR    $29D3
-E39F: 7F 29 D4       CLR    failed_rom_check_29d4
+E39F: 7F 29 D4       CLR    mole_state_29d4
 E3A2: 0C 06          INC    $06
 E3A4: 0C 06          INC    $06
 E3A6: 39             RTS

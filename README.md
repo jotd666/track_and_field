@@ -69,3 +69,5 @@ Every event (besides the fifth) has a secret way of earning an extra 1000 points
 3rd Event - Javelin Throw: Speed up and right before you reach the foul line, hold the throw button but do not release it. The javelin miraculously goes incredibly high, leaving the screen. It eventually hits an alien who gives you 1000 points.
 4th Event - 110 Meter Hurdles: Finish at the same time (tie) as the CPU or other player and you will be given 1000 points by the leprechaun again.
 6th Event - High Jump: On your first two attempts hit the bar which results in a foul. On the next attempt the bar properly until you qualify. A mole will reward you with 1000 points.
+
+https://strategywiki.org/wiki/Track_%26_Field

@@ -18,7 +18,7 @@ for i,line in enumerate(lines):
             nb += 1
         prev_line = i
         prev_loaded = value
-    if any(x in toks for x in ["rts","jmp","jra","jbsr"]):
+    if any(x in toks for x in ["rts","jmp","jra","jbsr","GET_REG_ADDRESS"]):
         prev_loaded = None
     if re.match("\w+:",line):
         prev_loaded = None

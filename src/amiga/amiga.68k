@@ -117,7 +117,10 @@ OPT_ENABLE_LOGGING = 0           | DO NOT CHANGE THIS
 OPT_VERY_EASY = 0
 	.else
 OPT_ENABLE_LOGGING = 1
-OPT_VERY_EASY = 1
+* very easy lowers all qualification requirements. for some reason
+* the game still detects that something is wrong as mole isn't properly
+* triggered if height is very low.
+OPT_VERY_EASY = 0
 * set to higher values than 1 to speed game up
 
 

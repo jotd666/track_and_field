@@ -153,7 +153,7 @@ current_attempted_height_centimetres_286c = 0x286c
 failed_rom_check_2a8e = 0x2a8e
 scroll_offsets_2af0 = 0x2af0
 event_buffer_2900 = 0x2900
-failed_rom_check_29d4 = 0x29d4
+mole_state_29d4 = 0x29d4
 display_state_2b40 = 0x2b40
 video_ram_3000 = 0x3000
 color_ram_3800 = 0x3800
@@ -166,6 +166,7 @@ player_current_attempt_2968 = 0x2968
 qualifying_values_aaf3 = 0xaaf3
 high_jump_attempted_heights_edea = 0xedea
 
+* high jump highs: 0X2800+0x4A0
 * the [xxx] tags are there to help the specific game post-processing to automatically
 * change or remove the code. For instance [rom_check_code] lines can be removed without
 * changing the game logic
@@ -1761,11 +1762,11 @@ l_688e:
 	subq.b	#1,d1                           	| [$6893: decb]
 	jne	l_688e                             	| [$6894: bne    $688e]
 	moveq	#0,d0                            	| [$6896: clra]
-	jbsr	l_850e                            	| [$6897: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6897: jsr    $850e]
 	move.b	#0x18,d0                        	| [$689a: lda    #$18]
-	jbsr	l_850e                            	| [$689c: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$689c: jsr    $850e]
 	move.b	#0x40,d0                        	| [$689f: lda    #$40]
-	jbsr	l_850e                            	| [$68a1: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$68a1: jsr    $850e]
 	move.b	#0x02,d0                        	| [$68a4: lda    #$02]
 	OP_W_ON_DP_ADDRESS	move,global_state_00,d0| [$68a6: sta    global_state_00]
 	move.b	#0x01,d0                        	| [$68a8: lda    #$01]
@@ -1873,7 +1874,7 @@ l_694f:
 	OP_W_ON_DP_ADDRESS	move,copy_of_screen_flipped_21,d0| [$6952: sta    copy_of_screen_flipped_21] remember the screen state
 	jbsr	reset_scrolling_8c2f              	| [$6954: jsr    reset_scrolling_8c2f]
 	move.b	#0x2c,d0                        	| [$6957: lda    #$2c]
-	jbsr	l_850e                            	| [$6959: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6959: jsr    $850e]
 	OP_W_ON_DP_ADDRESS	addq,0x09,#1         | [$695c: inc    $09]
 	rts                                    	| [$695e: rts]
 
@@ -2744,13 +2745,13 @@ l_6eba:
 	cmp.b	#0x05,d0                         	| [$6ecd: cmpa   #$05]
 	jeq	l_6edb                             	| [$6ecf: beq    $6edb]
 	move.b	#0xa2,d0                        	| [$6ed1: lda    #$a2]
-	jbsr	l_850e                            	| [$6ed3: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6ed3: jsr    $850e]
 	move.b	#0x84,d0                        	| [$6ed6: lda    #$84]
-	jbsr	l_850e                            	| [$6ed8: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6ed8: jsr    $850e]
 l_6edb:
 	jbsr	l_6f55                            	| [$6edb: jsr    $6f55]
 	move.b	#0xff,d0                        	| [$6ede: lda    #$ff]
-	jbsr	l_850e                            	| [$6ee0: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6ee0: jsr    $850e]
 	jra	l_6ef8                             	| [$6ee3: bra    $6ef8]
 l_6ee5:
 	OP_R_ON_DP_ADDRESS	move,current_level_84,d0| [$6ee5: lda    current_level_84]
@@ -2759,9 +2760,9 @@ l_6ee5:
 	GET_ADDRESS	0x2ab7                     	| [$6eeb: inc    $2ab7]
 	addq.b	#1,(a0)                         	| [...]
 	move.b	#0x82,d0                        	| [$6eee: lda    #$82]
-	jbsr	l_850e                            	| [$6ef0: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6ef0: jsr    $850e]
 	move.b	#0xff,d0                        	| [$6ef3: lda    #$ff]
-	jbsr	l_850e                            	| [$6ef5: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6ef5: jsr    $850e]
 l_6ef8:
 	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$6ef8: inc    $06]
 	rts                                    	| [$6efa: rts]
@@ -2790,9 +2791,9 @@ l_6f17:
 	move.w	d4,d2                           	| [$6f1b: tfr    u,x]
 l_6f1d:
 	move.b	#0xa2,d0                        	| [$6f1d: lda    #$a2]
-	jbsr	l_850e                            	| [$6f1f: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f1f: jsr    $850e]
 	move.b	#0x87,d0                        	| [$6f22: lda    #$87]
-	jbsr	l_850e                            	| [$6f24: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f24: jsr    $850e]
 	jbsr	l_6f55                            	| [$6f27: jsr    $6f55]
 l_6f2a:
 	GET_ADDRESS	0x2ab8                     	| [$6f2a: lda    $2ab8]
@@ -2812,13 +2813,13 @@ l_6f3a:
 	move.w	d4,d2                           	| [$6f3e: tfr    u,x]
 l_6f40:
 	move.b	#0xa2,d0                        	| [$6f40: lda    #$a2]
-	jbsr	l_850e                            	| [$6f42: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f42: jsr    $850e]
 	move.b	#0x87,d0                        	| [$6f45: lda    #$87]
-	jbsr	l_850e                            	| [$6f47: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f47: jsr    $850e]
 	jbsr	l_6f55                            	| [$6f4a: jsr    $6f55]
 l_6f4d:
 	move.b	#0xff,d0                        	| [$6f4d: lda    #$ff]
-	jbsr	l_850e                            	| [$6f4f: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f4f: jsr    $850e]
 	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$6f52: inc    $06]
 	rts                                    	| [$6f54: rts]
 
@@ -2842,17 +2843,17 @@ l_6f55:
 	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$6f6c: lda    a,y]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_850e                            	| [$6f6e: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f6e: jsr    $850e]
 	GET_REG_ADDRESS	0x1,d2                 	| [$6f71: lda    $1,x]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_6f90                             	| [$6f73: beq    $6f90]
 	add.b	#0x90,d0                         	| [$6f75: adda   #$90]
-	jbsr	l_850e                            	| [$6f77: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f77: jsr    $850e]
 	jra	l_6f90                             	| [$6f7a: bra    $6f90]
 l_6f7c:
 	add.b	#0x90,d1                         	| [$6f7c: addb   #$90]
 	move.b	d1,d0                           	| [$6f7e: tfr    b,a]
-	jbsr	l_850e                            	| [$6f80: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f80: jsr    $850e]
 	jra	l_6f90                             	| [$6f83: bra    $6f90]
 l_6f85:
 	move.w	#0xdef1,d3                      	| [$6f85: ldy    #$def1]
@@ -2862,10 +2863,10 @@ l_6f85:
 	DO_EXTB	d6                             	| [...] with sign extension
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$6f8b: lda    b,y]
 	move.b	(a0),d0                         	| [...]
-	jbsr	l_850e                            	| [$6f8d: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f8d: jsr    $850e]
 l_6f90:
 	move.b	#0x85,d0                        	| [$6f90: lda    #$85]
-	jbsr	l_850e                            	| [$6f92: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f92: jsr    $850e]
 	GET_REG_ADDRESS	0x2,d2                 	| [$6f95: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x90,d0                         	| [$6f97: adda   #$90]
@@ -2873,7 +2874,7 @@ l_6f90:
 	jne	l_6f9f                             	| [$6f9b: bne    $6f9f]
 	move.b	#0xa0,d0                        	| [$6f9d: lda    #$a0]
 l_6f9f:
-	jbsr	l_850e                            	| [$6f9f: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6f9f: jsr    $850e]
 	GET_REG_ADDRESS	0x3,d2                 	| [$6fa2: lda    $3,x]
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x90,d0                         	| [$6fa4: adda   #$90]
@@ -2881,14 +2882,14 @@ l_6f9f:
 	jne	l_6fac                             	| [$6fa8: bne    $6fac]
 	move.b	#0xa0,d0                        	| [$6faa: lda    #$a0]
 l_6fac:
-	jbsr	l_850e                            	| [$6fac: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$6fac: jsr    $850e]
 	move.b	#0x86,d0                        	| [$6faf: lda    #$86]
 	OP_R_ON_DP_ADDRESS	move,0xe6,d1         | [$6fb1: ldb    $e6]
 	cmp.b	#0x1d,d1                         	| [$6fb3: cmpb   #$1d]
 	jeq	l_6fb9                             	| [$6fb5: beq    $6fb9]
 	move.b	#0x88,d0                        	| [$6fb7: lda    #$88]
 l_6fb9:
-	jmp	l_850e                             	| [$6fb9: jmp    $850e]
+	jmp	force_queue_sound_event_850e                             	| [$6fb9: jmp    $850e]
 l_6fbc:
 	OP_1_ON_DP_ADDRESS	clr,chrono_hundredth_second_7e| [$6fbc: clr    chrono_hundredth_second_7e]
 	OP_1_ON_DP_ADDRESS	clr,chrono_second_7f | [$6fbe: clr    chrono_second_7f]
@@ -2949,9 +2950,9 @@ l_7014:
 	OP_R_ON_DP_ADDRESS	move,0xe8,d0         | [$7028: lda    $e8]
 	jne	l_7071                             	| [$702a: bne    $7071]
 	moveq	#0,d0                            	| [$702c: clra]
-	jbsr	l_850e                            	| [$702d: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$702d: jsr    $850e]
 	move.b	#0x41,d0                        	| [$7030: lda    #$41]
-	jbsr	l_850e                            	| [$7032: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7032: jsr    $850e]
 	jra	l_7071                             	| [$7035: bra    $7071]
 l_7037:
 	move.w	#0x28a0,d2                      	| [$7037: ldx    #$28a0]
@@ -2999,7 +3000,7 @@ l_7071:
 	jbsr	l_d9b2                            	| [$7078: jsr    $d9b2]
 	jbsr	clear_sprites_8c1d                	| [$707b: jsr    clear_sprites_8c1d]
 	move.b	#0x33,d0                        	| [$707e: lda    #$33]
-	jbsr	l_850e                            	| [$7080: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7080: jsr    $850e]
 l_7083:
 	move.b	#0xf0,d0                        	| [$7083: lda    #$f0]
 	OP_R_ON_DP_ADDRESS	move,current_level_84,d1| [$7085: ldb    current_level_84]
@@ -3108,9 +3109,9 @@ l_7119:
 	OP_R_ON_DP_ADDRESS	move,0xe8,d0         | [$712b: lda    $e8]
 	jne	l_7138                             	| [$712d: bne    $7138]
 	moveq	#0,d0                            	| [$712f: clra]
-	jbsr	l_850e                            	| [$7130: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7130: jsr    $850e]
 	move.b	#0x41,d0                        	| [$7133: lda    #$41]
-	jbsr	l_850e                            	| [$7135: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7135: jsr    $850e]
 l_7138:
 	jra	l_7071                             	| [$7138: lbra   $7071]
 l_713b:
@@ -3226,7 +3227,7 @@ l_71dc:
 	OP_W_ON_DP_ADDRESS	move,0xe8,d0         | [$71e6: sta    $e8]
 	OP_1_ON_DP_ADDRESS	clr,0xe7             | [$71e8: clr    $e7]
 	move.b	#0x33,d0                        	| [$71ea: lda    #$33]
-	jbsr	l_850e                            	| [$71ec: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$71ec: jsr    $850e]
 	OP_R_ON_DP_ADDRESS	move,0xf0,d0         | [$71ef: lda    $f0]
 	OP_W_ON_DP_ADDRESS	move,0x08,d0         | [$71f1: sta    $08]
 	rts                                    	| [$71f3: rts]
@@ -3471,7 +3472,7 @@ l_7339:
 l_7344:
 	jbsr	l_8ba3                            	| [$7344: jsr    $8ba3]
 	move.b	#0x2d,d0                        	| [$7347: lda    #$2d]
-	jbsr	l_850e                            	| [$7349: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7349: jsr    $850e]
 	move.b	#0x01,d0                        	| [$734c: ldd    #$0100]
 	move.w	#0x0100,d1                      	| [$734c: ldd    #$0100]
 	jbsr	queue_event_84f5                  	| [$734f: jsr    queue_event_84f5]
@@ -3763,7 +3764,7 @@ l_74c0:
 	OP_W_ON_DP_ADDRESS	addq,0x13,#1         | [$74f7: inc    $13]
 	move.l	d3,-(sp)                        	| [$74f9: pshs   y]
 	move.b	#0x31,d0                        	| [$74fb: lda    #$31]
-	jbsr	l_850e                            	| [$74fd: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$74fd: jsr    $850e]
 	movem.l	(sp)+,d3                       	| [$7500: puls   y]
 l_7502:
 	addq.w	#0x1,d3                         	| [$7502: leay   $1,y]
@@ -4281,11 +4282,11 @@ l_7810:
 	OP_1_ON_DP_ADDRESS	tst,game_playing_22  | [$782e: tst    game_playing_22]
 	jeq	l_7867                             	| [$7830: beq    $7867]
 	move.b	#0x0d,d0                        	| [$7832: lda    #$0d]
-	jbsr	l_850e                            	| [$7834: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7834: jsr    $850e]
 	move.b	#0x0c,d0                        	| [$7837: lda    #$0c]
-	jbsr	l_850e                            	| [$7839: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7839: jsr    $850e]
 	move.b	#0x0b,d0                        	| [$783c: lda    #$0b]
-	jbsr	l_850e                            	| [$783e: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$783e: jsr    $850e]
 	move.w	#0x320b,d4                      	| [$7841: ldu    #$320b]
 	OP_R_ON_DP_ADDRESS	move,0xdf,d0         | [$7844: lda    $df]
 	and.b	#0x02,d0                         	| [$7846: anda   #$02]
@@ -4393,11 +4394,11 @@ l_78d4:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_78f8                             	| [$78d7: bne    $78f8]
 	move.b	#0x1a,d0                        	| [$78d9: lda    #$1a]
-	jbsr	l_850e                            	| [$78db: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$78db: jsr    $850e]
 	move.b	#0x0c,d0                        	| [$78de: lda    #$0c]
-	jbsr	l_850e                            	| [$78e0: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$78e0: jsr    $850e]
 	move.b	#0x0d,d0                        	| [$78e3: lda    #$0d]
-	jbsr	l_850e                            	| [$78e5: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$78e5: jsr    $850e]
 	GET_REG_ADDRESS	0,d2                   	| [$78e8: inc    ,x]
 	addq.b	#1,(a0)                         	| [...]
 	GET_REG_ADDRESS	0x2,d2                 	| [$78ea: lda    $2,x]
@@ -4418,11 +4419,11 @@ l_78fa:
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_78f8                             	| [$78fd: bne    $78f8]
 	move.b	#0x1a,d0                        	| [$78ff: lda    #$1a]
-	jbsr	l_850e                            	| [$7901: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7901: jsr    $850e]
 	move.b	#0x0c,d0                        	| [$7904: lda    #$0c]
-	jbsr	l_850e                            	| [$7906: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7906: jsr    $850e]
 	move.b	#0x0d,d0                        	| [$7909: lda    #$0d]
-	jbsr	l_850e                            	| [$790b: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$790b: jsr    $850e]
 	GET_REG_ADDRESS	0x2,d2                 	| [$790e: lda    $2,x]
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x08,d0                         	| [$7910: adda   #$08]
@@ -4452,9 +4453,9 @@ l_7938:
 	cmp.b	#0x50,d0                         	| [$793d: cmpa   #$50]
 	jne	l_794b                             	| [$793f: bne    $794b]
 	move.b	#0xb3,d0                        	| [$7941: lda    #$b3]
-	jbsr	l_850e                            	| [$7943: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7943: jsr    $850e]
 	move.b	#0xff,d0                        	| [$7946: lda    #$ff]
-	jbsr	l_850e                            	| [$7948: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7948: jsr    $850e]
 l_794b:
 	OP_W_ON_DP_ADDRESS	subq,0x0b,#1         | [$794b: dec    $0b]
 	jne	l_79ae                             	| [$794d: bne    $79ae]
@@ -5069,7 +5070,7 @@ l_7ccf:
 	and.b	#0x3f,d0                         	| [$7ce1: anda   #$3f]
 	jne	l_7cea                             	| [$7ce3: bne    $7cea]
 	move.b	#0x2f,d0                        	| [$7ce5: lda    #$2f]
-	jbsr	l_850e                            	| [$7ce7: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7ce7: jsr    $850e]
 l_7cea:
 	rts                                    	| [$7cea: rts]
 
@@ -5286,7 +5287,7 @@ l_7e50:
 	move.b	d0,(a0)                         	| [...]
 	jbsr	l_ccbd                            	| [$7e57: jsr    $ccbd]
 	move.b	#0x25,d0                        	| [$7e5a: lda    #$25]
-	jbsr	l_850e                            	| [$7e5c: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7e5c: jsr    $850e]
 	OP_W_ON_DP_ADDRESS	addq,0x09,#1         | [$7e5f: inc    $09]
 	rts                                    	| [$7e61: rts]
 
@@ -5342,7 +5343,7 @@ l_7e7f:
 	moveq	#0,d0                            	| [$7ead: clra]
 	jbsr	queue_sound_event_8508            	| [$7eae: jsr    queue_sound_event_8508]
 	move.b	#0x25,d0                        	| [$7eb1: lda    #$25]
-	jbsr	l_850e                            	| [$7eb3: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$7eb3: jsr    $850e]
 	movem.l	(sp)+,d2                       	| [$7eb6: puls   x]
 l_7eb8:
 	OP_R_ON_DP_ADDRESS	move,0xa0,d0         | [$7eb8: lda    $a0]
@@ -5781,9 +5782,9 @@ l_8153:
 	jbsr	l_81be                            	| [$8159: bsr    $81be]
 	jbsr	l_81be                            	| [$815b: bsr    $81be]
 	move.b	#0x06,d0                        	| [$815d: lda    #$06]
-	jbsr	l_850e                            	| [$815f: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$815f: jsr    $850e]
 	move.b	#0x07,d0                        	| [$8162: lda    #$07]
-	jbsr	l_850e                            	| [$8164: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$8164: jsr    $850e]
 	move.b	#0xab,d0                        	| [$8167: ldd    #$ab77]
 	move.w	#0xab77,d1                      	| [$8167: ldd    #$ab77]
 	MAKE_D                                 	| [...]
@@ -6427,7 +6428,7 @@ queue_sound_event_8508:
 	OP_R_ON_DP_ADDRESS	move,dsw2_copy_2d,d1 | [$8508: ldb    dsw2_copy_2d]
 	and.b	#0x80,d1                         	| [$850a: andb   #$80]
 	jne	l_8512                             	| [$850c: bne    $8512] attract sounds: queue sound
-l_850e:
+force_queue_sound_event_850e:
 	OP_1_ON_DP_ADDRESS	tst,game_playing_22  | [$850e: tst    game_playing_22]
 	jeq	l_8524                             	| [$8510: beq    $8524] game not playing: skip
 l_8512:
@@ -11305,7 +11306,7 @@ l_9ecf:
 	GET_REG_ADDRESS	0x29,d2                	| [$9ecf: clr    $29,x]
 	clr.b	(a0)                         	| [...]
 	move.b	#0x0a,d0                        	| [$9ed2: lda    #$0a]
-	jbsr	l_850e                            	| [$9ed4: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$9ed4: jsr    $850e]
 	rts                                    	| [$9ed7: rts]
 
 l_9ed8:
@@ -12157,7 +12158,7 @@ l_a39d:
 	jbsr	l_cc6b                            	| [$a39d: jsr    $cc6b]
 	jbsr	l_a3da                            	| [$a3a0: jsr    $a3da]
 	move.b	#0x08,d0                        	| [$a3a3: lda    #$08]
-	jbsr	l_850e                            	| [$a3a5: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$a3a5: jsr    $850e]
 	move.b	#0x30,d0                        	| [$a3a8: lda    #$30]
 	OP_W_ON_DP_ADDRESS	move,0x0b,d0         | [$a3aa: sta    $0b]
 	OP_W_ON_DP_ADDRESS	addq,0x09,#1         | [$a3ac: inc    $09]
@@ -12532,7 +12533,7 @@ l_cb62:
 	cmp.b	#0x09,d0                         	| [$cb67: cmpa   #$09]
 	jne	l_cb70                             	| [$cb69: bne    $cb70]
 	move.b	#0x01,d0                        	| [$cb6b: lda    #$01]
-	jbsr	l_850e                            	| [$cb6d: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$cb6d: jsr    $850e]
 l_cb70:
 	GET_REG_ADDRESS	0x16,d2                	| [$cb70: lda    $16,x]
 	move.b	(a0),d0                         	| [...]
@@ -12642,7 +12643,7 @@ l_cc02:
 	cmp.b	#0x0b,d0                         	| [$cc06: cmpa   #$0b]
 	jne	l_cc0f                             	| [$cc08: bne    $cc0f]
 	move.b	#0x12,d0                        	| [$cc0a: lda    #$12]
-	jbsr	l_850e                            	| [$cc0c: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$cc0c: jsr    $850e]
 l_cc0f:
 	OP_R_ON_DP_ADDRESS	move,0xd0,d0         | [$cc0f: lda    $d0]
 	OP_R_ON_DP_ADDRESS	move,0xd7,d1         | [$cc11: ldb    $d7]
@@ -14343,8 +14344,9 @@ l_d567:
 	OP_R_ON_DP_ADDRESS	move,0xfb,d0         | [$d567: lda    $fb]
 	OP_W_ON_DP_ADDRESS	move,0xdf,d0         | [$d569: sta    $df]
 l_d56b:
+	* easter egg succeeded sound (mole, dwarf...)
 	move.b	#0x31,d0                        	| [$d56b: lda    #$31]
-	jbsr	l_850e                            	| [$d56d: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$d56d: jsr    $850e]
 	jbsr	l_8c4d                            	| [$d570: jsr    $8c4d]
 	movem.l	(sp)+,d2/d3/d4                 	| [$d573: puls   x,y,u]
 	move.b	#0x03,d0                        	| [$d575: lda    #$03]
@@ -14466,7 +14468,7 @@ l_d616:
 l_d618:
 	jbsr	reset_scrolling_8c2f              	| [$d618: jsr    reset_scrolling_8c2f]
 	move.b	#0x30,d0                        	| [$d61b: lda    #$30]
-	jbsr	l_850e                            	| [$d61d: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$d61d: jsr    $850e]
 	move.b	#0x00,d0                        	| [$d620: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$d620: ldd    #$0000]
 	jbsr	queue_event_84f5                  	| [$d623: jsr    queue_event_84f5]
@@ -15325,7 +15327,7 @@ l_dae7:
 	jeq	l_db00                             	| [$dae9: beq    $db00]
 	jbsr	reset_scrolling_8c2f              	| [$daeb: jsr    reset_scrolling_8c2f]
 	move.b	#0x30,d0                        	| [$daee: lda    #$30]
-	jbsr	l_850e                            	| [$daf0: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$daf0: jsr    $850e]
 	move.b	#0x00,d0                        	| [$daf3: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$daf3: ldd    #$0000]
 	jbsr	queue_event_84f5                  	| [$daf6: jsr    queue_event_84f5]
@@ -15993,7 +15995,7 @@ l_e128:
 	move.w	#current_attempted_height_metre_286a,d2	| [$e135: ldx    #current_attempted_height_metre_286a]
 	jbsr	l_6f55                            	| [$e138: jsr    $6f55]
 	move.b	#0xff,d0                        	| [$e13b: lda    #$ff]
-	jbsr	l_850e                            	| [$e13d: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e13d: jsr    $850e]
 	GET_ADDRESS	0x2809                     	| [$e140: inc    $2809]
 	addq.b	#1,(a0)                         	| [...]
 	rts                                    	| [$e143: rts]
@@ -16368,6 +16370,7 @@ l_e2fc:
 	OP_R_ON_DP_ADDRESS	move,high_jump_fault_9f,d0| [$e322: lda    high_jump_fault_9f]
 	cmp.b	#0x02,d0                         	| [$e324: cmpa   #$02]
 	jne	l_e3a2                             	| [$e326: lbne   $e3a2]
+	* let's see if we can display the mole
 	move.w	#high_jump_attempted_heights_edea,d3	| [$e32a: ldy    #high_jump_attempted_heights_edea]
 	move.w	#player_current_attempt_2968,d2 	| [$e32e: ldx    #player_current_attempt_2968]
 	OP_R_ON_DP_ADDRESS	move,0xdf,d0         | [$e331: lda    $df]
@@ -16382,7 +16385,7 @@ l_e2fc:
 	jeq	l_e345                             	| [$e33d: beq    $e345]
 	GET_ADDRESS	0x29d3                     	| [$e33f: inc    $29d3]
 	addq.b	#1,(a0)                         	| [...]
-	GET_ADDRESS	failed_rom_check_29d4      	| [$e342: clr    failed_rom_check_29d4]
+	GET_ADDRESS	mole_state_29d4      	| [$e342: clr    mole_state_29d4]
 	clr.b	(a0)                         	| [...]
 l_e345:
 	jbsr	check_player_qualified_877a       	| [$e345: jsr    check_player_qualified_877a]
@@ -16394,9 +16397,10 @@ l_e345:
 	OP_R_ON_DP_ADDRESS	move,0x3f,d0         | [$e351: lda    $3f]
 	and.b	#0x07,d0                         	| [$e353: anda   #$07]
 	jne	l_e383                             	| [$e355: bne    $e383]
-	 |  [$e357: lda    failed_rom_check_29d4] [rom_check_code]
-	 |  [$e35a: cmpa   #$04] [rom_check_code]
-	 |  [$e35c: beq    $e384] [rom_check_code]
+	GET_ADDRESS	mole_state_29d4        	| [$e357: lda    mole_state_29d4]
+	move.b	(a0),d0                         	| [...]
+	cmp.b	#0x04,d0                         	| [$e35a: cmpa   #$04]
+	jeq	mole_appeared_fully_e384                             	| [$e35c: beq    $e384]
 	move.w	#0x182e,d4                      	| [$e35e: ldu    #$182e]
 	move.w	#0x29d0,d2                      	| [$e361: ldx    #$29d0]
 	move.w	#0xded3,d3                      	| [$e364: ldy    #$ded3]
@@ -16410,19 +16414,20 @@ l_e345:
 	GET_ADDRESS	0x29d1                     	| [$e36d: std    $29d1]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jbsr	l_d12f                            	| [$e370: jsr    $d12f]
-	GET_ADDRESS	failed_rom_check_2a8e      	| [$e373: clr    failed_rom_check_2a8e]
-	clr.b	(a0)                         	| [...]
 * rom check!
+	 | [$e373: clr    failed_rom_check_2a8e] [rom_check_code]
 	 |  [$e376: lda    $c418] [rom_check_code]
 	 |  [$e379: cmpa   #$b1] [rom_check_code]
 	 |  [$e37b: beq    $e380] [rom_check_code]
 	 |  [$e37d: inc    failed_rom_check_2a8e] [rom_check_code]
 l_e380:
-	 |  [$e380: inc    failed_rom_check_29d4] [rom_check_code]
+	* next mole state: 0: no mole, 1: appearing, up to 4: end position
+	GET_ADDRESS	mole_state_29d4        	| [$e380: inc    mole_state_29d4]
+	addq.b	#1,(a0)                         	| [...]
 l_e383:
 	rts                                    	| [$e383: rts]
 
-l_e384:
+mole_appeared_fully_e384:
 	GET_ADDRESS	0x29d1                     	| [$e384: lda    $29d1]
 	move.b	(a0),d0                         	| [...]
 	add.b	#0x10,d0                         	| [$e387: adda   #$10]
@@ -16435,11 +16440,11 @@ l_e384:
 	jbsr	l_d540                            	| [$e399: jsr    $d540]
 	GET_ADDRESS	0x29d3                     	| [$e39c: clr    $29d3]
 	clr.b	(a0)                         	| [...]
-	GET_ADDRESS	failed_rom_check_29d4      	| [$e39f: clr    failed_rom_check_29d4]
+	GET_ADDRESS	mole_state_29d4      	| [$e39f: clr    mole_state_29d4]
 	clr.b	(a0)                         	| [...]
 l_e3a2:
-	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$e3a2: inc    $06]
-	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$e3a4: inc    $06]
+	OP_W_ON_DP_ADDRESS	addq,0x06,#2         | [$e3a2: inc    $06]
+	         | [$e3a4: inc    $06]
 	rts                                    	| [$e3a6: rts]
 
 * rom check after 2 faults at high jump, very vicious :)
@@ -16477,9 +16482,9 @@ l_e3c3:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x82,d0                        	| [$e3db: lda    #$82]
-	jbsr	l_850e                            	| [$e3dd: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e3dd: jsr    $850e]
 	move.b	#0xff,d0                        	| [$e3e0: lda    #$ff]
-	jbsr	l_850e                            	| [$e3e2: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e3e2: jsr    $850e]
 	rts                                    	| [$e3e5: rts]
 
 l_e3e6:
@@ -16548,11 +16553,11 @@ l_e41a:
 	OP_1_ON_DP_ADDRESS	clr,0xfc             | [$e43e: clr    $fc]
 	OP_1_ON_DP_ADDRESS	clr,0x3f             | [$e440: clr    $3f]
 	move.b	#0x05,d0                        	| [$e442: lda    #$05]
-	jbsr	l_850e                            	| [$e444: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e444: jsr    $850e]
 	move.b	#0x14,d0                        	| [$e447: lda    #$14]
-	jbsr	l_850e                            	| [$e449: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e449: jsr    $850e]
 	move.b	#0x15,d0                        	| [$e44c: lda    #$15]
-	jbsr	l_850e                            	| [$e44e: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e44e: jsr    $850e]
 	rts                                    	| [$e451: rts]
 
 l_e452:
@@ -16701,9 +16706,9 @@ l_e4e0:
 	GET_ADDRESS	0x2b25                     	| [$e52e: inc    $2b25]
 	addq.b	#1,(a0)                         	| [...]
 	moveq	#0,d0                            	| [$e531: clra]
-	jbsr	l_850e                            	| [$e532: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e532: jsr    $850e]
 	move.b	#0x13,d0                        	| [$e535: lda    #$13]
-	jbsr	l_850e                            	| [$e537: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e537: jsr    $850e]
 l_e53a:
 	OP_R_ON_DP_ADDRESS	move,p2_attempts_left_a1,d0| [$e53a: lda    p2_attempts_left_a1]
 	cmp.b	#0x37,d0                         	| [$e53c: cmpa   #$37]
@@ -16743,15 +16748,15 @@ l_e567:
 	OP_W_ON_DP_ADDRESS	addq,0xf4,#1         | [$e572: inc    $f4]
 l_e574:
 	move.b	#0x00,d0                        	| [$e574: lda    #$00]
-	jbsr	l_850e                            	| [$e576: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e576: jsr    $850e]
 	OP_R_ON_DP_ADDRESS	move,jump_foul_c9,d0 | [$e579: lda    jump_foul_c9]
 	jeq	l_e584                             	| [$e57b: beq    $e584]
 	move.b	#0x2e,d0                        	| [$e57d: lda    #$2e]
-	jbsr	l_850e                            	| [$e57f: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e57f: jsr    $850e]
 	jra	l_e589                             	| [$e582: bra    $e589]
 l_e584:
 	move.b	#0x2b,d0                        	| [$e584: lda    #$2b]
-	jbsr	l_850e                            	| [$e586: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e586: jsr    $850e]
 l_e589:
 	OP_R_ON_DP_ADDRESS	move,p2_attempts_left_a1,d0| [$e589: lda    p2_attempts_left_a1]
 	sub.b	#0x04,d0                         	| [$e58b: suba   #$04]
@@ -16865,7 +16870,7 @@ l_e601:
 	GET_ADDRESS	0x2b25                     	| [$e629: clr    $2b25]
 	clr.b	(a0)                         	| [...]
 	move.b	#0x10,d0                        	| [$e62c: lda    #$10]
-	jbsr	l_850e                            	| [$e62e: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e62e: jsr    $850e]
 	GET_ADDRESS	0x2ac1                     	| [$e631: lda    $2ac1]
 	move.b	(a0),d0                         	| [...]
 	addq.b	#1,d0                           	| [$e634: inca]
@@ -17006,7 +17011,7 @@ l_e66a:
 	jbsr	l_888a                            	| [$e6ed: jsr    $888a]
 	jbsr	l_6482                            	| [$e6f0: jsr    $6482]
 	move.b	#0x28,d0                        	| [$e6f3: lda    #$28]
-	jbsr	l_850e                            	| [$e6f5: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e6f5: jsr    $850e]
 	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$e6f8: inc    $06]
 	OP_1_ON_DP_ADDRESS	clr,0x09             | [$e6fa: clr    $09]
 l_e6fc:
@@ -17033,7 +17038,7 @@ l_e6fd:
 	jne	l_e728                             	| [$e721: bne    $e728]
 l_e723:
 	move.b	#0x2f,d0                        	| [$e723: lda    #$2f]
-	jbsr	l_850e                            	| [$e725: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e725: jsr    $850e]
 l_e728:
 	rts                                    	| [$e728: rts]
 
@@ -17203,7 +17208,7 @@ l_e81b:
 	clr.b	(a0)                         	| [...]
 	OP_1_ON_DP_ADDRESS	clr,0xbd             | [$e838: clr    $bd]
 	move.b	#0x0e,d0                        	| [$e83a: lda    #$0e]
-	jbsr	l_850e                            	| [$e83c: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e83c: jsr    $850e]
 	move.b	#0xff,d0                        	| [$e83f: lda    #$ff]
 	OP_W_ON_DP_ADDRESS	move,0xb7,d0         | [$e841: sta    $b7]
 	OP_W_ON_DP_ADDRESS	addq,0x09,#1         | [$e843: inc    $09]
@@ -17259,9 +17264,9 @@ l_e88b:
 	OP_W_ON_DP_ADDRESS	move,0xb7,d0         | [$e891: sta    $b7]
 	OP_W_ON_DP_ADDRESS	addq,0x09,#1         | [$e893: inc    $09]
 	move.b	#0x14,d0                        	| [$e895: lda    #$14]
-	jbsr	l_850e                            	| [$e897: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e897: jsr    $850e]
 	move.b	#0x15,d0                        	| [$e89a: lda    #$15]
-	jbsr	l_850e                            	| [$e89c: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e89c: jsr    $850e]
 	rts                                    	| [$e89f: rts]
 
 l_e8a0:
@@ -17363,9 +17368,9 @@ l_e942:
 	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$e942: inc    $06]
 l_e944:
 	move.b	#0x00,d0                        	| [$e944: lda    #$00]
-	jbsr	l_850e                            	| [$e946: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e946: jsr    $850e]
 	move.b	#0x0f,d0                        	| [$e949: lda    #$0f]
-	jbsr	l_850e                            	| [$e94b: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$e94b: jsr    $850e]
 	OP_1_ON_DP_ADDRESS	clr,0x09             | [$e94e: clr    $09]
 	OP_W_ON_DP_ADDRESS	addq,0x06,#1         | [$e950: inc    $06]
 	rts                                    	| [$e952: rts]
@@ -17870,17 +17875,17 @@ l_ec03:
 	GET_DP_ADDRESS	0xb2                    	| [$ec0e: std    $b2]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	moveq	#0,d0                            	| [$ec10: clra]
-	jbsr	l_850e                            	| [$ec11: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$ec11: jsr    $850e]
 	move.b	#0x0f,d0                        	| [$ec14: lda    #$0f]
-	jbsr	l_850e                            	| [$ec16: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$ec16: jsr    $850e]
 	move.b	#0xb0,d0                        	| [$ec19: lda    #$b0]
-	jbsr	l_850e                            	| [$ec1b: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$ec1b: jsr    $850e]
 	move.b	#0xff,d0                        	| [$ec1e: lda    #$ff]
-	jbsr	l_850e                            	| [$ec20: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$ec20: jsr    $850e]
 	move.b	#0x1c,d0                        	| [$ec23: lda    #$1c]
-	jbsr	l_850e                            	| [$ec25: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$ec25: jsr    $850e]
 	move.b	#0x1d,d0                        	| [$ec28: lda    #$1d]
-	jbsr	l_850e                            	| [$ec2a: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$ec2a: jsr    $850e]
 	OP_1_ON_DP_ADDRESS	clr,0xbd             | [$ec2d: clr    $bd]
 	move.b	#0xf1,d0                        	| [$ec2f: lda    #$f1]
 	GET_ADDRESS	0x2b38                     	| [$ec31: sta    $2b38]
@@ -18453,7 +18458,7 @@ l_f163:
 	move.w	#0x0000,d1                      	| [$f16a: ldd    #$0000]
 	jbsr	queue_event_84f5                  	| [$f16d: jsr    queue_event_84f5]
 	move.b	#0x1f,d0                        	| [$f170: lda    #$1f]
-	jbsr	l_850e                            	| [$f172: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f172: jsr    $850e]
 	OP_W_ON_DP_ADDRESS	addq,boot_state_03,#1| [$f175: inc    boot_state_03]
 	rts                                    	| [$f177: rts]
 
@@ -19031,9 +19036,9 @@ l_f44f:
 	move.w	#0x0000,d1                      	| [$f45f: ldd    #$0000]
 	jbsr	queue_event_84f5                  	| [$f462: jsr    queue_event_84f5]
 	move.b	#0x00,d0                        	| [$f465: lda    #$00]
-	jbsr	l_850e                            	| [$f467: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f467: jsr    $850e]
 	move.b	#0x22,d0                        	| [$f46a: lda    #$22]
-	jbsr	l_850e                            	| [$f46c: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f46c: jsr    $850e]
 	GET_ADDRESS	0x2a4c                     	| [$f46f: clr    $2a4c]
 	clr.b	(a0)                         	| [...]
 	move.b	#0xde,d0                        	| [$f472: ldd    #$deb2]
@@ -19513,7 +19518,7 @@ l_f6ba:
 
 l_f6c0:
 	move.b	#0x00,d0                        	| [$f6c0: lda    #$00]
-	jbsr	l_850e                            	| [$f6c2: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f6c2: jsr    $850e]
 	OP_1_ON_DP_ADDRESS	clr,0xdf             | [$f6c5: clr    $df]
 	GET_ADDRESS	0x2a50                     	| [$f6c7: clr    $2a50]
 	clr.b	(a0)                         	| [...]
@@ -19905,7 +19910,7 @@ l_f8b6:
 
 l_f8d9:
 	move.b	#0x17,d0                        	| [$f8d9: lda    #$17]
-	jbsr	l_850e                            	| [$f8db: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f8db: jsr    $850e]
 	GET_ADDRESS	0x299c                     	| [$f8de: ldb    $299c]
 	move.b	(a0),d1                         	| [...]
 	addq.b	#1,d1                           	| [$f8e1: incb]
@@ -19919,7 +19924,7 @@ l_f8e7:
 
 l_f8eb:
 	move.b	#0x17,d0                        	| [$f8eb: lda    #$17]
-	jbsr	l_850e                            	| [$f8ed: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f8ed: jsr    $850e]
 	GET_ADDRESS	0x299c                     	| [$f8f0: ldb    $299c]
 	move.b	(a0),d1                         	| [...]
 	sub.b	#0x01,d1                         	| [$f8f3: subb   #$01]
@@ -19932,7 +19937,7 @@ l_f8f9:
 
 l_f8fd:
 	move.b	#0x1b,d0                        	| [$f8fd: lda    #$1b]
-	jbsr	l_850e                            	| [$f8ff: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f8ff: jsr    $850e]
 	GET_ADDRESS	0x299c                     	| [$f902: ldb    $299c]
 	move.b	(a0),d1                         	| [...]
 	cmp.b	#0x1b,d1                         	| [$f905: cmpb   #$1b]
@@ -20070,7 +20075,7 @@ l_f9b1:
 	OP_1_ON_DP_ADDRESS	clr,boot_state_03    | [$f9c1: clr    boot_state_03]
 	OP_1_ON_DP_ADDRESS	clr,0x06             | [$f9c3: clr    $06]
 	moveq	#0,d0                            	| [$f9c5: clra]
-	jbsr	l_850e                            	| [$f9c6: jsr    $850e]
+	jbsr	force_queue_sound_event_850e                            	| [$f9c6: jsr    $850e]
 	move.w	#0x2a52,d3                      	| [$f9c9: ldy    #$2a52]
 	move.w	#0x2990,d2                      	| [$f9cd: ldx    #$2990]
 	move.b	#0x04,d0                        	| [$f9d0: lda    #$04]
