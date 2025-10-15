@@ -1,4 +1,9 @@
+- NTSC version doesn't seem to work either OCS or AGA, no key interrupts
+  in name entry. Seems to run fine until a key is pressed... Try to start
+  game with joystick just to see
 - high jump right pole position is 1 pixel too far to the right
+  probably a problem of sync with scrolling that is not visible in MAME
+  (unless we go frame per frame!)
 - clarify why previous positions need nb sprites * 2 else it crashes!
 - cpu erase not working (disabled right now, maybe buggy in Gyruss too?)
   still artefacts remaining sometimes seems that blitter busy makes erase fail!!

@@ -3632,7 +3632,11 @@ scroll_rows_fifth_part:
 
 
 	* pal limit
+	.ifdef OCS_VERSION
+    .word  0xFFDF,0xFFFE       | PAL wait
+	.else
     .word  0xFFCF,0xFFFE       | PAL wait
+	.endif
 	| no bobs from now on (as a bonus it runs on NTSC!)
 	.word	 intreq,0x8010
 	.set	y_start,0
