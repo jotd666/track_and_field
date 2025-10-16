@@ -963,8 +963,6 @@ _vblank:
 	btst	#5,d0
 	beq.b		1f
 
-	clr.b	vbl_sync_flag
-	
 	move.l	_joypad_1_state(pc),d1
 	jbsr		read_joypads
 	move.l	_joypad_1_state(pc),d0
@@ -983,7 +981,8 @@ _vblank:
 	move.w	#0x20,(intreq,a5)	
 	jra	3f
 1:
-	* has to be copper
+	* has to be copper either end of frame
+	* or middle of frame (PAL)
 	* still do NOT change D5, there are enough free registers!
 
 	* we're going to ack copper & software interrupt now
@@ -997,7 +996,6 @@ _vblank:
 
 
 	* declare that we're in interrupt mode so osd_disable_interrupts/osd_enable_interrupts
-	st.b	interrupt_mode
 	* is level 1 interrupt set? that would mean that mid-screen interrupt
 	* is the source of the interrupt
 	btst	#2,d0
@@ -1012,17 +1010,12 @@ _vblank:
 	bne.b	1f
 	* D5 should be left untouched!
 	jbsr		do_irq
-	clr.b	interrupt_mode	
 	jbsr	process_speech_queue	| process here too (PAL)
 	clr.b	d0
 1:
 	move.b	d0,mid_screen_interrupt_count
 	jra		23f
 2:
-
-
-	
-	subq.w	#1,delay_timer
 		
 	* make sure that we didn't change D5 from there. The IRQ
 	* may use it (D5 = S) to create local variables
@@ -1043,9 +1036,6 @@ _vblank:
 	bsr		switch_screen_buffers
 	.endif
 
-	* process speech queue at each copper interrupt including PAL mid-screen
-	* so in NTSC the timings are the same
-	jbsr	process_speech_queue
 	
 	* update tiles in the end, dual playfield means that
 	* we can do that when we want and at the frequency
@@ -1053,6 +1043,10 @@ _vblank:
 
 	jbsr		really_update_tiles
 23:
+	* process speech queue at each copper interrupt including PAL mid-screen
+	* so in NTSC the timings are the same
+	jbsr	process_speech_queue
+
 	.ifdef	OCS_VERSION
 	jbsr	detect_current_screen
 	.endif
@@ -2966,13 +2960,13 @@ osd_read_system_inputs:
 	beq.b	0f
 	bclr	#BIT_START_1P,d0
 	* rescan controller types in case the user swapped mouse after bootup
-	jsr	 _detect_controller_types 
+	jsr	 _detect_controller_types_no_wait 
 0:
 	tst.b	(2,a0)		| "2" key like in MAME
 	beq.b	0f
 	bclr	#BIT_START_2P,d0
 	* rescan controller types
-	jsr	 _detect_controller_types 
+	jsr	 _detect_controller_types_no_wait 
 0:	
 
 	jbsr		is_game_playing
@@ -3348,10 +3342,7 @@ host_sprites:
 keyboard_table:
 	ds.b	0x100
 
-interrupt_mode:
-	.word	0
-	
-	
+
 pause_flag:
 	.word	0
 
@@ -3635,13 +3626,11 @@ scroll_rows_fifth_part:
 	.ifdef OCS_VERSION
     .word  0xFFDF,0xFFFE       | PAL wait
 	.else
-    .word  0xFFCF,0xFFFE       | PAL wait
+    .word  0xFFCF,0xFFFE       | PAL wait (fmode changes stuff)
 	.endif
 	| no bobs from now on (as a bonus it runs on NTSC!)
 	.word	 intreq,0x8010
 	.set	y_start,0
-scroll_rows_bottom:
-	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_6
 	
 	.word	bplcon1
 	* set 0-scroll value value for both plane sets
@@ -3656,6 +3645,8 @@ reset_bplcon1_2:
 	
      .long    -2					
 	.ascii	"ENDCPLST"
+scroll_rows_bottom:
+	DEF_SCROLL_ROWS	NB_SCROLL_ROWS_PART_6
 
 	* aligning on 8 bytes so .align will work
 	* in the next datachip sections
