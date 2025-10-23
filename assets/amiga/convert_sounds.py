@@ -33,7 +33,7 @@ def convert(out_dir,hq_sample_rate,lq_sample_rate,speech_sample_rate):
     sound_dict = {
 
 
-    "STEP_SND"               :{"index":0x1,"channel":-1,"sample_rate":hq_sample_rate,"priority":40},
+    "STEP_SND"               :{"index":0x1,"channel":-1,"sample_rate":12000,"priority":40},  # fixed sample rate
     "DWARF_SND"               :{"index":0x31,"channel":0,"sample_rate":hq_sample_rate,"priority":40},
    "BAR_13_SND"               :{"index":0x13,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
    "BAR_10_SND"               :{"index":0x10,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
@@ -254,7 +254,7 @@ def convert(out_dir,hq_sample_rate,lq_sample_rate,speech_sample_rate):
                 ticks = details.get("ticks")
                 if not ticks:
                     # default value
-                    ticks = int(len(signed_data)/used_sampling_rate*85)+1  # inflate time (else speech is too fast)
+                    ticks = int(len(signed_data)/used_sampling_rate*170)+1  # inflate time (else speech is too fast)
 
                 sound_table[sound_index] = "    SOUND_ENTRY {},{},{},{},{},{},{}\n".format(wav,len(signed_data)//2,channel,
                             used_sampling_rate,int(64*amp_ratio),used_priority,ticks)
