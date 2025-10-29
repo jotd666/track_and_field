@@ -1,3 +1,4 @@
+- enter name post-music doesn't play?
 - high jump right pole position is 1 pixel too far to the right
   probably a problem of sync with scrolling that is not visible in MAME
   (unless we go frame per frame!)

@@ -1034,7 +1034,7 @@ _vblank:
 	
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-	bsr		switch_screen_buffers
+	jbsr		switch_screen_buffers
 	.endif
 
 	
@@ -1350,8 +1350,6 @@ record_broken_colors:
 	
 	
 really_update_bobs:
-
-
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -1696,7 +1694,7 @@ update_one_hw_sprite:
 	* D0 and D1 are already set
 	* so is A1 with sprite Y pos table
 	
-	bsr		store_sprite_pos
+	jbsr		store_sprite_pos
 
 	
 	* first sprite of couple
