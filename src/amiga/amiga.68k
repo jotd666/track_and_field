@@ -2889,6 +2889,7 @@ osd_read_inputs_2:
 	tst.b	(4,a0)		| "4" key like in MAME
 	beq.b	0f
 	bclr	#BIT_START_4P,d0
+	jsr	 dct_nowait 
 0:	
 	
 	movem.l	(a7)+,a0/d1
@@ -2941,6 +2942,17 @@ run_speed:
 	move.b	#0,0xB2(a4)
 	rts
 	
+dct_nowait:
+	move.l 	d0,-(a7)
+	moveq	#0,d0
+	jsr	 _detect_controller_types_no_wait 
+	moveq	#1,d0
+	jsr	 _detect_controller_types_no_wait 
+	
+	move.l	(a7)+,d0
+	rts
+
+
 osd_read_system_inputs:
 	st.b	d0
 
@@ -2961,13 +2973,13 @@ osd_read_system_inputs:
 	beq.b	0f
 	bclr	#BIT_START_1P,d0
 	* rescan controller types in case the user swapped mouse after bootup
-	jsr	 _detect_controller_types_no_wait 
+	jsr	 dct_nowait 
 0:
 	tst.b	(2,a0)		| "2" key like in MAME
 	beq.b	0f
 	bclr	#BIT_START_2P,d0
 	* rescan controller types
-	jsr	 _detect_controller_types_no_wait 
+	jsr	 dct_nowait 
 0:	
 
 	jbsr		is_game_playing
@@ -2980,10 +2992,12 @@ osd_read_system_inputs:
 0:
 	btst	#JPB_BTN_UP,d1		| "1" key like in MAME
 	beq.b	0f
+	jsr	 dct_nowait 
 	bclr	#BIT_START_1P,d0
 0:
 	btst	#JPB_BTN_DOWN,d1		| "2" key like in MAME
 	beq.b	0f
+	jsr	 dct_nowait 
 	bclr	#BIT_START_2P,d0
 0:	
 1:	
@@ -3000,6 +3014,7 @@ osd_read_inputs_1:
 	tst.b	(3,a0)		| "3" key like in MAME
 	beq.b	0f
 	bclr	#BIT_START_3P,d0
+	jsr	 dct_nowait 
 0:	
 	tst.b	(0x4F,a0)		| "<-" key
 	beq.b	0f
