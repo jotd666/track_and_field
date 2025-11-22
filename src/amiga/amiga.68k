@@ -1111,8 +1111,9 @@ really_update_scroll:
 	move.w	#NB_SCROLL_ROWS+1,d7
 	lea		scroll_table,a2
 	lea		scroll_row_copper_address_table,a1
-	move.l		background_ptr,a4
 	lea	current_scroll_values,a3
+	move.l		background_ptr,a4
+	moveq	#0,d2
 0:
 
 	* get LSB+MSB scroll value
@@ -1127,10 +1128,11 @@ really_update_scroll:
 	add.w	d5,d5
 	add.w	d5,d5
 	move.l	(a1),a0	| get address of bpl1con value
-	move.l	a4,d0				| base address
 	move.w	(a2,d5.w),(a0)	| set bplcon value
-	add.w	(2,a2,d5.w),d0	| bytes offset
+	move.w	(2,a2,d5.w),d2	| bytes offset
 	addq	#4,a0				| pointer on first bitplane
+	move.l	a4,d0
+	add.l	d2,d0
 	movem.l	a0-a1/d0-d2,-(a7)
 	jbsr	set_static_bitplanes
 	movem.l	(a7)+,a0-a1/d0-d2
