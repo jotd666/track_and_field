@@ -4493,7 +4493,7 @@ l_7980:
 	OP_W_ON_DP_ADDRESS	move,0xdf,d0         | [$7982: sta    $df]
 	move.w	#0x28ec,d4                      	| [$7984: ldu    #$28ec]
 	OP_R_ON_DP_ADDRESS	move,0xdf,d0         | [$7987: lda    $df]
-	and.l	#0xFF,d0                         	| [masking out]
+	DO_EXTB	d0                         	| [extending]
 	GET_REG_ADDRESS_FROM_REG	d0,d4         	| [$7989: inc    a,u]
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	l_8ba3                            	| [$798b: jsr    $8ba3]
@@ -16423,7 +16423,7 @@ l_e3c3:
 	move.w	#0x3ad7,d2                      	| [$e3d3: ldx    #$3ad7]
 	OP_R_ON_DP_ADDRESS	move,high_jump_fault_9f,d1| [$e3d6: ldb    high_jump_fault_9f]
 	addq.b	#1,d1                           	| [$e3d8: incb]
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d2         	| [$e3d9: sta    b,x] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
@@ -17884,7 +17884,7 @@ l_ec73:
 	jeq	l_ec8b                             	| [$ec78: beq    $ec8b]
 	OP_W_ON_DP_ADDRESS	move,nb_objects_48,d0| [$ec7a: sta    nb_objects_48]
 	and.b	#0x0f,d0                         	| [$ec7c: anda   #$0f]
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$ec7e: sta    b,y]
 	move.b	d0,(a0)                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,nb_objects_48,d0| [$ec80: lda    nb_objects_48]
@@ -17896,7 +17896,7 @@ l_ec73:
 	jne	l_ec73                             	| [$ec87: bne    $ec73]
 	jra	l_ec8b                             	| [$ec89: bra    $ec8b]
 l_ec8b:
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$ec8b: sta    b,y]
 	move.b	d0,(a0)                         	| [...]
 l_ec8d:
@@ -18342,8 +18342,7 @@ l_f11c:
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f120: cmpb   a,y]
 	cmp.b	(a0),d1                          	| [...]
 	jhi	l_f126                             	| [$f122: bhi    $f126]
-	and.l	#0xFF,d0                         	| [masking out]
-	GET_REG_ADDRESS_FROM_REG	d0,d3         	| [$f124: inc    a,y]
+	         	| [$f124: inc    a,y]
 	addq.b	#1,(a0)                         	| [...]
 l_f126:
 	addq.b	#1,d0                           	| [$f126: inca]
@@ -18441,17 +18440,15 @@ l_f19f:
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f19f: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	sub.b	#0x30,d1                         	| [$f1a1: subb   #$30]
-	and.l	#0xFF,d0                         	| [masking out]
-	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d0,d2         	| [$f1a3: stb    a,x] [video_address]
+	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d6,d2         	| [$f1a3: stb    a,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d0                           	| [$f1a5: deca]
 	jne	l_f19f                             	| [$f1a6: bne    $f19f]
-	move.b	#0x0b,d0                        	| [$f1a8: ldd    #$0b01]
+	moveq	#0x0b,d0                        	| [$f1a8: ldd    #$0b01]
 	move.w	#0x0b01,d1                      	| [$f1a8: ldd    #$0b01]
 	add.w	#0x0800,d2                       	| [$f1ab: leax   $0800,x]
 l_f1af:
-	and.l	#0xFF,d0                         	| [masking out]
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d0,d2         	| [$f1af: stb    a,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
@@ -18471,8 +18468,7 @@ l_f1c5:
 	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$f1c5: ldb    a,y]
 	move.b	(a0),d1                         	| [...]
 	sub.b	#0x30,d1                         	| [$f1c7: subb   #$30]
-	and.l	#0xFF,d0                         	| [masking out]
-	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d0,d2         	| [$f1c9: stb    a,x] [video_address]
+	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d6,d2         	| [$f1c9: stb    a,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	subq.b	#1,d0                           	| [$f1cb: deca]
@@ -18504,11 +18500,10 @@ l_f1c5:
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 l_f1e9:
-	move.b	#0x0e,d0                        	| [$f1e9: ldd    #$0e00]
+	moveq	#0x0e,d0                        	| [$f1e9: ldd    #$0e00]
 	move.w	#0x0e00,d1                      	| [$f1e9: ldd    #$0e00]
 	add.w	#0x0800,d2                       	| [$f1ec: leax   $0800,x]
 l_f1f0:
-	and.l	#0xFF,d0                         	| [masking out]
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d0,d2         	| [$f1f0: stb    a,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
@@ -19235,18 +19230,14 @@ l_f5ba:
 	jbsr	multiply_ab                       	| [$f5c5: mul]
 	add.w	d1,d2                            	| [$f5c6: leax   d,x]
 	movem.l	(sp)+,d0                       	| [$f5c8: puls   a]
-	PUSH_SR                                	| [...]
-	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	movem.l	(sp)+,d1                       	| [$f5ca: puls   b]
-	and.l	#0xFF,d0                         	| [masking out]
+	DO_EXTB		d0                         	| [extending]
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d0,d2         	| [$f5cc: stb    a,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	move.b	#0x0a,d1                        	| [$f5ce: ldb    #$0a]
 	add.w	#0x0800,d2                       	| [$f5d0: leax   $0800,x]
-	and.l	#0xFF,d0                         	| [masking out]
-	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d0,d2         	| [$f5d4: stb    a,x] [video_address]
+	add.w   #0x800,a0         	| [$f5d4: stb    a,x] [video_address]
 	move.b	d1,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	GET_ADDRESS	0x2a4c                     	| [$f5d6: lda    $2a4c]
@@ -19906,7 +19897,7 @@ l_f913:
 	GET_ADDRESS	0x299e                     	| [$f91f: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,nb_objects_48,d0| [$f922: lda    nb_objects_48]
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_ADDRESS_FROM_REG	d1,d2         	| [$f924: sta    b,x]
 	move.b	d0,(a0)                         	| [...]
 	move.w	#0x3516,d2                      	| [$f926: ldx    #$3516]
@@ -19917,7 +19908,7 @@ l_f913:
 	GET_ADDRESS	0x299e                     	| [$f930: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,nb_objects_48,d0| [$f933: lda    nb_objects_48]
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d2         	| [$f935: sta    b,x] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
@@ -19949,11 +19940,11 @@ l_f943:
 	GET_ADDRESS	0x299e                     	| [$f960: ldb    $299e]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0x10,d0                        	| [$f963: lda    #$10]
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d3         	| [$f965: sta    b,y] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_ADDRESS_FROM_REG	d1,d4         	| [$f967: sta    b,u]
 	move.b	d0,(a0)                         	| [...]
 l_f969:
@@ -20222,7 +20213,7 @@ l_fa92:
 	move.b	(a0),d0                         	| [...]
 	move.b	#0x0f,d1                        	| [$faa1: ldb    #$0f]
 l_faa3:
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d2         	| [$faa3: sta    b,x] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
@@ -20243,7 +20234,7 @@ l_faa3:
 	POP_SR                                 	| [...]
 	move.b	#0x07,d1                        	| [$fabb: ldb    #$07]
 l_fabd:
-	and.l	#0xFF,d1                         	| [masking out]
+        DO_EXTB	d1
 	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d2         	| [$fabd: sta    b,x] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]

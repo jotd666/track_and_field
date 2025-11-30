@@ -31,9 +31,9 @@ def doit(width):
         # pre-encode shift for bplcon
 
         shiftval_msb = ((shift&(wmask & 0x30))>>2)      # 2 high bits H7 H6
-        items.append((shiftval_msb<<4)|other_plane_mask_1) # put same shift for background playfield
+        items.append((shiftval_msb<<4)|other_plane_mask_1)
         shiftval_lsb = (shift&0xF)                      # 4 low bits H5->H2
-        items.append((shiftval_lsb<<4)|other_plane_mask_2) # put same shift for background playfield
+        items.append((shiftval_lsb<<4)|other_plane_mask_2)
 
         items.append(0)
         items.append(offset)

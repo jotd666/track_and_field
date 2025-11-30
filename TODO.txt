@@ -1,5 +1,5 @@
 - provide a OCS version without speech for 512k chip
-
+- remove all "masking out" lines: re-test
 
 - high jump right pole position is 1 pixel too far to the right
   probably a problem of sync with scrolling that is not visible in MAME
