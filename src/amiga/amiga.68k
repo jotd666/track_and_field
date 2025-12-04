@@ -2250,6 +2250,7 @@ platform_init:
 0:
      move.w #BASE_BPLCON0_VALUE,bplcon0(a5) 
 	move.w	#BASE_BPLCON2_VALUE,bplcon2(a5)
+	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
  	*         VVHH
     move.w #0x99-0X18+SCROLL_WIDTH+(COPPER_Y_START<<8),diwstrt(a5)
     move.w #0x79+SCROLL_WIDTH+8+(COPPER_Y_START<<8),diwstop(a5)
@@ -2260,10 +2261,8 @@ platform_init:
 	* try to hide color 0 on the border (except on OCS)
 	
 	.ifdef	OCS_VERSION
-	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
 	.else
     move.w #(SPRITE_FMODE<<2)+BITPLANE_FMODE,fmode(a5)	| 32 bit bitplane fetch, 64 bit wide sprites
-	move.w	#BASE_BPLCON3_VALUE,bplcon3(a5)
 	move.w	#0,bplcon4(a5)			| use the same colors as bobs playfield
 	.endif
 	
