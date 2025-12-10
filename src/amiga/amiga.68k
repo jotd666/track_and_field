@@ -1194,7 +1194,6 @@ detect_current_screen:
 	
 	GET_MEMORY_START_AND_DP
 	lea		(VIDEO_ADDRESS,a6),a6
-	move.b	#0,0x110
 	cmp.b	#3,(0x716,a6)
 	jne		0f
 	move.w	#CS_TITLE,d0
