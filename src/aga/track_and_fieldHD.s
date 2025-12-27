@@ -5,7 +5,7 @@
 
 ;CHIP_ONLY
 
-EXPMEM = $100000
+EXPMEM = $E0000
 CHIPSIZE = $100000
 
 _base	SLAVE_HEADER					; ws_security + ws_id
@@ -58,7 +58,7 @@ _config
 	ENDC
 
 DECL_VERSION:MACRO
-	dc.b	"1.0"
+	dc.b	"1.1"
 	IFD BARFLY
 		dc.b	" "
 		INCBIN	"T:date"
@@ -69,7 +69,11 @@ DECL_VERSION:MACRO
 	ENDC
 	ENDM
 _data   dc.b    0
-_name	dc.b	"Track'N'Field",0
+_name	dc.b	"Track'N'Field (AGA)"
+	IFD	CHIP_ONLY
+	dc.b	" (cd32load slave)"
+	ENDC
+		dc.b	0
 _copy	dc.b	'2025 JOTD',0
 _info
     dc.b    "Music by no9",0
