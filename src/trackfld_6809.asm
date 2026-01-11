@@ -156,6 +156,7 @@ player_2_final_time_296c = $296C		; dash/hurdles
 qualifying_value_2866 = $2866
 chrono_hundredth_second_287e = $287e
 player_current_attempt_2968 = $2968
+player_nb_lives_2b81 = $2b81
 
 qualifying_values_aaf3 = $aaf3
 high_jump_attempted_heights_edea = $edea
@@ -439,12 +440,12 @@ write_char_and_move_cursor_61f0:
 623C: C6 40          LDB    #$40
 623E: 86 6B          LDA    #$6B
 6240: BD 61 F0       JSR    write_char_and_move_cursor_61f0
-6243: 10 8E 2B 81    LDY    #$2B81
+6243: 10 8E 2B 81    LDY    #player_nb_lives_2b81
 6247: A6 1C          LDA    -$4,X
 6249: 4A             DECA
 624A: C6 20          LDB    #$20
 624C: 3D             MUL
-624D: A6 AB          LDA    D,Y
+624D: A6 AB          LDA    D,Y		; [video_address]
 624F: 27 07          BEQ    $6258
 6251: 81 0A          CMPA   #$0A
 6253: 25 02          BCS    $6257
@@ -2574,7 +2575,7 @@ player_turn_ends_6e75:
 73CD: 6F C8 1F       CLR    $1F,U
 73D0: 96 CD          LDA    player_is_qualified_cd
 73D2: 26 09          BNE    $73DD
-73D4: 6A 41          DEC    $1,U
+73D4: 6A 41          DEC    $1,U    ; lose 1 life
 73D6: 26 05          BNE    $73DD
 73D8: 6F C4          CLR    ,U
 73DA: 0C 09          INC    $09
@@ -2721,7 +2722,7 @@ player_turn_ends_6e75:
 74E1: 27 1F          BEQ    $7502
 74E3: A7 A4          STA    ,Y
 74E5: 34 40          PSHS   U
-74E7: CE 2B 81       LDU    #$2B81
+74E7: CE 2B 81       LDU    #player_nb_lives_2b81
 74EA: 96 49          LDA    $49
 74EC: C6 20          LDB    #$20
 74EE: 3D             MUL

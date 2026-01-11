@@ -39,7 +39,7 @@ _expmem
     dc.w    _config-_base
 ;---
 _config
-;	dc.b	"C1:X:infinite lives:1;"
+	dc.b	"C1:X:infinite lives:1;"
 ;	dc.b	"C1:X:super fast:2;"
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:25 Hz update:0;"
@@ -50,6 +50,9 @@ _config
 	ENDC
 	dc.b	"C3:L:start level:100m dash,long jump,javelin throw,"
 	dc.b	"110m hurdles,hammer throw,high jump;"
+	dc.b	"C4:X:2 lives:0;"
+;	dc.b	"C4:X:continue after last event:1;"
+	dc.b	"C4:X:bonus life at 100000:3;"
 ;	dc.b	"C5:L:difficulty level:1 (easiest),2,3,4,5 (average),6,7,8 (hardest);"
 	dc.b	0
 
@@ -58,7 +61,7 @@ _config
 	ENDC
 
 DECL_VERSION:MACRO
-	dc.b	"1.1"
+	dc.b	"1.2"
 	IFD BARFLY
 		dc.b	" "
 		INCBIN	"T:date"

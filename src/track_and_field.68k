@@ -561,7 +561,7 @@ l_61f8:
 	rts                                    	| [$61f8: rts]
 
 l_61f9:
-	move.w	#0x2aa0,d2                      	| [$61f9: ldx    #$2aa0]
+	move.w	#0x2aa0,d2                      	| [$61f9: ldx    #$2aa0] players individual data?
 	move.w	#0x30c1,d4                      	| [$61fc: ldu    #$30c1]
 	OP_R_ON_DP_ADDRESS	move,nb_players_minus_one_60,d0| [$61ff: lda    nb_players_minus_one_60]
 	addq.b	#1,d0                           	| [$6201: inca]
@@ -594,25 +594,27 @@ l_6204:
 	movem.l	(sp)+,d1                       	| [$6226: puls   b]
 	jbsr	l_6267                            	| [$6228: bsr    $6267]
 	addq.w	#0x1,d4                         	| [$622a: leau   $1,u]
+	* write number of lives only if bonus life at 100000 or 2-lives mode set
 	OP_R_ON_DP_ADDRESS	move,dsw2_copy_2d,d0 | [$622c: lda    dsw2_copy_2d]
-	BIT	#0x08,d0                           	| [$622e: bita   #$08]
+	BIT	#0x08,d0                           	| [$622e: bita   #$08]  bonus life?
 	jne	l_623a                             	| [$6230: bne    $623a]
-	and.b	#0x01,d0                         	| [$6232: anda   #$01]
+	and.b	#0x01,d0                         	| [$6232: anda   #$01] multi-lives
 	jne	l_623a                             	| [$6234: bne    $623a]
 	addq.w	#0x2,d4                         	| [$6236: leau   $2,u]
 	jra	l_625d                             	| [$6238: bra    $625d]
 l_623a:
 	move.l	d1,-(sp)                        	| [$623a: pshs   b]
 	move.b	#0x40,d1                        	| [$623c: ldb    #$40]
-	move.b	#0x6b,d0                        	| [$623e: lda    #$6b]
+	move.b	#0x6b,d0                        	| [$623e: lda    #$6b] life icon
 	jbsr	write_char_and_move_cursor_61f0   	| [$6240: jsr    write_char_and_move_cursor_61f0]
-	move.w	#0x2b81,d3                      	| [$6243: ldy    #$2b81]
+	* now write the number of lives
+	move.w	#player_nb_lives_2b81,d3                      	| [$6243: ldy    #$2b81]
 	GET_REG_ADDRESS	-0x4,d2                	| [$6247: lda    -$4,x]
-	move.b	(a0),d0                         	| [...]
+	move.b	(a0),d0						| current player
 	subq.b	#1,d0                           	| [$6249: deca]
 	move.b	#0x20,d1                        	| [$624a: ldb    #$20]
 	jbsr	multiply_ab                       	| [$624c: mul]
-	GET_REG_ADDRESS_FROM_REG	d1,d3         	| [$624d: lda    d,y]
+	GET_REG_UNCHECKED_ADDRESS_FROM_REG	d1,d3   | [$624d: lda    d,y]
 	move.b	(a0),d0                         	| [...]
 	jeq	l_6258                             	| [$624f: beq    $6258]
 	cmp.b	#0x0a,d0                         	| [$6251: cmpa   #$0a]
@@ -1687,9 +1689,9 @@ l_6833:
 	move.b	#0x01,d0                        	| [$6833: lda    #$01]
 	GET_REG_ADDRESS	0,d2                   	| [$6835: sta    ,x]
 	move.b	d0,(a0)                         	| [...]
-	OP_R_ON_DP_ADDRESS	move,0x49,d0         | [$6837: lda    $49]
+	OP_R_ON_DP_ADDRESS	move,0x49,d0         | [$6837: lda    $49] start nb lives
 	GET_REG_ADDRESS	0x1,d2                 	| [$6839: sta    $1,x]
-	move.b	d0,(a0)                         	| [...]
+	move.b	d0,(a0)                         	| [...]	store in nb lives
 	GET_REG_ADDRESS	0x4,d2                 	| [$683b: clr    $4,x]
 	clr.b	(a0)                         	| [...]
 	GET_REG_ADDRESS	0x1f,d2                	| [$683d: clr    $1f,x]
@@ -3556,7 +3558,9 @@ l_73b4:
 	clr.b	(a0)                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,player_is_qualified_cd,d0| [$73d0: lda    player_is_qualified_cd]
 	jne	l_73dd                             	| [$73d2: bne    $73dd]
-	GET_REG_ADDRESS	0x1,d4                 	| [$73d4: dec    $1,u]
+	GET_REG_ADDRESS	0x1,d4                 	| [$73d4: dec    $1,u]  lose 1 life
+	tst.b	infinite_lives_flag
+	jne	l_73dd
 	subq.b	#1,(a0)                         	| [...]
 	jne	l_73dd                             	| [$73d6: bne    $73dd]
 	GET_REG_ADDRESS	0,d4                   	| [$73d8: clr    ,u]
@@ -3740,7 +3744,7 @@ l_74c0:
 	GET_REG_ADDRESS	0,d2                   	| [$74d3: sta    ,x]
 	move.b	d0,(a0)                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,dsw2_copy_2d,d0 | [$74d5: lda    dsw2_copy_2d]
-	and.b	#0x08,d0                         	| [$74d7: anda   #$08]
+	and.b	#0x08,d0                         	| [$74d7: anda   #$08]  bonus life at 100000 ?
 	jeq	l_7506                             	| [$74d9: beq    $7506]
 	| [$74db: lda    ,x]
 	move.b	(a0),d0                         	| [...]
@@ -3751,13 +3755,13 @@ l_74c0:
 	| [$74e3: sta    ,y]
 	move.b	d0,(a0)                         	| [...]
 	move.l	d4,-(sp)                        	| [$74e5: pshs   u]
-	move.w	#0x2b81,d4                      	| [$74e7: ldu    #$2b81]
+	move.w	#player_nb_lives_2b81,d4                      	| [$74e7: ldu    #$2b81]
 	OP_R_ON_DP_ADDRESS	move,0x49,d0         | [$74ea: lda    $49]
 	move.b	#0x20,d1                        	| [$74ec: ldb    #$20]
 	jbsr	multiply_ab                       	| [$74ee: mul]
 	and.l	#0xFFFF,d1                       	| [masking out]
 	GET_REG_ADDRESS_FROM_REG	d1,d4         	| [$74ef: inc    d,u]
-	addq.b	#1,(a0)                         	| [...]
+	addq.b	#1,(a0)                         	| [...] add one life
 	movem.l	(sp)+,d4                       	| [$74f1: puls   u]
 	OP_R_ON_DP_ADDRESS	move,0x13,d0         | [$74f3: lda    $13]
 	jne	l_7502                             	| [$74f5: bne    $7502]

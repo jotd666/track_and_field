@@ -482,9 +482,6 @@ _user:
 	sne		break_at_startup_flag
 	.endif
 	
-	**move.b	d0,dip_switches_2
-
-
 	
 
 	move.l	cheat_flags,d0
@@ -496,6 +493,7 @@ _user:
 	btst	#1,d0
 	beq.b	0f
 	st		infinite_lives_flag
+	bset	#0,game_options+3		| set 2 lives else cheat won't work
 	st		cheat_used
 0:
 	btst	#2,d0
@@ -506,11 +504,13 @@ _user:
 	btst	#3,d0
 	beq.b	0f
 	st		cheat_used
-	*bset	#5,dip_switches_2
 0:
-	
-	move	#0x80,d1	| demo sounds on always
-	move.l	start_lives(pc),d0
+	* demo sounds on: always
+	* continue after last event: always
+	* by default, only one life (never saw the 2 lives
+	* setting in the arcade, just discovering it today !)
+	move.b	#0x82,d1
+	move.l	game_options(pc),d0
 	or.b	d0,d1
 	move.l	difficulty_level(pc),d0
 	ror.b	#4,d0
@@ -3319,7 +3319,7 @@ start_level_option:
 		.long	0
 		
 		.long	WHDLTAG_CUSTOM4_GET
-start_lives:
+game_options:
 		.long	0
 
 		.long	WHDLTAG_CUSTOM5_GET
