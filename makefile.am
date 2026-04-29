@@ -58,14 +58,18 @@ clean:
 	
 $(AGASRC)/graphics.68k: $(ASSETS)/convert_graphics_aga.py
 	cmd /c $(ASSETS)\convert_graphics_aga.py
+$(AGASRC)/palette.68k: $(ASSETS)/convert_graphics_aga.py
+	cmd /c $(ASSETS)\convert_graphics_aga.py
 $(OCSSRC)/graphics.68k: $(ASSETS)/convert_graphics_ocs.py
+	cmd /c $(ASSETS)\convert_graphics_ocs.py
+$(OCSSRC)/palette.68k: $(ASSETS)/convert_graphics_ocs.py
 	cmd /c $(ASSETS)\convert_graphics_ocs.py
 
 
 shell.o: $(AMIGASRC)/shell.68k
 	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/shell.68k -o shell.o
 
-$(AMIGASRC)/sounds.68k: $(ASSETS)/convert_sounds.py 
+$(OCSSRC)/sound_entries.68k: $(ASSETS)/convert_sounds.py 
 	cmd /c $(ASSETS)\convert_sounds.py
 	del sound_entries_ocs.o sounds_ocs.o sound_entries_aga.o sounds_aga.o
 	
