@@ -276,6 +276,7 @@ get_address:
 	move.b	\src,(\dest)
 	ror.w	#8,\src
 	move.b	\src,(1,\dest)
+	tst.w	\src
 	.endm
 
 
