@@ -2690,7 +2690,7 @@ flipped_tile:
 	
 0:
 	rts
-
+5:
 	CLEAR_TILE_PLANE
 	jra		41b
 	
